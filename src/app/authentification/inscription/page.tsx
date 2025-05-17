@@ -1,9 +1,20 @@
-"use client";
 import Link from "next/link";
 import ReturnButton from "@/components/ui/ReturnButton";
 import RegisterForm from "../components/RegisterForm";
+import { SignInOauthButton } from "../components/SignInOauthButton";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-const Page = () => {
+const Page = async () => {
+    const headersList = await headers()
+    
+      const session = await auth.api.getSession({
+          headers: headersList
+      })
+    
+        if (session) redirect("/compte") 
+
   return (
     <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
       <div className="space-y-8">
@@ -11,6 +22,7 @@ const Page = () => {
         <h1 className="text-3xl font bold">S&apos;inscrire</h1>
       </div>
 
+      <div className="space-y-4">
       <RegisterForm/>
 
       <p className="text-muted-foreground text-sm">
@@ -19,7 +31,15 @@ const Page = () => {
          Se connecter
          </Link>
       </p>
-    </div>
+
+      </div>
+
+        <hr className="max-w-sm" />
+    
+        <div className="flex flex-col max-w-sm gap-4">
+          <SignInOauthButton signUp/>
+        </div>
+      </div>
   )
 }
 

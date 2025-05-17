@@ -32,6 +32,7 @@ model User {
   email         String
   emailVerified Boolean
   role          UserRole @default(USER)
+  image         String? 
   banned        Boolean?
   banReason     String?
   banExpires    DateTime?

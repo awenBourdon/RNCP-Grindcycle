@@ -1,8 +1,20 @@
 import LoginForm from "../components/LoginForm"
 import ReturnButton from "../../../components/ui/ReturnButton"
 import Link from "next/link"
+import { SignInOauthButton } from "../components/SignInOauthButton"
+import { headers } from "next/headers"
+import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
-const Page = () => {
+const Page = async () => {
+  const headersList = await headers()
+  
+    const session = await auth.api.getSession({
+        headers: headersList
+    })
+  
+      if (session) redirect("/compte") 
+
   return (
     <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
       <div className="space-y-8">
@@ -10,7 +22,8 @@ const Page = () => {
         <h1 className="text-3xl font bold">Se connecter</h1>
       </div>
 
-      <LoginForm/>
+      <div className="space-y-4">
+        <LoginForm/>
 
       <p className="text-muted-foreground text-sm">
         Tu n&apos;as pas de compte ?{" "}
@@ -18,6 +31,13 @@ const Page = () => {
         S&apos;inscrire
         </Link>
       </p>
+      </div>
+
+      <hr className="max-w-sm" />
+
+      <div className="flex flex-col max-w-sm gap-4">
+        <SignInOauthButton />
+      </div>
     </div>
   )
 }
