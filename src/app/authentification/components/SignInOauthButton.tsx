@@ -13,6 +13,8 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
 
   const action = signUp ? "S'inscrire" : "Se connecter";
 
+
+  // TODO : Ouvrir dans une modale || fenêtre
   function handleClick() {
     startTransition(async () => {
       await signIn.social({

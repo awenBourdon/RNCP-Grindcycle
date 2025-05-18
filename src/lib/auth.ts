@@ -82,6 +82,11 @@ export const auth = betterAuth({
     session: {
         expiresIn: 7 * 24 * 60 * 60,
       },
+      account: {
+        accountLinking: {
+            enabled: false
+        }
+      },
     advanced: {
         database: {
           generateId: false,
