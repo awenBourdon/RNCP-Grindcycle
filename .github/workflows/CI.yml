@@ -22,15 +22,13 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
-          path: web/node_modules
+          path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('web/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install dependencies
-        working-directory: web
         run: npm install
 
       - name: Run `next build`
-        working-directory: web
         run: npm run build
