@@ -1,5 +1,5 @@
-"use client"
-import { useCart } from "@/contexts/CartContext"
+"use client";
+import { useCart } from "@/contexts/CartContext";
 
 export default function Header() {
   const { cartItems } = useCart()

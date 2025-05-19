@@ -1,6 +1,6 @@
-"use client"
-import Link from "next/link"
-import { useCart } from "@/contexts/CartContext"
+"use client";
+import Link from "next/link";
+import { useCart } from "@/contexts/CartContext";
 
 export default function Summary() {
   const { getCartTotal, getShippingCost, clearCart } = useCart()

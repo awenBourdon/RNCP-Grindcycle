@@ -1,4 +1,4 @@
-import Image from "next/image"
+import Image from "next/image";
 
 const Team = () => (
 <section className="py-24 bg-white">

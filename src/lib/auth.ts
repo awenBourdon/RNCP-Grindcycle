@@ -1,9 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
-
-// import { PrismaClient } from "@prisma/client"; Avec Docker
-import { PrismaClient, UserRole } from "@/generated/prisma/client"; // Sans Docker
+import { PrismaClient, UserRole } from "@/generated/prisma/client";
 import { hashPassword, verifyPassword } from "@/lib/argon2";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { getValidDomains, normalizeName } from "./utils";
@@ -94,7 +92,7 @@ export const auth = betterAuth({
         defaultCookieAttributes: {
             secure: false, // Mettre true en prod'
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: "lax", // Mettre strict en prod'
             partitioned: false,
         }
     },

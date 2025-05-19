@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { PlaceholderDeleteUserButton, DeleteUserButton } from "./components/DeleteUserButton";
 import { UserRoleSelect } from "./components/UserRoleSelect";
-import { UserRole } from "@/generated/prisma";
+import { User, UserRole } from "@/generated/prisma";
 
 const DashboardPage = async () => {
   const headersList = await headers()
@@ -22,7 +22,7 @@ const DashboardPage = async () => {
       },
     });
 
-    const sortedUsers = users.sort((a, b) => {
+    const sortedUsers = users.sort((a: { role: string; }, b: { role: string; }) => {
       if (a.role === "ADMIN" && b.role !== "ADMIN") return -1;
       if (a.role !== "ADMIN" && b.role === "ADMIN") return 1;
       return 0;
@@ -49,7 +49,7 @@ const DashboardPage = async () => {
           </thead>
 
           <tbody>
-              {sortedUsers.map((user) => (
+              {sortedUsers.map((user: User) => (
                 <tr key={user.id} className="border-b text-sm text-left">
                   <td className="px-4 py-2">{user.id.slice(0,8)}</td>
                   <td className="px-4 py-2">{user.name}</td>
