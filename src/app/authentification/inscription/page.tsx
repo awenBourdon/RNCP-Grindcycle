@@ -6,7 +6,7 @@ import { SignInOauthButton } from "../components/SignInOauthButton";
 const RegisterPage = async () => {
 
   return (
-    <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
+    <div className="px-8 py-40 container mx-auto max-w-screen-lg space-y-8">
       <div className="space-y-8">
       <ReturnButton href="/" label="Accueil"/>
         <h1 className="text-3xl font bold">S&apos;inscrire</h1>
