@@ -1,9 +1,9 @@
-"use client"
-import { deleteUserAction } from "@/actions/delete-user.action"
-import { Button } from "@/components/ui/button"
-import Spinner from "@/components/ui/Spinner"
-import { TrashIcon } from "lucide-react"
-import { useTransition } from "react"
+"use client";
+import { deleteUserAction } from "@/actions/delete-user.action";
+import { Button } from "@/components/ui/button";
+import Spinner from "@/components/ui/Spinner";
+import { TrashIcon } from "lucide-react";
+import React, { useTransition } from "react";
 
 interface DeleteUserButtonProps {
     userId: string

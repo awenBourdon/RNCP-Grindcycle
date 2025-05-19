@@ -1,4 +1,5 @@
 "use client";
+import React from 'react';
 import Spinner from "@/components/ui/Spinner";
 import type { UserRole } from "@/generated/prisma";
 import { admin } from "@/lib/auth-client";
