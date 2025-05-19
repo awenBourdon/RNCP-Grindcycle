@@ -1,13 +1,13 @@
-import { auth } from "@/lib/auth"
-import ReturnButton from "../../../components/ui/ReturnButton"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
-import { PlaceholderDeleteUserButton, DeleteUserButton } from "./components/DeleteUserButton"
-import { UserRoleSelect } from "./components/UserRoleSelect"
-import { UserRole } from "@/generated/prisma"
+import { auth } from "@/lib/auth";
+import ReturnButton from "../../../components/ui/ReturnButton";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { PlaceholderDeleteUserButton, DeleteUserButton } from "./components/DeleteUserButton";
+import { UserRoleSelect } from "./components/UserRoleSelect";
+import { UserRole } from "@/generated/prisma";
 
-const Page = async () => {
+const DashboardPage = async () => {
   const headersList = await headers()
 
   const session = await auth.api.getSession({
@@ -75,4 +75,4 @@ const Page = async () => {
   )
 }
  
-export default Page
+export default DashboardPage

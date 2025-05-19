@@ -6,7 +6,7 @@ import Link from "next/link";
 import SignOutButton from "./components/SignOutButton";
 import ReturnButton from "../../components/ui/ReturnButton";
 
-const Page = async () => {
+const ProfilePage = async () => {
     const headersList = await headers();
 
     const session = await auth.api.getSession({
@@ -58,4 +58,4 @@ const Page = async () => {
   )
 }
 
-export default Page
+export default ProfilePage

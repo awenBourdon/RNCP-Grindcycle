@@ -6,10 +6,11 @@ const protectedRoutes = ["/compte", "/admin/dashboard"];
 export async function middleware(req: NextRequest) {
     const { nextUrl } = req;
     const sessionCookie = getSessionCookie(req);
+    const googleAuthCookie = req.cookies.get('google-auth');
 
     const res = NextResponse.next();
 
-    const isLoggedIn = !!sessionCookie;
+    const isLoggedIn = !!sessionCookie || !!googleAuthCookie;
     const isOnProtectedRoute =  protectedRoutes.includes(nextUrl.pathname);
     const isOnAuthRoute = nextUrl.pathname.startsWith("/authentification");
 

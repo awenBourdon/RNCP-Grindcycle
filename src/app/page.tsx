@@ -1,15 +1,21 @@
-import { GetStartedButton } from "@/components/ui/GetStartedButton"
+import AboutUs from "./homeComponents/AboutUs";
+import Concept from "./homeComponents/Concept";
+import ContactUs from "./homeComponents/ContactUs";
+import Hero from "./homeComponents/Hero";
+import JoinMovement from "./homeComponents/JoinMouvement";
+import NewProducts from "./homeComponents/NewProducts";
+import ToTop from "./homeComponents/ToTop";
 
-const Page = () => {
+export default function HomePage() {
   return (
-    <div className="flex items-center justify-center h-dvh">
-      <div className="flex justify-center gap-6 flex-col items-center">
-          <h1 className="text-6xl font-bod">Hello</h1>
-
-          <GetStartedButton/>
-      </div>
+    <div>
+      <Hero />
+      <Concept />
+      <NewProducts />
+      <AboutUs />
+      <ContactUs/>
+      <JoinMovement />
+      <ToTop />
     </div>
-  )
+  );
 }
-
-export default Page

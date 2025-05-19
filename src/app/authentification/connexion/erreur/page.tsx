@@ -5,15 +5,15 @@ interface PageProps {
   searchParams: Promise<{ error: string }>;
 }
 
-export default async function Page({ searchParams }: PageProps) {
+export default async function ErrorLoginPage({ searchParams }: PageProps) {
   const error = (await searchParams).error;
 
   return (
     <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
       <div className="space-y-4">
-        <ReturnButton href="/Authentification/connexion" label="Connexion" />
+        <ReturnButton href="/authentification/connexion" label="Connexion" />
 
-        <h1 className="text-3xl font-bold">Login Error</h1>
+        <h1 className="text-3xl font-bold">Erreur lors de la connexion.</h1>
       </div>
 
       <p className="text-destructive">

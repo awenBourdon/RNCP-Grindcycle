@@ -1,19 +1,9 @@
-import LoginForm from "../components/LoginForm"
-import ReturnButton from "../../../components/ui/ReturnButton"
-import Link from "next/link"
-import { SignInOauthButton } from "../components/SignInOauthButton"
-import { headers } from "next/headers"
-import { auth } from "@/lib/auth"
-import { redirect } from "next/navigation"
+import LoginForm from "../components/LoginForm";
+import ReturnButton from "../../../components/ui/ReturnButton";
+import Link from "next/link";
+import { SignInOauthButton } from "../components/SignInOauthButton";
 
-const Page = async () => {
-  const headersList = await headers()
-  
-    const session = await auth.api.getSession({
-        headers: headersList
-    })
-  
-      if (session) redirect("/compte") 
+const LoginPage = async () => {
 
   return (
     <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
@@ -42,4 +32,4 @@ const Page = async () => {
   )
 }
  
-export default Page
+export default LoginPage
