@@ -1,30 +1,47 @@
-import Image from "next/image";
+import { Recycle, Axe, Sparkle } from "lucide-react"
 
-const Mission = () => (
-  <section className="py-24 bg-white">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div>
-          <h2 className="text-3xl font-normal mb-16">Notre Mission</h2>
-          <p className="text-lg text-gray-600 mb-6">
-            Chez GRINDCYCLE, nous sommes passionnés par le skateboard et déterminés à réduire son impact
-            environnemental.
-          </p>
-          <p className="text-lg text-gray-600 mb-6">
-            Notre mission est simple : donner une seconde vie aux planches usées en les transformant en nouvelles
-            créations uniques et durables.
-          </p>
-          <p className="text-lg text-gray-600">
-            Fondée en 2025 par un groupe de skateurs engagés, notre entreprise s&apos;est développée autour d&apos;une
-            vision commune : allier passion et responsabilité environnementale.
-          </p>
+const Process = () => (
+<section className="py-24 bg-white">
+  <div className="max-w-7xl mx-auto px-6">
+    <h2 className="text-3xl font-normal mb-16">Notre Processus</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div>
+        <div className="flex items-start gap-6">
+          <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#0a3d3f] text-white rounded-full">
+            <Recycle size={24} />
+          </div>
+          <div>
+            <p className="text-xl font-medium mb-3">Collecte</p>
+            <p className="text-gray-600">Nous récupérons les planches usées dans nos points de collecte partenaires.</p>
+          </div>
         </div>
-        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-gray-500">
-          <Image src="/placeholder.svg?height=800&width=600" alt="Atelier GRINDCYCLE" fill className="object-cover" />
+      </div>
+      <div>
+        <div className="flex items-start gap-6">
+          <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#0a3d3f] text-white rounded-full">
+            <Axe size={24} />
+          </div>
+          <div>
+            <p className="text-xl font-medium mb-3">Transformation</p>
+            <p className="text-gray-600">Chaque planche est soigneusement démontée, nettoyée et préparée pour sa nouvelle vie dans notre atelier.</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="flex items-start gap-6">
+          <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#0a3d3f] text-white rounded-full">
+            <Sparkle size={24} />
+          </div>
+          <div>
+            <p className="text-xl font-medium mb-3">Création</p>
+            <p className="text-gray-600">Nos artisans transforment le bois récupéré en nouvelles planches uniques, prêtes à rider à nouveau.</p>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
 )
 
-export default Mission
+export default Process
