@@ -11,6 +11,11 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
     },
+    coverage: {
+      reporter: ['text', 'html'],
+      include: ['src'],
+      exclude: ['**/*.d.ts', 'src/main.tsx'],
+    },
   },
   resolve: {
     alias: {
