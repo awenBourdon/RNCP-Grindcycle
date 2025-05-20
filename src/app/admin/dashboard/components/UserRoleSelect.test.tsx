@@ -136,7 +136,7 @@ describe('UserRoleSelect', () => {
     
     (admin.hasPermission as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true });
     
-    (admin.setRole as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Erreur inattendue'));
+    (admin.setRole as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(new Error());
 
     render(<UserRoleSelect userId="user123" role="USER" />);
     
