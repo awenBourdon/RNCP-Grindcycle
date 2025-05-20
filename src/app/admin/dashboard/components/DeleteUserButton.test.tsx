@@ -1,24 +1,22 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { deleteUserAction } from '@/actions/delete-user.action';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DeleteUserButton } from './DeleteUserButton';
-import '@testing-library/jest-dom';
 
-jest.mock('@/actions/delete-user.action', () => ({
-  deleteUserAction: jest.fn(),
+vi.mock('@/actions/delete-user.action', () => ({
+  deleteUserAction: vi.fn(),
 }));
 
-jest.mock('@/components/ui/Spinner', () => {
+vi.mock('@/components/ui/Spinner', () => {
   return {
-    __esModule: true,
-    default: () => <div data-testid="spinner">Loading...</div>,
+    default: () => <div data-testid="spinner"></div>,
   };
 });
 
 describe('DeleteUserButton', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('doit afficher correctement le bouton', () => {
@@ -28,28 +26,30 @@ describe('DeleteUserButton', () => {
     expect(button).toHaveClass('size-7 rounded-sm text-black cursor-pointer');
   });
 
-//   it('doit désactiver le bouton et afficher le spinner lors du clic', async () => {
-//     const user = userEvent.setup();
-//     (deleteUserAction as jest.Mock).mockResolvedValue({});
-
-//     render(<DeleteUserButton userId="user123" />);
-//     const button = screen.getByRole('button');
-
-//     await user.click(button);
-
-//     await waitFor(() => {
-//       expect(button).toBeDisabled();
-//       expect(screen.getByTestId('spinner')).toBeInTheDocument();
-//     });
-
-//     await waitFor(() => {
-//       expect(deleteUserAction).toHaveBeenCalledWith({ userId: 'user123' });
-//     });
-//   });
-
-  it('doit réactiver le bouton et cacher le spinner après la complétion de l\'action', async () => {
+  it('doit désactiver le bouton et afficher le spinner lors du clic', async () => {
     const user = userEvent.setup();
-    (deleteUserAction as jest.Mock).mockResolvedValue({});
+    const { deleteUserAction } = await import('@/actions/delete-user.action');
+    (deleteUserAction as ReturnType<typeof vi.fn>).mockResolvedValue({});
+
+    render(<DeleteUserButton userId="user123" />);
+    const button = screen.getByRole('button');
+
+    await user.click(button);
+
+    await waitFor(() => {
+      expect(button).toBeDisabled();
+      expect(screen.getByTestId('spinner')).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(deleteUserAction).toHaveBeenCalledWith({ userId: 'user123' });
+    });
+  });
+
+  it("doit réactiver le bouton et cacher le spinner après l'action", async () => {
+    const user = userEvent.setup();
+    const { deleteUserAction } = await import('@/actions/delete-user.action');
+    (deleteUserAction as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
     render(<DeleteUserButton userId="user123" />);
     const button = screen.getByRole('button');

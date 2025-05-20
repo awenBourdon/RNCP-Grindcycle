@@ -1,9 +1,9 @@
 "use client";
-import React from 'react';
 import Spinner from "@/components/ui/Spinner";
 import type { UserRole } from "@/generated/prisma";
 import { admin } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
