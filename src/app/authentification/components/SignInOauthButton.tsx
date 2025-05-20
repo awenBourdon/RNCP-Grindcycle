@@ -20,7 +20,7 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
       await signIn.social({
         provider: "google",
         callbackURL: "/compte",
-        errorCallbackURL: "/authentification/connexion/erreur",
+        errorCallbackURL: "/authentification/erreur",
       });
     });
   }
