@@ -7,6 +7,7 @@ import { createAuthMiddleware, APIError } from "better-auth/api";
 import { getValidDomains, normalizeName } from "./utils";
 import { admin } from "better-auth/plugins";
 import { ac, roles } from "./permissions";
+import { sendEmailAction } from "@/actions/send-email.action";
  
 const prisma = new PrismaClient();
 export const auth = betterAuth({
@@ -25,6 +26,22 @@ export const auth = betterAuth({
         password: {
             hash: hashPassword,
             verify: verifyPassword
+        },
+        requireEmailVerification: true,
+    },
+    emailVerification: {
+        sendOnSignUp: true,
+        expiresIn: 60 * 60,
+        autoSignInAfterVerification: true,
+        sendVerificationEmail: async({ user, url }) => {
+            await sendEmailAction({
+            to: user.email, 
+            subject: "Test email smtp",
+            meta: {
+                description: "Test email smtp",
+                link: String(url),
+            }
+        })
         },
     },
     hooks: {
