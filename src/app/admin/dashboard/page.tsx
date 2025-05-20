@@ -14,7 +14,7 @@ const DashboardPage = async () => {
       headers: headersList
   })
 
-    if (!session || session.user.role !== "ADMIN" ) redirect("/authentification/connexion")  // A remplacer par page 404 quand elle sera faite
+    if (!session || session.user.role !== "ADMIN" ) redirect("/authentification/connexion");
 
     const users = await prisma.user.findMany({
       orderBy: {
