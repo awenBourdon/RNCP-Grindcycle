@@ -1,4 +1,4 @@
-name: CI/Build Next
+name: CI/CD Pipeline
 
 on:
   push:
@@ -39,7 +39,7 @@ jobs:
         run: npm run build
 
       - name: Start Next.js server
-        run: npm dev &
+        run: npm start &
         env:
           PORT: 3000
 
@@ -49,8 +49,11 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
+      - name: Generate coverage report
+        run: npm run test:coverage
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
-        run: npm run playwright
+        run: npm run test
