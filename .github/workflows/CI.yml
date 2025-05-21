@@ -1,3 +1,13 @@
+name: Next.js Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
   next-build:
     runs-on: ubuntu-latest
