@@ -2,9 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { admin } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { UserRoleSelect } from './UserRoleSelect';
 import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { UserRoleSelect } from '@/app/admin/dashboard/components/UserRoleSelect';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({

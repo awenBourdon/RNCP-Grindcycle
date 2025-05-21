@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { DeleteUserButton } from './DeleteUserButton';
+import { DeleteUserButton } from '@/app/admin/dashboard/components//DeleteUserButton';
 
 vi.mock('@/actions/delete-user.action', () => ({
   deleteUserAction: vi.fn(),
