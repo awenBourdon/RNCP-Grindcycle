@@ -34,18 +34,18 @@ const RegisterForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
-     <div>
+     <div className="space-y-2">
       <Label htmlFor="name">Nom d&apos;utilisateur</Label>
       <Input id="name" name="name" />
      </div>
 
-     <div>
+     <div className="space-y-2">
       <Label htmlFor="email">Email</Label>
       <Input type="email" id="email" name="email" />
      </div>
 
-     <div>
-      <Label htmlFor="password">Mot-de-passe</Label>
+     <div className="space-y-2">
+      <Label htmlFor="password">Mot de passe</Label>
       <Input type="password" id="password" name="password" />
      </div>
 

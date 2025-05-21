@@ -9,7 +9,7 @@ export async function signInEmailAction(formData: FormData) {
     if (!email) return { error: "Merci d’indiquer ton adresse email." };
 
     const password = String(formData.get("password"));
-    if (!password) return { error: "Merci de renseigner ton mot-de-passe." };
+    if (!password) return { error: "Merci de renseigner ton mot de passe." };
 
     try {
         await auth.api.signInEmail({

@@ -2,15 +2,10 @@
 import { Button } from "@/components/ui/button"
 import Spinner from "@/components/ui/Spinner";
 import { signOut } from "@/lib/auth-client";
+import { ErrorContext } from "@/lib/types";
 import { useRouter } from "next/navigation"
 import { useTransition } from "react";
 import { toast } from "sonner";
-
-interface ErrorContext {
-    error : {
-        message: string
-    };
-}
 
 const SignOutButton = () => {
     const [isPending, startTransition] = useTransition();

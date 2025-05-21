@@ -18,3 +18,9 @@ export type ProductType = {
     quantity: number;
     imageUrl?: string;
   };
+
+  export interface ErrorContext {
+    error: {
+      message: string;
+    };
+  }

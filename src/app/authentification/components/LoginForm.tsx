@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Spinner from "@/components/ui/Spinner";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
@@ -32,13 +33,22 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
-     <div>
+     <div className="space-y-2">
       <Label htmlFor="email">Email</Label>
       <Input type="email" id="email" name="email" />
      </div>
 
-     <div>
-      <Label htmlFor="password">Mot-de-passe</Label>
+     <div className="space-y-2">
+      <div className="flex justify-between items-center gap-2">
+        <Label htmlFor="password">Mot de passe</Label>
+          <Link
+            href="/authentification/mot-de-passe-oublie"
+            className="text-sm italic text-muted-foreground hover:text-foreground"
+          >
+            Tu as perdu ton mot de passe oublié ?
+          </Link>
+      </div>
+
       <Input type="password" id="password" name="password" />
      </div>
 

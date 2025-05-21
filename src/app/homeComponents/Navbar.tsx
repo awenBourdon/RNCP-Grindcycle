@@ -173,7 +173,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="flex flex-col p-8 text-lg space-y-4 mt-8">
+          <div className="flex flex-col px-8 text-lg space-y-4">
             <Link
               href="/faq"
               onClick={() => setIsMenuOpen(false)}

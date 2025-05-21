@@ -2,6 +2,7 @@
 import Spinner from "@/components/ui/Spinner";
 import type { UserRole } from "@/generated/prisma";
 import { admin } from "@/lib/auth-client";
+import { ErrorContext } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useTransition } from "react";
@@ -10,12 +11,6 @@ import { toast } from "sonner";
 interface UserRoleSelectProps {
   userId: string;
   role: UserRole;
-}
-
-interface ErrorContext {
-  error: {
-    message: string;
-  };
 }
 
 export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
