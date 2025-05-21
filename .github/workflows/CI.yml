@@ -35,7 +35,7 @@ jobs:
         run: npm run build
 
       - name: Start Next.js server in background
-        run: npm dev &
+        run: npm run dev
 
       - name: Wait for server to be ready
         run: npx wait-on http://localhost:3000
