@@ -29,7 +29,7 @@ export async function signInEmailAction(formData: FormData) {
             // TODO : Implémenter un switch complet pour tous les cas possibles
             switch (errCode) {
                 case "EMAIL_NOT_VERIFIED":
-                    redirect("/auth/verify?error=email_not_verified");
+                    redirect("/authentification/verifier-email?error=email_not_verified");
                 default:
                     return { error: "Oups ! Une erreur est survenue pendant la connexion." };
             }
