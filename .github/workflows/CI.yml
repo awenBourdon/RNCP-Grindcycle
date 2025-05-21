@@ -47,7 +47,7 @@ jobs:
         run: npx wait-on http://localhost:3000 -t 60000
 
       - name: Run unit tests
-        run: npm run test:unit
+        run: npm run test
 
       - name: Generate coverage report
         run: npm run test:coverage
@@ -62,7 +62,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
-        run: npm run test:e2e
+        run: npm run test
 
       - name: Upload Playwright reports
         if: always()
