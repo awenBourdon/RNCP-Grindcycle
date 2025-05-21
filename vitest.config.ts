@@ -16,6 +16,7 @@ export default defineConfig({
       include: ['src'],
       exclude: ['**/*.d.ts', 'src/main.tsx'],
     },
+    include: ['src/tests/unit/**/*.{test,spec}.{js,jsx,ts,tsx}'],
   },
   resolve: {
     alias: {
