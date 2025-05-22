@@ -16,5 +16,6 @@ export const {
   admin,
   sendVerificationEmail,
   forgetPassword,
-  resetPassword
+  resetPassword,
+  updateUser
  } = authClient;

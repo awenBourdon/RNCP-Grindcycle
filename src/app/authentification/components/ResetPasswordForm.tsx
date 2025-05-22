@@ -13,7 +13,7 @@ interface ResetPasswordFormProps {
 }
 
 export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, setIsPending] = useState(false); // TODO : Utiliser useTransition
   const router = useRouter();
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {

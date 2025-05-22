@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import SignOutButton from "./components/SignOutButton";
 import ReturnButton from "../../components/ui/ReturnButton";
+import { UpdateUserForm } from "./components/UpdateUserForm";
+import { ChangePasswordForm } from "./components/ChangePasswordForm";
 
 const ProfilePage = async () => {
     const headersList = await headers();
@@ -15,7 +17,6 @@ const ProfilePage = async () => {
 
     if (!session) redirect("/authentification/connexion");
 
-    // TODO : Découvrir pourquoi Better-Auth ne valide pas la méthode userHasPermission
     const FULL_POST_ACCESS = await auth.api.userHasPermission({
         body: {
           userId: session.user.id,
@@ -50,6 +51,20 @@ const ProfilePage = async () => {
             <Button size="sm">Modififer mes posts</Button>
             <Button size="sm" disabled={!FULL_POST_ACCESS.success}>Modifier tous les posts</Button>
         </div>
+
+        <div className="space-y-4 p-4 rounded-b-md">
+        <h2 className="text-2xl font-bold">Modifier mes informations</h2>
+
+        <UpdateUserForm
+          name={session.user.name}
+        />
+      </div>
+
+      <div className="space-y-4 p-4 rounded-b-md">
+        <h2 className="text-2xl font-bold">Modifier mon mot de passe</h2>
+
+        <ChangePasswordForm />
+      </div>
 
         <pre className="text-sm overflow-clip">
             {JSON.stringify(session, null, 2)}
