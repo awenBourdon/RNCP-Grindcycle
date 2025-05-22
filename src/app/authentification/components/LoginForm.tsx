@@ -45,7 +45,7 @@ const LoginForm = () => {
             href="/authentification/mot-de-passe-oublie"
             className="text-sm italic text-muted-foreground hover:text-foreground"
           >
-            Tu as perdu ton mot de passe oublié ?
+            Mot de passe oublié ?
           </Link>
       </div>
 

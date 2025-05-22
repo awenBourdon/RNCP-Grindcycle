@@ -28,6 +28,16 @@ export const auth = betterAuth({
             verify: verifyPassword
         },
         requireEmailVerification: true,
+        sendResetPassword: async({ user, url }) => {
+            await sendEmailAction({
+                to: user.email,
+                subject: "Réinitialiser ton mot de passe",
+                meta: {
+                  description: "Clique ici pour réinitialiser ton mot de passe.",
+                  link: String(url),
+                },
+              });
+        },
     },
     emailVerification: {
         sendOnSignUp: true,
