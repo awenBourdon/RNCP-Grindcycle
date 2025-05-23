@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useState, useTransition, useEffect } from "react";
 import type { ProductType } from "@/lib/types";
 import { useCart } from "@/contexts/CartContext";
-import Spinner from "@/components/ui/Spinner";
+import Spinner from "@/components/Spinner";
 
 type Props = {
   product: ProductType

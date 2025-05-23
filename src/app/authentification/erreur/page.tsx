@@ -1,4 +1,4 @@
-import ReturnButton from "@/components/ui/ReturnButton";
+import ReturnButton from "@/components/ReturnButton";
 
 
 interface PageProps {

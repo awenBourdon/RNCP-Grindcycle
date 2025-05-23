@@ -1,22 +1,22 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
+import type React from "react";
 import { signIn } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ErrorContext } from "@/lib/types";
+import type { ErrorContext } from "@/lib/types";
+import { Mail } from "lucide-react";
 
 export const MagicLinkLoginForm = () => {
-  const [isPending, setIsPending] = useState(false); // TODO : Utiliser useTransition
-  const ref = useRef<HTMLDetailsElement>(null);
+  const [isPending, setIsPending] = useState(false) // TODO : Utiliser useTransition
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isOpen, setIsOpen] = useState(false)
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault();
-    const formData = new FormData(evt.currentTarget);
-    const email = String(formData.get("email"));
+    evt.preventDefault()
+    const formData = new FormData(evt.currentTarget)
+    const email = String(formData.get("email"))
 
-    if (!email) return toast.error("Please enter your email.");
+    if (!email) return toast.error("Veuillez entrer votre email.")
 
     await signIn.magicLink({
       email,
@@ -24,40 +24,55 @@ export const MagicLinkLoginForm = () => {
       callbackURL: "/compte",
       fetchOptions: {
         onRequest: () => {
-          setIsPending(true);
+          setIsPending(true)
         },
         onResponse: () => {
-          setIsPending(false);
+          setIsPending(false)
         },
         onError: (ctx: ErrorContext) => {
-          toast.error(ctx.error.message);
+          toast.error(ctx.error.message)
         },
         onSuccess: () => {
-          toast.success("Check your email for the magic link!");
-          if (ref.current) ref.current.open = false;
+          toast.success("Vérifiez votre email pour le lien magique !")
+          setIsOpen(false)
         },
       },
-    });
+    })
   }
 
   return (
-    <details
-      ref={ref}
-      className="max-w-sm rounded-md border border-black overflow-hidden"
-    >
-      <summary className="flex gap-2 items-center px-2 py-1  bg-black text-white">
-        Connexion express
-      </summary>
-
-      <form onSubmit={handleSubmit} className="px-2 py-1">
-        <Label htmlFor="email" className="sr-only">
-          Email
-        </Label>
-        <div className="flex gap-2 items-center">
-          <Input type="email" id="email" name="email" />
-          <Button disabled={isPending}>Envoyer</Button>
+    <div className="w-full">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="magic-email" className="text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            type="email"
+            id="magic-email"
+            name="email"
+            placeholder="ton@email.com"
+            className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+          />
         </div>
+
+        <button
+          type="submit"
+          disabled={isPending}
+          className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
+            isPending ? "opacity-70 cursor-not-allowed" : ""
+          }`}
+        >
+          {isPending ? (
+            "Envoi en cours..."
+          ) : (
+            <>
+              <Mail size={16} className="mr-2" />
+              Envoyer le lien magique
+            </>
+          )}
+        </button>
       </form>
-    </details>
-  );
-};
+    </div>
+  )
+}

@@ -1,29 +1,27 @@
 "use client";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Spinner from "@/components/ui/Spinner";
+import Spinner from "@/components/Spinner";
 import { forgetPassword } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Mail, ArrowRight } from "lucide-react";
+import type React from "react";
 
 export const ForgotPasswordForm = () => {
-  const [isPending, setIsPending] = useState(false); // TODO : Mettre UseTransition
-  const router = useRouter();
+  const [isPending, setIsPending] = useState(false) // TODO : Mettre UseTransition
+  const router = useRouter()
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault();
-    const formData = new FormData(evt.currentTarget);
-    const email = String(formData.get("email"));
+    evt.preventDefault()
+    const formData = new FormData(evt.currentTarget)
+    const email = String(formData.get("email"))
 
     if (!email) {
-      toast.error("Merci de renseigner ton adresse email.");
-      return;
+      toast.error("Merci de renseigner ton adresse email.")
+      return
     }
 
-    setIsPending(true);
+    setIsPending(true)
 
     try {
       await forgetPassword({
@@ -33,34 +31,57 @@ export const ForgotPasswordForm = () => {
           onRequest: () => {},
           onResponse: () => {},
           onError: (ctx) => {
-            toast.error(ctx.error.message);
+            toast.error(ctx.error.message)
           },
           onSuccess: () => {
-            toast.success("Le lien de réinitialisation a été envoyé.");
-            router.push("/authentification/mot-de-passe-oublie/succes");
+            toast.success("Le lien de réinitialisation a été envoyé.")
+            router.push("/authentification/mot-de-passe-oublie/succes")
           },
         },
-      });
+      })
     } finally {
       setTimeout(() => {
-        setIsPending(false);
-      }, 800);
+        setIsPending(false)
+      }, 800)
     }
   }
 
   return (
-    <form className="max-w-sm w-full space-y-4" onSubmit={handleSubmit}>
+    <form className="w-full space-y-6" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="email">Email</Label>
-        <Input type="email" id="email" name="email" />
+        <label htmlFor="email" className="text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Mail size={16} className="text-gray-400" />
+          </div>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="ton@email.com"
+            className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+          />
+        </div>
       </div>
 
-      <Button type="submit" disabled={isPending}>
-        <div className="flex items-center gap-2">
-          {isPending && <Spinner />}
-          Envoyer le lien de réinitialisation
-        </div>
-      </Button>
+      <button
+        type="submit"
+        disabled={isPending}
+        className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
+          isPending ? "opacity-70 cursor-not-allowed" : ""
+        }`}
+      >
+        {isPending ? (
+          <Spinner />
+        ) : (
+          <>
+            Envoyer le lien de réinitialisation
+            <ArrowRight size={16} className="ml-2" />
+          </>
+        )}
+      </button>
     </form>
-  );
-};
+  )
+}

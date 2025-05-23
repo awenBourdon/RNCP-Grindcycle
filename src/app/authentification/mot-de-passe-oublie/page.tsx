@@ -1,20 +1,26 @@
-import ReturnButton from "@/components/ui/ReturnButton";
+import ReturnButton from "@/components/ReturnButton";
 import { ForgotPasswordForm } from "../components/ForgotPasswordForm";
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="px-8 py-40 container mx-auto max-w-screen-lg space-y-8">
-      <div className="space-y-4">
-        <ReturnButton href="/authentification/connexion" label="Se connecter" />
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-6 py-40">
+        <div className="mb-12">
+          <ReturnButton href="/authentification/connexion" label="Se connecter" />
+        </div>
 
-        <h1 className="text-3xl font-bold">Mot de passe oublié.</h1>
+        <div className="max-w-xl mx-auto">
+          <div className="bg-[#f8f7f4] rounded-xl p-8 border border-gray-200">
+            <h1 className="text-3xl font-normal mb-4">Mot de passe oublié</h1>
 
-        <p className="text-muted-foreground">
-        Saisis ton adresse email pour recevoir un lien de réinitialisation de ton mot de passe.
-        </p>
+            <p className="text-gray-600 mb-8">
+              Saisis ton adresse email pour recevoir un lien de réinitialisation de ton mot de passe.
+            </p>
 
-        <ForgotPasswordForm />
+            <ForgotPasswordForm />
+          </div>
+        </div>
       </div>
     </div>
-  );
+  )
 }

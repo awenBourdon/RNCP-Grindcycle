@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
-import Footer from "./homeComponents/Footer";
-import Navbar from "./homeComponents/Navbar";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 import localFont from "next/font/local";
 import { CartProvider } from "@/contexts/CartContext";
 
