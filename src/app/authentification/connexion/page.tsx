@@ -16,7 +16,7 @@ const LoginPage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-8">
-            <div className="bg-[#f8f7f4] rounded-xl p-8 border border-gray-200">
+            <div className="bg-[#f8f7f4] rounded-xl p-8 ">
               <h2 className="text-xl font-medium mb-6">Connexion standard</h2>
               <LoginForm />
 
@@ -28,7 +28,7 @@ const LoginPage = () => {
               </p>
             </div>
 
-            <div className="bg-[#f8f7f4] rounded-xl p-8 border border-gray-200">
+            <div className="bg-[#f8f7f4] rounded-xl p-8 ">
               <h2 className="text-xl font-medium mb-6">Connexion avec Google</h2>
               <SignInOauthButton />
             </div>

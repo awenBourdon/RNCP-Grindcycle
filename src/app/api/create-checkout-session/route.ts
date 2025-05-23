@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 import type { CartItemType } from "@/contexts/CartContext"
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-04-30.basil",
@@ -10,13 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: Request) {
   try {
-    const { cartItems, shippingCost, shippingAddress } = await request.json()
-
-    // Vérifier si l'utilisateur est connecté
-    const headersList = headers()
-    const session = await auth.api.getSession({
-      headers: headersList,
-    })
+    const { cartItems, shippingCost, shippingAddress, userEmail } = await request.json()
 
     // TODO : Pansement pour faire fonctionner Stripe sans les images
     const lineItems = cartItems.map((item: CartItemType) => ({
@@ -28,7 +20,7 @@ export async function POST(request: Request) {
         },
         unit_amount: Math.round(item.price * 100),
       },
-      quantity: item.quantity || 1,
+      quantity: 1,
     }))
 
     if (shippingCost > 0) {
@@ -51,12 +43,11 @@ export async function POST(request: Request) {
       mode: "payment",
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/panier`,
-      customer_email: shippingAddress?.email || session?.user?.email,
+      customer_email: shippingAddress?.email || userEmail,
       shipping_address_collection: {
         allowed_countries: ["FR", "BE", "CH", "LU"],
       },
       metadata: {
-        userId: session?.user?.id || "guest",
         ...(shippingAddress && {
           shippingName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
           shippingAddress: shippingAddress.address,

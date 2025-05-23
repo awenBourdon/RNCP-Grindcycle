@@ -20,7 +20,7 @@ export default async function VerifyPage({ searchParams }: PageProps) {
         </div>
 
         <div className="max-w-xl mx-auto">
-          <div className="bg-[#f8f7f4] rounded-xl p-8 border border-gray-200">
+          <div className="bg-[#f8f7f4] rounded-xl p-8 ">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
                 <AlertTriangle size={24} className="text-red-600" />

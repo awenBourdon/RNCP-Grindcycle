@@ -10,7 +10,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         <div className="max-w-xl mx-auto">
-          <div className="bg-[#f8f7f4] rounded-xl p-8 border border-gray-200">
+          <div className="bg-[#f8f7f4] rounded-xl p-8 ">
             <h1 className="text-3xl font-normal mb-4">Mot de passe oublié</h1>
 
             <p className="text-gray-600 mb-8">

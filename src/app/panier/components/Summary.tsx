@@ -33,9 +33,13 @@ export default function Summary() {
       </div>
 
       <div className="space-y-4">
-        <button className="w-full py-3 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors">
-          Passer la commande
-        </button>
+        <Link
+          href="paiement/livraison"
+          >
+          <button className="w-full py-3 mb-2 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors">
+            Passer la commande
+          </button>
+        </Link>
         <Link
           href="/catalogue"
           className="block w-full py-3 text-center border border-[#0a3d3f] text-[#0a3d3f] rounded-full hover:bg-[#0a3d3f] hover:text-white transition-colors"
