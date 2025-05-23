@@ -2,6 +2,7 @@ import LoginForm from "../components/LoginForm";
 import ReturnButton from "../../../components/ui/ReturnButton";
 import Link from "next/link";
 import { SignInOauthButton } from "../components/SignInOauthButton";
+import { MagicLinkLoginForm } from "../components/MagicLinkLoginForm";
 
 const LoginPage = () => {
   return (
@@ -12,6 +13,7 @@ const LoginPage = () => {
       </div>
 
       <div className="space-y-4">
+        <MagicLinkLoginForm/>
         <LoginForm />
 
         <p className="text-muted-foreground text-sm">

@@ -5,7 +5,7 @@ import { PrismaClient, UserRole } from "@/generated/prisma/client";
 import { hashPassword, verifyPassword } from "@/lib/argon2";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { getValidDomains, normalizeName } from "./utils";
-import { admin } from "better-auth/plugins";
+import { admin, magicLink } from "better-auth/plugins";
 import { ac, roles } from "./permissions";
 import { sendEmailAction } from "@/actions/send-email.action";
  
@@ -135,6 +135,18 @@ export const auth = betterAuth({
             ac,
             roles,
         }),
+        magicLink({
+            sendMagicLink: async ({ email, url }) => {
+                await sendEmailAction({
+                    to: email,
+                    subject: "Magic Link Login",
+                    meta: {
+                      description: "Please click the link below to log in.",
+                      link: String(url),
+                    },
+                });
+            }
+        })
     ],
 });
 
