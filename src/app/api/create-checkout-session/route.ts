@@ -8,6 +8,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: Request) {
   try {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error("STRIPE_SECRET_KEY is not configured")
+      return NextResponse.json(
+        { error: "Configuration Stripe manquante" }, 
+        { status: 500 }
+      )
+    }
     const { cartItems, shippingCost, shippingAddress, userEmail } = await request.json()
 
     // TODO : Pansement pour faire fonctionner Stripe sans les images
