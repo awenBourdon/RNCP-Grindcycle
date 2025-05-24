@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-    STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
     steps:
       - name: Checkout repository
