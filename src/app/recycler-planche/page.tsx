@@ -1,8 +1,18 @@
+import { headers } from "next/headers";
 import ToTop from "../homeComponents/ToTop";
 import RecycleForm from "./components/RecycleForm";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 
 
-export default function CataloguePage() {
+export default async function RecyclePage() {
+  const headersList = await headers()
+  
+    const session = await auth.api.getSession({
+      headers: headersList,
+    })
+  
+    if (!session) redirect("/recycler-planche/redirect")
   return (
     <div className="min-h-screen">
       <div className="pt-40 pb-16 px-6 text-center bg-white">

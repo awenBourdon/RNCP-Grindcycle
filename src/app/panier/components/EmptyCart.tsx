@@ -16,7 +16,7 @@ export default function EmptyCart() {
 
       <Link
         href="/catalogue"
-        className="px-6 py-3 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors"
+        className="px-8 py-3 bg-[#0a3d3f] text-white font-medium rounded-full hover:bg-[#0a4d4f] transition-colors"
       >
         Découvrir nos planches
       </Link>

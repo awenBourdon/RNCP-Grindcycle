@@ -9,7 +9,7 @@ export default function Summary() {
   const total = subtotal + shipping
 
   return (
-    <div className="bg-[#f8f7f4] p-6 rounded-lg">
+    <div className="p-6 rounded-lg max-h-[26.5rem]">
       <h2 className="text-xl font-medium mb-6">Récapitulatif</h2>
 
       <div className="space-y-4 mb-6">

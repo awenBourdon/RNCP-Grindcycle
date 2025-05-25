@@ -34,10 +34,10 @@ const DashboardPage = async () => {
   const regularUsers = users.filter((user) => user.role === "USER").length
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4]">
+    <div className="min-h-screen">
       <div className="px-6 py-40 container mx-auto max-w-7xl">
         <div className="mb-12">
-          <ReturnButton href="/compte" label="compte" />
+          <ReturnButton href="/compte" label="Compte" />
 
           <div className="mt-8 mb-8">
             <h1 className="text-4xl md:text-5xl font-normal text-black mb-4">Dashboard Admin</h1>
@@ -45,7 +45,7 @@ const DashboardPage = async () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white p-6 rounded-xl">
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Total Utilisateurs</p>
@@ -57,7 +57,7 @@ const DashboardPage = async () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl">
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Administrateurs</p>
@@ -69,7 +69,7 @@ const DashboardPage = async () => {
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl">
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">Utilisateurs</p>
@@ -90,7 +90,7 @@ const DashboardPage = async () => {
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-[#f8f7f4]">
+              <thead className="">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">
                     <div className="flex items-center gap-2">
