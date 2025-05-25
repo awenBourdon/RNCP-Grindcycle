@@ -34,7 +34,7 @@ export default function Summary() {
 
       <div className="space-y-4">
         <Link
-          href="paiement/livraison"
+          href="panier/redirect"
           >
           <button className="w-full py-3 mb-2 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors">
             Passer la commande
