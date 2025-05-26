@@ -1,28 +1,105 @@
-"use client";
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowLeft, Upload, Recycle, Info } from "lucide-react";
+"use client"
+import { useState } from "react"
+import type React from "react"
 
-export default function RecycleForm() {
-  const [selectedType, setSelectedType] = useState("")
-  const [selectedCondition, setSelectedCondition] = useState("")
-  const [previewImage, setPreviewImage] = useState<string | null>(null)
+import Image from "next/image"
+import Link from "next/link"
+import { ArrowLeft, Upload, Recycle, Info } from "lucide-react"
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+interface RecycleFormProps {
+  userId: string
+}
+
+export default function RecycleForm({ userId }: RecycleFormProps) {
+  const [selectedCondition, setSelectedCondition] = useState<"bon" | "moyen" | "mauvais" | "">("")
+  const [previewImages, setPreviewImages] = useState<string[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [submitError, setSubmitError] = useState("")
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
       reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          setPreviewImage(reader.result)
+        if (typeof reader.result === "string") {
+          const newImages = [...previewImages]
+          newImages[index] = reader.result
+          setPreviewImages(newImages)
         }
       }
       reader.readAsDataURL(file)
     }
   }
-  
-  // TODO : Tout fragmenter en components quand ce sera fonctionnel à 100% avec les vraies données
+
+  const removeImage = (index: number) => {
+    const newImages = [...previewImages]
+    newImages[index] = ""
+    setPreviewImages(newImages)
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitError("")
+
+    try {
+      const formData = new FormData(e.currentTarget)
+
+
+      const images = previewImages.filter((img) => img !== "")
+
+      const requestBody = {
+        userId,
+        boardCondition: selectedCondition,
+        description: formData.get("description") as string,
+        image: images.length > 0 ? images : null,
+      }
+
+      const response = await fetch("/api/used-board", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Erreur lors de la soumission")
+      }
+
+      setSubmitSuccess(true)
+    } catch (error) {
+      console.error("Erreur soumission:", error)
+      setSubmitError(error instanceof Error ? error.message : "Une erreur est survenue")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (submitSuccess) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 pb-24">
+        <div className="text-center py-16">
+          <div className="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+            <Recycle className="text-green-600" size={32} />
+          </div>
+          <h2 className="text-3xl font-normal mb-4">Planche soumise avec succès !</h2>
+          <p className="text-gray-600 mb-8">
+            Nous avons bien reçu les informations de ta planche. Notre équipe va l&apos;évaluer et te contacter bientôt.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center px-6 py-3 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors"
+          >
+            Retour à l&apos;accueil
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="max-w-7xl mx-auto px-6 pb-24">
@@ -33,7 +110,6 @@ export default function RecycleForm() {
           </span>
         </Link>
 
-        {/* Introduction */}
         <div className="mb-12">
           <div className="flex items-start gap-6">
             <div className="bg-[#0a3d3f] p-3 rounded-full text-white">
@@ -49,89 +125,50 @@ export default function RecycleForm() {
           </div>
         </div>
 
-        <form className="space-y-16">
+        {submitError && (
+          <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600">{submitError}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-16">
+          <input type="hidden" name="userId" value={userId} />
+
           <div>
             <h3 className="text-2xl font-normal mb-8">Informations sur ta planche</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <label className="block text-sm text-gray-600 mb-3">Type de planche</label>
-                <div className="grid grid-cols-2 gap-3">
-                  {["skate", "cruiser", "longboard"].map((type) => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setSelectedType(type)}
-                      className={`py-3 px-4 rounded-md text-center transition-colors ${
-                        selectedType === type
-                          ? "bg-[#0a3d3f] text-white"
-                          : "bg-white text-black border border-gray-200 hover:bg-gray-50"
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-600 mb-3">Marque de la planche</label>
-                <input
-                  type="text"
-                  placeholder="Ex: Element, Santa Cruz, etc."
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-600 mb-3">État global</label>
+                <label className="block text-sm text-gray-600 mb-3">
+                  État de la planche <span className="text-red-500">*</span>
+                </label>
                 <div className="grid grid-cols-3 gap-3">
-                  {["Neuf", "Bon", "Moyen", "Usé", "Très usé", "Cassé"].map((condition) => (
+                  {[
+                    { value: "bon", label: "Bon état" },
+                    { value: "moyen", label: "État moyen" },
+                    { value: "mauvais", label: "Mauvais état" },
+                  ].map((condition) => (
                     <button
-                      key={condition}
+                      key={condition.value}
                       type="button"
-                      onClick={() => setSelectedCondition(condition)}
+                      onClick={() => setSelectedCondition(condition.value as "bon" | "moyen" | "mauvais")}
                       className={`py-3 px-2 rounded-md text-center transition-colors ${
-                        selectedCondition === condition
+                        selectedCondition === condition.value
                           ? "bg-[#0a3d3f] text-white"
                           : "bg-white text-black border border-gray-200 hover:bg-gray-50"
                       }`}
                     >
-                      {condition}
+                      {condition.label}
                     </button>
                   ))}
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-600 mb-3">Acheté quand</label>
-                <input
-                  type="date"
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
-                />
-              </div>
-
-              <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <label className="block text-sm text-gray-600 mb-3">Longueur (cm)</label>
-                  <input
-                    type="number"
-                    placeholder="Ex: 80"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-600 mb-3">Largeur (cm)</label>
-                  <input
-                    type="number"
-                    placeholder="Ex: 20"
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
-                  />
-                </div>
+                <input type="hidden" name="boardCondition" value={selectedCondition} required />
               </div>
 
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm text-gray-600 mb-3">Photos de ta planche</label>
+                <label className="block text-sm text-gray-600 mb-3">
+                  Photos de ta planche <span className="text-red-500">*</span>
+                </label>
                 <div className="bg-[#f8f7f4] p-6 rounded-lg">
                   <div className="flex items-center gap-2 mb-6">
                     <Info size={16} className="text-gray-600" />
@@ -142,54 +179,47 @@ export default function RecycleForm() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div
-                      className={`border border-dashed ${
-                        previewImage ? "border-[#0a3d3f]" : "border-gray-300"
-                      } rounded-lg bg-white p-4 flex flex-col items-center justify-center h-40 relative`}
-                    >
-                      {previewImage ? (
-                        <>
-                          <Image
-                            src={previewImage || "/placeholder.svg"}
-                            alt="Aperçu"
-                            fill
-                            className="object-contain p-2 rounded-lg"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setPreviewImage(null)}
-                            className="absolute top-2 right-2 bg-black text-white w-6 h-6 flex items-center justify-center z-10 rounded-full"
-                          >
-                            ×
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <Upload size={24} className="text-gray-400 mb-2" />
-                          <p className="text-sm text-center text-gray-600 mb-2">Clique ou glisse une photo ici</p>
-                          <p className="text-xs text-center text-gray-500">JPG, PNG • Max 5MB</p>
-                        </>
-                      )}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        onChange={handleImageUpload}
-                      />
-                    </div>
-
-                    {[1, 2].map((index) => (
+                    {[0, 1, 2].map((index) => (
                       <div
                         key={index}
-                        className="border border-dashed border-gray-300 rounded-lg bg-white p-4 flex flex-col items-center justify-center h-40 relative"
+                        className={`border border-dashed ${
+                          previewImages[index] ? "border-[#0a3d3f]" : "border-gray-300"
+                        } rounded-lg bg-white p-4 flex flex-col items-center justify-center h-40 relative`}
                       >
-                        <Upload size={24} className="text-gray-400 mb-2" />
-                        <p className="text-sm text-center text-gray-600 mb-2">Photo supplémentaire</p>
-                        <p className="text-xs text-center text-gray-500">Optionnel</p>
+                        {previewImages[index] ? (
+                          <>
+                            <Image
+                              src={previewImages[index] || "/placeholder.svg"}
+                              alt={`Aperçu ${index + 1}`}
+                              fill
+                              className="object-contain p-2 rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute top-2 right-2 bg-black text-white w-6 h-6 flex items-center justify-center z-10 rounded-full"
+                            >
+                              ×
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <Upload size={24} className="text-gray-400 mb-2" />
+                            <p className="text-sm text-center text-gray-600 mb-2">
+                              {index === 0 ? "Photo principale" : "Photo supplémentaire"}
+                            </p>
+                            <p className="text-xs text-center text-gray-500">
+                              {index === 0 ? "Obligatoire" : "Optionnel"}
+                            </p>
+                          </>
+                        )}
                         <input
                           type="file"
+                          name={`image-${index}`}
                           accept="image/*"
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          onChange={(e) => handleImageUpload(e, index)}
+                          required={index === 0}
                         />
                       </div>
                     ))}
@@ -198,12 +228,16 @@ export default function RecycleForm() {
               </div>
 
               <div className="col-span-1 md:col-span-2">
-                <label className="block text-sm text-gray-600 mb-3">Commentaires (optionnel)</label>
+                <label htmlFor="description" className="block text-sm text-gray-600 mb-3">
+                  Description (optionnel)
+                </label>
                 <textarea
-                  placeholder="Informations supplémentaires sur ta planche..."
+                  id="description"
+                  name="description"
+                  placeholder="Décris l'état de ta planche, son histoire, les défauts éventuels..."
                   rows={4}
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
-                ></textarea>
+                />
               </div>
             </div>
           </div>
@@ -211,10 +245,20 @@ export default function RecycleForm() {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="w-xl align-center py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center"
+              disabled={!selectedCondition || isSubmitting}
+              className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Recycle className="mr-2 h-5 w-5" />
-              Soumettre ma planche
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Envoi en cours...
+                </>
+              ) : (
+                <>
+                  <Recycle className="mr-2 h-5 w-5" />
+                  Soumettre ma planche
+                </>
+              )}
             </button>
           </div>
         </form>

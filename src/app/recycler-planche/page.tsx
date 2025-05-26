@@ -21,7 +21,7 @@ export default async function RecyclePage() {
         </div>
   </div>
       <div className="max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
-        <RecycleForm />
+        <RecycleForm userId={session.user.id}/>
         <ToTop/>
       </div>
     </div>
