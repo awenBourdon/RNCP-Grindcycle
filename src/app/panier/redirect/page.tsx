@@ -21,12 +21,7 @@ export default async function RedirectPage() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-[#0a3d3f] rounded-full mb-8">
-              <ShoppingCart size={32} className="text-white" />
-            </div>
-
             <h1 className="text-4xl md:text-6xl font-normal text-black mb-6">Finalise ta commande</h1>
 
             <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
@@ -36,12 +31,11 @@ export default async function RedirectPage() {
 
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-[#0a3d3f] transition-colors">
+            <div className="bg-[#f8f7f4] rounded-2xl p-8">
               <div className="flex items-center justify-between mb-6">
                 <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
                   <User size={24} className="text-white" />
                 </div>
-                <span className="bg-[#0a3d3f] text-white text-xs font-medium px-3 py-1 rounded-full">Membre</span>
               </div>
 
               <h3 className="text-2xl font-medium text-black mb-4">Se connecter</h3>
@@ -64,13 +58,11 @@ export default async function RedirectPage() {
               </p>
             </div>
 
-            {/* Carte Invité */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:border-gray-400 transition-colors">
+            <div className="bg-[#f8f7f4] rounded-2xl p-8">
               <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Zap size={24} className="text-gray-600" />
+                <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
+                  <Zap size={24} className="text-white" />
                 </div>
-                <span className="bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1 rounded-full">Express</span>
               </div>
 
               <h3 className="text-2xl font-medium text-black mb-4">Continuer en invité</h3>
@@ -87,13 +79,6 @@ export default async function RedirectPage() {
 
               <p className="text-xs text-gray-500 mt-4 text-center">Aucune inscription requise</p>
             </div>
-          </div>
-
-          <div className="bg-[#f8f7f4] rounded-2xl p-8 border border-gray-200 text-center">
-            <h3 className="text-xl font-medium text-black mb-4">Les deux options te mènent au même endroit</h3>
-            <p className="text-gray-600">
-              Choisis ce qui te convient le mieux pour finaliser ton achat.
-            </p>
           </div>
 
           <div className="text-center mt-8">

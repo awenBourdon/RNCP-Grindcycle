@@ -25,12 +25,12 @@ const RedirectPage = async () => {
           <h1 className="text-4xl md:text-5xl font-normal text-black mb-8">Connexion requise</h1>
 
           <p className="text-xl text-gray-600 mb-12">
-            Pour accéder à la page de recyclage et donner une seconde vie à ta planche, tu dois d&apos;abord te connecter ou
+            Pour donner une seconde vie à ta planche, tu dois d&apos;abord te connecter ou
             créer un compte.
           </p>
 
           <div className="bg-[#f8f7f4] rounded-xl p-8 mb-12">
-            <h2 className="text-2xl font-normal mb-6">Pourquoi se connecter ?</h2>
+            <h2 className="text-2xl font-normal mb-6">Pourquoi avoir un compte ?</h2>
             <div className="space-y-4 text-left">
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-[#0a3d3f] rounded-full mt-2 flex-shrink-0"></div>
@@ -39,10 +39,6 @@ const RedirectPage = async () => {
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-[#0a3d3f] rounded-full mt-2 flex-shrink-0"></div>
                 <p className="text-gray-600">Accumuler des points pour les échanger contre des planches</p>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-[#0a3d3f] rounded-full mt-2 flex-shrink-0"></div>
-                <p className="text-gray-600">Recevoir des notifications sur tes échanges</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-[#0a3d3f] rounded-full mt-2 flex-shrink-0"></div>

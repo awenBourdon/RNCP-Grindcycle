@@ -34,7 +34,7 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div className="bg-[#f8f7f4] rounded-xl p-8 border border-gray-200 h-fit">
+          <div className="bg-[#f8f7f4] rounded-xl p-8 h-fit">
             <h2 className="text-xl font-medium mb-6">Connexion express</h2>
             <p className="text-gray-600 mb-6">
               Reçois un lien de connexion directement dans ta boîte mail, sans avoir à saisir ton mot de passe.

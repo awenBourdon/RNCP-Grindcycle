@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#f8f7f4] text-[#010101] py-12 border-t border-gray-200">
+    <footer className="bg-[#f8f7f4] text-[#010101] py-12">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="flex flex-col">

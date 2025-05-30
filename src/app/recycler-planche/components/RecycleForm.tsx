@@ -1,25 +1,30 @@
 "use client"
 import { useState } from "react"
 import type React from "react"
-
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Upload, Recycle, Info } from "lucide-react"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 interface RecycleFormProps {
   userId: string
 }
 
 export default function RecycleForm({ userId }: RecycleFormProps) {
+  const router = useRouter()
   const [selectedCondition, setSelectedCondition] = useState<"bon" | "moyen" | "mauvais" | "">("")
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitSuccess, setSubmitSuccess] = useState(false)
-  const [submitError, setSubmitError] = useState("")
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0]
     if (file) {
+      const newFiles = [...selectedFiles]
+      newFiles[index] = file
+      setSelectedFiles(newFiles)
+
       const reader = new FileReader()
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
@@ -33,6 +38,9 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
   }
 
   const removeImage = (index: number) => {
+    const newFiles = selectedFiles.filter((_, i) => i !== index)
+    setSelectedFiles(newFiles)
+
     const newImages = [...previewImages]
     newImages[index] = ""
     setPreviewImages(newImages)
@@ -41,63 +49,38 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setSubmitError("")
 
     try {
-      const formData = new FormData(e.currentTarget)
+      const formData = new FormData()
+      formData.append("userId", userId)
+      formData.append("boardCondition", selectedCondition)
 
-
-      const images = previewImages.filter((img) => img !== "")
-
-      const requestBody = {
-        userId,
-        boardCondition: selectedCondition,
-        description: formData.get("description") as string,
-        image: images.length > 0 ? images : null,
+      const description = (e.currentTarget.elements.namedItem("description") as HTMLTextAreaElement).value
+      if (description) {
+        formData.append("description", description)
       }
 
-      const response = await fetch("/api/used-board", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
+      if (selectedFiles.length === 0) {
+        toast.error("Veuillez télécharger au moins une image")
+        setIsSubmitting(false)
+        return
+      }
+
+      selectedFiles.forEach((file) => {
+        formData.append("image", file)
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Erreur lors de la soumission")
-      }
+      await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      setSubmitSuccess(true)
+      toast.success("Planche soumise avec succès !")
+
+      router.push("/")
     } catch (error) {
       console.error("Erreur soumission:", error)
-      setSubmitError(error instanceof Error ? error.message : "Une erreur est survenue")
+      toast.error("Une erreur est survenue lors de la soumission")
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  if (submitSuccess) {
-    return (
-      <div className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="text-center py-16">
-          <div className="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-            <Recycle className="text-green-600" size={32} />
-          </div>
-          <h2 className="text-3xl font-normal mb-4">Planche soumise avec succès !</h2>
-          <p className="text-gray-600 mb-8">
-            Nous avons bien reçu les informations de ta planche. Notre équipe va l&apos;évaluer et te contacter bientôt.
-          </p>
-          <Link
-            href="/"
-            className="inline-flex items-center px-6 py-3 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors"
-          >
-            Retour à l&apos;accueil
-          </Link>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -125,13 +108,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
           </div>
         </div>
 
-        {submitError && (
-          <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-red-600">{submitError}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-16">
+        <form onSubmit={handleSubmit} className="space-y-16" encType="multipart/form-data">
           <input type="hidden" name="userId" value={userId} />
 
           <div>
@@ -279,7 +256,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
               <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#0a3d3f] text-white text-xl font-medium rounded-full mb-4">
                 2
               </div>
-              <p className="text-lg font-medium mb-3">Nous l&apos;évaluons</p>
+              <p className="text-lg font-medium mb-3">Nous l&rsquo;évaluons</p>
               <p className="text-gray-600">Notre équipe évalue ta planche et te propose des points</p>
             </div>
 

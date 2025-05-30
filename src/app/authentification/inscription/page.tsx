@@ -28,7 +28,7 @@ const RegisterPage = async () => {
             </div>
           </div>
 
-          <div className="bg-[#f8f7f4] rounded-xl p-8 border border-gray-200 h-fit">
+          <div className="bg-[#f8f7f4] rounded-xl p-8 h-fit">
             <h2 className="text-xl font-medium mb-6">Inscription avec Google</h2>
             <p className="text-gray-600 mb-6">
               Inscris-toi rapidement avec ton compte Google, sans avoir à créer un nouveau mot de passe.
