@@ -3,20 +3,37 @@ import { useState } from "react"
 import type React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Upload, Recycle, Info } from "lucide-react"
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+import { ArrowLeft, Upload, Recycle, Info, CheckCircle, XCircle } from "lucide-react"
 
 interface RecycleFormProps {
   userId: string
 }
 
+interface Toast {
+  id: number
+  type: "success" | "error"
+  message: string
+}
+
 export default function RecycleForm({ userId }: RecycleFormProps) {
-  const router = useRouter()
   const [selectedCondition, setSelectedCondition] = useState<"bon" | "moyen" | "mauvais" | "">("")
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toasts, setToasts] = useState<Toast[]>([])
+
+  const addToast = (type: "success" | "error", message: string) => {
+    const id = Date.now()
+    setToasts(prev => [...prev, { id, type, message }])
+    
+    setTimeout(() => {
+      setToasts(prev => prev.filter(toast => toast.id !== id))
+    }, 5000)
+  }
+
+  const removeToast = (id: number) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+  }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0]
@@ -61,23 +78,33 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
       }
 
       if (selectedFiles.length === 0) {
-        toast.error("Veuillez télécharger au moins une image")
-        setIsSubmitting(false)
-        return
+        throw new Error("Veuillez télécharger au moins une image")
       }
 
       selectedFiles.forEach((file) => {
         formData.append("image", file)
       })
 
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const response = await fetch("/api/used-board", {
+        method: "POST",
+        body: formData,
+      })
 
-      toast.success("Planche soumise avec succès !")
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Erreur lors de la soumission")
+      }
 
-      router.push("/")
+      addToast("success", "Planche soumise avec succès ! Notre équipe va l'évaluer et te contacter bientôt.")
+
+      setSelectedCondition("")
+      setSelectedFiles([])
+      setPreviewImages([])
+      ;(e.target as HTMLFormElement).reset()
+
     } catch (error) {
       console.error("Erreur soumission:", error)
-      toast.error("Une erreur est survenue lors de la soumission")
+      addToast("error", error instanceof Error ? error.message : "Une erreur est survenue")
     } finally {
       setIsSubmitting(false)
     }
@@ -85,6 +112,32 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
 
   return (
     <>
+      <div className="fixed top-4 right-4 z-50 space-y-2">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-80 max-w-md ${
+              toast.type === "success" 
+                ? "bg-green-50 border border-green-200 text-green-800" 
+                : "bg-red-50 border border-red-200 text-red-800"
+            }`}
+          >
+            {toast.type === "success" ? (
+              <CheckCircle size={20} className="text-green-600 flex-shrink-0" />
+            ) : (
+              <XCircle size={20} className="text-red-600 flex-shrink-0" />
+            )}
+            <p className="text-sm flex-1">{toast.message}</p>
+            <button
+              onClick={() => removeToast(toast.id)}
+              className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+
       <div className="max-w-7xl mx-auto px-6 pb-24">
         <Link href="/" className="inline-flex items-center mb-12 text-gray-600 group">
           <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />

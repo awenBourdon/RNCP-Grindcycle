@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { writeFile, unlink } from "fs/promises";
 import { mkdir } from "fs/promises";
 import path from "path";
+import { BoardCondition } from "@/generated/prisma";
 
 class UsedBoardController {
   private uploadDir: string;
@@ -118,10 +119,15 @@ class UsedBoardController {
     description: string | null;
     imagePaths: string[];
   }) {
+
+    if (!['bon', 'moyen', 'mauvais'].includes(data.boardCondition)) {
+    throw new Error('Erreur type de planche');
+  }
+  
     return await prisma.usedBoard.create({
       data: {
         userId: data.userId,
-        boardCondition: data.boardCondition,
+        boardCondition: data.boardCondition as BoardCondition,
         description: data.description || null,
         image: data.imagePaths,
       },
@@ -130,7 +136,6 @@ class UsedBoardController {
 
   async deleteBoard(boardId: string) {
     try {
-      // Trouver la planche dans la base de données
       const board = await prisma.usedBoard.findUnique({
         where: {
           id: boardId,
@@ -141,7 +146,6 @@ class UsedBoardController {
         throw new Error("Planche non trouvée");
       }
 
-      // Supprimer les images associées du système de fichiers
       for (const imagePath of board.image) {
         const fullPath = path.join(process.cwd(), "public", imagePath);
         try {
@@ -151,7 +155,6 @@ class UsedBoardController {
         }
       }
 
-      // Supprimer la planche de la base de données
       await prisma.usedBoard.delete({
         where: {
           id: boardId,

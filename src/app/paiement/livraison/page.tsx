@@ -27,7 +27,7 @@ export default function ShippingPage() {
   useEffect(() => {
     const checkUserSession = async () => {
       try {
-        const response = await fetch("/api/auth/check-session")
+        const response = await fetch("/api/auth[/check-session]")
         const data = await response.json()
         if (data.isLoggedIn && data.user?.email) {
           setUserEmail(data.user.email)
@@ -58,7 +58,6 @@ export default function ShippingPage() {
     setIsLoading(true)
 
     try {
-      // Stocker les informations d'adresse dans sessionStorage
       sessionStorage.setItem("shippingAddress", JSON.stringify(formData))
 
       const response = await fetch("/api/create-checkout-session", {
