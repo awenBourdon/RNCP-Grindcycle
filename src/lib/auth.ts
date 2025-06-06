@@ -86,16 +86,25 @@ export const auth = betterAuth({
         }),
     },
     databaseHooks: {
-        user: {
+       user: {
             create: {
                 before: async (user) => {
                     const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.split(',') ?? [];
 
-                    if (ADMIN_EMAIL.includes(user.email)) {
-                        return { data: { ...user, role: UserRole.ADMIN}}
+                    // TODO : Pourquoi Better Auth attend maintenant un tableau pour l'image ??
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const processedUser: any = { ...user }; // TODO : Typer si ça doit rester comme ça à l'avenir
+                    if (user.image && typeof user.image === 'string') {
+                        processedUser.image = [user.image];
+                    } else if (!user.image) {
+                        processedUser.image = [];
                     }
 
-                    return { data: user };
+                    if (ADMIN_EMAIL.includes(user.email)) {
+                        return { data: { ...processedUser, role: UserRole.ADMIN}}
+                    }
+
+                    return { data: processedUser };
                 }
             }
         }
