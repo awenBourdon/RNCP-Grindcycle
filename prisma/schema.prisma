@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,60 +13,66 @@ enum UserRole {
   ADMIN
 }
 
-model Post {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title   String
-  content String
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+enum UsedBoardStatus {
+  envoyé
+  reçu
+  refusé
+}
 
-  @@map("posts")
+enum BoardCondition {
+  bon
+  moyen
+  mauvais
+}
+
+enum PointsType {
+  achat
+  recyclage
 }
 
 model User {
-  id            String    @id @default(uuid())
-  name          String
-  email         String
-  emailVerified Boolean
-  role          UserRole @default(USER)
-  image         String? 
-  banned        Boolean?
-  banReason     String?
-  banExpires    DateTime?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-  posts         Post[]
-  
-  @@unique([email])
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  emailVerified  Boolean
+  role           UserRole        @default(USER)
+  image          String[]
+  banned         Boolean?
+  banReason      String?
+  banExpires     DateTime?
+  createdAt      DateTime
+  updatedAt      DateTime
+
+  sessions       Session[]
+  accounts       Account[]
+  posts          Post[]
+  usedBoards     UsedBoard[]
+  pointsHistory  PointsHistory[]
+
   @@map("user")
 }
 
 model Session {
-  id        String   @id @default(uuid())
-  expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
-  impersonatedBy String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String   @id @default(uuid())
+  expiresAt       DateTime
+  token           String   @unique
+  createdAt       DateTime
+  updatedAt       DateTime
+  ipAddress       String?
+  userAgent       String?
+  impersonatedBy  String?
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id @default(uuid())
+  id                    String   @id @default(uuid())
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -82,7 +87,7 @@ model Account {
 }
 
 model Verification {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
@@ -90,4 +95,43 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("posts")
+}
+
+
+model UsedBoard {
+  id             String           @id @default(uuid())
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  status         UsedBoardStatus  @default(envoyé)
+  boardCondition BoardCondition?
+  description    String?
+  image          String[]
+  pointsAwarded  Int?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@map("used_board")
+}
+
+model PointsHistory {
+  id            String      @id @default(uuid())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  type          PointsType
+  pointsAmount  Int
+  createdAt     DateTime    @default(now())
+
+  @@map("points_history")
 }

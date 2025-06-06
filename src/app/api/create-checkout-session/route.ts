@@ -3,7 +3,7 @@ import Stripe from "stripe"
 import type { CartItemType } from "@/contexts/CartContext"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-04-30.basil",
+  apiVersion: "2025-05-28.basil",
 })
 
 export async function POST(request: Request) {
@@ -43,7 +43,6 @@ export async function POST(request: Request) {
       })
     }
 
-    // Créer la session Stripe avec les informations d'adresse
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
@@ -52,7 +51,7 @@ export async function POST(request: Request) {
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/panier`,
       customer_email: shippingAddress?.email || userEmail,
       shipping_address_collection: {
-        allowed_countries: ["FR", "BE", "CH", "LU"],
+        allowed_countries: ["FR"],
       },
       metadata: {
         ...(shippingAddress && {
