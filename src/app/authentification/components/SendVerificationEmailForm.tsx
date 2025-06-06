@@ -1,45 +1,36 @@
-"use client"
+"use client";
 
-import Spinner from "@/components/Spinner"
-import { sendVerificationEmail } from "@/lib/auth-client"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { toast } from "sonner"
-import { Mail, Send } from "lucide-react"
-import type React from "react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Spinner from "@/components/Spinner";
+import { sendVerificationEmail } from "@/lib/auth-client";
+import { Mail, Send } from "lucide-react";
+import { emailVerificationSchema } from "@/lib/validation/authValidation";
 
 export const SendVerificationEmailForm = () => {
+  const [email, setEmail] = useState("");
+
   // TODO : convertir en useTransition()
-  const [isPending, setIsPending] = useState(false)
-  const router = useRouter()
+  const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.currentTarget)
-    const email = String(formData.get("email"))
-
-    if (!email) {
-      toast.error("Renseigne ton adresse email s'il te plait.")
-      return
-    }
-
-    setIsPending(true) // démarrer le spinner manuellement ici
+    evt.preventDefault();
+    setIsPending(true);
 
     try {
+      emailVerificationSchema.parse({ email });
+
       await sendVerificationEmail({
         email,
         callbackURL: "/authentification/verifier-email",
-      })
+      });
 
-      toast.success("Email de vérification envoyé avec succès.")
-      router.push("/authentification/verifier-email/succes")
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      // TODO : Typer correctement
-      toast.error(err?.message || "Une erreur est survenue.")
+      router.push("/authentification/verifier-email/succes");
+    } catch (err) {
+      return err;
     } finally {
-      setIsPending(false)
+      setIsPending(false);
     }
   }
 
@@ -56,7 +47,8 @@ export const SendVerificationEmailForm = () => {
           <input
             type="email"
             id="email"
-            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="ton@email.com"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
           />
@@ -80,5 +72,5 @@ export const SendVerificationEmailForm = () => {
         )}
       </button>
     </form>
-  )
-}
+  );
+};

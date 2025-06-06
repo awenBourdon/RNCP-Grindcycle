@@ -1,31 +1,32 @@
 "use client";
-import { signInEmailAction } from "@/actions/sign-in-email.action";
-import type React from "react";
-import Spinner from "@/components/Spinner";
-import Link from "next/link";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { toast } from "sonner";
+import Spinner from "@/components/Spinner";
+import Link from "next/link";
 import { LogIn } from "lucide-react";
+import { signInEmailAction } from "@/actions/sign-in-email.action";
 
 const LoginForm = () => {
-  const [isPending, startTransition] = useTransition()
-  const router = useRouter()
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.target as HTMLFormElement)
+    evt.preventDefault();
+    const formData = new FormData(evt.target as HTMLFormElement);
 
     startTransition(async () => {
-      const { error } = await signInEmailAction(formData)
+      const { error } = await signInEmailAction(formData);
 
       if (error) {
-        toast.error(error)
+        setError("Identifiant et/ou mot de passe incorrect.");
       } else {
-        toast.success("Connecté avec succès.")
-        router.push("/compte")
+        setError(null);
+        router.push("/compte");
       }
-    })
+    });
   }
 
   return (
@@ -40,6 +41,7 @@ const LoginForm = () => {
           name="email"
           placeholder="ton@email.com"
           className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+          required
         />
       </div>
 
@@ -56,7 +58,9 @@ const LoginForm = () => {
           type="password"
           id="password"
           name="password"
+          placeholder="••••••••"
           className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+          required
         />
       </div>
 
@@ -76,8 +80,10 @@ const LoginForm = () => {
           </>
         )}
       </button>
-    </form>
-  )
-}
 
-export default LoginForm
+      {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+    </form>
+  );
+};
+
+export default LoginForm;

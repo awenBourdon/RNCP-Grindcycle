@@ -1,34 +1,45 @@
-"use client"
-;import { signUpEmailAction } from "@/actions/sign-up-email.action";
-import Spinner from "@/components/Spinner";
+"use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react"
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { UserPlus, Mail, Lock } from "lucide-react";
-import type React from "react";
+import { z } from "zod";
+import { signUpSchema } from "@/lib/validation/authValidation";
+import { signUpEmailAction } from "@/actions/sign-up-email.action";
+import Spinner from "@/components/Spinner";
+
+type SignUpInput = z.infer<typeof signUpSchema>;
 
 const RegisterForm = () => {
-  const [isPending, startTransition] = useTransition()
-  const router = useRouter()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpInput>({
+    resolver: zodResolver(signUpSchema),
+  });
 
-  async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.target as HTMLFormElement)
+  const router = useRouter();
 
-    startTransition(async () => {
-      const { error } = await signUpEmailAction(formData)
+  async function onSubmit(data: SignUpInput) {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
 
-      if (error) {
-        toast.error(error)
-      } else {
-        toast.success("Compte créé avec succès.") // TODO : UX pour dire qu'il faut valider email si pas connectée avec google
-        router.push("/authentification/connexion")
-      }
-    })
+    const { error } = await signUpEmailAction(formData);
+
+    if (error) {
+      toast.error(error);
+    } else {
+      toast.success("Compte créé avec succès.");
+      router.push("/authentification/inscription/succes");
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
       <div className="flex flex-col gap-2">
         <label htmlFor="name" className="text-sm font-medium text-gray-700">
           Nom d&apos;utilisateur
@@ -39,11 +50,14 @@ const RegisterForm = () => {
           </div>
           <input
             id="name"
-            name="name"
+            {...register("name")}
             placeholder="Ton nom d'utilisateur"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
           />
         </div>
+        {errors.name && (
+          <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -57,11 +71,14 @@ const RegisterForm = () => {
           <input
             type="email"
             id="email"
-            name="email"
+            {...register("email")}
             placeholder="ton@email.com"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
           />
         </div>
+        {errors.email && (
+          <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -75,21 +92,26 @@ const RegisterForm = () => {
           <input
             type="password"
             id="password"
-            name="password"
+            {...register("password")}
             placeholder="••••••••"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
           />
         </div>
+        {errors.password && (
+          <p className="text-red-500 text-xs mt-1">
+            {errors.password.message}
+          </p>
+        )}
       </div>
 
       <button
         type="submit"
-        disabled={isPending}
+        disabled={isSubmitting}
         className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
-          isPending ? "opacity-70 cursor-not-allowed" : ""
+          isSubmitting ? "opacity-70 cursor-not-allowed" : ""
         }`}
       >
-        {isPending ? (
+        {isSubmitting ? (
           <Spinner />
         ) : (
           <>
@@ -99,7 +121,7 @@ const RegisterForm = () => {
         )}
       </button>
     </form>
-  )
-}
+  );
+};
 
-export default RegisterForm
+export default RegisterForm;
