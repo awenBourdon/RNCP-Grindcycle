@@ -2,7 +2,7 @@ import Link from "next/link";
 import ReturnButton from "@/components/ReturnButton";
 import { CheckCircle } from "lucide-react";
 
-export default function InscriptionSuccesPage() {
+export default function SuccesPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">
@@ -34,7 +34,7 @@ export default function InscriptionSuccesPage() {
 
               <p className="text-sm text-gray-500 mt-4">
                 Si tu n&apos;as pas reçu d&apos;email, vérifie ton dossier de spam ou
-                <Link href="/authentification/inscription" className="text-[#0a3d3f] hover:underline ml-1">
+                <Link href="/authentification/mot-de-passe-oublie" className="text-[#0a3d3f] hover:underline ml-1">
                   essaie à nouveau
                 </Link>
               </p>

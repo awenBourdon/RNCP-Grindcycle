@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
+export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
 
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .min(12, "Le mot de passe doit contenir au moins 12 caractères")
   .regex(

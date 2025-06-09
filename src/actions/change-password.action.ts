@@ -1,16 +1,11 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import { passwordSchema } from "@/lib/validation/authValidation";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
-import { z } from "zod";
 
-export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
-
-export const passwordSchema = z
-  .string()
-  .min(12)
-  .regex(passwordRegex);
+const passwordSchemaZod = passwordSchema;
 
 export async function changePasswordAction(formData: FormData) {
   const currentPassword = String(formData.get("currentPassword"));
@@ -20,7 +15,7 @@ export async function changePasswordAction(formData: FormData) {
   if (!newPassword) return { error: "Veuillez entrer votre nouveau mot de passe" };
 
   try {
-    passwordSchema.parse(newPassword);
+    passwordSchemaZod.parse(newPassword);
   } catch {
     return { error: "Validation error" };
   }
@@ -43,3 +38,5 @@ export async function changePasswordAction(formData: FormData) {
     return { error: "Erreur interne du serveur" };
   }
 }
+export { passwordSchema };
+
