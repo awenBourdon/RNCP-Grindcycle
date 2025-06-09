@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@better-auth/cli": "^1.2.7",
+    "@hookform/resolvers": "^5.0.1",
     "@node-rs/argon2": "^2.0.2",
     "@prisma/client": "^6.7.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -27,9 +28,11 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-fast-marquee": "^1.6.5",
+    "react-hook-form": "^7.57.0",
     "sonner": "^2.0.3",
     "stripe": "^18.1.1",
-    "tailwind-merge": "^3.2.0"
+    "tailwind-merge": "^3.2.0",
+    "zod": "^3.25.55"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

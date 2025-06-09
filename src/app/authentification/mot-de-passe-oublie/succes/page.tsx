@@ -2,7 +2,7 @@ import Link from "next/link";
 import ReturnButton from "@/components/ReturnButton";
 import { CheckCircle } from "lucide-react";
 
-export default function SuccessPage() {
+export default function SuccesPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">
@@ -11,17 +11,17 @@ export default function SuccessPage() {
         </div>
 
         <div className="max-w-xl mx-auto">
-          <div className="bg-[#f8f7f4] rounded-xl p-8 border border-gray-200 text-center">
+          <div className="bg-[#f8f7f4] rounded-xl p-8 text-center">
             <div className="flex justify-center mb-6">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                 <CheckCircle size={32} className="text-green-600" />
               </div>
             </div>
 
-            <h1 className="text-3xl font-normal mb-4">C&apos;est tout bon !</h1>
+            <h1 className="text-3xl font-normal mb-4">Compte créé avec succès</h1>
 
             <p className="text-gray-600 mb-8">
-              Le lien de réinitialisation t&apos;a été envoyé. Va jeter un œil à ta boîte mail.
+              Tu vas recevoir un email de vérification. Clique sur le lien dans ce message pour activer ton compte.
             </p>
 
             <div className="space-y-4">
@@ -43,5 +43,5 @@ export default function SuccessPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

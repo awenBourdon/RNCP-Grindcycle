@@ -1,14 +1,24 @@
 "use server";
+
 import { auth } from "@/lib/auth";
+import { passwordSchema } from "@/lib/validation/authValidation";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 
+const passwordSchemaZod = passwordSchema;
+
 export async function changePasswordAction(formData: FormData) {
   const currentPassword = String(formData.get("currentPassword"));
-  if (!currentPassword) return { error: "Please enter your current password" };
+  if (!currentPassword) return { error: "Veuillez entrer votre mot de passe actuel" };
 
   const newPassword = String(formData.get("newPassword"));
-  if (!newPassword) return { error: "Please enter your new password" };
+  if (!newPassword) return { error: "Veuillez entrer votre nouveau mot de passe" };
+
+  try {
+    passwordSchemaZod.parse(newPassword);
+  } catch {
+    return { error: "Validation error" };
+  }
 
   try {
     await auth.api.changePassword({
@@ -25,6 +35,8 @@ export async function changePasswordAction(formData: FormData) {
       return { error: err.message };
     }
 
-    return { error: "Internal Server Error" };
+    return { error: "Erreur interne du serveur" };
   }
 }
+export { passwordSchema };
+

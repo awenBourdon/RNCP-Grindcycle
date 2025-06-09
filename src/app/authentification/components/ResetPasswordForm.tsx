@@ -1,52 +1,88 @@
 "use client";
-import { resetPassword } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+
 import { useState } from "react";
-import { toast } from "sonner";
-import { Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner";
-import type React from "react";
+import { resetPassword } from "@/lib/auth-client";
+import { Lock } from "lucide-react";
+import { toast } from "sonner";
+import { resetPasswordSchema } from "@/lib/validation/authValidation";
+import { z } from "zod";
 
 interface ResetPasswordFormProps {
-  token: string
+  token: string;
 }
 
 export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
-  const [isPending, setIsPending] = useState(false) // TODO : Utiliser useTransition
-  const router = useRouter()
+  const [formData, setFormData] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+  const [isPending, setIsPending] = useState(false);
+  const [errors, setErrors] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+  const router = useRouter();
+
+  const validatePassword = () => {
+    try {
+      resetPasswordSchema.parse(formData);
+      setErrors({ password: "", confirmPassword: "" });
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const newErrors = { password: "", confirmPassword: "" };
+        err.errors.forEach((error) => {
+          if (error.path && typeof error.path[0] === "string") {
+            const field = error.path[0] as keyof typeof newErrors;
+            newErrors[field] = error.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.currentTarget)
+    evt.preventDefault();
 
-    const password = String(formData.get("password"))
-    if (!password) return toast.error("Tu dois renseigner ton nouveau mot de passe.")
-
-    const confirmPassword = String(formData.get("confirmPassword"))
-
-    if (password !== confirmPassword) {
-      return toast.error("Les mots de passe ne sont pas les mêmes")
+    if (!validatePassword()) {
+      return;
     }
 
-    await resetPassword({
-      newPassword: password,
-      token,
-      fetchOptions: {
-        onRequest: () => {
-          setIsPending(true)
+    setIsPending(true);
+
+    try {
+      await resetPassword({
+        newPassword: formData.password,
+        token,
+        fetchOptions: {
+          onRequest: () => {},
+          onResponse: () => {},
+          onError: (ctx) => {
+            toast.error(ctx.error.message);
+          },
+          onSuccess: () => {
+            toast.success("Mot de passe changé avec succès.");
+            router.push("/authentification/connexion");
+          },
         },
-        onResponse: () => {
-          setIsPending(false)
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message)
-        },
-        onSuccess: () => {
-          toast.success("Mot de passe changé avec succès.")
-          router.push("/authentification/connexion")
-        },
-      },
-    })
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
@@ -56,17 +92,22 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
           Nouveau mot de passe
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3">
             <Lock size={16} className="text-gray-400" />
           </div>
           <input
             type="password"
             id="password"
             name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="••••••••"
-            className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent"
           />
         </div>
+        {errors.password && (
+          <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -74,17 +115,22 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
           Confirmer le nouveau mot de passe
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3">
             <Lock size={16} className="text-gray-400" />
           </div>
           <input
             type="password"
             id="confirmPassword"
             name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
             placeholder="••••••••"
-            className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent"
           />
         </div>
+        {errors.confirmPassword && (
+          <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+        )}
       </div>
 
       <button
@@ -97,11 +143,9 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
         {isPending ? (
           <Spinner />
         ) : (
-          <>
-            Réinitialiser ton mot de passe
-          </>
+          "Réinitialiser ton mot de passe"
         )}
       </button>
     </form>
-  )
-}
+  );
+};
