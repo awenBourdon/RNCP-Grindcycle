@@ -29,7 +29,7 @@ export default function SuccesPage() {
                 href="/authentification/connexion"
                 className="inline-flex items-center justify-center rounded-full text-sm font-medium px-6 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors"
               >
-                Retour à la connexion
+                Connexion
               </Link>
 
               <p className="text-sm text-gray-500 mt-4">

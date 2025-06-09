@@ -106,7 +106,7 @@ export default function ShippingPage() {
         >
           <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
           <span className="border-b border-transparent group-hover:border-[#0a3d3f] pb-0.5 transition-colors">
-            Retour au panier
+            Panier
           </span>
         </Link>
 

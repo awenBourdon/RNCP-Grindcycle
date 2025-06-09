@@ -17,7 +17,7 @@ export default async function RedirectPage() {
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">
         <div className="mb-8">
-          <ReturnButton href="/panier" label="Retour au panier" />
+          <ReturnButton href="/panier" label="Panier" />
         </div>
 
         <div className="max-w-4xl mx-auto">
