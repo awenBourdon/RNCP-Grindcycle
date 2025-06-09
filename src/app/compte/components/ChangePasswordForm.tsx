@@ -2,19 +2,11 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { changePasswordAction } from "@/actions/change-password.action";
+import { changePasswordAction, passwordSchema } from "@/actions/change-password.action";
 import { z } from "zod";
 import { Lock } from "lucide-react";
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
-
-const passwordSchema = z
-  .string()
-  .min(12, "Le mot de passe doit contenir au moins 12 caractères")
-  .regex(
-    passwordRegex,
-    "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial"
-  );
+const passwordSchemaZod = passwordSchema;
 
 export const ChangePasswordForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -24,7 +16,7 @@ export const ChangePasswordForm = () => {
 
   const validatePassword = (password: string) => {
     try {
-      passwordSchema.parse(password);
+      passwordSchemaZod.parse(password);
       setErrors({ newPassword: "" });
       return true;
     } catch (err) {

@@ -5,9 +5,9 @@ import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 import { z } from "zod";
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
+export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
 
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .min(12)
   .regex(passwordRegex);
