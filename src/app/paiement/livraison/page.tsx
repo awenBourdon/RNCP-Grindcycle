@@ -1,7 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
-import type React from "react"
-
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/contexts/CartContext"
 import Link from "next/link"
@@ -11,7 +9,6 @@ export default function ShippingPage() {
   const router = useRouter()
   const { cartItems, getCartTotal, getShippingCost } = useCart()
   const [isLoading, setIsLoading] = useState(false)
-  const [userEmail, setUserEmail] = useState("")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -23,25 +20,7 @@ export default function ShippingPage() {
     phone: "",
   })
 
-  // Vérifier si l'utilisateur est connecté et récupérer son email
-  useEffect(() => {
-    const checkUserSession = async () => {
-      try {
-        const response = await fetch("/api/auth[/check-session]")
-        const data = await response.json()
-        if (data.isLoggedIn && data.user?.email) {
-          setUserEmail(data.user.email)
-          setFormData((prev) => ({ ...prev, email: data.user.email }))
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données utilisateur:", error)
-      }
-    }
-
-    checkUserSession()
-  }, [])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -69,7 +48,6 @@ export default function ShippingPage() {
           cartItems,
           shippingCost: getShippingCost(),
           shippingAddress: formData,
-          userEmail: userEmail,
         }),
       })
 
@@ -80,7 +58,6 @@ export default function ShippingPage() {
       }
 
       if (data.url) {
-        // Redirection vers Stripe
         window.location.href = data.url
       } else {
         throw new Error("URL de paiement non disponible")
