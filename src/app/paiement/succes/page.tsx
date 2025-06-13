@@ -1,27 +1,23 @@
-// TODO : séparer les différents cas dans plusieurs pages et refaire le style
-
 "use client"
-export const dynamic = "force-dynamic"
+// TODO : séparer les différents cas dans plusieurs pages et refaire le style
 import { useEffect, useState } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { CheckCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { useCart } from "@/contexts/CartContext"
 
-export default function SuccessPage() {
+export default function SuccessContent() {
   const { clearCart } = useCart()
   const searchParams = useSearchParams()
-  const router = useRouter()
-
   const session_id = searchParams.get("session_id")
 
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [orderDetails, setOrderDetails] = useState<{
     email?: string
     amount_total?: number
     currency?: string
   }>({})
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!session_id) {
@@ -57,10 +53,10 @@ export default function SuccessPage() {
     }
 
     fetchOrderDetails()
-  }, [session_id, router, clearCart])
+  }, [session_id, clearCart])
 
   if (loading) {
-    return <div className="min-h-screen flex flex-col items-center justify-center px-6"><p className="text-center mt-20">Chargement...</p></div>
+    return <p className="text-center mt-20">Chargement...</p>
   }
 
   if (error) {
