@@ -1,18 +1,17 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, ShoppingCart, X } from "lucide-react";
+import { ShoppingCart, X } from "lucide-react";
 import Image from "next/image";
 import { useState, useTransition, useEffect } from "react";
 import type { ProductType } from "@/lib/types";
 import { useCart } from "@/contexts/CartContext";
 import Spinner from "@/components/Spinner";
+import ReturnButton from "@/components/ReturnButton";
 
 type Props = {
   product: ProductType
 }
 
 export default function ProductDisplay({ product }: Props) {
-  const router = useRouter()
   const { addToCart, removeFromCart, isInCart } = useCart()
   const [isPending, startTransition] = useTransition()
   const [added, setAdded] = useState(false)
@@ -34,10 +33,7 @@ export default function ProductDisplay({ product }: Props) {
 
   return (
     <div>
-      <button onClick={() => router.back()} className="flex items-center text-gray-600 mb-12 group">
-        <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-        <span className="border-b border-transparent group-hover:border-gray-600 pb-1 transition-colors">Retour</span>
-      </button>
+      <ReturnButton href="/catalogue" label="Catalogue" />
 
       <div className="grid md:grid-cols-2 gap-16 items-start">
         <div className="w-full aspect-[3/4] relative overflow-hidden rounded-xl">

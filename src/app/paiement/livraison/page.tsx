@@ -1,17 +1,16 @@
 "use client"
-import { useState, useEffect } from "react"
-import type React from "react"
-
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/contexts/CartContext"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
+// TODO : supprimer ou refaire bien (envoyer infos à stripe, mettre des regex et de la validation de données)
+
 export default function ShippingPage() {
   const router = useRouter()
   const { cartItems, getCartTotal, getShippingCost } = useCart()
   const [isLoading, setIsLoading] = useState(false)
-  const [userEmail, setUserEmail] = useState("")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -23,25 +22,7 @@ export default function ShippingPage() {
     phone: "",
   })
 
-  // Vérifier si l'utilisateur est connecté et récupérer son email
-  useEffect(() => {
-    const checkUserSession = async () => {
-      try {
-        const response = await fetch("/api/auth[/check-session]")
-        const data = await response.json()
-        if (data.isLoggedIn && data.user?.email) {
-          setUserEmail(data.user.email)
-          setFormData((prev) => ({ ...prev, email: data.user.email }))
-        }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données utilisateur:", error)
-      }
-    }
-
-    checkUserSession()
-  }, [])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -69,7 +50,6 @@ export default function ShippingPage() {
           cartItems,
           shippingCost: getShippingCost(),
           shippingAddress: formData,
-          userEmail: userEmail,
         }),
       })
 
@@ -80,7 +60,6 @@ export default function ShippingPage() {
       }
 
       if (data.url) {
-        // Redirection vers Stripe
         window.location.href = data.url
       } else {
         throw new Error("URL de paiement non disponible")
@@ -106,7 +85,7 @@ export default function ShippingPage() {
         >
           <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
           <span className="border-b border-transparent group-hover:border-[#0a3d3f] pb-0.5 transition-colors">
-            Retour au panier
+            Panier
           </span>
         </Link>
 
@@ -253,7 +232,7 @@ export default function ShippingPage() {
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Redirection vers le paiement...
+                    Redirection vers la page de paiement
                   </>
                 ) : (
                   "Procéder au paiement"
@@ -289,7 +268,7 @@ export default function ShippingPage() {
 
               <div className="space-y-4">
                 <div className="text-sm text-gray-600">
-                  En procédant au paiement, vous acceptez nos{" "}
+                  En procédant au paiement, tu acceptes nos{" "}
                   <Link href="/conditions-generales" className="text-[#0a3d3f] hover:underline">
                     conditions générales de vente
                   </Link>{" "}
