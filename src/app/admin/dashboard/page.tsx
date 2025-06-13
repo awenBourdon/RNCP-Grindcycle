@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { PlaceholderDeleteUserButton, DeleteUserButton } from "./components/DeleteUserButton";
 import { UserRoleSelect } from "./components/UserRoleSelect";
-import type { User, UserRole } from "@/generated/prisma";
-import { Users, Shield, Mail, Hash } from "lucide-react";
+import type { User, UserRole, UsedBoard, UsedBoardStatus, BoardCondition } from "@/generated/prisma";
+import { Users, Shield, Mail, Hash, Package, Clock, CheckCircle, XCircle } from "lucide-react";
+import { UsedBoardsTable } from "./components/UsedBoardsTable";
 
 const DashboardPage = async () => {
   const headersList = await headers()
@@ -23,6 +24,22 @@ const DashboardPage = async () => {
     },
   })
 
+  // Récupération des usedboards avec les informations utilisateur
+  const usedBoards = await prisma.usedBoard.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  })
+
   const sortedUsers = users.sort((a: { role: string }, b: { role: string }) => {
     if (a.role === "ADMIN" && b.role !== "ADMIN") return -1
     if (a.role !== "ADMIN" && b.role === "ADMIN") return 1
@@ -33,6 +50,12 @@ const DashboardPage = async () => {
   const adminUsers = users.filter((user) => user.role === "ADMIN").length
   const regularUsers = users.filter((user) => user.role === "USER").length
 
+  // Statistiques des usedboards
+  const totalBoards = usedBoards.length
+  const pendingBoards = usedBoards.filter((board) => board.status === "SENT").length
+  const receivedBoards = usedBoards.filter((board) => board.status === "RECEIVED").length
+  const rejectedBoards = usedBoards.filter((board) => board.status === "REJECTED").length
+
   return (
     <div className="min-h-screen">
       <div className="px-6 py-40 container mx-auto max-w-7xl">
@@ -41,9 +64,10 @@ const DashboardPage = async () => {
 
           <div className="mt-8 mb-8">
             <h1 className="text-4xl md:text-5xl font-normal text-black mb-4">Dashboard Admin</h1>
-            <p className="text-gray-600 text-lg">Gestion des utilisateurs GRINDCYCLE</p>
+            <p className="text-gray-600 text-lg">Gestion des utilisateurs et planches GRINDCYCLE</p>
           </div>
 
+          {/* Statistiques utilisateurs */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
@@ -81,9 +105,61 @@ const DashboardPage = async () => {
               </div>
             </div>
           </div>
+
+          {/* Statistiques des planches */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Total Planches</p>
+                  <p className="text-2xl font-normal text-black mt-1">{totalBoards}</p>
+                </div>
+                <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
+                  <Package size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">En attente</p>
+                  <p className="text-2xl font-normal text-black mt-1">{pendingBoards}</p>
+                </div>
+                <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
+                  <Clock size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Reçues</p>
+                  <p className="text-2xl font-normal text-black mt-1">{receivedBoards}</p>
+                </div>
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                  <CheckCircle size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Rejetées</p>
+                  <p className="text-2xl font-normal text-black mt-1">{rejectedBoards}</p>
+                </div>
+                <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+                  <XCircle size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        {/* Section Utilisateurs */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-12">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-medium text-black">Liste des utilisateurs</h2>
           </div>
@@ -133,7 +209,7 @@ const DashboardPage = async () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-[#0a3d3f] rounded-full flex items-center justify-center text-white text-sm font-medium">
-                          {user.name?.charAt(0).toUpperCase() || "U"}
+                          {user.name?.slice(0, 1).toUpperCase() || "U"}
                         </div>
                         <span className="text-sm font-medium text-black">{user.name}</span>
                         {user.role === "ADMIN" && (
@@ -170,6 +246,9 @@ const DashboardPage = async () => {
             </div>
           )}
         </div>
+
+        {/* Section Planches d'occasion */}
+        <UsedBoardsTable usedBoards={usedBoards} />
 
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">
