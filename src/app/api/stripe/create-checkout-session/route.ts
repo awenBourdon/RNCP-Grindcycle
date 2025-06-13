@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/paiement/succes?session_id={CHECKOUT_SESSION_ID}`, // TODO : faire la page
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/panier`,
       customer_email: shippingAddress?.email || userEmail,
       shipping_address_collection: {

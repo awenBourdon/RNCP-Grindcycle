@@ -12,11 +12,9 @@ export const DeleteUserButton = ({ userId }: DeleteUserButtonProps) => {
   const [isPending, startTransition] = useTransition()
 
   const handleClick = () => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.")) {
       startTransition(async () => {
         await deleteUserAction({ userId })
       })
-    }
   }
 
   return (

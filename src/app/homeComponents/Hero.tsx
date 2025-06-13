@@ -4,9 +4,9 @@ import { ArrowRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen w-full bg-[#f8f7f4] text-[#010101] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 min-h-screen flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 py-24">
+    <section className="relative py-12 md:py-20 w-full bg-[#f8f7f4] text-[#010101] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 flex items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 py-12 md:py-24">
           <div className="flex flex-col justify-center">
             <h1 className="text-4xl md:text-6xl font-normal leading-tight mb-8">
               Roule avec des planches recyclées & durables

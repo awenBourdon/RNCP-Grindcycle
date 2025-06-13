@@ -135,3 +135,21 @@ model PointsHistory {
 
   @@map("points_history")
 }
+
+// Pas fonctionnel
+
+model Order {
+  id             String   @id @default(uuid())
+  totalAmount    Float
+  shippingCost   Float
+  shippingAddress String?
+  shippingCity   String?
+  shippingPostalCode String?
+  shippingCountry String?
+  shippingPhone  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("order")
+}
+

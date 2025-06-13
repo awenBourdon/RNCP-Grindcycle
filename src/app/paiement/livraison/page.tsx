@@ -5,6 +5,8 @@ import { useCart } from "@/contexts/CartContext"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
+// TODO : supprimer ou refaire bien (envoyer infos à stripe, mettre des regex et de la validation de données)
+
 export default function ShippingPage() {
   const router = useRouter()
   const { cartItems, getCartTotal, getShippingCost } = useCart()
@@ -230,7 +232,7 @@ export default function ShippingPage() {
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Redirection vers le paiement...
+                    Redirection vers la page de paiement
                   </>
                 ) : (
                   "Procéder au paiement"
@@ -266,7 +268,7 @@ export default function ShippingPage() {
 
               <div className="space-y-4">
                 <div className="text-sm text-gray-600">
-                  En procédant au paiement, vous acceptez nos{" "}
+                  En procédant au paiement, tu acceptes nos{" "}
                   <Link href="/conditions-generales" className="text-[#0a3d3f] hover:underline">
                     conditions générales de vente
                   </Link>{" "}

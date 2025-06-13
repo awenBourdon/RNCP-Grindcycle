@@ -61,7 +61,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         id: product.id,
         name: product.name,
         price: product.priceEuro,
-        imageUrl: product.imageUrl || "/placeholder.svg?height=600&width=400",
+        imageUrl: product.imageUrl,
         type: product.type,
         size: product.size,
       },
