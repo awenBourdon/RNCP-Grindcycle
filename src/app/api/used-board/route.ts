@@ -120,7 +120,8 @@ class UsedBoardController {
     imagePaths: string[];
   }) {
 
-    if (!['bon', 'moyen', 'mauvais'].includes(data.boardCondition)) {
+    console.log('Board condition reçue :', data.boardCondition);
+    if (!['GOOD', 'AVERAGE', 'BAD'].includes(data.boardCondition)) {
     throw new Error('Erreur type de planche');
   }
   
