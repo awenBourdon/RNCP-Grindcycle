@@ -16,7 +16,7 @@ interface Toast {
 }
 
 export default function RecycleForm({ userId }: RecycleFormProps) {
-  const [selectedCondition, setSelectedCondition] = useState<"bon" | "moyen" | "mauvais" | "">("")
+  const [selectedCondition, setSelectedCondition] = useState<"GOOD" | "AVERAGE" | "BAD" | "">("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -92,7 +92,9 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
 
       if (!response.ok) {
         const errorData = await response.json()
+        console.log(errorData);
         throw new Error(errorData.error || "Erreur lors de la soumission")
+        
       }
 
       addToast("success", "Planche soumise avec succès ! Notre équipe va l'évaluer et te contacter bientôt.")
@@ -174,14 +176,14 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { value: "bon", label: "Bon état" },
-                    { value: "moyen", label: "État moyen" },
-                    { value: "mauvais", label: "Mauvais état" },
+                    { value: "GOOD", label: "Bon état" },
+                    { value: "AVERAGE", label: "État moyen" },
+                    { value: "BAD", label: "Mauvais état" },
                   ].map((condition) => (
                     <button
                       key={condition.value}
                       type="button"
-                      onClick={() => setSelectedCondition(condition.value as "bon" | "moyen" | "mauvais")}
+                      onClick={() => setSelectedCondition(condition.value as "GOOD" | "AVERAGE" | "BAD")}
                       className={`py-3 px-2 rounded-md text-center transition-colors ${
                         selectedCondition === condition.value
                           ? "bg-[#0a3d3f] text-white"

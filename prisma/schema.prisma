@@ -14,20 +14,20 @@ enum UserRole {
 }
 
 enum UsedBoardStatus {
-  envoyé
-  reçu
-  refusé
+  SENT
+  RECEIVED
+  REJECTED
 }
 
 enum BoardCondition {
-  bon
-  moyen
-  mauvais
+  GOOD
+  AVERAGE
+  BAD
 }
 
 enum PointsType {
-  achat
-  recyclage
+  PURCHASE
+  RECYCLING
 }
 
 model User {
@@ -114,7 +114,7 @@ model UsedBoard {
   id             String           @id @default(uuid())
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
-  status         UsedBoardStatus  @default(envoyé)
+  status         UsedBoardStatus  @default(SENT)
   boardCondition BoardCondition?
   description    String?
   image          String[]
