@@ -1,6 +1,7 @@
 // TODO : séparer les différents cas dans plusieurs pages et refaire le style
 
 "use client"
+export const dynamic = "force-dynamic"
 import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { CheckCircle, ArrowRight } from "lucide-react"
