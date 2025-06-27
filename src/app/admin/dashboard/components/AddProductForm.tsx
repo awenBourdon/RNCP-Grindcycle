@@ -1,24 +1,17 @@
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
-import {
-  ArrowLeft,
-  Upload,
-  Recycle,
-  Info,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react'
+import { Upload, Info, CheckCircle, XCircle } from 'lucide-react'
 
-enum BoardType {
+enum ProductType {
   SKATE = 'SKATE',
   CRUISER = 'CRUISER',
   LONG = 'LONG',
 }
 
-interface RecycleFormProps {
-  userId: string
+interface UsedBoard {
+  id: string
+  name: string
 }
 
 interface Toast {
@@ -27,11 +20,22 @@ interface Toast {
   message: string
 }
 
-export default function RecycleForm({ userId }: RecycleFormProps) {
-  const [selectedCondition, setSelectedCondition] = useState<
-    'GOOD' | 'AVERAGE' | 'BAD' | ''
-  >('')
-  const [selectedType, setSelectedType] = useState<BoardType | ''>('')
+interface AddProductFormProps {
+  usedBoards: UsedBoard[]
+}
+
+export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    type: '',
+    size: 0,
+    priceEuro: 0,
+    pricePoints: 0,
+    imageUrl: '',
+    usedBoardId: '',
+  })
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -81,41 +85,42 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
     setPreviewImages(newImages)
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === 'size' || name === 'priceEuro' || name === 'pricePoints'
+          ? Number(value)
+          : value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
     try {
-      const formData = new FormData()
-      formData.append('userId', userId)
-      formData.append('boardCondition', selectedCondition)
-      formData.append('boardType', selectedType)
-
-      const name = (
-        e.currentTarget.elements.namedItem('name') as HTMLInputElement
-      ).value
-      if (name) {
-        formData.append('name', name)
-      }
-
-      const description = (
-        e.currentTarget.elements.namedItem('description') as HTMLTextAreaElement
-      ).value
-      if (description) {
-        formData.append('description', description)
-      }
-
-      if (selectedFiles.length === 0) {
-        throw new Error('Veuillez télécharger au moins une image')
-      }
+      const formDataToSend = new FormData()
+      formDataToSend.append('name', formData.name)
+      formDataToSend.append('description', formData.description)
+      formDataToSend.append('type', formData.type)
+      formDataToSend.append('size', formData.size.toString())
+      formDataToSend.append('priceEuro', formData.priceEuro.toString())
+      formDataToSend.append('pricePoints', formData.pricePoints.toString())
+      formDataToSend.append('usedBoardId', formData.usedBoardId)
 
       selectedFiles.forEach((file) => {
-        formData.append('image', file)
+        formDataToSend.append('images', file)
       })
 
-      const response = await fetch('/api/used-board', {
+      const response = await fetch('/api/product', {
         method: 'POST',
-        body: formData,
+        body: formDataToSend,
       })
 
       if (!response.ok) {
@@ -124,16 +129,19 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
         throw new Error(errorData.error || 'Erreur lors de la soumission')
       }
 
-      addToast(
-        'success',
-        "Planche soumise avec succès ! Notre équipe va l'évaluer et te contacter bientôt."
-      )
-
-      setSelectedCondition('')
-      setSelectedType('')
+      addToast('success', 'Produit ajouté avec succès !')
+      setFormData({
+        name: '',
+        description: '',
+        type: '',
+        size: 0,
+        priceEuro: 0,
+        pricePoints: 0,
+        imageUrl: '',
+        usedBoardId: '',
+      })
       setSelectedFiles([])
       setPreviewImages([])
-      ;(e.target as HTMLFormElement).reset()
     } catch (error) {
       console.error('Erreur soumission:', error)
       addToast(
@@ -174,29 +182,18 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 pb-24">
-        <Link
-          href="/"
-          className="inline-flex items-center mb-12 text-gray-600 group"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="border-b border-transparent group-hover:border-gray-600 pb-1 transition-colors">
-            Retour à l&apos;accueil
-          </span>
-        </Link>
-
         <div className="mb-12">
           <div className="flex items-start gap-6">
             <div className="bg-[#0a3d3f] p-3 rounded-full text-white">
-              <Recycle size={24} />
+              <Upload size={24} />
             </div>
             <div>
               <h2 className="text-3xl font-normal mb-6">
-                Donne une seconde vie à ta planche
+                Ajouter un nouveau produit
               </h2>
               <p className="text-gray-600 max-w-3xl">
-                Remplis ce formulaire pour nous aider à évaluer ta planche. Une
-                fois soumis, nous te contacterons pour organiser la collecte et
-                t&apos;informer des points que tu recevras en échange.
+                Remplissez ce formulaire pour ajouter un nouveau produit au
+                catalogue.
               </p>
             </div>
           </div>
@@ -207,11 +204,9 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
           className="space-y-16"
           encType="multipart/form-data"
         >
-          <input type="hidden" name="userId" value={userId} />
-
           <div>
             <h3 className="text-2xl font-normal mb-8">
-              Informations sur ta planche
+              Informations sur le produit
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -222,85 +217,85 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                 <input
                   type="text"
                   name="name"
-                  required
+                  value={formData.name}
+                  onChange={handleChange}
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-600 mb-3">
-                  Type de planche <span className="text-red-500">*</span>
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {Object.values(BoardType).map((type) => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setSelectedType(type)}
-                      className={`py-3 px-2 rounded-md text-center transition-colors ${
-                        selectedType === type
-                          ? 'bg-[#0a3d3f] text-white'
-                          : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-                <input
-                  type="hidden"
-                  name="boardType"
-                  value={selectedType}
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm text-gray-600 mb-3">
-                  État de la planche <span className="text-red-500">*</span>
+                  Type <span className="text-red-500">*</span>
                 </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { value: 'GOOD', label: 'Bon état' },
-                    { value: 'AVERAGE', label: 'État moyen' },
-                    { value: 'BAD', label: 'Mauvais état' },
-                  ].map((condition) => (
-                    <button
-                      key={condition.value}
-                      type="button"
-                      onClick={() =>
-                        setSelectedCondition(
-                          condition.value as 'GOOD' | 'AVERAGE' | 'BAD'
-                        )
-                      }
-                      className={`py-3 px-2 rounded-md text-center transition-colors ${
-                        selectedCondition === condition.value
-                          ? 'bg-[#0a3d3f] text-white'
-                          : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      {condition.label}
-                    </button>
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
+                  required
+                >
+                  <option value="">Sélectionnez un type</option>
+                  {Object.values(ProductType).map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
                   ))}
-                </div>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-600 mb-3">
+                  Taille <span className="text-red-500">*</span>
+                </label>
                 <input
-                  type="hidden"
-                  name="boardCondition"
-                  value={selectedCondition}
+                  type="number"
+                  name="size"
+                  value={formData.size}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-600 mb-3">
+                  Prix en Euros <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="priceEuro"
+                  value={formData.priceEuro}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-600 mb-3">
+                  Prix en Points <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="pricePoints"
+                  value={formData.pricePoints}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
                   required
                 />
               </div>
 
               <div className="col-span-1 md:col-span-2">
                 <label className="block text-sm text-gray-600 mb-3">
-                  Photos de ta planche <span className="text-red-500">*</span>
+                  Photos du produit <span className="text-red-500">*</span>
                 </label>
                 <div className="bg-[#f8f7f4] p-6 rounded-lg">
                   <div className="flex items-center gap-2 mb-6">
                     <Info size={16} className="text-gray-600" />
                     <p className="text-sm text-gray-600">
-                      Ajoute au moins une photo montrant l&apos;état général de
-                      ta planche. Tu peux ajouter jusqu&apos;à 3 photos.
+                      Ajoutez au moins une photo montrant le produit. Vous
+                      pouvez ajouter jusqu&apos;à 3 photos.
                     </p>
                   </div>
 
@@ -367,10 +362,39 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                 <textarea
                   id="description"
                   name="description"
-                  placeholder="Décris l'état de ta planche, son histoire, les défauts éventuels..."
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Décrivez l'état du produit, son histoire, les défauts éventuels..."
                   rows={4}
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
                 />
+              </div>
+
+              <div className="col-span-1 md:col-span-2">
+                <label
+                  htmlFor="usedBoardId"
+                  className="block text-sm text-gray-600 mb-3"
+                >
+                  Planche d&apos;occasion associée{' '}
+                  <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="usedBoardId"
+                  name="usedBoardId"
+                  value={formData.usedBoardId}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
+                  required
+                >
+                  <option value="">
+                    Sélectionnez une planche d&apos;occasion
+                  </option>
+                  {usedBoards.map((board) => (
+                    <option key={board.id} value={board.id}>
+                      {board.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
@@ -378,7 +402,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
           <div className="flex justify-center">
             <button
               type="submit"
-              disabled={!selectedCondition || !selectedType || isSubmitting}
+              disabled={!formData.type || isSubmitting}
               className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
@@ -388,49 +412,13 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                 </>
               ) : (
                 <>
-                  <Recycle className="mr-2 h-5 w-5" />
-                  Soumettre ma planche
+                  <Upload className="mr-2 h-5 w-5" />
+                  Ajouter le produit
                 </>
               )}
             </button>
           </div>
         </form>
-
-        <div className="mt-16">
-          <h3 className="text-2xl font-normal mb-8">Comment ça fonctionne ?</h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-[#f8f7f4] p-6 rounded-lg">
-              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#0a3d3f] text-white text-xl font-medium rounded-full mb-4">
-                1
-              </div>
-              <p className="text-lg font-medium mb-3">Soumets ta planche</p>
-              <p className="text-gray-600">
-                Remplis ce formulaire avec les détails de ta planche usée
-              </p>
-            </div>
-
-            <div className="bg-[#f8f7f4] p-6 rounded-lg">
-              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#0a3d3f] text-white text-xl font-medium rounded-full mb-4">
-                2
-              </div>
-              <p className="text-lg font-medium mb-3">Nous l&rsquo;évaluons</p>
-              <p className="text-gray-600">
-                Notre équipe évalue ta planche et te propose des points
-              </p>
-            </div>
-
-            <div className="bg-[#f8f7f4] p-6 rounded-lg">
-              <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-[#0a3d3f] text-white text-xl font-medium rounded-full mb-4">
-                3
-              </div>
-              <p className="text-lg font-medium mb-3">Échange tes points</p>
-              <p className="text-gray-600">
-                Utilise tes points pour acheter une planche recyclée
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </>
   )

@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { writeFile, unlink } from 'fs/promises'
 import { mkdir } from 'fs/promises'
 import path from 'path'
-import { BoardCondition, UsedBoardStatus, PointsType } from '@/generated/prisma'
+import { BoardCondition, UsedBoardStatus, PointsType, BoardType } from '@/generated/prisma'
 
 class UsedBoardController {
   private uploadDir: string
@@ -50,7 +50,7 @@ class UsedBoardController {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updateData: any = {} // TODO : mieux typer
+      const updateData: any = {} // TODO :typer correctement
 
       if (status !== undefined) {
         if (!Object.values(UsedBoardStatus).includes(status)) {
@@ -130,11 +130,12 @@ class UsedBoardController {
     const formData = await req.formData()
 
     const userId = formData.get('userId') as string
-    const boardCondition = formData.get('boardCondition') as string
+    const boardCondition = formData.get('boardCondition') as BoardCondition
+    const boardType = formData.get('boardType') as BoardType
     const description = formData.get('description') as string | null
     const name = formData.get('name') as string
 
-    if (!this.validateRequiredFields(userId, boardCondition, name)) {
+    if (!this.validateRequiredFields(userId, boardCondition, boardType, name)) {
       return NextResponse.json(
         { error: 'Champs obligatoires manquants' },
         { status: 400 }
@@ -147,6 +148,7 @@ class UsedBoardController {
     const board = await this.createBoardInDatabase({
       userId,
       boardCondition,
+      boardType,
       description,
       name,
       imagePaths,
@@ -157,9 +159,9 @@ class UsedBoardController {
 
   private async handleJsonRequest(req: NextRequest) {
     const body = await req.json()
-    const { userId, boardCondition, description, image, name } = body
+    const { userId, boardCondition, boardType, description, image, name } = body
 
-    if (!this.validateRequiredFields(userId, boardCondition, name)) {
+    if (!this.validateRequiredFields(userId, boardCondition, boardType, name)) {
       return NextResponse.json(
         { error: 'Champs obligatoires manquants' },
         { status: 400 }
@@ -169,6 +171,7 @@ class UsedBoardController {
     const board = await this.createBoardInDatabase({
       userId,
       boardCondition,
+      boardType,
       description,
       name,
       imagePaths: image || [],
@@ -180,9 +183,10 @@ class UsedBoardController {
   private validateRequiredFields(
     userId: string,
     boardCondition: string,
+    boardType: string,
     name: string
   ): boolean {
-    return !!(userId && boardCondition && name)
+    return !!(userId && boardCondition && boardType && name)
   }
 
   private async processImages(images: File[]): Promise<string[]> {
@@ -227,7 +231,8 @@ class UsedBoardController {
 
   private async createBoardInDatabase(data: {
     userId: string
-    boardCondition: string
+    boardCondition: BoardCondition
+    boardType: BoardType
     description: string | null
     name: string
     imagePaths: string[]
@@ -239,7 +244,8 @@ class UsedBoardController {
     return await prisma.usedBoard.create({
       data: {
         userId: data.userId,
-        boardCondition: data.boardCondition as BoardCondition,
+        boardCondition: data.boardCondition,
+        boardType: data.boardType,
         description: data.description || null,
         name: data.name,
         image: data.imagePaths,
