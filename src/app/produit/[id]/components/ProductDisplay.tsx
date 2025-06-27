@@ -96,7 +96,7 @@ export default function ProductDisplay({ product }: Props) {
               <span className="font-medium">Livraison gratuite</span> à partir de 100€ d&apos;achat
             </p>
             <p className="text-gray-600 mt-2">
-              <span className="font-medium">Retour gratuit</span> sous 30 jours
+              <span className="font-medium">Retour gratuit</span> sous 14 jours
             </p>
           </div>
         </div>

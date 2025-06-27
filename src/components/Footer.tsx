@@ -86,7 +86,7 @@ const Footer = () => {
           <div className="flex flex-col">
             <h4 className="mb-4 font-bold text-xl uppercase border-b border-black/30 pb-2">Nous contacter</h4>
             <ul className="space-y-3">
-              <li className="text-gray-600">contact@grindcycle.com</li>
+              <li className="text-gray-600">hellogrindcycle@gmail.com</li>
               <li className="text-gray-600">02 40 41 42 43</li>
               <li className="text-gray-600">9h - 18h</li>
             </ul>
