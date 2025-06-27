@@ -27,107 +27,104 @@ class UsedBoardController {
     }
   }
 
- async update(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const { boardId, status, pointsAwarded } = body
+  async update(req: NextRequest) {
+    try {
+      const body = await req.json()
+      const { boardId, status, pointsAwarded } = body
 
-    if (!boardId) {
-      return NextResponse.json({ error: 'ID de planche manquant' }, { status: 400 })
-    }
-
-    if (pointsAwarded !== undefined && (typeof pointsAwarded !== 'number' || pointsAwarded < 0)) {
-      return NextResponse.json({ error: 'Points attribués invalides' }, { status: 400 })
-    }
-
-    const oldBoard = await prisma.usedBoard.findUnique({
-      where: { id: boardId },
-      include: { user: true },
-    })
-
-    if (!oldBoard) {
-      return NextResponse.json({ error: 'Planche non trouvée' }, { status: 404 })
-    }
-
-    // TODO : typer correctement
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateData: any = {}
-
-    if (status !== undefined) {
-      if (!Object.values(UsedBoardStatus).includes(status)) {
-        return NextResponse.json({ error: 'Statut de planche invalide' }, { status: 400 })
+      if (!boardId) {
+        return NextResponse.json({ error: 'ID de planche manquant' }, { status: 400 })
       }
 
-      updateData.status = status
-
-      if (status !== 'RECEIVED') {
-        updateData.pointsAwarded = null
+      if (pointsAwarded !== undefined && (typeof pointsAwarded !== 'number' || pointsAwarded < 0)) {
+        return NextResponse.json({ error: 'Points attribués invalides' }, { status: 400 })
       }
-    }
 
-    if (pointsAwarded !== undefined && (status === 'RECEIVED' || oldBoard.status === 'RECEIVED')) {
-      updateData.pointsAwarded = pointsAwarded
-    }
-
-    const result = await prisma.$transaction(async (tx) => {
-      const updatedBoard = await tx.usedBoard.update({
+      const oldBoard = await prisma.usedBoard.findUnique({
         where: { id: boardId },
-        data: updateData,
         include: { user: true },
       })
 
-      if (
-        oldBoard.pointsAwarded &&
-        oldBoard.pointsAwarded > 0 &&
-        oldBoard.status === 'RECEIVED'
-      ) {
-        await tx.pointsHistory.deleteMany({
-          where: {
-            userId: updatedBoard.userId,
-            usedBoardId: boardId,
-            type: 'RECYCLING',
-          },
-        })
+      if (!oldBoard) {
+        return NextResponse.json({ error: 'Planche non trouvée' }, { status: 404 })
       }
 
-      if (
-        updatedBoard.pointsAwarded &&
-        updatedBoard.pointsAwarded > 0 &&
-        updatedBoard.status === 'RECEIVED'
-      ) {
-        await tx.pointsHistory.create({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updateData: any = {} // TODO : mieux typer
+
+      if (status !== undefined) {
+        if (!Object.values(UsedBoardStatus).includes(status)) {
+          return NextResponse.json({ error: 'Statut de planche invalide' }, { status: 400 })
+        }
+
+        updateData.status = status
+
+        if (status !== 'RECEIVED') {
+          updateData.pointsAwarded = null
+        }
+      }
+
+      if (pointsAwarded !== undefined && (status === 'RECEIVED' || oldBoard.status === 'RECEIVED')) {
+        updateData.pointsAwarded = pointsAwarded
+      }
+
+      const result = await prisma.$transaction(async (tx) => {
+        const updatedBoard = await tx.usedBoard.update({
+          where: { id: boardId },
+          data: updateData,
+          include: { user: true },
+        })
+
+        if (
+          oldBoard.pointsAwarded &&
+          oldBoard.pointsAwarded > 0 &&
+          oldBoard.status === 'RECEIVED'
+        ) {
+          await tx.pointsHistory.deleteMany({
+            where: {
+              userId: updatedBoard.userId,
+              usedBoardId: boardId,
+              type: 'RECYCLING',
+            },
+          })
+        }
+
+        if (
+          updatedBoard.pointsAwarded &&
+          updatedBoard.pointsAwarded > 0 &&
+          updatedBoard.status === 'RECEIVED'
+        ) {
+          await tx.pointsHistory.create({
+            data: {
+              userId: updatedBoard.userId,
+              usedBoardId: boardId,
+              type: PointsType.RECYCLING,
+              pointsAmount: updatedBoard.pointsAwarded,
+            },
+          })
+        }
+
+        const totalPoints = await tx.pointsHistory.aggregate({
+          where: { userId: updatedBoard.userId },
+          _sum: { pointsAmount: true },
+        })
+
+        await tx.user.update({
+          where: { id: updatedBoard.userId },
           data: {
-            userId: updatedBoard.userId,
-            usedBoardId: boardId,
-            type: PointsType.RECYCLING,
-            pointsAmount: updatedBoard.pointsAwarded,
+            points: totalPoints._sum.pointsAmount ?? 0,
           },
         })
-      }
 
-      const totalPoints = await tx.pointsHistory.aggregate({
-        where: { userId: updatedBoard.userId },
-        _sum: { pointsAmount: true },
+        return updatedBoard
       })
 
-      await tx.user.update({
-        where: { id: updatedBoard.userId },
-        data: {
-          points: totalPoints._sum.pointsAmount ?? 0,
-        },
-      })
-
-      return updatedBoard
-    })
-
-    return NextResponse.json(result, { status: 200 })
-
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour de la planche:', error)
-    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
+      return NextResponse.json(result, { status: 200 })
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la planche:', error)
+      return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
+    }
   }
-}
-
 
   private async handleFormDataRequest(req: NextRequest) {
     const formData = await req.formData()
@@ -135,8 +132,9 @@ class UsedBoardController {
     const userId = formData.get('userId') as string
     const boardCondition = formData.get('boardCondition') as string
     const description = formData.get('description') as string | null
+    const name = formData.get('name') as string
 
-    if (!this.validateRequiredFields(userId, boardCondition)) {
+    if (!this.validateRequiredFields(userId, boardCondition, name)) {
       return NextResponse.json(
         { error: 'Champs obligatoires manquants' },
         { status: 400 }
@@ -150,6 +148,7 @@ class UsedBoardController {
       userId,
       boardCondition,
       description,
+      name,
       imagePaths,
     })
 
@@ -158,9 +157,9 @@ class UsedBoardController {
 
   private async handleJsonRequest(req: NextRequest) {
     const body = await req.json()
-    const { userId, boardCondition, description, image } = body
+    const { userId, boardCondition, description, image, name } = body
 
-    if (!this.validateRequiredFields(userId, boardCondition)) {
+    if (!this.validateRequiredFields(userId, boardCondition, name)) {
       return NextResponse.json(
         { error: 'Champs obligatoires manquants' },
         { status: 400 }
@@ -171,6 +170,7 @@ class UsedBoardController {
       userId,
       boardCondition,
       description,
+      name,
       imagePaths: image || [],
     })
 
@@ -179,9 +179,10 @@ class UsedBoardController {
 
   private validateRequiredFields(
     userId: string,
-    boardCondition: string
+    boardCondition: string,
+    name: string
   ): boolean {
-    return !!(userId && boardCondition)
+    return !!(userId && boardCondition && name)
   }
 
   private async processImages(images: File[]): Promise<string[]> {
@@ -228,9 +229,9 @@ class UsedBoardController {
     userId: string
     boardCondition: string
     description: string | null
+    name: string
     imagePaths: string[]
   }) {
-    console.log('Board condition reçue :', data.boardCondition)
     if (!['GOOD', 'AVERAGE', 'BAD'].includes(data.boardCondition)) {
       throw new Error('Erreur type de planche')
     }
@@ -240,6 +241,7 @@ class UsedBoardController {
         userId: data.userId,
         boardCondition: data.boardCondition as BoardCondition,
         description: data.description || null,
+        name: data.name,
         image: data.imagePaths,
       },
     })

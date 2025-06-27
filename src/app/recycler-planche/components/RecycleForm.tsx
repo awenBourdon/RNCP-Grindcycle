@@ -84,6 +84,13 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
       formData.append('userId', userId)
       formData.append('boardCondition', selectedCondition)
 
+      const name = (
+        e.currentTarget.elements.namedItem('name') as HTMLInputElement
+      ).value
+      if (name) {
+        formData.append('name', name)
+      }
+
       const description = (
         e.currentTarget.elements.namedItem('description') as HTMLTextAreaElement
       ).value
@@ -200,6 +207,18 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-sm text-gray-600 mb-3">
+                  Nom <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm text-gray-600 mb-3">
                   État de la planche <span className="text-red-500">*</span>

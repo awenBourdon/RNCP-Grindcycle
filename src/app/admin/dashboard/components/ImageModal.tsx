@@ -9,6 +9,7 @@ interface ImageModalProps {
   isOpen: boolean
   onClose: () => void
   boardId: string
+  name?: string
   userName?: string
   description?: string
 }
@@ -18,7 +19,7 @@ export const ImageModal = ({
   isOpen,
   onClose,
   boardId,
-  userName,
+  name,
   description,
 }: ImageModalProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -46,11 +47,8 @@ export const ImageModal = ({
         <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
           <div>
             <h3 className="text-lg font-medium text-gray-900">
-              Photos de la planche
+              {name ? `Photos de ${name}` : 'Photos de la planche'}
             </h3>
-            {userName && (
-              <p className="text-sm text-gray-600">Utilisateur: {userName}</p>
-            )}
           </div>
           <div className="flex items-center gap-2">
             {images.length > 1 && (
@@ -159,17 +157,20 @@ export const useImageModal = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [currentImages, setCurrentImages] = useState<string[]>([])
   const [currentBoardId, setCurrentBoardId] = useState('')
+  const [currentBoardName, setCurrentBoardName] = useState('')
   const [currentUserName, setCurrentUserName] = useState('')
   const [currentDescription, setCurrentDescription] = useState('')
 
   const openModal = (
     images: string[],
     boardId: string,
+    boardName?: string,
     userName?: string,
-    description?: string | null
+    description?: string
   ) => {
     setCurrentImages(images)
     setCurrentBoardId(boardId)
+    setCurrentBoardName(boardName || '')
     setCurrentUserName(userName || '')
     setCurrentDescription(description || '')
     setIsOpen(true)
@@ -179,6 +180,7 @@ export const useImageModal = () => {
     setIsOpen(false)
     setCurrentImages([])
     setCurrentBoardId('')
+    setCurrentBoardName('')
     setCurrentUserName('')
   }
 
@@ -186,6 +188,7 @@ export const useImageModal = () => {
     isOpen,
     images: currentImages,
     boardId: currentBoardId,
+    name: currentBoardName,
     userName: currentUserName,
     description: currentDescription,
     openModal,

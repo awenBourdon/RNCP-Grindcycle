@@ -74,7 +74,7 @@ const StatusSelect = ({
         })
 
         if (!response.ok) {
-          const errorData = await response.json() // Essayez de récupérer plus d'informations sur l'erreur
+          const errorData = await response.json()
           console.error('Erreur détaillée:', errorData)
           throw new Error('Erreur lors de la mise à jour')
         }
@@ -113,19 +113,6 @@ const StatusSelect = ({
         return 'text-gray-600 bg-gray-100 border-gray-200'
     }
   }
-
-  // const getStatusText = (status: UsedBoardStatus) => {
-  //   switch (status) {
-  //     case "SENT":
-  //       return "Envoyé";
-  //     case "RECEIVED":
-  //       return "Reçu";
-  //     case "REJECTED":
-  //       return "Rejeté";
-  //     default:
-  //       return status;
-  //   }
-  // };
 
   return (
     <div className="relative inline-flex items-center">
@@ -221,19 +208,19 @@ const PointsSelect = ({
           onChange={handleChange}
           disabled={isPending || currentStatus !== 'RECEIVED'}
           className={`
-          appearance-none
-          pl-3 pr-8 py-2
-          text-sm font-medium
-          border
-          rounded-full
-          cursor-pointer
-          transition-all duration-200
-          focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f]
-          disabled:opacity-50 disabled:cursor-not-allowed
-          hover:border-gray-300
-          min-w-[80px]
-          ${getPointsColor(currentPoints)}
-        `}
+            appearance-none
+            pl-3 pr-8 py-2
+            text-sm font-medium
+            border
+            rounded-full
+            cursor-pointer
+            transition-all duration-200
+            focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f]
+            disabled:opacity-50 disabled:cursor-not-allowed
+            hover:border-gray-300
+            min-w-[80px]
+            ${getPointsColor(currentPoints)}
+          `}
         >
           <option value="">0 pts</option>
           <option value="10">10 pts</option>
@@ -308,7 +295,12 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
 
   const handleViewImages = (board: UsedBoardWithUser) => {
     if (board.image.length > 0) {
-      openModal(board.image, board.id, board.user.name, board.description)
+      openModal(
+        board.image,
+        board.id,
+        board.user.name,
+        board.description ?? undefined // TODO : Suppr undefined pour que ce soit plus propre
+      )
     }
   }
 
@@ -354,6 +346,9 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                     <Users size={16} />
                     Utilisateur
                   </div>
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
+                  Nom
                 </th>
                 <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
                   Statut
@@ -404,6 +399,9 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                         </div>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className="text-sm text-gray-600">{board.name}</span>
                   </td>
                   <td className="px-6 py-4 text-center">
                     <StatusSelect
