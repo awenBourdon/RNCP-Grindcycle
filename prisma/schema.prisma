@@ -130,6 +130,7 @@ model PointsHistory {
   id            String      @id @default(uuid())
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  usedBoardId   String? 
   type          PointsType
   pointsAmount  Int
   createdAt     DateTime    @default(now())

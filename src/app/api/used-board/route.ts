@@ -27,117 +27,107 @@ class UsedBoardController {
     }
   }
 
-  async update(req: NextRequest) {
-    try {
-      const body = await req.json()
-      const { boardId, status, pointsAwarded } = body
+ async update(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { boardId, status, pointsAwarded } = body
 
-      if (!boardId) {
-        return NextResponse.json(
-          { error: 'ID de planche manquant' },
-          { status: 400 }
-        )
+    if (!boardId) {
+      return NextResponse.json({ error: 'ID de planche manquant' }, { status: 400 })
+    }
+
+    if (pointsAwarded !== undefined && (typeof pointsAwarded !== 'number' || pointsAwarded < 0)) {
+      return NextResponse.json({ error: 'Points attribués invalides' }, { status: 400 })
+    }
+
+    const oldBoard = await prisma.usedBoard.findUnique({
+      where: { id: boardId },
+      include: { user: true },
+    })
+
+    if (!oldBoard) {
+      return NextResponse.json({ error: 'Planche non trouvée' }, { status: 404 })
+    }
+
+    // TODO : typer correctement
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: any = {}
+
+    if (status !== undefined) {
+      if (!Object.values(UsedBoardStatus).includes(status)) {
+        return NextResponse.json({ error: 'Statut de planche invalide' }, { status: 400 })
       }
 
-      if (
-        pointsAwarded !== undefined &&
-        (typeof pointsAwarded !== 'number' || pointsAwarded < 0)
-      ) {
-        return NextResponse.json(
-          { error: 'Points attribués invalides' },
-          { status: 400 }
-        )
-      }
+      updateData.status = status
 
-      const oldBoard = await prisma.usedBoard.findUnique({
+      if (status !== 'RECEIVED') {
+        updateData.pointsAwarded = null
+      }
+    }
+
+    if (pointsAwarded !== undefined && (status === 'RECEIVED' || oldBoard.status === 'RECEIVED')) {
+      updateData.pointsAwarded = pointsAwarded
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedBoard = await tx.usedBoard.update({
         where: { id: boardId },
+        data: updateData,
         include: { user: true },
       })
 
-      if (!oldBoard) {
-        return NextResponse.json(
-          { error: 'Planche non trouvée' },
-          { status: 404 }
-        )
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updateData: any = {} // TODO : typer correctement
-
-      if (status !== undefined) {
-        if (!Object.values(UsedBoardStatus).includes(status)) {
-          return NextResponse.json(
-            { error: 'Statut de planche invalide' },
-            { status: 400 }
-          )
-        }
-        updateData.status = status
-      }
-
-      if (pointsAwarded !== undefined) {
-        updateData.pointsAwarded = pointsAwarded
-      }
-
-      const result = await prisma.$transaction(async (tx) => {
-        const updatedBoard = await tx.usedBoard.update({
-          where: { id: boardId },
-          data: updateData,
-          include: { user: true },
-        })
-
-        if (
-          oldBoard.pointsAwarded &&
-          oldBoard.pointsAwarded > 0 &&
-          oldBoard.status === 'RECEIVED'
-        ) {
-          await tx.pointsHistory.deleteMany({
-            where: {
-              userId: updatedBoard.userId,
-              type: 'RECYCLING',
-              pointsAmount: oldBoard.pointsAwarded,
-              createdAt: {
-                gte: new Date(oldBoard.updatedAt.getTime() - 60000),
-              },
-            },
-          })
-        }
-
-        if (
-          pointsAwarded !== undefined &&
-          pointsAwarded > 0 &&
-          (status === 'RECEIVED' || updatedBoard.status === 'RECEIVED')
-        ) {
-          await tx.pointsHistory.create({
-            data: {
-              userId: updatedBoard.userId,
-              type: PointsType.RECYCLING,
-              pointsAmount: pointsAwarded,
-            },
-          })
-        }
-
-        // Recalcul du total des points utilisateur
-        const totalPoints = await tx.pointsHistory.aggregate({
-          where: { userId: updatedBoard.userId },
-          _sum: { pointsAmount: true },
-        })
-
-        await tx.user.update({
-          where: { id: updatedBoard.userId },
-          data: {
-            points: totalPoints._sum.pointsAmount ?? 0,
+      if (
+        oldBoard.pointsAwarded &&
+        oldBoard.pointsAwarded > 0 &&
+        oldBoard.status === 'RECEIVED'
+      ) {
+        await tx.pointsHistory.deleteMany({
+          where: {
+            userId: updatedBoard.userId,
+            usedBoardId: boardId,
+            type: 'RECYCLING',
           },
         })
+      }
 
-        return updatedBoard
+      if (
+        updatedBoard.pointsAwarded &&
+        updatedBoard.pointsAwarded > 0 &&
+        updatedBoard.status === 'RECEIVED'
+      ) {
+        await tx.pointsHistory.create({
+          data: {
+            userId: updatedBoard.userId,
+            usedBoardId: boardId,
+            type: PointsType.RECYCLING,
+            pointsAmount: updatedBoard.pointsAwarded,
+          },
+        })
+      }
+
+      const totalPoints = await tx.pointsHistory.aggregate({
+        where: { userId: updatedBoard.userId },
+        _sum: { pointsAmount: true },
       })
 
-      return NextResponse.json(result, { status: 200 })
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour de la planche:', error)
-      return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
-    }
+      await tx.user.update({
+        where: { id: updatedBoard.userId },
+        data: {
+          points: totalPoints._sum.pointsAmount ?? 0,
+        },
+      })
+
+      return updatedBoard
+    })
+
+    return NextResponse.json(result, { status: 200 })
+
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de la planche:', error)
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 })
   }
+}
+
 
   private async handleFormDataRequest(req: NextRequest) {
     const formData = await req.formData()

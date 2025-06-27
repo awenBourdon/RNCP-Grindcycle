@@ -38,6 +38,7 @@ interface StatusSelectProps {
   boardId: string
   currentStatus: UsedBoardStatus
   onUpdate: () => void
+  currentPoints: number | null
 }
 
 interface PointsSelectProps {
@@ -51,6 +52,7 @@ const StatusSelect = ({
   boardId,
   currentStatus,
   onUpdate,
+  currentPoints,
 }: StatusSelectProps) => {
   const [isPending, startTransition] = useTransition()
 
@@ -67,6 +69,7 @@ const StatusSelect = ({
           body: JSON.stringify({
             boardId,
             status: newStatus,
+            pointsAwarded: newStatus === 'RECEIVED' ? (currentPoints ?? 0) : 0,
           }),
         })
 
@@ -211,26 +214,26 @@ const PointsSelect = ({
   }
 
   return (
-    <div className="relative inline-flex items-center">
+    <div className="relative inline-flex items-center group">
       <div className="relative">
         <select
           value={currentPoints || ''}
           onChange={handleChange}
-          disabled={isPending || currentStatus === 'REJECTED'}
+          disabled={isPending || currentStatus !== 'RECEIVED'}
           className={`
-            appearance-none
-            pl-3 pr-8 py-2
-            text-sm font-medium
-            border
-            rounded-full
-            cursor-pointer
-            transition-all duration-200
-            focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f]
-            disabled:opacity-50 disabled:cursor-not-allowed
-            hover:border-gray-300
-            min-w-[80px]
-            ${getPointsColor(currentPoints)}
-          `}
+          appearance-none
+          pl-3 pr-8 py-2
+          text-sm font-medium
+          border
+          rounded-full
+          cursor-pointer
+          transition-all duration-200
+          focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f]
+          disabled:opacity-50 disabled:cursor-not-allowed
+          hover:border-gray-300
+          min-w-[80px]
+          ${getPointsColor(currentPoints)}
+        `}
         >
           <option value="">0 pts</option>
           <option value="10">10 pts</option>
@@ -248,6 +251,13 @@ const PointsSelect = ({
           )}
         </div>
       </div>
+
+      {currentStatus !== 'RECEIVED' && (
+        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+          L’attribution des points est possible uniquement si la planche est
+          reçue.
+        </div>
+      )}
     </div>
   )
 }
@@ -400,6 +410,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                       boardId={board.id}
                       currentStatus={board.status}
                       onUpdate={handleUpdate}
+                      currentPoints={board.pointsAwarded}
                     />
                   </td>
                   <td className="px-6 py-4 text-center">
