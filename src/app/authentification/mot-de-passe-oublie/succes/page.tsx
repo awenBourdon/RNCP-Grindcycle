@@ -1,13 +1,16 @@
-import Link from "next/link";
-import ReturnButton from "@/components/ReturnButton";
-import { CheckCircle } from "lucide-react";
+import Link from 'next/link'
+import ReturnButton from '@/components/ReturnButton'
+import { CheckCircle } from 'lucide-react'
 
 export default function SuccesPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">
         <div className="mb-12">
-          <ReturnButton href="/authentification/connexion" label="Se connecter" />
+          <ReturnButton
+            href="/authentification/connexion"
+            label="Se connecter"
+          />
         </div>
 
         <div className="max-w-xl mx-auto">
@@ -18,10 +21,13 @@ export default function SuccesPage() {
               </div>
             </div>
 
-            <h1 className="text-3xl font-normal mb-4">Compte créé avec succès</h1>
+            <h1 className="text-3xl font-normal mb-4">
+              Compte créé avec succès
+            </h1>
 
             <p className="text-gray-600 mb-8">
-              Tu vas recevoir un email de vérification. Clique sur le lien dans ce message pour activer ton compte.
+              Tu vas recevoir un email de vérification. Clique sur le lien dans
+              ce message pour activer ton compte.
             </p>
 
             <div className="space-y-4">
@@ -33,8 +39,12 @@ export default function SuccesPage() {
               </Link>
 
               <p className="text-sm text-gray-500 mt-4">
-                Si tu n&apos;as pas reçu d&apos;email, vérifie ton dossier de spam ou
-                <Link href="/authentification/mot-de-passe-oublie" className="text-[#0a3d3f] hover:underline ml-1">
+                Si tu n&apos;as pas reçu d&apos;email, vérifie ton dossier de
+                spam ou
+                <Link
+                  href="/authentification/mot-de-passe-oublie"
+                  className="text-[#0a3d3f] hover:underline ml-1"
+                >
                   essaie à nouveau
                 </Link>
               </p>
@@ -43,5 +53,5 @@ export default function SuccesPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

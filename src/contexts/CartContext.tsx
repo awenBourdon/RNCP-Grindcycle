@@ -1,6 +1,12 @@
-"use client";
-import type { ProductType } from "@/lib/types";
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+'use client'
+import type { ProductType } from '@/lib/types'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from 'react'
 
 export type CartItemType = {
   id: number
@@ -39,19 +45,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItemType[]>([])
 
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart")
+    const savedCart = localStorage.getItem('cart')
     if (savedCart) {
       try {
         setCartItems(JSON.parse(savedCart))
       } catch (error) {
-        console.error("Erreur lors du chargement du panier:", error)
-        localStorage.removeItem("cart")
+        console.error('Erreur lors du chargement du panier:', error)
+        localStorage.removeItem('cart')
       }
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems))
+    localStorage.setItem('cart', JSON.stringify(cartItems))
   }, [cartItems])
 
   const addToCart = (product: ProductType) => {
@@ -69,7 +75,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const removeFromCart = (productOrId: ProductType | number) => {
-    const id = typeof productOrId === "number" ? productOrId : productOrId.id
+    const id = typeof productOrId === 'number' ? productOrId : productOrId.id
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id))
   }
 
@@ -105,5 +111,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     isInCart,
   }
 
-  return <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
+  return (
+    <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
+  )
 }

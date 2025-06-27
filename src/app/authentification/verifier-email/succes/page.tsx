@@ -1,13 +1,16 @@
-import ReturnButton from "@/components/ReturnButton";
-import Link from "next/link";
-import { CheckCircle } from "lucide-react";
+import ReturnButton from '@/components/ReturnButton'
+import Link from 'next/link'
+import { CheckCircle } from 'lucide-react'
 
 export default function Page() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">
         <div className="mb-12">
-          <ReturnButton href="/authentification/connexion" label="Se connecter" />
+          <ReturnButton
+            href="/authentification/connexion"
+            label="Se connecter"
+          />
         </div>
 
         <div className="max-w-xl mx-auto">
@@ -21,8 +24,8 @@ export default function Page() {
             <h1 className="text-3xl font-normal mb-4">Email envoyé !</h1>
 
             <p className="text-gray-600 mb-8">
-              Email de vérification envoyé avec succès. Vérifie ta boîte de réception et clique sur le lien pour
-              vérifier ton adresse email.
+              Email de vérification envoyé avec succès. Vérifie ta boîte de
+              réception et clique sur le lien pour vérifier ton adresse email.
             </p>
 
             <div className="space-y-4">
@@ -34,8 +37,12 @@ export default function Page() {
               </Link>
 
               <p className="text-sm text-gray-500 mt-4">
-                Si tu n&apos;as pas reçu d&apos;email, vérifie ton dossier de spam ou
-                <Link href="/authentification/verifier-email" className="text-[#0a3d3f] hover:underline ml-1">
+                Si tu n&apos;as pas reçu d&apos;email, vérifie ton dossier de
+                spam ou
+                <Link
+                  href="/authentification/verifier-email"
+                  className="text-[#0a3d3f] hover:underline ml-1"
+                >
                   essaie à nouveau
                 </Link>
               </p>

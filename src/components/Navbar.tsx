@@ -1,8 +1,8 @@
-"use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { User, X, Menu, ShoppingCart } from "lucide-react";
-import { useCart } from "@/contexts/CartContext";
+'use client'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { User, X, Menu, ShoppingCart } from 'lucide-react'
+import { useCart } from '@/contexts/CartContext'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -23,33 +23,33 @@ const Navbar = () => {
       setIsScrolled(window.scrollY > 10)
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener('scroll', handleScroll)
     return () => {
-      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener('scroll', handleScroll)
     }
   }, [lastScrollY])
 
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = "hidden"
-      document.body.style.position = "fixed"
-      document.body.style.width = "100%"
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
     } else {
-      document.body.style.overflow = "auto"
-      document.body.style.position = "static"
+      document.body.style.overflow = 'auto'
+      document.body.style.position = 'static'
     }
 
     return () => {
-      document.body.style.overflow = "auto"
-      document.body.style.position = "static"
+      document.body.style.overflow = 'auto'
+      document.body.style.position = 'static'
     }
   }, [isMenuOpen])
 
   return (
     <header
       className={`fixed top-0 left-0 w-full p-5 transition-all duration-300 ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
-      } z-50 ${isScrolled ? "bg-[#f8f7f4]/90 backdrop-blur-md" : "bg-[#f8f7f4]"}`}
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      } z-50 ${isScrolled ? 'bg-[#f8f7f4]/90 backdrop-blur-md' : 'bg-[#f8f7f4]'}`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center">
@@ -57,12 +57,15 @@ const Navbar = () => {
             <button
               className="flex items-center justify-center p-1 text-[#010101] transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
-          <Link href="/" className="text-2xl md:text-3xl font-bold tracking-tight text-[#010101] px-3 py-1">
+          <Link
+            href="/"
+            className="text-2xl md:text-3xl font-bold tracking-tight text-[#010101] px-3 py-1"
+          >
             GRINDCYCLE
           </Link>
         </div>
@@ -133,10 +136,17 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="fixed inset-0 bg-[#f8f7f4] z-50 flex flex-col h-screen w-screen">
           <div className="flex items-center justify-between p-5">
-            <button onClick={() => setIsMenuOpen(false)} aria-label="Fermer le menu" className="text-[#010101]">
+            <button
+              onClick={() => setIsMenuOpen(false)}
+              aria-label="Fermer le menu"
+              className="text-[#010101]"
+            >
               <X size={24} />
             </button>
-            <Link href="/" className="text-2xl font-bold tracking-tight text-[#010101] px-3 py-1">
+            <Link
+              href="/"
+              className="text-2xl font-bold tracking-tight text-[#010101] px-3 py-1"
+            >
               GRINDCYCLE
             </Link>
             <div className="w-10"></div>

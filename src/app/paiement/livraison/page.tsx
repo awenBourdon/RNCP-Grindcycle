@@ -1,9 +1,9 @@
-"use client"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useCart } from "@/contexts/CartContext"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCart } from '@/contexts/CartContext'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 // TODO : supprimer ou refaire bien (envoyer infos à stripe, mettre des regex et de la validation de données)
 
@@ -12,17 +12,19 @@ export default function ShippingPage() {
   const { cartItems, getCartTotal, getShippingCost } = useCart()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
-    city: "",
-    postalCode: "",
-    country: "France",
-    email: "",
-    phone: "",
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    country: 'France',
+    email: '',
+    phone: '',
   })
 
- const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -31,20 +33,20 @@ export default function ShippingPage() {
     e.preventDefault()
 
     if (cartItems.length === 0) {
-      alert("Votre panier est vide")
-      router.push("/panier")
+      alert('Votre panier est vide')
+      router.push('/panier')
       return
     }
 
     setIsLoading(true)
 
     try {
-      sessionStorage.setItem("shippingAddress", JSON.stringify(formData))
+      sessionStorage.setItem('shippingAddress', JSON.stringify(formData))
 
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           cartItems,
@@ -56,17 +58,19 @@ export default function ShippingPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || "Erreur lors de la création de la session de paiement")
+        throw new Error(
+          data.error || 'Erreur lors de la création de la session de paiement'
+        )
       }
 
       if (data.url) {
         window.location.href = data.url
       } else {
-        throw new Error("URL de paiement non disponible")
+        throw new Error('URL de paiement non disponible')
       }
     } catch (error) {
-      console.error("Erreur lors du checkout:", error)
-      alert("Une erreur est survenue lors du paiement. Veuillez réessayer.")
+      console.error('Erreur lors du checkout:', error)
+      alert('Une erreur est survenue lors du paiement. Veuillez réessayer.')
     } finally {
       setIsLoading(false)
     }
@@ -83,20 +87,28 @@ export default function ShippingPage() {
           href="/panier"
           className="inline-flex items-center text-gray-600 hover:text-[#0a3d3f] transition-colors group mb-12"
         >
-          <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft
+            size={16}
+            className="mr-2 group-hover:-translate-x-1 transition-transform"
+          />
           <span className="border-b border-transparent group-hover:border-[#0a3d3f] pb-0.5 transition-colors">
             Panier
           </span>
         </Link>
 
-        <h1 className="text-4xl md:text-6xl font-normal text-black mb-12">Adresse de livraison</h1>
+        <h1 className="text-4xl md:text-6xl font-normal text-black mb-12">
+          Adresse de livraison
+        </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="firstName"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Prénom
                   </label>
                   <input
@@ -111,7 +123,10 @@ export default function ShippingPage() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="lastName"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Nom
                   </label>
                   <input
@@ -127,7 +142,10 @@ export default function ShippingPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="address" className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="address"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Adresse
                 </label>
                 <input
@@ -143,7 +161,10 @@ export default function ShippingPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="city" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="city"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Ville
                   </label>
                   <input
@@ -158,7 +179,10 @@ export default function ShippingPage() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="postalCode" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="postalCode"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Code postal
                   </label>
                   <input
@@ -174,7 +198,10 @@ export default function ShippingPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="country" className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="country"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Pays
                 </label>
                 <select
@@ -194,7 +221,10 @@ export default function ShippingPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="email"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Email
                   </label>
                   <input
@@ -209,7 +239,10 @@ export default function ShippingPage() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="phone"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Téléphone
                   </label>
                   <input
@@ -235,7 +268,7 @@ export default function ShippingPage() {
                     Redirection vers la page de paiement
                   </>
                 ) : (
-                  "Procéder au paiement"
+                  'Procéder au paiement'
                 )}
               </button>
             </form>
@@ -253,11 +286,15 @@ export default function ShippingPage() {
 
                 <div className="flex justify-between">
                   <span className="text-gray-600">Livraison</span>
-                  <span>{shipping === 0 ? "Gratuite" : `${shipping.toFixed(2)} €`}</span>
+                  <span>
+                    {shipping === 0 ? 'Gratuite' : `${shipping.toFixed(2)} €`}
+                  </span>
                 </div>
 
                 {shipping > 0 && (
-                  <div className="text-sm text-gray-500 italic">Livraison gratuite à partir de 100€ d&apos;achat</div>
+                  <div className="text-sm text-gray-500 italic">
+                    Livraison gratuite à partir de 100€ d&apos;achat
+                  </div>
                 )}
 
                 <div className="border-t border-gray-200 pt-4 flex justify-between font-medium">
@@ -268,12 +305,18 @@ export default function ShippingPage() {
 
               <div className="space-y-4">
                 <div className="text-sm text-gray-600">
-                  En procédant au paiement, tu acceptes nos{" "}
-                  <Link href="/conditions-generales" className="text-[#0a3d3f] hover:underline">
+                  En procédant au paiement, tu acceptes nos{' '}
+                  <Link
+                    href="/conditions-generales"
+                    className="text-[#0a3d3f] hover:underline"
+                  >
                     conditions générales de vente
-                  </Link>{" "}
-                  et notre{" "}
-                  <Link href="/politique-confidentialite" className="text-[#0a3d3f] hover:underline">
+                  </Link>{' '}
+                  et notre{' '}
+                  <Link
+                    href="/politique-confidentialite"
+                    className="text-[#0a3d3f] hover:underline"
+                  >
                     politique de confidentialité
                   </Link>
                   .

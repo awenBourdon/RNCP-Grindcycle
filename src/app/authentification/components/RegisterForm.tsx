@@ -1,15 +1,15 @@
-"use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { UserPlus, Mail, Lock } from "lucide-react";
-import { z } from "zod";
-import { signUpSchema } from "@/lib/validation/authValidation";
-import { signUpEmailAction } from "@/actions/sign-up-email.action";
-import Spinner from "@/components/Spinner";
+'use client'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { UserPlus, Mail, Lock } from 'lucide-react'
+import { z } from 'zod'
+import { signUpSchema } from '@/lib/validation/authValidation'
+import { signUpEmailAction } from '@/actions/sign-up-email.action'
+import Spinner from '@/components/Spinner'
 
-type SignUpInput = z.infer<typeof signUpSchema>;
+type SignUpInput = z.infer<typeof signUpSchema>
 
 const RegisterForm = () => {
   const {
@@ -18,23 +18,23 @@ const RegisterForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
-  });
+  })
 
-  const router = useRouter();
+  const router = useRouter()
 
   async function onSubmit(data: SignUpInput) {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
+    const formData = new FormData()
+    formData.append('name', data.name)
+    formData.append('email', data.email)
+    formData.append('password', data.password)
 
-    const { error } = await signUpEmailAction(formData);
+    const { error } = await signUpEmailAction(formData)
 
     if (error) {
-      toast.error(error);
+      toast.error(error)
     } else {
-      toast.success("Compte créé avec succès.");
-      router.push("/authentification/inscription/succes");
+      toast.success('Compte créé avec succès.')
+      router.push('/authentification/inscription/succes')
     }
   }
 
@@ -50,7 +50,7 @@ const RegisterForm = () => {
           </div>
           <input
             id="name"
-            {...register("name")}
+            {...register('name')}
             placeholder="Ton nom d'utilisateur"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
           />
@@ -71,7 +71,7 @@ const RegisterForm = () => {
           <input
             type="email"
             id="email"
-            {...register("email")}
+            {...register('email')}
             placeholder="ton@email.com"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
           />
@@ -92,15 +92,13 @@ const RegisterForm = () => {
           <input
             type="password"
             id="password"
-            {...register("password")}
+            {...register('password')}
             placeholder="••••••••"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
           />
         </div>
         {errors.password && (
-          <p className="text-red-500 text-xs mt-1">
-            {errors.password.message}
-          </p>
+          <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
         )}
       </div>
 
@@ -108,7 +106,7 @@ const RegisterForm = () => {
         type="submit"
         disabled={isSubmitting}
         className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
-          isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+          isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
         }`}
       >
         {isSubmitting ? (
@@ -121,7 +119,7 @@ const RegisterForm = () => {
         )}
       </button>
     </form>
-  );
-};
+  )
+}
 
-export default RegisterForm;
+export default RegisterForm

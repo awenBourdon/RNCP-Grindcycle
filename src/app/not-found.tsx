@@ -1,12 +1,11 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
       <div className="max-w-2xl">
-        <div className="flex justify-center mb-8">
-        </div>
+        <div className="flex justify-center mb-8"></div>
         <h1 className="text-4xl md:text-6xl font-normal text-[#010101] mb-6">
           Oups, tu as roulé beaucoup trop loin.
         </h1>
@@ -22,5 +21,5 @@ export default function NotFound() {
         </Link>
       </div>
     </div>
-  );
+  )
 }

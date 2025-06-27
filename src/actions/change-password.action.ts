@@ -1,23 +1,25 @@
-"use server";
+'use server'
 
-import { auth } from "@/lib/auth";
-import { passwordSchema } from "@/lib/validation/authValidation";
-import { APIError } from "better-auth/api";
-import { headers } from "next/headers";
+import { auth } from '@/lib/auth'
+import { passwordSchema } from '@/lib/validation/authValidation'
+import { APIError } from 'better-auth/api'
+import { headers } from 'next/headers'
 
-const passwordSchemaZod = passwordSchema;
+const passwordSchemaZod = passwordSchema
 
 export async function changePasswordAction(formData: FormData) {
-  const currentPassword = String(formData.get("currentPassword"));
-  if (!currentPassword) return { error: "Veuillez entrer votre mot de passe actuel" };
+  const currentPassword = String(formData.get('currentPassword'))
+  if (!currentPassword)
+    return { error: 'Veuillez entrer votre mot de passe actuel' }
 
-  const newPassword = String(formData.get("newPassword"));
-  if (!newPassword) return { error: "Veuillez entrer votre nouveau mot de passe" };
+  const newPassword = String(formData.get('newPassword'))
+  if (!newPassword)
+    return { error: 'Veuillez entrer votre nouveau mot de passe' }
 
   try {
-    passwordSchemaZod.parse(newPassword);
+    passwordSchemaZod.parse(newPassword)
   } catch {
-    return { error: "Validation error" };
+    return { error: 'Validation error' }
   }
 
   try {
@@ -27,16 +29,15 @@ export async function changePasswordAction(formData: FormData) {
         currentPassword,
         newPassword,
       },
-    });
+    })
 
-    return { error: null };
+    return { error: null }
   } catch (err) {
     if (err instanceof APIError) {
-      return { error: err.message };
+      return { error: err.message }
     }
 
-    return { error: "Erreur interne du serveur" };
+    return { error: 'Erreur interne du serveur' }
   }
 }
-export { passwordSchema };
-
+export { passwordSchema }

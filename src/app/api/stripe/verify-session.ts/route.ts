@@ -1,8 +1,8 @@
-import Stripe from "stripe"
-import { NextResponse } from "next/server"
+import Stripe from 'stripe'
+import { NextResponse } from 'next/server'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-05-28.basil",
+  apiVersion: '2025-05-28.basil',
 })
 
 export async function POST(req: Request) {
@@ -12,10 +12,10 @@ export async function POST(req: Request) {
     const session = await stripe.checkout.sessions.retrieve(session_id)
 
     return NextResponse.json({
-      valid: session.payment_status === "paid"
+      valid: session.payment_status === 'paid',
     })
   } catch (err) {
-    console.error("Erreur Stripe:", err)
+    console.error('Erreur Stripe:', err)
     return NextResponse.json({ valid: false }) // Mettre true en prod
   }
 }

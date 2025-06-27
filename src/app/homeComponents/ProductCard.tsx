@@ -1,6 +1,6 @@
-"use client";
-import { ProductType } from "@/lib/types";
-import Image from "next/image";
+'use client'
+import { ProductType } from '@/lib/types'
+import Image from 'next/image'
 
 interface ProductCardProps {
   product: ProductType
@@ -28,7 +28,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       <div className="mt-4 flex justify-between items-center">
         <h3 className="text-lg font-medium truncate">{product.name}</h3>
-        <span className="px-3 py-1 bg-[#0a3d3f] text-white rounded-full">{product.priceEuro}€</span>
+        <span className="px-3 py-1 bg-[#0a3d3f] text-white rounded-full">
+          {product.priceEuro}€
+        </span>
       </div>
     </div>
   )

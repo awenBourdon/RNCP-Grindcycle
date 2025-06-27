@@ -1,16 +1,15 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 body {
-    font-family: "--font-splineSans", Arial, Helvetica;
-  }
+  font-family: '--font-splineSans', Arial, Helvetica;
+}
 
 ::selection {
   background-color: #0a4d4f;
   color: #f8f7f4;
 }
-  
+
 ::-moz-selection {
   background-color: #0a4d4f;
   color: #f8f7f4;
 }
-  

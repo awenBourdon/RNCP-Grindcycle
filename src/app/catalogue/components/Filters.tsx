@@ -1,7 +1,7 @@
-"use client";
-import { ChevronDown } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import type React from "react";
+'use client'
+import { ChevronDown } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import type React from 'react'
 
 type FiltersProps = {
   filters: {
@@ -9,7 +9,10 @@ type FiltersProps = {
     sizes: number[]
   }
   handleTypeChange: (type: string) => void
-  handlePriceChange: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void
+  handlePriceChange: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => void
   handleSizeChange: (size: number) => void
   resetFilters: () => void
   priceRangeValues: [number, number]
@@ -23,10 +26,12 @@ const Filters: React.FC<FiltersProps> = ({
   resetFilters,
   priceRangeValues,
 }) => {
-  const [openMenu, setOpenMenu] = useState<"type" | "price" | "size" | null>(null)
+  const [openMenu, setOpenMenu] = useState<'type' | 'price' | 'size' | null>(
+    null
+  )
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const toggleDropdown = (key: "type" | "price" | "size") => {
+  const toggleDropdown = (key: 'type' | 'price' | 'size') => {
     setOpenMenu((prev) => (prev === key ? null : key))
   }
 
@@ -39,14 +44,16 @@ const Filters: React.FC<FiltersProps> = ({
         return
       }
 
-      const clickedInteractive = (target as HTMLElement).closest("button, .dropdown")
+      const clickedInteractive = (target as HTMLElement).closest(
+        'button, .dropdown'
+      )
       if (!clickedInteractive) {
         setOpenMenu(null)
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   return (
@@ -55,17 +62,17 @@ const Filters: React.FC<FiltersProps> = ({
         <div className="flex flex-wrap gap-3 md:flex-nowrap">
           <div className="relative w-full md:w-auto">
             <button
-              onClick={() => toggleDropdown("type")}
+              onClick={() => toggleDropdown('type')}
               className="flex items-center justify-between w-full md:w-48 px-4 py-3 border border-gray-200 rounded-md bg-white hover:bg-gray-50 transition-colors"
             >
               <span>Type de planche</span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-300 ${openMenu === "type" ? "rotate-180" : ""}`}
+                className={`w-4 h-4 transition-transform duration-300 ${openMenu === 'type' ? 'rotate-180' : ''}`}
               />
             </button>
-            {openMenu === "type" && (
+            {openMenu === 'type' && (
               <div className="dropdown absolute left-0 top-full mt-2 w-full md:w-48 bg-white border border-gray-200 rounded-md z-50 shadow-sm">
-                {["skate", "cruiser", "long"].map((type) => (
+                {['skate', 'cruiser', 'long'].map((type) => (
                   <label
                     key={type}
                     className="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
@@ -85,15 +92,15 @@ const Filters: React.FC<FiltersProps> = ({
 
           <div className="relative w-full md:w-auto">
             <button
-              onClick={() => toggleDropdown("price")}
+              onClick={() => toggleDropdown('price')}
               className="flex items-center justify-between w-full md:w-48 px-4 py-3 border border-gray-200 rounded-md bg-white hover:bg-gray-50 transition-colors"
             >
               <span>Prix (€)</span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-300 ${openMenu === "price" ? "rotate-180" : ""}`}
+                className={`w-4 h-4 transition-transform duration-300 ${openMenu === 'price' ? 'rotate-180' : ''}`}
               />
             </button>
-            {openMenu === "price" && (
+            {openMenu === 'price' && (
               <div className="dropdown absolute left-0 top-full mt-2 w-full md:w-48 bg-white border border-gray-200 rounded-md z-50 shadow-sm p-4">
                 <div className="flex items-center justify-between">
                   <input
@@ -120,25 +127,27 @@ const Filters: React.FC<FiltersProps> = ({
 
           <div className="relative w-full md:w-auto">
             <button
-              onClick={() => toggleDropdown("size")}
+              onClick={() => toggleDropdown('size')}
               className="flex items-center justify-between w-full md:w-48 px-4 py-3 border border-gray-200 rounded-md bg-white hover:bg-gray-50 transition-colors"
             >
               <span>Taille</span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-300 ${openMenu === "size" ? "rotate-180" : ""}`}
+                className={`w-4 h-4 transition-transform duration-300 ${openMenu === 'size' ? 'rotate-180' : ''}`}
               />
             </button>
-            {openMenu === "size" && (
+            {openMenu === 'size' && (
               <div className="dropdown absolute left-0 top-full mt-2 w-full md:w-48 bg-white border border-gray-200 rounded-md z-50 shadow-sm p-3">
                 <div className="grid grid-cols-3 gap-2">
-                  {[7.7, 7.8, 7.9, 8, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8 ].map((size) => (
+                  {[
+                    7.7, 7.8, 7.9, 8, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8,
+                  ].map((size) => (
                     <button
                       key={size}
                       onClick={() => handleSizeChange(size)}
                       className={`py-2 px-3 text-sm transition-colors rounded-full ${
                         filters.sizes.includes(size)
-                          ? "bg-[#0a3d3f] text-white"
-                          : "bg-white text-[#010101] border border-gray-200 hover:bg-gray-50"
+                          ? 'bg-[#0a3d3f] text-white'
+                          : 'bg-white text-[#010101] border border-gray-200 hover:bg-gray-50'
                       }`}
                     >
                       {size}

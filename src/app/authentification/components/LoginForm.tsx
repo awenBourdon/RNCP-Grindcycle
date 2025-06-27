@@ -1,32 +1,32 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import Spinner from "@/components/Spinner";
-import Link from "next/link";
-import { LogIn } from "lucide-react";
-import { signInEmailAction } from "@/actions/sign-in-email.action";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
+import Spinner from '@/components/Spinner'
+import Link from 'next/link'
+import { LogIn } from 'lucide-react'
+import { signInEmailAction } from '@/actions/sign-in-email.action'
 
 const LoginForm = () => {
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault();
-    const formData = new FormData(evt.target as HTMLFormElement);
+    evt.preventDefault()
+    const formData = new FormData(evt.target as HTMLFormElement)
 
     startTransition(async () => {
-      const { error } = await signInEmailAction(formData);
+      const { error } = await signInEmailAction(formData)
 
       if (error) {
-        setError("Identifiant et/ou mot de passe incorrect.");
+        setError('Identifiant et/ou mot de passe incorrect.')
       } else {
-        setError(null);
-        router.push("/compte");
+        setError(null)
+        router.push('/compte')
       }
-    });
+    })
   }
 
   return (
@@ -47,10 +47,16 @@ const LoginForm = () => {
 
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
-          <label htmlFor="password" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="password"
+            className="text-sm font-medium text-gray-700"
+          >
             Mot de passe
           </label>
-          <Link href="/authentification/mot-de-passe-oublie" className="text-sm text-[#0a3d3f] hover:underline">
+          <Link
+            href="/authentification/mot-de-passe-oublie"
+            className="text-sm text-[#0a3d3f] hover:underline"
+          >
             Mot de passe oublié ?
           </Link>
         </div>
@@ -68,7 +74,7 @@ const LoginForm = () => {
         type="submit"
         disabled={isPending}
         className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
-          isPending ? "opacity-70 cursor-not-allowed" : ""
+          isPending ? 'opacity-70 cursor-not-allowed' : ''
         }`}
       >
         {isPending ? (
@@ -81,9 +87,11 @@ const LoginForm = () => {
         )}
       </button>
 
-      {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+      {error && (
+        <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+      )}
     </form>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm

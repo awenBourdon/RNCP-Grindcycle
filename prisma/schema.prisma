@@ -37,6 +37,7 @@ model User {
   emailVerified  Boolean
   role           UserRole        @default(USER)
   image          String[]
+  points         Int             @default(0)
   banned         Boolean?
   banReason      String?
   banExpires     DateTime?
@@ -112,6 +113,7 @@ model Post {
 
 model UsedBoard {
   id             String           @id @default(uuid())
+  name           String
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
   status         UsedBoardStatus  @default(SENT)
@@ -129,6 +131,7 @@ model PointsHistory {
   id            String      @id @default(uuid())
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
+  usedBoardId   String? 
   type          PointsType
   pointsAmount  Int
   createdAt     DateTime    @default(now())

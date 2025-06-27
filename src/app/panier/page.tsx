@@ -1,9 +1,9 @@
-"use client";
-import { useCart } from "@/contexts/CartContext";
-import EmptyCart from "./components/EmptyCart";
-import Header from "./components/Header";
-import Items from "./components/ItemsList";
-import Summary from "./components/Summary";
+'use client'
+import { useCart } from '@/contexts/CartContext'
+import EmptyCart from './components/EmptyCart'
+import Header from './components/Header'
+import Items from './components/ItemsList'
+import Summary from './components/Summary'
 
 export default function CartPage() {
   const { cartItems } = useCart()

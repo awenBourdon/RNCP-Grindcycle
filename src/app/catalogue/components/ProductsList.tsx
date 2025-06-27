@@ -1,6 +1,6 @@
-"use client";
-import { ProductType } from "@/lib/types";
-import ProductCard from "./ProductCard";
+'use client'
+import { ProductType } from '@/lib/types'
+import ProductCard from './ProductCard'
 
 type Props = {
   filteredProducts: ProductType[]

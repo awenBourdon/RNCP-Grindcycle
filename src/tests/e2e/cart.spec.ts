@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 
-test("doit chercher un skate à moins de 50€ taille 8.2, aller sur la page du produit, l'ajouter au panier puis enlever l'article du panier sur la page panier", async ({ page }) => {
+test("doit chercher un skate à moins de 50€ taille 8.2, aller sur la page du produit, l'ajouter au panier puis enlever l'article du panier sur la page panier", async ({
+  page,
+}) => {
   await page.goto('/catalogue')
 
   await page.getByRole('button', { name: 'Type de planche' }).click()
@@ -18,20 +20,17 @@ test("doit chercher un skate à moins de 50€ taille 8.2, aller sur la page du 
 
   await page.locator('a[href^="/produit/"]').first().click()
 
-
   await page.getByRole('button', { name: /ajouter/i }).click()
 
-
   await page.goto('/panier')
-
 
   await expect(page.locator('text=Skate')).toBeVisible()
   await expect(page.locator('text=8.2')).toBeVisible()
 
-
   await page.getByRole('button', { name: /supprimer/i }).click()
 
-
-  const emptyCartHeading = page.locator('h2').filter({ hasText: 'Ton panier est vide' })
+  const emptyCartHeading = page
+    .locator('h2')
+    .filter({ hasText: 'Ton panier est vide' })
   await expect(emptyCartHeading).toBeVisible()
 })

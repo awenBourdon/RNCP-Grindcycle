@@ -1,12 +1,25 @@
-import { auth } from "@/lib/auth";
-import ReturnButton from "../../../components/ReturnButton";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { PlaceholderDeleteUserButton, DeleteUserButton } from "./components/DeleteUserButton";
-import { UserRoleSelect } from "./components/UserRoleSelect";
-import type { User, UserRole } from "@/generated/prisma";
-import { Users, Shield, Mail, Hash } from "lucide-react";
+import { auth } from '@/lib/auth'
+import ReturnButton from '../../../components/ReturnButton'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import {
+  PlaceholderDeleteUserButton,
+  DeleteUserButton,
+} from './components/DeleteUserButton'
+import { UserRoleSelect } from './components/UserRoleSelect'
+import type { User, UserRole } from '@/generated/prisma'
+import {
+  Users,
+  Shield,
+  Mail,
+  Hash,
+  Package,
+  Clock,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react'
+import { UsedBoardsTable } from './components/UsedBoardsTable'
 
 const DashboardPage = async () => {
   const headersList = await headers()
@@ -15,23 +28,50 @@ const DashboardPage = async () => {
     headers: headersList,
   })
 
-  if (!session || session.user.role !== "ADMIN") redirect("/authentification/connexion")
+  if (!session || session.user.role !== 'ADMIN')
+    redirect('/authentification/connexion')
 
   const users = await prisma.user.findMany({
     orderBy: {
-      name: "asc",
+      name: 'asc',
+    },
+  })
+
+  const usedBoards = await prisma.usedBoard.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
     },
   })
 
   const sortedUsers = users.sort((a: { role: string }, b: { role: string }) => {
-    if (a.role === "ADMIN" && b.role !== "ADMIN") return -1
-    if (a.role !== "ADMIN" && b.role === "ADMIN") return 1
+    if (a.role === 'ADMIN' && b.role !== 'ADMIN') return -1
+    if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1
     return 0
   })
 
   const totalUsers = users.length
-  const adminUsers = users.filter((user) => user.role === "ADMIN").length
-  const regularUsers = users.filter((user) => user.role === "USER").length
+  const adminUsers = users.filter((user) => user.role === 'ADMIN').length
+  const regularUsers = users.filter((user) => user.role === 'USER').length
+
+  const totalBoards = usedBoards.length
+  const pendingBoards = usedBoards.filter(
+    (board) => board.status === 'SENT'
+  ).length
+  const receivedBoards = usedBoards.filter(
+    (board) => board.status === 'RECEIVED'
+  ).length
+  const rejectedBoards = usedBoards.filter(
+    (board) => board.status === 'REJECTED'
+  ).length
 
   return (
     <div className="min-h-screen">
@@ -40,16 +80,24 @@ const DashboardPage = async () => {
           <ReturnButton href="/compte" label="Compte" />
 
           <div className="mt-8 mb-8">
-            <h1 className="text-4xl md:text-5xl font-normal text-black mb-4">Dashboard Admin</h1>
-            <p className="text-gray-600 text-lg">Gestion des utilisateurs GRINDCYCLE</p>
+            <h1 className="text-4xl md:text-5xl font-normal text-black mb-4">
+              Dashboard Admin
+            </h1>
+            <p className="text-gray-600 text-lg">
+              Gestion des utilisateurs et planches GRINDCYCLE
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm font-medium">Total Utilisateurs</p>
-                  <p className="text-2xl font-normal text-black mt-1">{totalUsers}</p>
+                  <p className="text-gray-600 text-sm font-medium">
+                    Total Utilisateurs
+                  </p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {totalUsers}
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
                   <Users size={24} className="text-white" />
@@ -60,8 +108,12 @@ const DashboardPage = async () => {
             <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm font-medium">Administrateurs</p>
-                  <p className="text-2xl font-normal text-black mt-1">{adminUsers}</p>
+                  <p className="text-gray-600 text-sm font-medium">
+                    Administrateurs
+                  </p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {adminUsers}
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
                   <Shield size={24} className="text-white" />
@@ -72,8 +124,12 @@ const DashboardPage = async () => {
             <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm font-medium">Utilisateurs</p>
-                  <p className="text-2xl font-normal text-black mt-1">{regularUsers}</p>
+                  <p className="text-gray-600 text-sm font-medium">
+                    Utilisateurs
+                  </p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {regularUsers}
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
                   <Users size={24} className="text-white" />
@@ -81,11 +137,75 @@ const DashboardPage = async () => {
               </div>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">
+                    Total Planches
+                  </p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {totalBoards}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
+                  <Package size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">
+                    En attente
+                  </p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {pendingBoards}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
+                  <Clock size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Reçues</p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {receivedBoards}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                  <CheckCircle size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Rejetées</p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {rejectedBoards}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
+                  <XCircle size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-12">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-medium text-black">Liste des utilisateurs</h2>
+            <h2 className="text-xl font-medium text-black">
+              Liste des utilisateurs
+            </h2>
           </div>
 
           <div className="overflow-x-auto">
@@ -116,13 +236,18 @@ const DashboardPage = async () => {
                       Rôle
                     </div>
                   </th>
-                  <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">Actions</th>
+                  <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
+                    Actions
+                  </th>
                 </tr>
               </thead>
 
               <tbody className="divide-y divide-gray-200">
                 {sortedUsers.map((user: User) => (
-                  <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={user.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <span className="text-sm font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">
@@ -133,10 +258,12 @@ const DashboardPage = async () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-[#0a3d3f] rounded-full flex items-center justify-center text-white text-sm font-medium">
-                          {user.name?.charAt(0).toUpperCase() || "U"}
+                          {user.name?.slice(0, 1).toUpperCase() || 'U'}
                         </div>
-                        <span className="text-sm font-medium text-black">{user.name}</span>
-                        {user.role === "ADMIN" && (
+                        <span className="text-sm font-medium text-black">
+                          {user.name}
+                        </span>
+                        {user.role === 'ADMIN' && (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#0a3d3f] text-white">
                             Admin
                           </span>
@@ -144,13 +271,18 @@ const DashboardPage = async () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-gray-600">{user.email}</span>
+                      <span className="text-sm text-gray-600">
+                        {user.email}
+                      </span>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <UserRoleSelect userId={user.id} role={user.role as UserRole} />
+                      <UserRoleSelect
+                        userId={user.id}
+                        role={user.role as UserRole}
+                      />
                     </td>
                     <td className="px-6 py-4 text-center">
-                      {user.role === "ADMIN" || user.id === session.user.id ? (
+                      {user.role === 'ADMIN' || user.id === session.user.id ? (
                         <PlaceholderDeleteUserButton />
                       ) : (
                         <DeleteUserButton userId={user.id} />
@@ -165,16 +297,26 @@ const DashboardPage = async () => {
           {sortedUsers.length === 0 && (
             <div className="px-6 py-12 text-center">
               <Users size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">Aucun utilisateur trouvé</h3>
-              <p className="text-gray-500">Il n&apos;y a actuellement aucun utilisateur dans la base de données.</p>
+              <h3 className="text-lg font-medium text-gray-600 mb-2">
+                Aucun utilisateur trouvé
+              </h3>
+              <p className="text-gray-500">
+                Il n&apos;y a actuellement aucun utilisateur dans la base de
+                données.
+              </p>
             </div>
           )}
         </div>
 
+        <UsedBoardsTable usedBoards={usedBoards} />
+
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">
-            Connecté en tant que <span className="font-medium text-[#0a3d3f]">{session.user.name}</span> •{" "}
-            <span className="font-medium">Administrateur</span>
+            Connecté en tant que{' '}
+            <span className="font-medium text-[#0a3d3f]">
+              {session.user.name}
+            </span>{' '}
+            • <span className="font-medium">Administrateur</span>
           </p>
         </div>
       </div>

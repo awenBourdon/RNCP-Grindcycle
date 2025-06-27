@@ -1,12 +1,13 @@
-"use server"
-import transporter from "@/lib/nodemailer"
+'use server'
+import transporter from '@/lib/nodemailer'
 
 const styles = {
   container:
-    "max-width:500px;margin:20px auto;padding:20px;border:1px solid #e5e5e5;border-radius:8px;background-color:#ffffff;font-family:Arial,sans-serif;",
-  heading: "font-size:20px;color:#0a3d3f;font-weight:normal;margin-bottom:20px;",
-  paragraph: "font-size:16px;color:#333333;line-height:1.5;margin-bottom:20px;",
-  link: "display:inline-block;margin-top:15px;padding:12px 24px;background:#0a3d3f;color:#ffffff;text-decoration:none;border-radius:50px;font-weight:normal;",
+    'max-width:500px;margin:20px auto;padding:20px;border:1px solid #e5e5e5;border-radius:8px;background-color:#ffffff;font-family:Arial,sans-serif;',
+  heading:
+    'font-size:20px;color:#0a3d3f;font-weight:normal;margin-bottom:20px;',
+  paragraph: 'font-size:16px;color:#333333;line-height:1.5;margin-bottom:20px;',
+  link: 'display:inline-block;margin-top:15px;padding:12px 24px;background:#0a3d3f;color:#ffffff;text-decoration:none;border-radius:50px;font-weight:normal;',
 }
 
 export async function sendEmailAction({
@@ -38,7 +39,7 @@ export async function sendEmailAction({
     await transporter.sendMail(mailOptions)
     return { success: true }
   } catch (err) {
-    console.error("[SendEmail]:", err)
+    console.error('[SendEmail]:', err)
     return { success: false }
   }
 }
