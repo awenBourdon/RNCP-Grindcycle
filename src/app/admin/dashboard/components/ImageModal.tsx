@@ -1,36 +1,44 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { X, ChevronLeft, ChevronRight, Download } from "lucide-react";
-import Image from "next/image";
+import { useState } from 'react'
+import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react'
+import Image from 'next/image'
 
 interface ImageModalProps {
-  images: string[];
-  isOpen: boolean;
-  onClose: () => void;
-  boardId: string;
-  userName?: string;
+  images: string[]
+  isOpen: boolean
+  onClose: () => void
+  boardId: string
+  userName?: string
+  description?: string
 }
 
-export const ImageModal = ({ images, isOpen, onClose, boardId, userName }: ImageModalProps) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+export const ImageModal = ({
+  images,
+  isOpen,
+  onClose,
+  boardId,
+  userName,
+  description,
+}: ImageModalProps) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  if (!isOpen || images.length === 0) return null;
+  if (!isOpen || images.length === 0) return null
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  };
+    setCurrentImageIndex((prev) => (prev + 1) % images.length)
+  }
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
+  }
 
   const downloadImage = () => {
-    const link = document.createElement('a');
-    link.href = images[currentImageIndex];
-    link.download = `planche_${boardId}_${currentImageIndex + 1}`;
-    link.click();
-  };
+    const link = document.createElement('a')
+    link.href = images[currentImageIndex]
+    link.download = `planche_${boardId}_${currentImageIndex + 1}`
+    link.click()
+  }
 
   return (
     <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
@@ -74,8 +82,8 @@ export const ImageModal = ({ images, isOpen, onClose, boardId, userName }: Image
             width={800}
             height={500}
             onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = '/placeholder-image.jpg';
+              const target = e.target as HTMLImageElement
+              target.src = '/placeholder-image.jpg'
             }}
           />
 
@@ -114,11 +122,11 @@ export const ImageModal = ({ images, isOpen, onClose, boardId, userName }: Image
                     src={image}
                     alt={`Miniature ${index + 1}`}
                     className="w-full h-full object-cover"
-                     width={200}
+                    width={200}
                     height={200}
                     onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/placeholder-image.jpg';
+                      const target = e.target as HTMLImageElement
+                      target.src = '/placeholder-image.jpg'
                     }}
                   />
                 </button>
@@ -128,10 +136,10 @@ export const ImageModal = ({ images, isOpen, onClose, boardId, userName }: Image
         )}
 
         <div className="p-4 border-t border-gray-200 bg-gray-50">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              ID Planche: <span className="font-mono bg-gray-200 px-1 rounded">{boardId.slice(0, 8)}</span>
-            </div>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm text-gray-500 mt-1 line-clamp-4 flex-1">
+              {description}
+            </p>
             <button
               onClick={onClose}
               className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
@@ -142,40 +150,45 @@ export const ImageModal = ({ images, isOpen, onClose, boardId, userName }: Image
         </div>
       </div>
 
-      <div 
-        className="absolute inset-0 -z-10" 
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 -z-10" onClick={onClose} />
     </div>
-  );
-};
+  )
+}
 
 export const useImageModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentImages, setCurrentImages] = useState<string[]>([]);
-  const [currentBoardId, setCurrentBoardId] = useState("");
-  const [currentUserName, setCurrentUserName] = useState("");
+  const [isOpen, setIsOpen] = useState(false)
+  const [currentImages, setCurrentImages] = useState<string[]>([])
+  const [currentBoardId, setCurrentBoardId] = useState('')
+  const [currentUserName, setCurrentUserName] = useState('')
+  const [currentDescription, setCurrentDescription] = useState('')
 
-  const openModal = (images: string[], boardId: string, userName?: string) => {
-    setCurrentImages(images);
-    setCurrentBoardId(boardId);
-    setCurrentUserName(userName || "");
-    setIsOpen(true);
-  };
+  const openModal = (
+    images: string[],
+    boardId: string,
+    userName?: string,
+    description?: string | null
+  ) => {
+    setCurrentImages(images)
+    setCurrentBoardId(boardId)
+    setCurrentUserName(userName || '')
+    setCurrentDescription(description || '')
+    setIsOpen(true)
+  }
 
   const closeModal = () => {
-    setIsOpen(false);
-    setCurrentImages([]);
-    setCurrentBoardId("");
-    setCurrentUserName("");
-  };
+    setIsOpen(false)
+    setCurrentImages([])
+    setCurrentBoardId('')
+    setCurrentUserName('')
+  }
 
   return {
     isOpen,
     images: currentImages,
     boardId: currentBoardId,
     userName: currentUserName,
+    description: currentDescription,
     openModal,
     closeModal,
-  };
-};
+  }
+}

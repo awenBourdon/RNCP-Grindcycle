@@ -1,10 +1,10 @@
-"use client";
-import { useState } from "react";
-import type React from "react";
-import { signIn } from "@/lib/auth-client";
-import { toast } from "sonner";
-import type { ErrorContext } from "@/lib/types";
-import { Mail } from "lucide-react";
+'use client'
+import { useState } from 'react'
+import type React from 'react'
+import { signIn } from '@/lib/auth-client'
+import { toast } from 'sonner'
+import type { ErrorContext } from '@/lib/types'
+import { Mail } from 'lucide-react'
 
 export const MagicLinkLoginForm = () => {
   const [isPending, setIsPending] = useState(false) // TODO : Utiliser useTransition
@@ -14,14 +14,14 @@ export const MagicLinkLoginForm = () => {
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault()
     const formData = new FormData(evt.currentTarget)
-    const email = String(formData.get("email"))
+    const email = String(formData.get('email'))
 
-    if (!email) return toast.error("Veuillez entrer votre email.")
+    if (!email) return toast.error('Veuillez entrer votre email.')
 
     await signIn.magicLink({
       email,
-      name: email.split("@")[0],
-      callbackURL: "/compte",
+      name: email.split('@')[0],
+      callbackURL: '/compte',
       fetchOptions: {
         onRequest: () => {
           setIsPending(true)
@@ -33,7 +33,7 @@ export const MagicLinkLoginForm = () => {
           toast.error(ctx.error.message)
         },
         onSuccess: () => {
-          toast.success("Vérifiez votre email pour le lien magique !")
+          toast.success('Vérifiez votre email pour le lien magique !')
           setIsOpen(false)
         },
       },
@@ -44,7 +44,10 @@ export const MagicLinkLoginForm = () => {
     <div className="w-full">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col gap-2">
-          <label htmlFor="magic-email" className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="magic-email"
+            className="text-sm font-medium text-gray-700"
+          >
             Email
           </label>
           <input
@@ -60,11 +63,11 @@ export const MagicLinkLoginForm = () => {
           type="submit"
           disabled={isPending}
           className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
-            isPending ? "opacity-70 cursor-not-allowed" : ""
+            isPending ? 'opacity-70 cursor-not-allowed' : ''
           }`}
         >
           {isPending ? (
-            "Envoi en cours..."
+            'Envoi en cours...'
           ) : (
             <>
               <Mail size={16} className="mr-2" />

@@ -1,12 +1,14 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 
 export default function ContactUs() {
   return (
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <h2 className="text-3xl font-normal mb-8 md:mb-0 max-w-xl">Tu veux en savoir plus ?</h2>
+          <h2 className="text-3xl font-normal mb-8 md:mb-0 max-w-xl">
+            Tu veux en savoir plus ?
+          </h2>
 
           <Link href="/contact" className="flex items-center group">
             <span className="mr-2 border-b border-black pb-1 group-hover:border-[#0a3d3f] transition-colors">

@@ -1,6 +1,6 @@
-"use client";
-import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
+'use client'
+import Link from 'next/link'
+import { ShoppingBag } from 'lucide-react'
 
 export default function EmptyCart() {
   return (
@@ -11,7 +11,8 @@ export default function EmptyCart() {
 
       <h2 className="text-2xl font-normal mb-3">Ton panier est vide</h2>
       <p className="text-gray-600 mb-8 text-center max-w-md">
-        Il semble que tu n&apos;aies pas encore ajouté d&apos;articles à ton panier.
+        Il semble que tu n&apos;aies pas encore ajouté d&apos;articles à ton
+        panier.
       </p>
 
       <Link

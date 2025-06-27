@@ -1,9 +1,16 @@
-"use client"
-import { useState } from "react"
-import type React from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowLeft, Upload, Recycle, Info, CheckCircle, XCircle } from "lucide-react"
+'use client'
+import { useState } from 'react'
+import type React from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import {
+  ArrowLeft,
+  Upload,
+  Recycle,
+  Info,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react'
 
 interface RecycleFormProps {
   userId: string
@@ -11,31 +18,36 @@ interface RecycleFormProps {
 
 interface Toast {
   id: number
-  type: "success" | "error"
+  type: 'success' | 'error'
   message: string
 }
 
 export default function RecycleForm({ userId }: RecycleFormProps) {
-  const [selectedCondition, setSelectedCondition] = useState<"GOOD" | "AVERAGE" | "BAD" | "">("");
+  const [selectedCondition, setSelectedCondition] = useState<
+    'GOOD' | 'AVERAGE' | 'BAD' | ''
+  >('')
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [toasts, setToasts] = useState<Toast[]>([])
 
-  const addToast = (type: "success" | "error", message: string) => {
+  const addToast = (type: 'success' | 'error', message: string) => {
     const id = Date.now()
-    setToasts(prev => [...prev, { id, type, message }])
-    
+    setToasts((prev) => [...prev, { id, type, message }])
+
     setTimeout(() => {
-      setToasts(prev => prev.filter(toast => toast.id !== id))
+      setToasts((prev) => prev.filter((toast) => toast.id !== id))
     }, 5000)
   }
 
   const removeToast = (id: number) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id))
+    setToasts((prev) => prev.filter((toast) => toast.id !== id))
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     const file = e.target.files?.[0]
     if (file) {
       const newFiles = [...selectedFiles]
@@ -44,7 +56,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
 
       const reader = new FileReader()
       reader.onloadend = () => {
-        if (typeof reader.result === "string") {
+        if (typeof reader.result === 'string') {
           const newImages = [...previewImages]
           newImages[index] = reader.result
           setPreviewImages(newImages)
@@ -59,7 +71,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
     setSelectedFiles(newFiles)
 
     const newImages = [...previewImages]
-    newImages[index] = ""
+    newImages[index] = ''
     setPreviewImages(newImages)
   }
 
@@ -69,44 +81,50 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
 
     try {
       const formData = new FormData()
-      formData.append("userId", userId)
-      formData.append("boardCondition", selectedCondition)
+      formData.append('userId', userId)
+      formData.append('boardCondition', selectedCondition)
 
-      const description = (e.currentTarget.elements.namedItem("description") as HTMLTextAreaElement).value
+      const description = (
+        e.currentTarget.elements.namedItem('description') as HTMLTextAreaElement
+      ).value
       if (description) {
-        formData.append("description", description)
+        formData.append('description', description)
       }
 
       if (selectedFiles.length === 0) {
-        throw new Error("Veuillez télécharger au moins une image")
+        throw new Error('Veuillez télécharger au moins une image')
       }
 
       selectedFiles.forEach((file) => {
-        formData.append("image", file)
+        formData.append('image', file)
       })
 
-      const response = await fetch("/api/used-board", {
-        method: "POST",
+      const response = await fetch('/api/used-board', {
+        method: 'POST',
         body: formData,
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.log(errorData);
-        throw new Error(errorData.error || "Erreur lors de la soumission")
-        
+        console.log(errorData)
+        throw new Error(errorData.error || 'Erreur lors de la soumission')
       }
 
-      addToast("success", "Planche soumise avec succès ! Notre équipe va l'évaluer et te contacter bientôt.")
+      addToast(
+        'success',
+        "Planche soumise avec succès ! Notre équipe va l'évaluer et te contacter bientôt."
+      )
 
-      setSelectedCondition("")
+      setSelectedCondition('')
       setSelectedFiles([])
       setPreviewImages([])
       ;(e.target as HTMLFormElement).reset()
-
     } catch (error) {
-      console.error("Erreur soumission:", error)
-      addToast("error", error instanceof Error ? error.message : "Une erreur est survenue")
+      console.error('Erreur soumission:', error)
+      addToast(
+        'error',
+        error instanceof Error ? error.message : 'Une erreur est survenue'
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -119,12 +137,12 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
           <div
             key={toast.id}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-80 max-w-md ${
-              toast.type === "success" 
-                ? "bg-green-50 border border-green-200 text-green-800" 
-                : "bg-red-50 border border-red-200 text-red-800"
+              toast.type === 'success'
+                ? 'bg-green-50 border border-green-200 text-green-800'
+                : 'bg-red-50 border border-red-200 text-red-800'
             }`}
           >
-            {toast.type === "success" ? (
+            {toast.type === 'success' ? (
               <CheckCircle size={20} className="text-green-600 flex-shrink-0" />
             ) : (
               <XCircle size={20} className="text-red-600 flex-shrink-0" />
@@ -141,7 +159,10 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 pb-24">
-        <Link href="/" className="inline-flex items-center mb-12 text-gray-600 group">
+        <Link
+          href="/"
+          className="inline-flex items-center mb-12 text-gray-600 group"
+        >
           <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           <span className="border-b border-transparent group-hover:border-gray-600 pb-1 transition-colors">
             Retour à l&apos;accueil
@@ -154,20 +175,29 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
               <Recycle size={24} />
             </div>
             <div>
-              <h2 className="text-3xl font-normal mb-6">Donne une seconde vie à ta planche</h2>
+              <h2 className="text-3xl font-normal mb-6">
+                Donne une seconde vie à ta planche
+              </h2>
               <p className="text-gray-600 max-w-3xl">
-                Remplis ce formulaire pour nous aider à évaluer ta planche. Une fois soumis, nous te contacterons pour
-                organiser la collecte et t&apos;informer des points que tu recevras en échange.
+                Remplis ce formulaire pour nous aider à évaluer ta planche. Une
+                fois soumis, nous te contacterons pour organiser la collecte et
+                t&apos;informer des points que tu recevras en échange.
               </p>
             </div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-16" encType="multipart/form-data">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-16"
+          encType="multipart/form-data"
+        >
           <input type="hidden" name="userId" value={userId} />
 
           <div>
-            <h3 className="text-2xl font-normal mb-8">Informations sur ta planche</h3>
+            <h3 className="text-2xl font-normal mb-8">
+              Informations sur ta planche
+            </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
@@ -176,25 +206,34 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { value: "GOOD", label: "Bon état" },
-                    { value: "AVERAGE", label: "État moyen" },
-                    { value: "BAD", label: "Mauvais état" },
+                    { value: 'GOOD', label: 'Bon état' },
+                    { value: 'AVERAGE', label: 'État moyen' },
+                    { value: 'BAD', label: 'Mauvais état' },
                   ].map((condition) => (
                     <button
                       key={condition.value}
                       type="button"
-                      onClick={() => setSelectedCondition(condition.value as "GOOD" | "AVERAGE" | "BAD")}
+                      onClick={() =>
+                        setSelectedCondition(
+                          condition.value as 'GOOD' | 'AVERAGE' | 'BAD'
+                        )
+                      }
                       className={`py-3 px-2 rounded-md text-center transition-colors ${
                         selectedCondition === condition.value
-                          ? "bg-[#0a3d3f] text-white"
-                          : "bg-white text-black border border-gray-200 hover:bg-gray-50"
+                          ? 'bg-[#0a3d3f] text-white'
+                          : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
                       }`}
                     >
                       {condition.label}
                     </button>
                   ))}
                 </div>
-                <input type="hidden" name="boardCondition" value={selectedCondition} required />
+                <input
+                  type="hidden"
+                  name="boardCondition"
+                  value={selectedCondition}
+                  required
+                />
               </div>
 
               <div className="col-span-1 md:col-span-2">
@@ -205,8 +244,8 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                   <div className="flex items-center gap-2 mb-6">
                     <Info size={16} className="text-gray-600" />
                     <p className="text-sm text-gray-600">
-                      Ajoute au moins une photo montrant l&apos;état général de ta planche. Tu peux ajouter jusqu&apos;à
-                      3 photos.
+                      Ajoute au moins une photo montrant l&apos;état général de
+                      ta planche. Tu peux ajouter jusqu&apos;à 3 photos.
                     </p>
                   </div>
 
@@ -215,13 +254,15 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                       <div
                         key={index}
                         className={`border border-dashed ${
-                          previewImages[index] ? "border-[#0a3d3f]" : "border-gray-300"
+                          previewImages[index]
+                            ? 'border-[#0a3d3f]'
+                            : 'border-gray-300'
                         } rounded-lg bg-white p-4 flex flex-col items-center justify-center h-40 relative`}
                       >
                         {previewImages[index] ? (
                           <>
                             <Image
-                              src={previewImages[index] || "/placeholder.svg"}
+                              src={previewImages[index] || '/placeholder.svg'}
                               alt={`Aperçu ${index + 1}`}
                               fill
                               className="object-contain p-2 rounded-lg"
@@ -238,10 +279,12 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                           <>
                             <Upload size={24} className="text-gray-400 mb-2" />
                             <p className="text-sm text-center text-gray-600 mb-2">
-                              {index === 0 ? "Photo principale" : "Photo supplémentaire"}
+                              {index === 0
+                                ? 'Photo principale'
+                                : 'Photo supplémentaire'}
                             </p>
                             <p className="text-xs text-center text-gray-500">
-                              {index === 0 ? "Obligatoire" : "Optionnel"}
+                              {index === 0 ? 'Obligatoire' : 'Optionnel'}
                             </p>
                           </>
                         )}
@@ -260,7 +303,10 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
               </div>
 
               <div className="col-span-1 md:col-span-2">
-                <label htmlFor="description" className="block text-sm text-gray-600 mb-3">
+                <label
+                  htmlFor="description"
+                  className="block text-sm text-gray-600 mb-3"
+                >
                   Description (optionnel)
                 </label>
                 <textarea
@@ -304,7 +350,9 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                 1
               </div>
               <p className="text-lg font-medium mb-3">Soumets ta planche</p>
-              <p className="text-gray-600">Remplis ce formulaire avec les détails de ta planche usée</p>
+              <p className="text-gray-600">
+                Remplis ce formulaire avec les détails de ta planche usée
+              </p>
             </div>
 
             <div className="bg-[#f8f7f4] p-6 rounded-lg">
@@ -312,7 +360,9 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                 2
               </div>
               <p className="text-lg font-medium mb-3">Nous l&rsquo;évaluons</p>
-              <p className="text-gray-600">Notre équipe évalue ta planche et te propose des points</p>
+              <p className="text-gray-600">
+                Notre équipe évalue ta planche et te propose des points
+              </p>
             </div>
 
             <div className="bg-[#f8f7f4] p-6 rounded-lg">
@@ -320,7 +370,9 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                 3
               </div>
               <p className="text-lg font-medium mb-3">Échange tes points</p>
-              <p className="text-gray-600">Utilise tes points pour acheter une planche recyclée</p>
+              <p className="text-gray-600">
+                Utilise tes points pour acheter une planche recyclée
+              </p>
             </div>
           </div>
         </div>

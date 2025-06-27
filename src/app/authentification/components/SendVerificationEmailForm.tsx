@@ -1,36 +1,36 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Spinner from "@/components/Spinner";
-import { sendVerificationEmail } from "@/lib/auth-client";
-import { Mail, Send } from "lucide-react";
-import { emailVerificationSchema } from "@/lib/validation/authValidation";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Spinner from '@/components/Spinner'
+import { sendVerificationEmail } from '@/lib/auth-client'
+import { Mail, Send } from 'lucide-react'
+import { emailVerificationSchema } from '@/lib/validation/authValidation'
 
 export const SendVerificationEmailForm = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('')
 
   // TODO : convertir en useTransition()
-  const [isPending, setIsPending] = useState(false);
-  const router = useRouter();
+  const [isPending, setIsPending] = useState(false)
+  const router = useRouter()
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault();
-    setIsPending(true);
+    evt.preventDefault()
+    setIsPending(true)
 
     try {
-      emailVerificationSchema.parse({ email });
+      emailVerificationSchema.parse({ email })
 
       await sendVerificationEmail({
         email,
-        callbackURL: "/authentification/verifier-email",
-      });
+        callbackURL: '/authentification/verifier-email',
+      })
 
-      router.push("/authentification/verifier-email/succes");
+      router.push('/authentification/verifier-email/succes')
     } catch (err) {
-      return err;
+      return err
     } finally {
-      setIsPending(false);
+      setIsPending(false)
     }
   }
 
@@ -59,7 +59,7 @@ export const SendVerificationEmailForm = () => {
         type="submit"
         disabled={isPending}
         className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
-          isPending ? "opacity-70 cursor-not-allowed" : ""
+          isPending ? 'opacity-70 cursor-not-allowed' : ''
         }`}
       >
         {isPending ? (
@@ -72,5 +72,5 @@ export const SendVerificationEmailForm = () => {
         )}
       </button>
     </form>
-  );
-};
+  )
+}

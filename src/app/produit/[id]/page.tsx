@@ -1,9 +1,9 @@
-"use client";
-import { useEffect, useState } from 'react';
-import { useParams } from "next/navigation";
-import { ProductType } from '@/lib/types';
-import { products } from '@/lib/data';
-import ProductDisplay from './components/ProductDisplay';
+'use client'
+import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
+import { ProductType } from '@/lib/types'
+import { products } from '@/lib/data'
+import ProductDisplay from './components/ProductDisplay'
 
 export default function ProductPage() {
   const params = useParams()
@@ -18,7 +18,6 @@ export default function ProductPage() {
     }
     setLoading(false)
   }, [id])
-  
 
   if (loading) {
     return (
@@ -45,8 +44,8 @@ export default function ProductPage() {
   }
 
   return (
-      <div className="max-w-7xl mx-auto px-6 py-40">
-        <ProductDisplay product={product} />
-      </div>
+    <div className="max-w-7xl mx-auto px-6 py-40">
+      <ProductDisplay product={product} />
+    </div>
   )
 }

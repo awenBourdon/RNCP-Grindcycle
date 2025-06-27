@@ -1,8 +1,8 @@
-"use client"
-import { deleteUserAction } from "@/actions/delete-user.action"
-import Spinner from "@/components/Spinner"
-import { Trash2 } from "lucide-react"
-import { useTransition } from "react"
+'use client'
+import { deleteUserAction } from '@/actions/delete-user.action'
+import Spinner from '@/components/Spinner'
+import { Trash2 } from 'lucide-react'
+import { useTransition } from 'react'
 
 interface DeleteUserButtonProps {
   userId: string
@@ -12,9 +12,9 @@ export const DeleteUserButton = ({ userId }: DeleteUserButtonProps) => {
   const [isPending, startTransition] = useTransition()
 
   const handleClick = () => {
-      startTransition(async () => {
-        await deleteUserAction({ userId })
-      })
+    startTransition(async () => {
+      await deleteUserAction({ userId })
+    })
   }
 
   return (

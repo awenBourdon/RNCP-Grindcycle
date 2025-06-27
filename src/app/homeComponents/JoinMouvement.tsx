@@ -1,6 +1,6 @@
-"use client";
-import Marquee from "react-fast-marquee";
-import { useEffect, useState } from "react";
+'use client'
+import Marquee from 'react-fast-marquee'
+import { useEffect, useState } from 'react'
 
 export default function JoinMovement() {
   const [isMobile, setIsMobile] = useState(false)
@@ -8,8 +8,8 @@ export default function JoinMovement() {
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 640)
     handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return (

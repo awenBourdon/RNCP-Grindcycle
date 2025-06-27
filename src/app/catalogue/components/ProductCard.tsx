@@ -1,6 +1,6 @@
-import Link from "next/link";
-import Image from "next/image";
-import { ProductType } from "@/lib/types";
+import Link from 'next/link'
+import Image from 'next/image'
+import { ProductType } from '@/lib/types'
 
 type Props = {
   product: ProductType
@@ -14,7 +14,7 @@ export default function ProductCard({ product }: Props) {
     >
       <div className="relative w-full aspect-[3/4] bg-gray-100">
         <Image
-          src={product.imageUrl || "/placeholder.svg?height=700&width=600"}
+          src={product.imageUrl || '/placeholder.svg?height=700&width=600'}
           alt={product.name}
           fill
           className="object-cover"
@@ -23,9 +23,13 @@ export default function ProductCard({ product }: Props) {
       <div className="p-4">
         <h2 className="text-lg font-medium truncate">{product.name}</h2>
         <p className="text-sm text-gray-500 capitalize">{product.type}</p>
-        <div className="mt-2 text-[#0a3d3f] font-medium text-base">{product.priceEuro} €</div>
+        <div className="mt-2 text-[#0a3d3f] font-medium text-base">
+          {product.priceEuro} €
+        </div>
         {product.pricePoints && (
-          <div className="text-sm text-gray-500">ou {product.pricePoints} points</div>
+          <div className="text-sm text-gray-500">
+            ou {product.pricePoints} points
+          </div>
         )}
       </div>
     </Link>

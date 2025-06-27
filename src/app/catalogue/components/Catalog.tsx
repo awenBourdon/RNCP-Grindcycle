@@ -1,9 +1,9 @@
-"use client"
-import { products } from "@/lib/data";
-import type React from "react"
-import { useState } from "react"
-import ProductList from "./ProductsList";
-import Filters from "./Filters";
+'use client'
+import { products } from '@/lib/data'
+import type React from 'react'
+import { useState } from 'react'
+import ProductList from './ProductsList'
+import Filters from './Filters'
 
 export default function Catalog() {
   const [filters, setFilters] = useState({
@@ -12,23 +12,39 @@ export default function Catalog() {
     sizes: [] as number[],
   })
 
-  const [priceRangeValues, setPriceRangeValues] = useState<[number, number]>([0, 200])
+  const [priceRangeValues, setPriceRangeValues] = useState<[number, number]>([
+    0, 200,
+  ])
 
   const filteredProducts = products.filter((product) => {
-    if (filters.types.length > 0 && !filters.types.includes(product.type)) return false
-    if (product.priceEuro < filters.priceRange[0] || product.priceEuro > filters.priceRange[1]) return false
-    if (filters.sizes.length > 0 && (!product.size || !filters.sizes.includes(product.size))) return false
+    if (filters.types.length > 0 && !filters.types.includes(product.type))
+      return false
+    if (
+      product.priceEuro < filters.priceRange[0] ||
+      product.priceEuro > filters.priceRange[1]
+    )
+      return false
+    if (
+      filters.sizes.length > 0 &&
+      (!product.size || !filters.sizes.includes(product.size))
+    )
+      return false
     return true
   })
 
   const handleTypeChange = (type: string) => {
     setFilters((prev) => {
-      const newTypes = prev.types.includes(type) ? prev.types.filter((t) => t !== type) : [...prev.types, type]
+      const newTypes = prev.types.includes(type)
+        ? prev.types.filter((t) => t !== type)
+        : [...prev.types, type]
       return { ...prev, types: newTypes }
     })
   }
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handlePriceChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     const newValue = Number.parseInt(e.target.value)
     const newValues: [number, number] = [...priceRangeValues]
     newValues[index] = newValue
@@ -45,7 +61,9 @@ export default function Catalog() {
 
   const handleSizeChange = (size: number) => {
     setFilters((prev) => {
-      const newSizes = prev.sizes.includes(size) ? prev.sizes.filter((s) => s !== size) : [...prev.sizes, size]
+      const newSizes = prev.sizes.includes(size)
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size]
       return { ...prev, sizes: newSizes }
     })
   }
@@ -72,8 +90,9 @@ export default function Catalog() {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-8">
           <p className="text-gray-600">
-            {filteredProducts.length} produit{filteredProducts.length !== 1 ? "s" : ""} trouvé
-            {filteredProducts.length !== 1 ? "s" : ""}
+            {filteredProducts.length} produit
+            {filteredProducts.length !== 1 ? 's' : ''} trouvé
+            {filteredProducts.length !== 1 ? 's' : ''}
           </p>
         </div>
         <ProductList filteredProducts={filteredProducts} />

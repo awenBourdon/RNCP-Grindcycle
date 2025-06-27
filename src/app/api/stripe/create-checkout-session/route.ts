@@ -1,29 +1,30 @@
-import { NextResponse } from "next/server"
-import Stripe from "stripe"
-import type { CartItemType } from "@/contexts/CartContext"
+import { NextResponse } from 'next/server'
+import Stripe from 'stripe'
+import type { CartItemType } from '@/contexts/CartContext'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-05-28.basil",
+  apiVersion: '2025-05-28.basil',
 })
 
 export async function POST(request: Request) {
   try {
     if (!process.env.STRIPE_SECRET_KEY) {
-      console.error("STRIPE_SECRET_KEY is not configured")
+      console.error('STRIPE_SECRET_KEY is not configured')
       return NextResponse.json(
-        { error: "Configuration Stripe manquante" }, 
+        { error: 'Configuration Stripe manquante' },
         { status: 500 }
       )
     }
-    const { cartItems, shippingCost, shippingAddress, userEmail } = await request.json()
+    const { cartItems, shippingCost, shippingAddress, userEmail } =
+      await request.json()
 
     // TODO : Pansement pour faire fonctionner Stripe sans les images
     const lineItems = cartItems.map((item: CartItemType) => ({
       price_data: {
-        currency: "eur",
+        currency: 'eur',
         product_data: {
           name: item.name,
-          description: `Type: ${item.type}${item.size ? `, Taille: ${item.size}"` : ""}`,
+          description: `Type: ${item.type}${item.size ? `, Taille: ${item.size}"` : ''}`,
         },
         unit_amount: Math.round(item.price * 100),
       },
@@ -33,9 +34,9 @@ export async function POST(request: Request) {
     if (shippingCost > 0) {
       lineItems.push({
         price_data: {
-          currency: "eur",
+          currency: 'eur',
           product_data: {
-            name: "Frais de livraison",
+            name: 'Frais de livraison',
           },
           unit_amount: Math.round(shippingCost * 100),
         },
@@ -44,14 +45,14 @@ export async function POST(request: Request) {
     }
 
     const stripeSession = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ['card'],
       line_items: lineItems,
-      mode: "payment",
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/paiement/succes?session_id={CHECKOUT_SESSION_ID}`, // TODO : faire la page
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/panier`,
+      mode: 'payment',
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/paiement/succes?session_id={CHECKOUT_SESSION_ID}`, // TODO : faire la page
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/panier`,
       customer_email: shippingAddress?.email || userEmail,
       shipping_address_collection: {
-        allowed_countries: ["FR"],
+        allowed_countries: ['FR'],
       },
       metadata: {
         ...(shippingAddress && {
@@ -67,7 +68,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: stripeSession.url })
   } catch (error) {
-    console.error("Erreur lors de la création de la session Stripe:", error)
-    return NextResponse.json({ error: "Erreur lors de la création de la session de paiement" }, { status: 500 })
+    console.error('Erreur lors de la création de la session Stripe:', error)
+    return NextResponse.json(
+      { error: 'Erreur lors de la création de la session de paiement' },
+      { status: 500 }
+    )
   }
 }

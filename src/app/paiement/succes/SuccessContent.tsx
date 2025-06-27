@@ -1,15 +1,15 @@
-"use client"
+'use client'
 // TODO : refaire tout cette partie !
-import { useEffect, useState } from "react"
-import { useSearchParams} from "next/navigation"
-import { CheckCircle, ArrowRight } from "lucide-react"
-import Link from "next/link"
-import { useCart } from "@/contexts/CartContext"
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { CheckCircle, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { useCart } from '@/contexts/CartContext'
 
 export default function SuccessContent() {
   const { clearCart } = useCart()
   const searchParams = useSearchParams()
-  const session_id = searchParams.get("session_id")
+  const session_id = searchParams.get('session_id')
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -21,32 +21,34 @@ export default function SuccessContent() {
 
   useEffect(() => {
     if (!session_id) {
-      setError("Aucun identifiant de session fourni.")
+      setError('Aucun identifiant de session fourni.')
       setLoading(false)
       return
     }
 
     const fetchOrderDetails = async () => {
       try {
-        const res = await fetch("/api/get-order-details", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const res = await fetch('/api/get-order-details', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ session_id }),
         })
 
         if (!res.ok) {
           const errorText = await res.text()
-          console.error("Échec API:", res.status, errorText)
-          setError("Impossible de récupérer les détails de la commande.")
+          console.error('Échec API:', res.status, errorText)
+          setError('Impossible de récupérer les détails de la commande.')
           return
         }
 
         const data = await res.json()
         setOrderDetails(data)
         clearCart()
-        sessionStorage.removeItem("shippingAddress")
+        sessionStorage.removeItem('shippingAddress')
       } catch {
-        setError("Une erreur est survenue lors de la récupération de la commande.")
+        setError(
+          'Une erreur est survenue lors de la récupération de la commande.'
+        )
       } finally {
         setLoading(false)
       }
@@ -83,19 +85,22 @@ export default function SuccessContent() {
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-normal text-black mb-6">Commande confirmée !</h1>
+          <h1 className="text-4xl md:text-5xl font-normal text-black mb-6">
+            Commande confirmée !
+          </h1>
 
           <p className="text-xl text-gray-600 mb-4">
             Merci pour ton achat. Ta commande a été traitée avec succès.
           </p>
 
           <p className="text-gray-600 mb-4">
-            Total payé : {(orderDetails.amount_total! / 100).toFixed(2)}{" "}
+            Total payé : {(orderDetails.amount_total! / 100).toFixed(2)}{' '}
             {orderDetails.currency?.toUpperCase()}
           </p>
 
           <p className="text-gray-600 mb-12">
-            Un email de confirmation a été envoyé à <strong>{orderDetails.email}</strong>.
+            Un email de confirmation a été envoyé à{' '}
+            <strong>{orderDetails.email}</strong>.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">

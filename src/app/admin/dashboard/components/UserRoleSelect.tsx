@@ -1,13 +1,13 @@
-"use client";
-import Spinner from "@/components/Spinner";
-import type { UserRole } from "@/generated/prisma";
-import { admin } from "@/lib/auth-client";
-import type { ErrorContext } from "@/lib/types";
-import { useRouter } from "next/navigation";
-import type React from "react";
-import { useTransition } from "react";
-import { toast } from "sonner";
-import { ChevronDown, Shield, User } from "lucide-react";
+'use client'
+import Spinner from '@/components/Spinner'
+import type { UserRole } from '@/generated/prisma'
+import { admin } from '@/lib/auth-client'
+import type { ErrorContext } from '@/lib/types'
+import { useRouter } from 'next/navigation'
+import type React from 'react'
+import { useTransition } from 'react'
+import { toast } from 'sonner'
+import { ChevronDown, Shield, User } from 'lucide-react'
 
 interface UserRoleSelectProps {
   userId: string
@@ -25,12 +25,12 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
       try {
         const canChangeRole = await admin.hasPermission({
           permissions: {
-            user: ["set-role"],
+            user: ['set-role'],
           },
         })
 
         if (!canChangeRole || canChangeRole.error) {
-          toast.error("Interdit")
+          toast.error('Interdit')
           return
         }
 
@@ -42,7 +42,7 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
               toast.error(ctx.error.message)
             },
             onSuccess: () => {
-              toast.success("Rôle mis à jour.")
+              toast.success('Rôle mis à jour.')
               router.refresh()
             },
           },
@@ -54,11 +54,13 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
   }
 
   const getRoleIcon = (userRole: UserRole) => {
-    return userRole === "ADMIN" ? <Shield size={14} /> : <User size={14} />
+    return userRole === 'ADMIN' ? <Shield size={14} /> : <User size={14} />
   }
 
   const getRoleColor = (userRole: UserRole) => {
-    return userRole === "ADMIN" ? "text-[#0a3d3f] bg-[#0a3d3f]/10" : "text-gray-600 bg-gray-100"
+    return userRole === 'ADMIN'
+      ? 'text-[#0a3d3f] bg-[#0a3d3f]/10'
+      : 'text-gray-600 bg-gray-100'
   }
 
   return (
@@ -67,7 +69,7 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
         <select
           value={role}
           onChange={handleChange}
-          disabled={role === "ADMIN" || isPending}
+          disabled={role === 'ADMIN' || isPending}
           className={`
             appearance-none
             pl-8 pr-8 py-2
@@ -91,7 +93,11 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
         </div>
 
         <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none">
-          {isPending ? <Spinner /> : <ChevronDown size={14} className="text-gray-400" />}
+          {isPending ? (
+            <Spinner />
+          ) : (
+            <ChevronDown size={14} className="text-gray-400" />
+          )}
         </div>
       </div>
     </div>

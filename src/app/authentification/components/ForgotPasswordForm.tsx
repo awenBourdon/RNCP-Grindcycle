@@ -1,11 +1,11 @@
-"use client";
-import Spinner from "@/components/Spinner";
-import { forgetPassword } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Mail, ArrowRight } from "lucide-react";
-import type React from "react";
+'use client'
+import Spinner from '@/components/Spinner'
+import { forgetPassword } from '@/lib/auth-client'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Mail, ArrowRight } from 'lucide-react'
+import type React from 'react'
 
 export const ForgotPasswordForm = () => {
   const [isPending, setIsPending] = useState(false) // TODO : Mettre UseTransition
@@ -14,10 +14,10 @@ export const ForgotPasswordForm = () => {
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault()
     const formData = new FormData(evt.currentTarget)
-    const email = String(formData.get("email"))
+    const email = String(formData.get('email'))
 
     if (!email) {
-      toast.error("Merci de renseigner ton adresse email.")
+      toast.error('Merci de renseigner ton adresse email.')
       return
     }
 
@@ -26,7 +26,7 @@ export const ForgotPasswordForm = () => {
     try {
       await forgetPassword({
         email,
-        redirectTo: "/authentification/reinitialiser-mot-de-passe",
+        redirectTo: '/authentification/reinitialiser-mot-de-passe',
         fetchOptions: {
           onRequest: () => {},
           onResponse: () => {},
@@ -34,8 +34,8 @@ export const ForgotPasswordForm = () => {
             toast.error(ctx.error.message)
           },
           onSuccess: () => {
-            toast.success("Le lien de réinitialisation a été envoyé.")
-            router.push("/authentification/mot-de-passe-oublie/succes")
+            toast.success('Le lien de réinitialisation a été envoyé.')
+            router.push('/authentification/mot-de-passe-oublie/succes')
           },
         },
       })
@@ -70,7 +70,7 @@ export const ForgotPasswordForm = () => {
         type="submit"
         disabled={isPending}
         className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
-          isPending ? "opacity-70 cursor-not-allowed" : ""
+          isPending ? 'opacity-70 cursor-not-allowed' : ''
         }`}
       >
         {isPending ? (

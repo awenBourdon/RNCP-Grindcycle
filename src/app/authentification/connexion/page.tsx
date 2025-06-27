@@ -1,8 +1,8 @@
-import LoginForm from "../components/LoginForm";
-import ReturnButton from "../../../components/ReturnButton";
-import Link from "next/link";
-import { SignInOauthButton } from "../components/SignInOauthButton";
-import { MagicLinkLoginForm } from "../components/MagicLinkLoginForm";
+import LoginForm from '../components/LoginForm'
+import ReturnButton from '../../../components/ReturnButton'
+import Link from 'next/link'
+import { SignInOauthButton } from '../components/SignInOauthButton'
+import { MagicLinkLoginForm } from '../components/MagicLinkLoginForm'
 
 const LoginPage = () => {
   return (
@@ -21,15 +21,20 @@ const LoginPage = () => {
               <LoginForm />
 
               <p className="text-gray-600 text-sm mt-6">
-                Tu n&apos;as pas de compte ?{" "}
-                <Link href="/authentification/inscription" className="text-[#0a3d3f] hover:underline font-medium">
+                Tu n&apos;as pas de compte ?{' '}
+                <Link
+                  href="/authentification/inscription"
+                  className="text-[#0a3d3f] hover:underline font-medium"
+                >
                   S&apos;inscrire
                 </Link>
               </p>
             </div>
 
             <div className="bg-[#f8f7f4] rounded-xl p-8 ">
-              <h2 className="text-xl font-medium mb-6">Connexion avec Google</h2>
+              <h2 className="text-xl font-medium mb-6">
+                Connexion avec Google
+              </h2>
               <SignInOauthButton />
             </div>
           </div>
@@ -37,7 +42,8 @@ const LoginPage = () => {
           <div className="bg-[#f8f7f4] rounded-xl p-8 h-fit">
             <h2 className="text-xl font-medium mb-6">Connexion express</h2>
             <p className="text-gray-600 mb-6">
-              Reçois un lien de connexion directement dans ta boîte mail, sans avoir à saisir ton mot de passe.
+              Reçois un lien de connexion directement dans ta boîte mail, sans
+              avoir à saisir ton mot de passe.
             </p>
             <MagicLinkLoginForm />
           </div>

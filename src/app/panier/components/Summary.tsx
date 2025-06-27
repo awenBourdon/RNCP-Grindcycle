@@ -1,6 +1,6 @@
-"use client";
-import Link from "next/link";
-import { useCart } from "@/contexts/CartContext";
+'use client'
+import Link from 'next/link'
+import { useCart } from '@/contexts/CartContext'
 
 export default function Summary() {
   const { getCartTotal, getShippingCost, clearCart } = useCart()
@@ -19,7 +19,9 @@ export default function Summary() {
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Livraison</span>
-          <span>{shipping === 0 ? "Gratuite" : `${shipping.toFixed(2)} €`}</span>
+          <span>
+            {shipping === 0 ? 'Gratuite' : `${shipping.toFixed(2)} €`}
+          </span>
         </div>
         {shipping > 0 && (
           <div className="text-sm text-gray-500 italic">
@@ -33,9 +35,7 @@ export default function Summary() {
       </div>
 
       <div className="space-y-4">
-        <Link
-          href="panier/redirect"
-          >
+        <Link href="panier/redirect">
           <button className="w-full py-3 mb-2 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors">
             Passer la commande
           </button>
