@@ -1,3 +1,4 @@
+// Votre formulaire corrigé avec debug
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'
@@ -60,9 +61,10 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   ) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Créer un nouveau tableau avec le fichier à l'index correct
       const newFiles = [...selectedFiles]
       newFiles[index] = file
-      setSelectedFiles(newFiles)
+      setSelectedFiles(newFiles.filter(Boolean)) // Enlever les undefined
 
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -77,11 +79,13 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   }
 
   const removeImage = (index: number) => {
-    const newFiles = selectedFiles.filter((_, i) => i !== index)
+    // Corriger la logique de suppression
+    const newFiles = [...selectedFiles]
+    newFiles.splice(index, 1)
     setSelectedFiles(newFiles)
 
     const newImages = [...previewImages]
-    newImages[index] = ''
+    newImages.splice(index, 1)
     setPreviewImages(newImages)
   }
 
@@ -99,11 +103,70 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   }
 
   const validateFormData = () => {
+    console.log('🔍 Validation côté client...')
+    console.log('📋 FormData à valider:', formData)
+    console.log('📷 Images sélectionnées:', selectedFiles.length)
+
     try {
+      // Validation Zod du formulaire
       productSchema.parse(formData)
+      console.log('✅ Validation Zod réussie')
+
+      // Validation des images
+      if (selectedFiles.length === 0) {
+        addToast('error', 'Au moins une image est requise')
+        console.log('❌ Aucune image sélectionnée')
+        return false
+      }
+
+      // Validation des types d'images
+      const invalidImages = selectedFiles.filter(
+        (file) =>
+          ![
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/webp',
+            'image/gif',
+          ].includes(file.type)
+      )
+
+      if (invalidImages.length > 0) {
+        addToast(
+          'error',
+          "Format d'image non supporté. Utilisez JPG, PNG, WebP ou GIF."
+        )
+        console.log(
+          "❌ Formats d'images invalides:",
+          invalidImages.map((f) => f.type)
+        )
+        return false
+      }
+
+      // Validation de la taille des images (5MB max)
+      const oversizedImages = selectedFiles.filter(
+        (file) => file.size > 5 * 1024 * 1024
+      )
+
+      if (oversizedImages.length > 0) {
+        addToast(
+          'error',
+          'Une ou plusieurs images sont trop volumineuses (max 5MB)'
+        )
+        console.log(
+          '❌ Images trop volumineuses:',
+          oversizedImages.map(
+            (f) => `${f.name}: ${(f.size / 1024 / 1024).toFixed(2)}MB`
+          )
+        )
+        return false
+      }
+
+      console.log('✅ Validation complète réussie')
       return true
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.log('❌ Erreurs Zod:', error.errors)
         error.errors.forEach((err) => {
           addToast('error', err.message)
         })
@@ -115,6 +178,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+
+    console.log('🚀 Début de soumission du formulaire')
 
     if (!validateFormData()) {
       setIsSubmitting(false)
@@ -130,22 +195,57 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       formDataToSend.append('pricePoints', formData.pricePoints.toString())
       formDataToSend.append('usedBoardId', formData.usedBoardId)
 
-      selectedFiles.forEach((file) => {
-        formDataToSend.append('images', file)
+      // Ajouter les images (uniquement celles qui existent)
+      selectedFiles.forEach((file, index) => {
+        if (file) {
+          formDataToSend.append('images', file)
+          console.log(
+            `📷 Image ${index + 1} ajoutée: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(1)}KB)`
+          )
+        }
       })
 
+      // Debug: Afficher toutes les données envoyées
+      console.log('📤 Données envoyées au serveur:')
+      for (const [key, value] of formDataToSend.entries()) {
+        if (value instanceof File) {
+          console.log(
+            `  ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`
+          )
+        } else {
+          console.log(`  ${key}: "${value}"`)
+        }
+      }
+
+      console.log('🌐 Envoi vers /api/product...')
       const response = await fetch('/api/product', {
         method: 'POST',
         body: formDataToSend,
       })
 
+      console.log(`📡 Réponse reçue: ${response.status} ${response.statusText}`)
+
       if (!response.ok) {
         const errorData = await response.json()
-        console.log(errorData)
-        throw new Error(errorData.error || 'Erreur lors de la soumission')
+        console.log('❌ Erreur serveur:', errorData)
+
+        // Afficher les détails des erreurs si disponibles
+        if (errorData.details && Array.isArray(errorData.details)) {
+          errorData.details.forEach((detail: string) => {
+            addToast('error', detail)
+          })
+        } else {
+          addToast('error', errorData.error || 'Erreur lors de la soumission')
+        }
+        return
       }
 
+      const successData = await response.json()
+      console.log('✅ Succès:', successData)
+
       addToast('success', 'Produit ajouté avec succès !')
+
+      // Reset du formulaire
       setFormData({
         name: '',
         description: '',
@@ -157,7 +257,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       setSelectedFiles([])
       setPreviewImages([])
     } catch (error) {
-      console.error('Erreur soumission:', error)
+      console.error('💥 Erreur catch:', error)
       addToast(
         'error',
         error instanceof Error ? error.message : 'Une erreur est survenue'
@@ -264,6 +364,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                 </label>
                 <input
                   type="number"
+                  step="0.01"
+                  min="0"
                   name="priceEuro"
                   value={formData.priceEuro}
                   onChange={handleChange}
@@ -278,6 +380,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                 </label>
                 <input
                   type="number"
+                  min="0"
+                  step="1"
                   name="pricePoints"
                   value={formData.pricePoints}
                   onChange={handleChange}
@@ -295,12 +399,12 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                     <Info size={16} className="text-gray-600" />
                     <p className="text-sm text-gray-600">
                       Ajoutez au moins une photo montrant le produit. Vous
-                      pouvez ajouter jusqu&apos;à 3 photos.
+                      pouvez ajouter jusqu&apos;à 5 photos (max 5MB chacune).
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[0, 1, 2].map((index) => (
+                    {[0, 1, 2, 3, 4].map((index) => (
                       <div
                         key={index}
                         className={`border border-dashed ${
@@ -341,14 +445,20 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                         <input
                           type="file"
                           name={`image-${index}`}
-                          accept="image/*"
+                          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                           onChange={(e) => handleImageUpload(e, index)}
-                          required={index === 0}
                         />
                       </div>
                     ))}
                   </div>
+
+                  {/* Indicateur du nombre d'images sélectionnées */}
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-4 text-sm text-gray-600">
+                      {selectedFiles.length} image(s) sélectionnée(s)
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -403,7 +513,13 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           <div className="flex justify-center">
             <button
               type="submit"
-              disabled={!formData.type || isSubmitting}
+              disabled={
+                !formData.type ||
+                !formData.name ||
+                !formData.usedBoardId ||
+                selectedFiles.length === 0 ||
+                isSubmitting
+              }
               className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
