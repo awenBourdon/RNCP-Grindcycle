@@ -2,12 +2,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Upload, Info, CheckCircle, XCircle } from 'lucide-react'
-
-enum ProductType {
-  SKATE = 'SKATE',
-  CRUISER = 'CRUISER',
-  LONG = 'LONG',
-}
+import { productSchema } from '@/lib/validation/productValidation'
+import z from 'zod'
 
 interface UsedBoard {
   id: string
@@ -24,15 +20,19 @@ interface AddProductFormProps {
   usedBoards: UsedBoard[]
 }
 
+enum ProductType {
+  SKATE = 'SKATE',
+  CRUISER = 'CRUISER',
+  LONG = 'LONG',
+}
+
 export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     type: '',
-    size: 0,
     priceEuro: 0,
     pricePoints: 0,
-    imageUrl: '',
     usedBoardId: '',
   })
 
@@ -94,22 +94,38 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     setFormData((prev) => ({
       ...prev,
       [name]:
-        name === 'size' || name === 'priceEuro' || name === 'pricePoints'
-          ? Number(value)
-          : value,
+        name === 'priceEuro' || name === 'pricePoints' ? Number(value) : value,
     }))
+  }
+
+  const validateFormData = () => {
+    try {
+      productSchema.parse(formData)
+      return true
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          addToast('error', err.message)
+        })
+      }
+      return false
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
+    if (!validateFormData()) {
+      setIsSubmitting(false)
+      return
+    }
+
     try {
       const formDataToSend = new FormData()
       formDataToSend.append('name', formData.name)
       formDataToSend.append('description', formData.description)
       formDataToSend.append('type', formData.type)
-      formDataToSend.append('size', formData.size.toString())
       formDataToSend.append('priceEuro', formData.priceEuro.toString())
       formDataToSend.append('pricePoints', formData.pricePoints.toString())
       formDataToSend.append('usedBoardId', formData.usedBoardId)
@@ -134,10 +150,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         name: '',
         description: '',
         type: '',
-        size: 0,
         priceEuro: 0,
         pricePoints: 0,
-        imageUrl: '',
         usedBoardId: '',
       })
       setSelectedFiles([])
@@ -242,20 +256,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                     </option>
                   ))}
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-600 mb-3">
-                  Taille <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="size"
-                  value={formData.size}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
-                  required
-                />
               </div>
 
               <div>
@@ -387,7 +387,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                   required
                 >
                   <option value="">
-                    Sélectionnez une planche d&apos;occasion
+                    Sélectionnez la planche d&apos;occasion qui a été
+                    réhabilitée
                   </option>
                   {usedBoards.map((board) => (
                     <option key={board.id} value={board.id}>
@@ -413,7 +414,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
               ) : (
                 <>
                   <Upload className="mr-2 h-5 w-5" />
-                  Ajouter le produit
+                  Ajouter le produit au catalogue
                 </>
               )}
             </button>

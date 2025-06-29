@@ -4,67 +4,37 @@ import { ProductStatus, PointsType, UsedBoardStatus, BoardCondition, BoardType }
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 
-class ProductController {
+interface CreateProductData {
+  name: string
+  description?: string
+  type: BoardType
+  priceEuro: number
+  pricePoints: number
+  imageUrl: string[]
+  usedBoardId: string
+}
+
+interface PurchaseProductData {
+  productId: string
+  userId: string
+}
+
+class ImageService {
   private uploadDir: string
 
-  constructor() {
-    this.uploadDir = path.join(process.cwd(), 'public', 'uploads', 'products')
+  constructor(subDirectory: string = 'products') {
+    this.uploadDir = path.join(process.cwd(), 'public', 'uploads', subDirectory)
   }
 
-  async create(req: NextRequest) {
-    try {
-      // Utiliser FormData au lieu de JSON
-      const formData = await req.formData()
-      
-      const name = formData.get('name') as string
-      const description = formData.get('description') as string
-      const type = formData.get('type') as string
-      const size = parseInt(formData.get('size') as string)
-      const priceEuro = parseInt(formData.get('priceEuro') as string)
-      const pricePoints = parseInt(formData.get('pricePoints') as string)
-      const usedBoardId = formData.get('usedBoardId') as string
-      
-      // Récupérer les fichiers images
-      const images = formData.getAll('images') as File[]
-      
-      if (!name || !type || !size || !priceEuro || !pricePoints || !usedBoardId) {
-        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-      }
-
-      // Traitement des images avec la même logique que UsedBoardController
-      const imagePaths = await this.processImages(images)
-      const boardType = type as BoardType; 
-
-      const product = await prisma.product.create({
-        data: {
-          name,
-          description,
-          type: boardType,
-          size,
-          priceEuro,
-          pricePoints,
-          imageUrl: imagePaths,
-          usedBoardId,
-        },
-      })
-
-      return NextResponse.json(product, { status: 201 })
-    } catch (error) {
-      console.error('Error creating product:', error)
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-    }
-  }
-
-  // Méthode pour traiter les images (copiée de UsedBoardController)
-  private async processImages(images: File[]): Promise<string[]> {
-    const imagePaths: string[] = []
-
+  async processImages(images: File[]): Promise<string[]> {
     if (!images || images.length === 0) {
-      return imagePaths
+      return []
     }
 
     await this.ensureUploadDirectoryExists()
 
+    const imagePaths: string[] = []
+    
     for (const image of images) {
       if (image && image.size > 0) {
         const imagePath = await this.saveImageToServer(image)
@@ -75,19 +45,9 @@ class ProductController {
     return imagePaths
   }
 
-  // Méthode pour s'assurer que le dossier d'upload existe
-  private async ensureUploadDirectoryExists(): Promise<void> {
-    try {
-      await mkdir(this.uploadDir, { recursive: true })
-    } catch (err) {
-      console.log('Le dossier existe déjà ou erreur lors de sa création:', err)
-    }
-  }
-
-  // Méthode pour sauvegarder une image sur le serveur
   private async saveImageToServer(image: File): Promise<string> {
     const timestamp = Date.now()
-    const sanitizedName = image.name.replace(/\s+/g, '_')
+    const sanitizedName = this.sanitizeFilename(image.name)
     const filename = `${timestamp}_${sanitizedName}`
     const filepath = path.join(this.uploadDir, filename)
 
@@ -98,90 +58,422 @@ class ProductController {
     return `/uploads/products/${filename}`
   }
 
-  async getAll() {
+  private async ensureUploadDirectoryExists(): Promise<void> {
     try {
-      const products = await prisma.product.findMany()
-      return NextResponse.json(products, { status: 200 })
-    } catch (error) {
-      console.error('Error fetching products:', error)
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+      await mkdir(this.uploadDir, { recursive: true })
+    } catch (err) {
+      console.log('Le dossier existe déjà ou erreur lors de sa création:', err)
     }
   }
 
-  async purchase(req: NextRequest) {
-    try {
-      const body = await req.json()
-      const { productId, userId } = body
-
-      if (!productId || !userId) {
-        return NextResponse.json({ error: 'Product ID and User ID are required' }, { status: 400 })
-      }
-
-      const product = await prisma.product.findUnique({
-        where: { id: productId },
-      })
-
-      if (!product) {
-        return NextResponse.json({ error: 'Product not found' }, { status: 404 })
-      }
-
-      await prisma.$transaction(async (tx) => {
-        const usedBoard = await tx.usedBoard.create({
-          data: {
-            name: product.name,
-            user: { connect: { id: userId } },
-            status: UsedBoardStatus.RECEIVED,
-            boardCondition: BoardCondition.GOOD,
-            boardType: product.type,
-            image: [],
-            pointsAwarded: product.pricePoints,
-          },
-        })
-
-        await tx.product.update({
-          where: { id: productId },
-          data: {
-            status: ProductStatus.PURCHASED,
-            usedBoard: { connect: { id: usedBoard.id } },
-          },
-        })
-
-        await tx.pointsHistory.create({
-          data: {
-            user: { connect: { id: userId } },
-            usedBoardId: usedBoard.id,
-            type: PointsType.PURCHASE,
-            pointsAmount: product.pricePoints,
-          },
-        })
-      })
-
-      return NextResponse.json({ message: 'Product purchased successfully' }, { status: 200 })
-    } catch (error) {
-      console.error('Error during product purchase:', error)
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-    }
+  private sanitizeFilename(filename: string): string {
+    return filename
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Z0-9_.-]/g, '')
+      .toLowerCase()
   }
 
-  async delete(req: NextRequest) {
-    try {
-      const { productId } = await req.json()
+  validateImages(images: File[]): { isValid: boolean; errors: string[] } {
+    const errors: string[] = []
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 
-      if (!productId) {
-        return NextResponse.json({ error: 'Product ID is required' }, { status: 400 })
+    if (images.length === 0) {
+      errors.push('Au moins une image est requise')
+    }
+
+    images.forEach((file, index) => {
+      if (!allowedTypes.includes(file.type)) {
+        errors.push(`Image ${index + 1}: Type de fichier non supporté`)
       }
+      if (file.size > maxSize) {
+        errors.push(`Image ${index + 1}: Fichier trop volumineux (max 5MB)`)
+      }
+    })
 
-      await prisma.product.delete({
-        where: { id: productId },
-      })
-
-      return NextResponse.json({ message: 'Product deleted successfully' }, { status: 200 })
-    } catch (error) {
-      console.error('Error deleting product:', error)
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return {
+      isValid: errors.length === 0,
+      errors
     }
   }
 }
+
+class ProductService {
+  async createProduct(data: CreateProductData) {
+    return await prisma.product.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        type: data.type,
+        priceEuro: data.priceEuro,
+        pricePoints: data.pricePoints,
+        imageUrl: data.imageUrl,
+        usedBoardId: data.usedBoardId,
+      },
+    })
+  }
+
+  async getAllProducts() {
+    return await prisma.product.findMany({
+      include: {
+        usedBoard: {
+          select: {
+            id: true,
+            name: true,
+            boardType: true,
+            boardCondition: true,
+          }
+        }
+      }
+    })
+  }
+
+  async getProductById(productId: string) {
+    return await prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        usedBoard: true
+      }
+    })
+  }
+
+  async purchaseProduct(data: PurchaseProductData) {
+    const { productId, userId } = data
+
+    const product = await this.getProductById(productId)
+    if (!product) {
+      throw new Error('Produit non trouvé')
+    }
+
+    if (product.status === ProductStatus.PURCHASED) {
+      throw new Error('Produit déjà acheté')
+    }
+
+    return await prisma.$transaction(async (tx) => {
+      const usedBoard = await tx.usedBoard.create({
+        data: {
+          name: product.name,
+          user: { connect: { id: userId } },
+          status: UsedBoardStatus.RECEIVED,
+          boardCondition: BoardCondition.GOOD,
+          boardType: product.type,
+          image: product.imageUrl,
+          pointsAwarded: product.pricePoints,
+        },
+      })
+
+      const updatedProduct = await tx.product.update({
+        where: { id: productId },
+        data: {
+          status: ProductStatus.PURCHASED,
+          usedBoard: { connect: { id: usedBoard.id } },
+        },
+      })
+
+      await tx.pointsHistory.create({
+        data: {
+          user: { connect: { id: userId } },
+          usedBoardId: usedBoard.id,
+          type: PointsType.PURCHASE,
+          pointsAmount: -product.pricePoints,
+        },
+      })
+
+      return { product: updatedProduct, usedBoard }
+    })
+  }
+
+  async deleteProduct(productId: string) {
+    const product = await this.getProductById(productId)
+    if (!product) {
+      throw new Error('Produit non trouvé')
+    }
+
+    if (product.status === ProductStatus.PURCHASED) {
+      throw new Error('Impossible de supprimer un produit acheté')
+    }
+
+    return await prisma.product.delete({
+      where: { id: productId },
+    })
+  }
+
+  async getAvailableProducts() {
+    return await prisma.product.findMany({
+      where: {
+        status: ProductStatus.CATALOG
+      },
+      include: {
+        usedBoard: {
+          select: {
+            id: true,
+            name: true,
+            boardType: true,
+            boardCondition: true,
+          }
+        }
+      }
+    })
+  }
+}
+
+class ProductValidator {
+  static validateCreateData(formData: FormData): {
+    isValid: boolean
+    data?: CreateProductData;
+    errors: string[]
+  } {
+    const errors: string[] = []
+    
+    const name = formData.get('name') as string
+    const description = formData.get('description') as string
+    const type = formData.get('type') as string
+    const priceEuro = formData.get('priceEuro') as string
+    const pricePoints = formData.get('pricePoints') as string
+    const usedBoardId = formData.get('usedBoardId') as string
+
+    if (!name || name.trim() === '') {
+      errors.push('Le nom est requis')
+    }
+
+    if (!type || !Object.values(BoardType).includes(type as BoardType)) {
+      errors.push('Type de planche invalide')
+    }
+
+    if (!priceEuro || isNaN(parseInt(priceEuro)) || parseInt(priceEuro) < 0) {
+      errors.push('Prix en euros invalide')
+    }
+
+    if (!pricePoints || isNaN(parseInt(pricePoints)) || parseInt(pricePoints) < 0) {
+      errors.push('Prix en points invalide')
+    }
+
+    if (!usedBoardId || usedBoardId.trim() === '') {
+      errors.push('ID de la planche d\'occasion requis')
+    }
+
+    return {
+      isValid: errors.length === 0,
+      data: {
+        name: name?.trim(),
+        description: description?.trim() || undefined,
+        type: type as BoardType,
+        priceEuro: parseInt(priceEuro),
+        pricePoints: parseInt(pricePoints),
+        usedBoardId: usedBoardId?.trim(),
+        imageUrl: []
+      },
+      errors
+    }
+  }
+
+  static validatePurchaseData(body: {
+  productId: string;
+  userId: string;
+}): {
+    isValid: boolean
+    data?: PurchaseProductData
+    errors: string[]
+  } {
+    const errors: string[] = []
+
+    if (!body.productId || typeof body.productId !== 'string') {
+      errors.push('ID du produit requis')
+    }
+
+    if (!body.userId || typeof body.userId !== 'string') {
+      errors.push('ID de l\'utilisateur requis')
+    }
+
+    return {
+      isValid: errors.length === 0,
+      data: {
+        productId: body.productId,
+        userId: body.userId
+      },
+      errors
+    }
+  }
+
+  static validateDeleteData(body: {
+  productId: string;
+}): {
+    isValid: boolean
+    data?: { productId: string }
+    errors: string[]
+  } {
+    const errors: string[] = []
+
+    if (!body.productId || typeof body.productId !== 'string') {
+      errors.push('ID du produit requis')
+    }
+
+    return {
+      isValid: errors.length === 0,
+      data: { productId: body.productId },
+      errors
+    }
+  }
+}
+
+class ProductController {
+  private productService: ProductService
+  private imageService: ImageService
+
+  constructor() {
+    this.productService = new ProductService()
+    this.imageService = new ImageService('products')
+  }
+
+  async create(req: NextRequest): Promise<NextResponse> {
+    try {
+      const formData = await req.formData()
+      
+      const validation = ProductValidator.validateCreateData(formData)
+      if (!validation.isValid) {
+        return NextResponse.json({ 
+          error: 'Données invalides',
+          details: validation.errors 
+        }, { status: 400 })
+      }
+
+      const images = formData.getAll('images') as File[]
+      const imageValidation = this.imageService.validateImages(images)
+      
+      if (!imageValidation.isValid) {
+        return NextResponse.json({ 
+          error: 'Erreur de validation des images',
+          details: imageValidation.errors 
+        }, { status: 400 })
+      }
+
+      const imagePaths = await this.imageService.processImages(images)
+
+      const productData: CreateProductData = {
+        ...validation.data!,
+        imageUrl: imagePaths,
+      }
+
+      const product = await this.productService.createProduct(productData)
+
+      return NextResponse.json(product, { status: 201 })
+    } catch (error) {
+      console.error('Erreur lors de la création du produit:', error)
+      return NextResponse.json({ 
+        error: 'Erreur interne du serveur' 
+      }, { status: 500 })
+    }
+  }
+
+  async getAll(): Promise<NextResponse> {
+    try {
+      const products = await this.productService.getAllProducts()
+      return NextResponse.json(products, { status: 200 })
+    } catch (error) {
+      console.error('Erreur lors de la récupération des produits:', error)
+      return NextResponse.json({ 
+        error: 'Erreur interne du serveur' 
+      }, { status: 500 })
+    }
+  }
+
+  async getAvailable(): Promise<NextResponse> {
+    try {
+      const products = await this.productService.getAvailableProducts()
+      return NextResponse.json(products, { status: 200 })
+    } catch (error) {
+      console.error('Erreur lors de la récupération des produits disponibles:', error)
+      return NextResponse.json({ 
+        error: 'Erreur interne du serveur' 
+      }, { status: 500 })
+    }
+  }
+
+  async purchase(req: NextRequest): Promise<NextResponse> {
+    try {
+      const body = await req.json()
+      const validation = ProductValidator.validatePurchaseData(body)
+
+      if (!validation.isValid) {
+        return NextResponse.json({ 
+          error: 'Données invalides',
+          details: validation.errors 
+        }, { status: 400 })
+      }
+
+      const result = await this.productService.purchaseProduct(validation.data!)
+
+      return NextResponse.json({ 
+        message: 'Produit acheté avec succès',
+        data: result
+      }, { status: 200 })
+    } catch (error) {
+      console.error('Erreur lors de l\'achat du produit:', error)
+      
+      if (error instanceof Error) {
+        return NextResponse.json({ 
+          error: error.message 
+        }, { status: 400 })
+      }
+
+      return NextResponse.json({ 
+        error: 'Erreur interne du serveur' 
+      }, { status: 500 })
+    }
+  }
+
+  async delete(req: NextRequest): Promise<NextResponse> {
+    try {
+      const body = await req.json()
+      const validation = ProductValidator.validateDeleteData(body)
+
+      if (!validation.isValid) {
+        return NextResponse.json({ 
+          error: 'Données invalides',
+          details: validation.errors 
+        }, { status: 400 })
+      }
+
+      await this.productService.deleteProduct(validation.data!.productId)
+
+      return NextResponse.json({ 
+        message: 'Produit supprimé avec succès' 
+      }, { status: 200 })
+    } catch (error) {
+      console.error('Erreur lors de la suppression du produit:', error)
+      
+      if (error instanceof Error) {
+        return NextResponse.json({ 
+          error: error.message 
+        }, { status: 400 })
+      }
+
+      return NextResponse.json({ 
+        error: 'Erreur interne du serveur' 
+      }, { status: 500 })
+    }
+  }
+
+  async getById(productId: string): Promise<NextResponse> {
+    try {
+      const product = await this.productService.getProductById(productId)
+      
+      if (!product) {
+        return NextResponse.json({ 
+          error: 'Produit non trouvé' 
+        }, { status: 404 })
+      }
+
+      return NextResponse.json(product, { status: 200 })
+    } catch (error) {
+      console.error('Erreur lors de la récupération du produit:', error)
+      return NextResponse.json({ 
+        error: 'Erreur interne du serveur' 
+      }, { status: 500 })
+    }
+  }
+}
+
 
 const controller = new ProductController()
 
@@ -189,7 +481,19 @@ export async function POST(req: NextRequest) {
   return controller.create(req)
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const available = searchParams.get('available')
+  const productId = searchParams.get('id')
+
+  if (productId) {
+    return controller.getById(productId)
+  }
+
+  if (available === 'true') {
+    return controller.getAvailable()
+  }
+
   return controller.getAll()
 }
 

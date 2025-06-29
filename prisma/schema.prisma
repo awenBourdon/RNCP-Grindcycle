@@ -149,7 +149,6 @@ model Product {
   name        String
   description String?
   type        BoardType
-  size        Float
   priceEuro   Float
   pricePoints Int
   imageUrl    String[]
