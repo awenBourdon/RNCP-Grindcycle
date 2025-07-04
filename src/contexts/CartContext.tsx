@@ -1,5 +1,5 @@
 'use client'
-import type { ProductType } from '@/lib/types'
+import type { CartItemType, ProductType } from '@/lib/types'
 import {
   createContext,
   useContext,
@@ -8,19 +8,10 @@ import {
   type ReactNode,
 } from 'react'
 
-export type CartItemType = {
-  id: number
-  name: string
-  price: number
-  imageUrl: string
-  type: string
-  size: number | null
-}
-
 type CartContextType = {
   cartItems: CartItemType[]
   addToCart: (product: ProductType) => void
-  removeFromCart: (product: ProductType | number) => void
+  removeFromCart: (product: ProductType | string) => void // string au lieu de number
   clearCart: () => void
   getCartTotal: () => number
   getCartCount: () => number
@@ -66,16 +57,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       {
         id: product.id,
         name: product.name,
-        price: product.priceEuro,
-        imageUrl: product.imageUrl,
         type: product.type,
-        size: product.size,
+        priceEuro: product.priceEuro,
+        quantity: 1,
+        imageUrl: product.imageUrl,
       },
     ])
   }
 
-  const removeFromCart = (productOrId: ProductType | number) => {
-    const id = typeof productOrId === 'number' ? productOrId : productOrId.id
+  const removeFromCart = (productOrId: ProductType | string) => {
+    const id = typeof productOrId === 'string' ? productOrId : productOrId.id
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id))
   }
 
@@ -84,11 +75,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const getCartTotal = () => {
-    return cartItems.reduce((total, item) => total + item.price, 0)
+    return cartItems.reduce(
+      (total, item) => total + item.priceEuro * item.quantity,
+      0
+    )
   }
 
   const getCartCount = () => {
-    return cartItems.length
+    return cartItems.reduce((total, item) => total + item.quantity, 0)
   }
 
   const getShippingCost = () => {

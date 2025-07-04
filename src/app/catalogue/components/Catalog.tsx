@@ -1,11 +1,23 @@
 'use client'
-import { products } from '@/lib/data'
+
 import type React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ProductList from './ProductsList'
 import Filters from './Filters'
+import Spinner from '@/components/Spinner'
+import { ProductType } from '@/lib/types'
+
+interface ApiResponse {
+  success: boolean
+  data: ProductType[]
+  error?: string
+}
 
 export default function Catalog() {
+  const [products, setProducts] = useState<ProductType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   const [filters, setFilters] = useState({
     types: [] as string[],
     priceRange: [0, 200] as [number, number],
@@ -16,17 +28,41 @@ export default function Catalog() {
     0, 200,
   ])
 
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/product/available')
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`)
+      }
+
+      const data: ApiResponse = await response.json()
+
+      if (data.success) {
+        setProducts(data.data)
+        setError(null)
+      } else {
+        setError(data.error || 'Erreur lors du chargement des produits')
+      }
+    } catch (err) {
+      console.error('Erreur fetch produits:', err)
+      setError(err instanceof Error ? err.message : 'Erreur inconnue')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
   const filteredProducts = products.filter((product) => {
     if (filters.types.length > 0 && !filters.types.includes(product.type))
       return false
     if (
       product.priceEuro < filters.priceRange[0] ||
       product.priceEuro > filters.priceRange[1]
-    )
-      return false
-    if (
-      filters.sizes.length > 0 &&
-      (!product.size || !filters.sizes.includes(product.size))
     )
       return false
     return true
@@ -59,15 +95,6 @@ export default function Catalog() {
     setFilters((prev) => ({ ...prev, priceRange: newValues }))
   }
 
-  const handleSizeChange = (size: number) => {
-    setFilters((prev) => {
-      const newSizes = prev.sizes.includes(size)
-        ? prev.sizes.filter((s) => s !== size)
-        : [...prev.sizes, size]
-      return { ...prev, sizes: newSizes }
-    })
-  }
-
   const resetFilters = () => {
     setFilters({
       types: [],
@@ -77,13 +104,39 @@ export default function Catalog() {
     setPriceRangeValues([0, 200])
   }
 
+  if (loading) {
+    return (
+      <div className="pb-24">
+        <div className="flex justify-center items-center h-64">
+          <Spinner />
+          <span className="ml-3 text-gray-600">Chargement des produits...</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="pb-24">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={fetchProducts}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="pb-24">
       <Filters
         filters={filters}
         handleTypeChange={handleTypeChange}
         handlePriceChange={handlePriceChange}
-        handleSizeChange={handleSizeChange}
         resetFilters={resetFilters}
         priceRangeValues={priceRangeValues}
       />

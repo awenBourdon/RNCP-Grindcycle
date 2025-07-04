@@ -10,6 +10,10 @@ import {
   XCircle,
   Package,
   ChevronDown,
+  Recycle,
+  ShoppingCart,
+  AlertCircle,
+  Truck,
 } from 'lucide-react'
 import { ImageModal, useImageModal } from './ImageModal'
 import { useTransition } from 'react'
@@ -52,7 +56,6 @@ const StatusSelect = ({
   boardId,
   currentStatus,
   onUpdate,
-  currentPoints,
 }: StatusSelectProps) => {
   const [isPending, startTransition] = useTransition()
 
@@ -69,7 +72,6 @@ const StatusSelect = ({
           body: JSON.stringify({
             boardId,
             status: newStatus,
-            pointsAwarded: newStatus === 'RECEIVED' ? (currentPoints ?? 0) : 0,
           }),
         })
 
@@ -90,12 +92,20 @@ const StatusSelect = ({
 
   const getStatusIcon = (status: UsedBoardStatus) => {
     switch (status) {
-      case 'SENT':
-        return <Clock size={14} />
-      case 'RECEIVED':
+      case 'PENDING_VALIDATION':
+        return <AlertCircle size={14} />
+      case 'VALIDATED':
         return <CheckCircle size={14} />
       case 'REJECTED':
         return <XCircle size={14} />
+      case 'SENT':
+        return <Truck size={14} />
+      case 'RECEIVED':
+        return <CheckCircle size={14} />
+      case 'RECYCLED_TO_PRODUCT':
+        return <Recycle size={14} />
+      case 'SOLD':
+        return <ShoppingCart size={14} />
       default:
         return <Clock size={14} />
     }
@@ -103,12 +113,20 @@ const StatusSelect = ({
 
   const getStatusColor = (status: UsedBoardStatus) => {
     switch (status) {
+      case 'PENDING_VALIDATION':
+        return 'text-orange-700 bg-orange-50 border-orange-200'
+      case 'VALIDATED':
+        return 'text-blue-700 bg-blue-50 border-blue-200'
+      case 'REJECTED':
+        return 'text-red-700 bg-red-50 border-red-200'
       case 'SENT':
         return 'text-yellow-700 bg-yellow-50 border-yellow-200'
       case 'RECEIVED':
         return 'text-green-700 bg-green-50 border-green-200'
-      case 'REJECTED':
-        return 'text-red-700 bg-red-50 border-red-200'
+      case 'RECYCLED_TO_PRODUCT':
+        return 'text-purple-700 bg-purple-50 border-purple-200'
+      case 'SOLD':
+        return 'text-emerald-700 bg-emerald-50 border-emerald-200'
       default:
         return 'text-gray-600 bg-gray-100 border-gray-200'
     }
@@ -135,9 +153,13 @@ const StatusSelect = ({
             ${getStatusColor(currentStatus)}
           `}
         >
+          <option value="PENDING_VALIDATION">À valider</option>
+          <option value="VALIDATED">Validé</option>
+          <option value="REJECTED">Rejeté</option>
           <option value="SENT">Envoyé</option>
           <option value="RECEIVED">Reçu</option>
-          <option value="REJECTED">Rejeté</option>
+          <option value="RECYCLED_TO_PRODUCT">Recyclé en produit</option>
+          <option value="SOLD">Vendu</option>
         </select>
 
         <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none">
@@ -200,13 +222,18 @@ const PointsSelect = ({
     return 'text-blue-700 bg-blue-50 border-blue-200'
   }
 
+  const canEditPoints =
+    currentStatus === 'RECEIVED' ||
+    currentStatus === 'RECYCLED_TO_PRODUCT' ||
+    currentStatus === 'SOLD'
+
   return (
     <div className="relative inline-flex items-center group">
       <div className="relative">
         <select
           value={currentPoints || ''}
           onChange={handleChange}
-          disabled={isPending || currentStatus !== 'RECEIVED'}
+          disabled={isPending || !canEditPoints}
           className={`
             appearance-none
             pl-3 pr-8 py-2
@@ -239,10 +266,10 @@ const PointsSelect = ({
         </div>
       </div>
 
-      {currentStatus !== 'RECEIVED' && (
+      {!canEditPoints && (
         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-          L’attribution des points est possible uniquement si la planche est
-          reçue.
+          Les points ne peuvent être attribués qu&apos;aux planches reçues,
+          recyclées ou vendues.
         </div>
       )}
     </div>
@@ -299,7 +326,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
         board.image,
         board.id,
         board.user.name,
-        board.description ?? undefined // TODO : Suppr undefined pour que ce soit plus propre
+        board?.description ?? undefined
       )
     }
   }

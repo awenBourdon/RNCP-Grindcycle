@@ -109,35 +109,79 @@ export class UsedBoardService {
     return await this.usedBoardRepository.findByUserId(userId)
   }
 
-  async updateUsedBoard(
-    boardId: string, 
-    updateData: Partial<UpdateUsedBoardData>
-  ): Promise<UsedBoardWithRelations> {
-    const oldBoard = await this.getUsedBoardById(boardId)
+async updateUsedBoard(
+  boardId: string, 
+  updateData: Partial<UpdateUsedBoardData>
+): Promise<UsedBoardWithRelations> {
+  const oldBoard = await this.getUsedBoardById(boardId)
 
-    return await prisma.$transaction(async (tx) => {
-      const updatedBoard = await tx.usedBoard.update({
-        where: { id: boardId },
-        data: updateData,
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          },
-          product: {
-            select: {
-              id: true,
-              name: true,
-              status: true
-            }
+  return await prisma.$transaction(async (tx) => {
+    const updatedBoard = await tx.usedBoard.update({
+      where: { id: boardId },
+      data: updateData,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            status: true
           }
         }
-      })
+      }
+    })
 
-      if (oldBoard.pointsAwarded && oldBoard.pointsAwarded > 0 && oldBoard.status === 'RECEIVED') {
+    const statusChanged = oldBoard.status !== updatedBoard.status
+    const pointsEligibleStatuses = ['RECEIVED', 'RECYCLED_TO_PRODUCT', 'SOLD']
+    const noPointsStatuses = ['PENDING_VALIDATION', 'VALIDATED', 'REJECTED', 'SENT']
+    
+    if (statusChanged) {
+      console.log(`🔄 Changement de statut: ${oldBoard.status} → ${updatedBoard.status}`)
+      
+      if (pointsEligibleStatuses.includes(updatedBoard.status) && 
+          !pointsEligibleStatuses.includes(oldBoard.status)) {
+        console.log('📥 Transition vers statut éligible aux points')
+
+        const existingTransaction = await tx.pointsHistory.findFirst({
+          where: {
+            userId: updatedBoard.userId,
+            usedBoardId: boardId,
+            type: 'RECYCLING',
+          }
+        })
+
+        const pointsToAward = updatedBoard.pointsAwarded || oldBoard.pointsAwarded || 0
+
+        if (!existingTransaction && pointsToAward > 0) {
+          console.log(`💰 Création transaction: ${pointsToAward} points`)
+
+          if (!updatedBoard.pointsAwarded && pointsToAward > 0) {
+            await tx.usedBoard.update({
+              where: { id: boardId },
+              data: { pointsAwarded: pointsToAward }
+            })
+          }
+          
+          await tx.pointsHistory.create({
+            data: {
+              userId: updatedBoard.userId,
+              usedBoardId: boardId,
+              type: PointsType.RECYCLING,
+              pointsAmount: pointsToAward,
+            },
+          })
+        }
+      }
+      
+      else if (noPointsStatuses.includes(updatedBoard.status)) {
+        console.log('Transition vers statut sans points - Suppression des points')
+        
         await tx.pointsHistory.deleteMany({
           where: {
             userId: updatedBoard.userId,
@@ -145,19 +189,13 @@ export class UsedBoardService {
             type: 'RECYCLING',
           },
         })
-      }
 
-      if (updatedBoard.pointsAwarded && updatedBoard.pointsAwarded > 0 && updatedBoard.status === 'RECEIVED') {
-        await tx.pointsHistory.create({
-          data: {
-            userId: updatedBoard.userId,
-            usedBoardId: boardId,
-            type: PointsType.RECYCLING,
-            pointsAmount: updatedBoard.pointsAwarded,
-          },
+        await tx.usedBoard.update({
+          where: { id: boardId },
+          data: { pointsAwarded: 0 }
         })
       }
-
+      
       const totalPoints = await tx.pointsHistory.aggregate({
         where: { userId: updatedBoard.userId },
         _sum: { pointsAmount: true },
@@ -169,10 +207,48 @@ export class UsedBoardService {
           points: totalPoints._sum.pointsAmount ?? 0,
         },
       })
+    }
+    
+    else if (updateData.pointsAwarded !== undefined && 
+             pointsEligibleStatuses.includes(updatedBoard.status)) {
+      
+      console.log('💰 Mise à jour des points sans changement de statut')
+      
+      await tx.pointsHistory.deleteMany({
+        where: {
+          userId: updatedBoard.userId,
+          usedBoardId: boardId,
+          type: 'RECYCLING',
+        },
+      })
+      
+      if (updatedBoard.pointsAwarded && updatedBoard.pointsAwarded > 0) {
+        await tx.pointsHistory.create({
+          data: {
+            userId: updatedBoard.userId,
+            usedBoardId: boardId,
+            type: PointsType.RECYCLING,
+            pointsAmount: updatedBoard.pointsAwarded,
+          },
+        })
+      }
+      
+      const totalPoints = await tx.pointsHistory.aggregate({
+        where: { userId: updatedBoard.userId },
+        _sum: { pointsAmount: true },
+      })
 
-      return updatedBoard
-    })
-  }
+      await tx.user.update({
+        where: { id: updatedBoard.userId },
+        data: {
+          points: totalPoints._sum.pointsAmount ?? 0,
+        },
+      })
+    }
+
+    return updatedBoard
+  })
+}
 
   async deleteUsedBoard(boardId: string): Promise<void> {
     const board = await this.getUsedBoardById(boardId)

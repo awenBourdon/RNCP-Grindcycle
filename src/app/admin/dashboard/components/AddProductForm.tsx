@@ -1,13 +1,16 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Upload, Info, CheckCircle, XCircle } from 'lucide-react'
 import { productSchema } from '@/lib/zod-validations/productValidation'
 import z from 'zod'
+import Spinner from '@/components/Spinner'
 
 interface UsedBoard {
   id: string
   name: string
+  status: string
 }
 
 interface Toast {
@@ -27,6 +30,8 @@ enum ProductType {
 }
 
 export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
+  const router = useRouter()
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -40,6 +45,10 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [toasts, setToasts] = useState<Toast[]>([])
+
+  const availableUsedBoards = usedBoards.filter(
+    (board) => board.status === 'RECEIVED'
+  )
 
   const addToast = (type: 'success' | 'error', message: string) => {
     const id = Date.now()
@@ -60,10 +69,9 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   ) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Créer un nouveau tableau avec le fichier à l'index correct
       const newFiles = [...selectedFiles]
       newFiles[index] = file
-      setSelectedFiles(newFiles.filter(Boolean)) // Enlever les undefined
+      setSelectedFiles(newFiles.filter(Boolean))
 
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -169,6 +177,33 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     }
   }
 
+  const updateUsedBoardStatus = async (usedBoardId: string) => {
+    try {
+      console.log(
+        `Mise à jour du statut de la planche ${usedBoardId} vers RECYCLED_TO_PRODUCT`
+      )
+
+      const response = await fetch('/api/used-board', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          boardId: usedBoardId,
+          status: 'RECYCLED_TO_PRODUCT',
+        }),
+      })
+
+      if (!response.ok) {
+        console.error('Erreur lors de la mise à jour du statut de la planche')
+      } else {
+        console.log('Statut de la planche mis à jour avec succès')
+      }
+    } catch (error) {
+      console.error('Erreur mise à jour statut planche:', error)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -215,7 +250,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         body: formDataToSend,
       })
 
-      console.log(`📡 Réponse reçue: ${response.status} ${response.statusText}`)
+      console.log(`Réponse reçue: ${response.status} ${response.statusText}`)
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -234,7 +269,14 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       const successData = await response.json()
       console.log('Succès:', successData)
 
-      addToast('success', 'Produit ajouté avec succès !')
+      if (formData.usedBoardId) {
+        await updateUsedBoardStatus(formData.usedBoardId)
+      }
+
+      addToast(
+        'success',
+        'Produit ajouté avec succès ! La planche a été marquée comme recyclée.'
+      )
 
       setFormData({
         name: '',
@@ -246,6 +288,10 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       })
       setSelectedFiles([])
       setPreviewImages([])
+
+      setTimeout(() => {
+        router.refresh()
+      }, 2000)
     } catch (error) {
       console.error('Erreur catch:', error)
       addToast(
@@ -297,11 +343,29 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
               </h2>
               <p className="text-gray-600 max-w-3xl">
                 Remplissez ce formulaire pour ajouter un nouveau produit au
-                catalogue.
+                catalogue. La planche sélectionnée sera automatiquement marquée
+                comme recyclée.
               </p>
             </div>
           </div>
         </div>
+
+        {availableUsedBoards.length === 0 && (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-8">
+            <div className="flex items-center gap-3">
+              <Info size={20} className="text-orange-600" />
+              <div>
+                <h3 className="font-medium text-orange-800">
+                  Aucune planche disponible
+                </h3>
+                <p className="text-orange-700 text-sm">
+                  Il n&apos;y a actuellement aucune planche avec le statut
+                  &quot;Reçue&quot; disponible pour être recyclée en produit.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form
           onSubmit={handleSubmit}
@@ -474,7 +538,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                   htmlFor="usedBoardId"
                   className="block text-sm text-gray-600 mb-3"
                 >
-                  Planche d&apos;occasion associée{' '}
+                  Planche d&apos;occasion à recycler{' '}
                   <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -484,17 +548,25 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
                   required
+                  disabled={availableUsedBoards.length === 0}
                 >
                   <option value="">
-                    Sélectionnez la planche d&apos;occasion qui a été
-                    réhabilitée
+                    {availableUsedBoards.length === 0
+                      ? 'Aucune planche disponible pour recyclage'
+                      : 'Sélectionnez la planche réhabilitée'}
                   </option>
-                  {usedBoards.map((board) => (
+                  {availableUsedBoards.map((board) => (
                     <option key={board.id} value={board.id}>
                       {board.name}
                     </option>
                   ))}
                 </select>
+                {availableUsedBoards.length > 0 && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Cette planche sera automatiquement marquée comme
+                    &quot;Recyclée en produit&quot; après création.
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -507,19 +579,22 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                 !formData.name ||
                 !formData.usedBoardId ||
                 selectedFiles.length === 0 ||
-                isSubmitting
+                isSubmitting ||
+                availableUsedBoards.length === 0
               }
               className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Envoi en cours...
+                  <Spinner />
+                  Création en cours...
                 </>
               ) : (
                 <>
                   <Upload className="mr-2 h-5 w-5" />
-                  Ajouter le produit au catalogue
+                  {availableUsedBoards.length === 0
+                    ? 'Aucune planche disponible'
+                    : 'Recycler en produit'}
                 </>
               )}
             </button>

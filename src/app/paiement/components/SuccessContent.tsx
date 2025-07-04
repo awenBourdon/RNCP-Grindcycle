@@ -28,7 +28,7 @@ export default function SuccessContent() {
 
     const fetchOrderDetails = async () => {
       try {
-        const res = await fetch('/api/get-order-details', {
+        const res = await fetch('/api/stripe/get-order-details', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ session_id }),

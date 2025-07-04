@@ -38,7 +38,7 @@ export default function ProductDisplay({ product }: Props) {
       <div className="grid md:grid-cols-2 gap-16 items-start">
         <div className="w-full aspect-[3/4] relative overflow-hidden rounded-xl">
           <Image
-            src={product.imageUrl || '/placeholder.svg?height=700&width=600'}
+            src={product.imageUrl[0]}
             alt={product.name}
             fill
             className="object-cover bg-gray-500"
@@ -49,19 +49,13 @@ export default function ProductDisplay({ product }: Props) {
           <h1 className="text-3xl font-normal mb-6">{product.name}</h1>
           <p className="text-gray-600 text-lg mb-8">
             {product.description ||
-              'Planche de skate recyclée, parfaite pour tous les styles de ride.'}
+              'Pas de description disponible pour cette planche.'}
           </p>
 
           <div className="space-y-4 mb-8">
             <div className="flex items-center border-b border-gray-200 pb-3">
               <span className="w-24 font-medium">Type :</span>
-              <span className="text-gray-600 capitalize">
-                {product.type || 'Skate'}
-              </span>
-            </div>
-            <div className="flex items-center border-b border-gray-200 pb-3">
-              <span className="w-24 font-medium">Taille :</span>
-              <span className="text-gray-600">{product.size || '8'}&quot;</span>
+              <span className="text-gray-600 capitalize">{product.type}</span>
             </div>
           </div>
 

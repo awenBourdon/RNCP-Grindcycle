@@ -1,7 +1,6 @@
 'use client'
-
 import { Suspense } from 'react'
-import SuccessContent from './SuccessContent'
+import SuccessContent from '../components/SuccessContent'
 
 export default function SuccessPage() {
   return (
