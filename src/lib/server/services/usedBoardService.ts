@@ -137,22 +137,18 @@ async updateUsedBoard(
       }
     })
 
-    // ✅ Logique corrigée : gérer les points selon les règles métier
     const statusChanged = oldBoard.status !== updatedBoard.status
     
-    // ✅ Définir les statuts qui donnent droit aux points
     const pointsEligibleStatuses = ['RECEIVED', 'RECYCLED_TO_PRODUCT', 'SOLD']
     const noPointsStatuses = ['SENT', 'VALIDATE_TO_SEND', 'REJECTED']
     
     if (statusChanged) {
       console.log(`🔄 Changement de statut: ${oldBoard.status} → ${updatedBoard.status}`)
       
-      // ✅ Cas 1 : Transition vers un statut qui donne droit aux points
       if (pointsEligibleStatuses.includes(updatedBoard.status) && 
           !pointsEligibleStatuses.includes(oldBoard.status)) {
-        console.log('📥 Transition vers statut éligible aux points')
-        
-        // Vérifier qu'il n'y a pas déjà une transaction pour cette planche
+        console.log('Transition vers statut éligible aux points')
+
         const existingTransaction = await tx.pointsHistory.findFirst({
           where: {
             userId: updatedBoard.userId,
@@ -161,13 +157,11 @@ async updateUsedBoard(
           }
         })
 
-        // ✅ Utiliser les points existants ou une valeur par défaut
         const pointsToAward = updatedBoard.pointsAwarded || oldBoard.pointsAwarded || 50
 
         if (!existingTransaction && pointsToAward > 0) {
           console.log(`💰 Création transaction: ${pointsToAward} points`)
-          
-          // Si on n'a pas spécifié de nouveaux points, mettre à jour la planche
+
           if (!updatedBoard.pointsAwarded && pointsToAward > 0) {
             await tx.usedBoard.update({
               where: { id: boardId },
@@ -186,11 +180,9 @@ async updateUsedBoard(
         }
       }
       
-      // ✅ Cas 2 : Transition vers un statut qui ne donne PAS droit aux points
       else if (noPointsStatuses.includes(updatedBoard.status)) {
-        console.log('❌ Transition vers statut sans points - Suppression des points')
+        console.log('Transition vers statut sans points - Suppression des points')
         
-        // Supprimer les transactions de points existantes pour cette planche
         await tx.pointsHistory.deleteMany({
           where: {
             userId: updatedBoard.userId,
