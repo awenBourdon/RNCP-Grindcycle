@@ -1,6 +1,6 @@
+import { CartItemType } from '@/lib/types'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import type { CartItemType } from '@/contexts/CartContext'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
@@ -19,17 +19,18 @@ export async function POST(request: Request) {
       await request.json()
 
     // TODO : Pansement pour faire fonctionner Stripe sans les images
-    const lineItems = cartItems.map((item: CartItemType) => ({
-      price_data: {
-        currency: 'eur',
-        product_data: {
-          name: item.name,
-          description: `Type: ${item.type}${item.size ? `, Taille: ${item.size}"` : ''}`,
-        },
-        unit_amount: Math.round(item.price * 100),
-      },
-      quantity: 1,
-    }))
+    // Dans create-checkout-session/route.ts
+const lineItems = cartItems.map((item: CartItemType) => ({
+  price_data: {
+    currency: 'eur',
+    product_data: {
+      name: item.name,
+      description: `Type: ${item.type}`,
+    },
+    unit_amount: Math.round(item.priceEuro * 100),
+  },
+  quantity: item.quantity,
+}))
 
     if (shippingCost > 0) {
       lineItems.push({

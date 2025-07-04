@@ -1,12 +1,17 @@
-export type ProductType = {
-  imageUrl: string
-  id: number
+export interface ProductType {
+  id: string
   name: string
-  description: string
-  type: 'skate' | 'cruiser' | 'long'
-  size: number | null
+  description?: string
+  type: string
   priceEuro: number
   pricePoints: number
+  imageUrl: string[]
+  status: string
+  usedBoard?: {
+    id: string
+    name: string
+    boardType: string
+  }
 }
 
 export type CartItemType = {
@@ -16,7 +21,7 @@ export type CartItemType = {
   size?: number
   priceEuro: number
   quantity: number
-  imageUrl?: string
+  imageUrl: string[]
 }
 
 export interface ErrorContext {

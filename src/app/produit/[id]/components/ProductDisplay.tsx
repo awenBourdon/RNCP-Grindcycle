@@ -38,7 +38,7 @@ export default function ProductDisplay({ product }: Props) {
       <div className="grid md:grid-cols-2 gap-16 items-start">
         <div className="w-full aspect-[3/4] relative overflow-hidden rounded-xl">
           <Image
-            src={product.imageUrl || '/placeholder.svg?height=700&width=600'}
+            src={product.imageUrl[0]}
             alt={product.name}
             fill
             className="object-cover bg-gray-500"
