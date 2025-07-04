@@ -14,12 +14,13 @@ enum UserRole {
 }
 
 enum UsedBoardStatus {
-  SENT
-  VALIDATE_TO_SEND
-  RECEIVED
+  PENDING_VALIDATION
+  VALIDATED
   REJECTED
+  SENT
+  RECEIVED
   RECYCLED_TO_PRODUCT
-  SOLD  
+  SOLD
 }
 
 enum BoardCondition {
@@ -123,7 +124,7 @@ model UsedBoard {
   name           String
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
-  status         UsedBoardStatus  @default(SENT)
+  status         UsedBoardStatus  @default(PENDING_VALIDATION)
   boardType      BoardType
   boardCondition BoardCondition?
   description    String?

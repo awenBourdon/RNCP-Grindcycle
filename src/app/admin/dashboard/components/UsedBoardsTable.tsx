@@ -12,6 +12,8 @@ import {
   ChevronDown,
   Recycle,
   ShoppingCart,
+  AlertCircle,
+  Truck,
 } from 'lucide-react'
 import { ImageModal, useImageModal } from './ImageModal'
 import { useTransition } from 'react'
@@ -90,14 +92,16 @@ const StatusSelect = ({
 
   const getStatusIcon = (status: UsedBoardStatus) => {
     switch (status) {
-      case 'SENT':
-        return <Clock size={14} />
-      case 'VALIDATE_TO_SEND':
-        return <Clock size={14} />
-      case 'RECEIVED':
+      case 'PENDING_VALIDATION':
+        return <AlertCircle size={14} />
+      case 'VALIDATED':
         return <CheckCircle size={14} />
       case 'REJECTED':
         return <XCircle size={14} />
+      case 'SENT':
+        return <Truck size={14} />
+      case 'RECEIVED':
+        return <CheckCircle size={14} />
       case 'RECYCLED_TO_PRODUCT':
         return <Recycle size={14} />
       case 'SOLD':
@@ -109,18 +113,20 @@ const StatusSelect = ({
 
   const getStatusColor = (status: UsedBoardStatus) => {
     switch (status) {
-      case 'SENT':
-        return 'text-yellow-700 bg-yellow-50 border-yellow-200'
-      case 'VALIDATE_TO_SEND':
+      case 'PENDING_VALIDATION':
         return 'text-orange-700 bg-orange-50 border-orange-200'
-      case 'RECEIVED':
-        return 'text-green-700 bg-green-50 border-green-200'
+      case 'VALIDATED':
+        return 'text-blue-700 bg-blue-50 border-blue-200'
       case 'REJECTED':
         return 'text-red-700 bg-red-50 border-red-200'
+      case 'SENT':
+        return 'text-yellow-700 bg-yellow-50 border-yellow-200'
+      case 'RECEIVED':
+        return 'text-green-700 bg-green-50 border-green-200'
       case 'RECYCLED_TO_PRODUCT':
-        return 'text-blue-700 bg-blue-50 border-blue-200'
-      case 'SOLD':
         return 'text-purple-700 bg-purple-50 border-purple-200'
+      case 'SOLD':
+        return 'text-emerald-700 bg-emerald-50 border-emerald-200'
       default:
         return 'text-gray-600 bg-gray-100 border-gray-200'
     }
@@ -147,10 +153,11 @@ const StatusSelect = ({
             ${getStatusColor(currentStatus)}
           `}
         >
-          <option value="SENT">Envoyé</option>
-          <option value="VALIDATE_TO_SEND">À valider</option>
-          <option value="RECEIVED">Reçu</option>
+          <option value="PENDING_VALIDATION">À valider</option>
+          <option value="VALIDATED">Validé</option>
           <option value="REJECTED">Rejeté</option>
+          <option value="SENT">Envoyé</option>
+          <option value="RECEIVED">Reçu</option>
           <option value="RECYCLED_TO_PRODUCT">Recyclé en produit</option>
           <option value="SOLD">Vendu</option>
         </select>
@@ -261,8 +268,8 @@ const PointsSelect = ({
 
       {!canEditPoints && (
         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-          L&apos;attribution des points est possible quand la planche est reçue,
-          recyclée ou vendue.
+          Les points ne peuvent être attribués qu&apos;aux planches reçues,
+          recyclées ou vendues.
         </div>
       )}
     </div>

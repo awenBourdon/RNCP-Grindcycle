@@ -138,16 +138,15 @@ async updateUsedBoard(
     })
 
     const statusChanged = oldBoard.status !== updatedBoard.status
-    
     const pointsEligibleStatuses = ['RECEIVED', 'RECYCLED_TO_PRODUCT', 'SOLD']
-    const noPointsStatuses = ['SENT', 'VALIDATE_TO_SEND', 'REJECTED']
+    const noPointsStatuses = ['PENDING_VALIDATION', 'VALIDATED', 'REJECTED', 'SENT']
     
     if (statusChanged) {
       console.log(`🔄 Changement de statut: ${oldBoard.status} → ${updatedBoard.status}`)
       
       if (pointsEligibleStatuses.includes(updatedBoard.status) && 
           !pointsEligibleStatuses.includes(oldBoard.status)) {
-        console.log('Transition vers statut éligible aux points')
+        console.log('📥 Transition vers statut éligible aux points')
 
         const existingTransaction = await tx.pointsHistory.findFirst({
           where: {
@@ -157,7 +156,7 @@ async updateUsedBoard(
           }
         })
 
-        const pointsToAward = updatedBoard.pointsAwarded || oldBoard.pointsAwarded || 50
+        const pointsToAward = updatedBoard.pointsAwarded || oldBoard.pointsAwarded || 0
 
         if (!existingTransaction && pointsToAward > 0) {
           console.log(`💰 Création transaction: ${pointsToAward} points`)
@@ -211,11 +210,9 @@ async updateUsedBoard(
     }
     
     else if (updateData.pointsAwarded !== undefined && 
-             (updatedBoard.status === 'RECEIVED' || 
-              updatedBoard.status === 'RECYCLED_TO_PRODUCT' || 
-              updatedBoard.status === 'SOLD')) {
+             pointsEligibleStatuses.includes(updatedBoard.status)) {
       
-      console.log('Mise à jour des points sans changement de statut')
+      console.log('💰 Mise à jour des points sans changement de statut')
       
       await tx.pointsHistory.deleteMany({
         where: {
@@ -252,6 +249,7 @@ async updateUsedBoard(
     return updatedBoard
   })
 }
+
   async deleteUsedBoard(boardId: string): Promise<void> {
     const board = await this.getUsedBoardById(boardId)
 
