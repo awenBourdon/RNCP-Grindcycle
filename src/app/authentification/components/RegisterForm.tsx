@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { UserPlus, Mail, Lock } from 'lucide-react'
 import { z } from 'zod'
-import { signUpSchema } from '@/lib/validation/authValidation'
+import { signUpSchema } from '@/lib/zod-validations/authValidation'
 import { signUpEmailAction } from '@/actions/sign-up-email.action'
 import Spinner from '@/components/Spinner'
 

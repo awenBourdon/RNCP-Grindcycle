@@ -15,6 +15,7 @@ enum UserRole {
 
 enum UsedBoardStatus {
   SENT
+  VALIDATE_TO_SEND
   RECEIVED
   REJECTED
 }
@@ -25,9 +26,20 @@ enum BoardCondition {
   BAD
 }
 
+enum BoardType {
+  SKATE
+  CRUISER
+  LONG
+}
+
 enum PointsType {
   PURCHASE
   RECYCLING
+}
+
+enum ProductStatus {
+  CATALOG
+  PURCHASED
 }
 
 model User {
@@ -43,13 +55,11 @@ model User {
   banExpires     DateTime?
   createdAt      DateTime
   updatedAt      DateTime
-
   sessions       Session[]
   accounts       Account[]
   posts          Post[]
   usedBoards     UsedBoard[]
   pointsHistory  PointsHistory[]
-
   @@map("user")
 }
 
@@ -64,7 +74,6 @@ model Session {
   impersonatedBy  String?
   userId          String
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@map("session")
 }
 
@@ -83,7 +92,6 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
-
   @@map("account")
 }
 
@@ -94,7 +102,6 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime?
   updatedAt  DateTime?
-
   @@map("verification")
 }
 
@@ -106,10 +113,8 @@ model Post {
   content   String
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@map("posts")
 }
-
 
 model UsedBoard {
   id             String           @id @default(uuid())
@@ -117,13 +122,14 @@ model UsedBoard {
   user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
   status         UsedBoardStatus  @default(SENT)
+  boardType      BoardType
   boardCondition BoardCondition?
   description    String?
   image          String[]
   pointsAwarded  Int?
+  product        Product?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-
   @@map("used_board")
 }
 
@@ -131,15 +137,28 @@ model PointsHistory {
   id            String      @id @default(uuid())
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String
-  usedBoardId   String? 
+  usedBoardId   String?
   type          PointsType
   pointsAmount  Int
   createdAt     DateTime    @default(now())
-
   @@map("points_history")
 }
 
-// Pas fonctionnel
+model Product {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  type        BoardType
+  priceEuro   Float
+  pricePoints Int
+  imageUrl    String[]
+  status      ProductStatus @default(CATALOG)
+  usedBoard   UsedBoard?    @relation(fields: [usedBoardId], references: [id])
+  usedBoardId String?       @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  @@map("product")
+}
 
 model Order {
   id             String   @id @default(uuid())
@@ -152,7 +171,5 @@ model Order {
   shippingPhone  String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-
   @@map("order")
 }
-

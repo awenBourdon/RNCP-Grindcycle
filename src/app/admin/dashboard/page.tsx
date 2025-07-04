@@ -20,6 +20,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { UsedBoardsTable } from './components/UsedBoardsTable'
+import { AddProductForm } from './components/AddProductForm'
 
 const DashboardPage = async () => {
   const headersList = await headers()
@@ -210,7 +211,7 @@ const DashboardPage = async () => {
 
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="">
+              <thead>
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">
                     <div className="flex items-center gap-2">
@@ -309,6 +310,8 @@ const DashboardPage = async () => {
         </div>
 
         <UsedBoardsTable usedBoards={usedBoards} />
+
+        <AddProductForm usedBoards={usedBoards} />
 
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">

@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import type React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -11,6 +10,12 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react'
+
+enum BoardType {
+  SKATE = 'SKATE',
+  CRUISER = 'CRUISER',
+  LONG = 'LONG',
+}
 
 interface RecycleFormProps {
   userId: string
@@ -26,6 +31,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
   const [selectedCondition, setSelectedCondition] = useState<
     'GOOD' | 'AVERAGE' | 'BAD' | ''
   >('')
+  const [selectedType, setSelectedType] = useState<BoardType | ''>('')
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -83,6 +89,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
       const formData = new FormData()
       formData.append('userId', userId)
       formData.append('boardCondition', selectedCondition)
+      formData.append('boardType', selectedType)
 
       const name = (
         e.currentTarget.elements.namedItem('name') as HTMLInputElement
@@ -123,6 +130,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
       )
 
       setSelectedCondition('')
+      setSelectedType('')
       setSelectedFiles([])
       setPreviewImages([])
       ;(e.target as HTMLFormElement).reset()
@@ -216,6 +224,34 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
                   name="name"
                   required
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-[#0a3d3f] focus:ring-1 focus:ring-[#0a3d3f]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm text-gray-600 mb-3">
+                  Type de planche <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {Object.values(BoardType).map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setSelectedType(type)}
+                      className={`py-3 px-2 rounded-md text-center transition-colors ${
+                        selectedType === type
+                          ? 'bg-[#0a3d3f] text-white'
+                          : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="hidden"
+                  name="boardType"
+                  value={selectedType}
+                  required
                 />
               </div>
 
@@ -342,7 +378,7 @@ export default function RecycleForm({ userId }: RecycleFormProps) {
           <div className="flex justify-center">
             <button
               type="submit"
-              disabled={!selectedCondition || isSubmitting}
+              disabled={!selectedCondition || !selectedType || isSubmitting}
               className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
