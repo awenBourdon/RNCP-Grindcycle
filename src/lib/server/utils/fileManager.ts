@@ -1,10 +1,51 @@
+/**
+ * FILE SYSTEM OPERATIONS UTILITY
+ * 
+ * This utility class provides a comprehensive set of file system operations for managing
+ * files throughout the application. It handles file existence checking, deletion, copying,
+ * moving, and filename manipulation with built-in safety measures and error handling to
+ * ensure robust file management across different operating systems.
+ * 
+ * Core Capabilities:
+ * - File existence verification and safe deletion operations
+ * - Batch file operations with detailed success/failure reporting
+ * - Filename sanitization and validation for cross-platform compatibility
+ * - Unique filename generation to prevent conflicts
+ * - File size calculation and human-readable formatting
+ * - Safe file copying and moving with directory creation
+ * 
+ * Key Features:
+ * - Cross-platform filename sanitization (Windows reserved names, invalid characters)
+ * - Atomic file operations with proper error handling
+ * - Unique filename generation using timestamps and random suffixes
+ * - File size formatting with appropriate units (Bytes, KB, MB, GB, TB)
+ * - Batch operations returning detailed success/failure statistics
+ * - Safe file moving (copy + delete) with rollback on failure
+ * 
+ * Security Features:
+ * - Filename validation to prevent directory traversal attacks
+ * - Reserved filename detection for Windows compatibility
+ * - Character sanitization to prevent shell injection
+ * - Length limitations to prevent filesystem issues
+ * - Safe path construction using Node.js path utilities
+ * 
+ * Error Handling:
+ * - Graceful failure handling with boolean return values
+ * - Detailed error logging for debugging and monitoring
+ * - Batch operation reporting with individual file status
+ * - Safe fallbacks for edge cases and invalid inputs
+ * 
+ * Usage Context:
+ * - Used by ImageService for file upload and cleanup operations
+ * - Supports file lifecycle management throughout the application
+ * - Provides foundation for any file-related operations
+ * - Ensures consistent file handling patterns across services
+ */
+
 import { unlink, access } from 'fs/promises'
 import path from 'path'
 
 export class FileManager {
-  /**
-   * Vérifie si un fichier existe
-   */
   static async exists(filePath: string): Promise<boolean> {
     try {
       await access(filePath)
@@ -14,9 +55,6 @@ export class FileManager {
     }
   }
 
-  /**
-   * Supprime un fichier de manière sécurisée
-   */
   static async deleteFile(filePath: string): Promise<boolean> {
     try {
       const fullPath = path.join(process.cwd(), 'public', filePath)
@@ -33,9 +71,6 @@ export class FileManager {
     }
   }
 
-  /**
-   * Supprime plusieurs fichiers
-   */
   static async deleteFiles(filePaths: string[]): Promise<{
     deleted: string[]
     failed: string[]
@@ -55,9 +90,6 @@ export class FileManager {
     return { deleted, failed }
   }
 
-  /**
-   * Génère un nom de fichier unique
-   */
   static generateUniqueFilename(originalName: string): string {
     const timestamp = Date.now()
     const randomSuffix = Math.random().toString(36).substring(2, 8)
@@ -66,34 +98,22 @@ export class FileManager {
     return `${timestamp}_${randomSuffix}_${sanitizedName}`
   }
 
-  /**
-   * Sanitise un nom de fichier
-   */
   static sanitizeFilename(filename: string): string {
     return filename
-      .replace(/\s+/g, '_')           // Espaces -> underscores
-      .replace(/[^a-zA-Z0-9_.-]/g, '') // Garder seulement alphanumerique + _ . -
-      .toLowerCase()                   // Tout en minuscules
-      .substring(0, 50)               // Limiter la longueur
+      .replace(/\s+/g, '_')           
+      .replace(/[^a-zA-Z0-9_.-]/g, '') 
+      .toLowerCase()                   
+      .substring(0, 50)               
   }
 
-  /**
-   * Extrait l'extension d'un fichier
-   */
   static getFileExtension(filename: string): string {
     return path.extname(filename).toLowerCase()
   }
 
-  /**
-   * Calcule la taille totale des fichiers
-   */
   static calculateTotalSize(files: File[]): number {
     return files.reduce((total, file) => total + file.size, 0)
   }
 
-  /**
-   * Formate une taille en bytes vers un format lisible
-   */
   static formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes'
 
@@ -104,14 +124,8 @@ export class FileManager {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
-  /**
-   * Vérifie si un nom de fichier est valide
-   */
   static isValidFilename(filename: string): boolean {
-    // Caractères interdits dans les noms de fichiers
     const invalidChars = /[<>:"/\\|?*\x00-\x1f]/
-    
-    // Noms réservés Windows
     const reservedNames = /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i
     
     return !invalidChars.test(filename) && 
@@ -120,17 +134,13 @@ export class FileManager {
            filename.length <= 255
   }
 
-  /**
-   * Crée un nom de fichier sûr à partir d'un nom donné
-   */
   static createSafeFilename(filename: string): string {
     let safeName = filename
-      .replace(/[<>:"/\\|?*\x00-\x1f]/g, '_') // Remplacer caractères interdits
-      .replace(/\s+/g, '_')                    // Espaces -> underscores
-      .replace(/_{2,}/g, '_')                  // Multiple underscores -> single
-      .replace(/^_|_$/g, '')                   // Supprimer underscores début/fin
+      .replace(/[<>:"/\\|?*\x00-\x1f]/g, '_') 
+      .replace(/\s+/g, '_')                    
+      .replace(/_{2,}/g, '_')                  
+      .replace(/^_|_$/g, '')                   
     
-    // Limiter la longueur en gardant l'extension
     const extension = path.extname(safeName)
     const nameWithoutExt = path.basename(safeName, extension)
     
@@ -138,7 +148,6 @@ export class FileManager {
       safeName = nameWithoutExt.substring(0, 200) + extension
     }
     
-    // Si le nom est réservé, ajouter un suffixe
     const reservedNames = /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i
     if (reservedNames.test(path.basename(safeName, extension))) {
       const nameOnly = path.basename(safeName, extension)
@@ -148,25 +157,19 @@ export class FileManager {
     return safeName || 'unnamed_file'
   }
 
-  /**
-   * Copie un fichier d'un endroit à un autre
-   */
   static async copyFile(sourcePath: string, destPath: string): Promise<boolean> {
     try {
       const fs = await import('fs/promises')
       const sourceFullPath = path.join(process.cwd(), 'public', sourcePath)
       const destFullPath = path.join(process.cwd(), 'public', destPath)
       
-      // Vérifier que le fichier source existe
       if (!await this.exists(sourceFullPath)) {
         return false
       }
       
-      // Créer le dossier de destination si nécessaire
       const destDir = path.dirname(destFullPath)
       await fs.mkdir(destDir, { recursive: true })
       
-      // Copier le fichier
       await fs.copyFile(sourceFullPath, destFullPath)
       return true
     } catch (error) {

@@ -1,3 +1,55 @@
+/**
+ * COMPREHENSIVE IMAGE MANAGEMENT SERVICE
+ * 
+ * This service provides a complete solution for image upload, validation, storage, and lifecycle
+ * management in the skateboard marketplace application. It handles all aspects of image processing
+ * from initial validation through storage, retrieval, and cleanup operations with robust error
+ * handling and security measures throughout the entire workflow.
+ * 
+ * Core Capabilities:
+ * - Multi-file image upload with comprehensive validation
+ * - Context-aware image management (products vs used boards)
+ * - Atomic upload operations with automatic rollback on failures
+ * - Image lifecycle management with cleanup and optimization features
+ * - Advanced file operations including moving between contexts
+ * - Storage analytics and orphaned file detection
+ * 
+ * Key Features:
+ * - Configurable validation (file count, size, type) based on context
+ * - Automatic directory creation and management
+ * - Unique filename generation to prevent conflicts
+ * - Batch operations with detailed success/failure reporting
+ * - Cross-context image migration capabilities
+ * - Storage cleanup and maintenance utilities
+ * 
+ * Security & Validation:
+ * - MIME type validation against whitelist of allowed image formats
+ * - File size validation (individual and total) to prevent abuse
+ * - Extension validation as additional security layer
+ * - Filename sanitization and unique generation
+ * - Path validation to prevent directory traversal attacks
+ * 
+ * Error Handling & Recovery:
+ * - Atomic upload operations with automatic cleanup on failure
+ * - Detailed error reporting for each validation step
+ * - Rollback mechanisms for partial upload failures
+ * - Graceful handling of file system errors
+ * - Comprehensive logging for debugging and monitoring
+ * 
+ * Advanced Features:
+ * - Factory pattern for service instance management
+ * - Cross-service image migration (products ↔ used boards)
+ * - Orphaned file detection and cleanup
+ * - Storage statistics and analytics
+ * - Flexible validation options for different use cases
+ * 
+ * Usage Context:
+ * - Used by ProductService and UsedBoardService for image management
+ * - Supports both single and multiple file upload scenarios
+ * - Integrates with FileManager for low-level file operations
+ * - Provides foundation for any image-related operations in the application
+ */
+
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { API_MESSAGES } from '@/lib/server/config/constants';

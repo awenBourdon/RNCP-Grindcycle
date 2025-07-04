@@ -3,7 +3,7 @@ import { auth, ErrorCode } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { APIError } from 'better-auth/api'
 import { redirect } from 'next/navigation'
-import { signInSchema } from '@/lib/validation/authValidation'
+import { signInSchema } from '@/lib/zod-validations/authValidation'
 
 export async function signInEmailAction(formData: FormData) {
   const raw = {

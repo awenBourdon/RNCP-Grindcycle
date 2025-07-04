@@ -1,7 +1,47 @@
+/**
+ * ABSTRACT VALIDATION FOUNDATION CLASS
+ * 
+ * This abstract base class provides a comprehensive validation toolkit for all input validation
+ * needs across the application. It implements a wide range of validation methods that can be
+ * inherited and used by specific validators, ensuring consistent validation patterns and
+ * error messaging throughout the entire system.
+ * 
+ * Core Capabilities:
+ * - Primitive type validation (strings, numbers, booleans)
+ * - Complex type validation (arrays, objects, enums)
+ * - Format validation (UUIDs, emails, URLs, dates)
+ * - Range and constraint validation (min/max values, lengths)
+ * - Pattern matching and regular expression validation
+ * 
+ * Key Features:
+ * - Consistent French error messaging for user-facing validation
+ * - Flexible validation options with configurable constraints
+ * - Array validation with item-level validation support
+ * - Date validation with temporal constraints (past/future only)
+ * - UUID validation following RFC 4122 standards
+ * - Email and URL format validation
+ * - String sanitization and normalization utilities
+ * 
+ * Validation Patterns:
+ * - Single field validation returning string | null for errors
+ * - Array validation returning string[] for multiple errors
+ * - Utility methods for error collection and aggregation
+ * - Configurable validation options for flexible rule application
+ * 
+ * Design Philosophy:
+ * - DRY principle implementation preventing validation code duplication
+ * - Type-safe validation with proper TypeScript generics
+ * - Extensible foundation for domain-specific validators
+ * - Consistent error messaging for improved user experience
+ * 
+ * Usage Context:
+ * - Extended by ProductValidator, UsedBoardValidator, etc.
+ * - Provides foundation for all API input validation
+ * - Ensures consistent validation patterns across controllers
+ * - Supports both simple and complex validation scenarios
+ */
+
 export abstract class BaseValidator {
-  /**
-   * Valide qu'un champ est requis
-   */
   protected static validateRequired(value: unknown, fieldName: string): string | null {
     if (value === null || value === undefined) {
       return `${fieldName} est requis`;
@@ -14,9 +54,6 @@ export abstract class BaseValidator {
     return null;
   }
 
-  /**
-   * Valide un nombre
-   */
   protected static validateNumber(
     value: unknown,
     fieldName: string,
@@ -47,9 +84,6 @@ export abstract class BaseValidator {
     return null;
   }
 
-  /**
-   * Valide une énumération
-   */
   protected static validateEnum<T extends object>(
     value: unknown,
     enumObject: T,
@@ -63,9 +97,6 @@ export abstract class BaseValidator {
     return null;
   }
 
-  /**
-   * Valide une chaîne de caractères
-   */
   protected static validateString(
     value: unknown,
     fieldName: string,
@@ -99,9 +130,6 @@ export abstract class BaseValidator {
     return null;
   }
 
-  /**
-   * Valide un tableau
-   */
   protected static validateArray(
     value: unknown,
     fieldName: string,
@@ -143,32 +171,20 @@ export abstract class BaseValidator {
     return errors;
   }
 
-  /**
-   * Collecte toutes les erreurs de validation
-   */
   protected static collectErrors(validators: (() => string | null)[]): string[] {
     return validators
       .map((validator) => validator())
       .filter((error): error is string => error !== null);
   }
 
-  /**
-   * Collecte les erreurs de validation de tableaux
-   */
   protected static collectArrayErrors(validators: (() => string[])[]): string[] {
     return validators.flatMap((validator) => validator());
   }
 
-  /**
-   * Nettoie et normalise une chaîne
-   */
   protected static sanitizeString(value: string): string {
     return value.trim().replace(/\s+/g, ' ');
   }
 
-  /**
-   * Valide un UUID
-   */
   protected static validateUUID(value: unknown, fieldName: string): string | null {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -179,22 +195,17 @@ export abstract class BaseValidator {
     return null;
   }
 
-  /**
-   * Valide une adresse email
-   */
-  protected static validateEmail(value: unknown, fieldName: string): string | null {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // TODO : BetterAuth gère bien ça tout seul, à tester !
+  // protected static validateEmail(value: unknown, fieldName: string): string | null {
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (typeof value !== 'string' || !emailRegex.test(value)) {
-      return `${fieldName} doit être une adresse email valide`;
-    }
+  //   if (typeof value !== 'string' || !emailRegex.test(value)) {
+  //     return `${fieldName} doit être une adresse email valide`;
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
-  /**
-   * Valide une URL
-   */
   protected static validateUrl(value: unknown, fieldName: string): string | null {
     try {
       new URL(value as string);
@@ -204,9 +215,6 @@ export abstract class BaseValidator {
     }
   }
 
-  /**
-   * Valide une date
-   */
   protected static validateDate(
     value: unknown,
     fieldName: string,

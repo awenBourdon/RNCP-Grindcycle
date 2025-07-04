@@ -12,6 +12,7 @@ export interface ValidationResult<T = unknown> {
   data?: T
 }
 
+// TODO : Mettre en place pagination côté back -> catalogue et dashboard
 export interface PaginationParams {
   page?: number
   limit?: number

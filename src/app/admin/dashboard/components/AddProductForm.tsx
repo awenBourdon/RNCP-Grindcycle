@@ -1,9 +1,8 @@
-// Votre formulaire corrigé avec debug
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'
 import { Upload, Info, CheckCircle, XCircle } from 'lucide-react'
-import { productSchema } from '@/lib/validation/productValidation'
+import { productSchema } from '@/lib/zod-validations/productValidation'
 import z from 'zod'
 
 interface UsedBoard {
@@ -79,7 +78,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   }
 
   const removeImage = (index: number) => {
-    // Corriger la logique de suppression
     const newFiles = [...selectedFiles]
     newFiles.splice(index, 1)
     setSelectedFiles(newFiles)
@@ -103,23 +101,20 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   }
 
   const validateFormData = () => {
-    console.log('🔍 Validation côté client...')
-    console.log('📋 FormData à valider:', formData)
-    console.log('📷 Images sélectionnées:', selectedFiles.length)
+    console.log('Validation côté client...')
+    console.log('FormData à valider:', formData)
+    console.log('Images sélectionnées:', selectedFiles.length)
 
     try {
-      // Validation Zod du formulaire
       productSchema.parse(formData)
-      console.log('✅ Validation Zod réussie')
+      console.log('Validation Zod réussie')
 
-      // Validation des images
       if (selectedFiles.length === 0) {
         addToast('error', 'Au moins une image est requise')
-        console.log('❌ Aucune image sélectionnée')
+        console.log('Aucune image sélectionnée')
         return false
       }
 
-      // Validation des types d'images
       const invalidImages = selectedFiles.filter(
         (file) =>
           ![
@@ -137,13 +132,12 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           "Format d'image non supporté. Utilisez JPG, PNG, WebP ou GIF."
         )
         console.log(
-          "❌ Formats d'images invalides:",
+          "Formats d'images invalides:",
           invalidImages.map((f) => f.type)
         )
         return false
       }
 
-      // Validation de la taille des images (5MB max)
       const oversizedImages = selectedFiles.filter(
         (file) => file.size > 5 * 1024 * 1024
       )
@@ -154,7 +148,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           'Une ou plusieurs images sont trop volumineuses (max 5MB)'
         )
         console.log(
-          '❌ Images trop volumineuses:',
+          'Images trop volumineuses:',
           oversizedImages.map(
             (f) => `${f.name}: ${(f.size / 1024 / 1024).toFixed(2)}MB`
           )
@@ -162,11 +156,11 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         return false
       }
 
-      console.log('✅ Validation complète réussie')
+      console.log('Validation complète réussie')
       return true
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.log('❌ Erreurs Zod:', error.errors)
+        console.log('Erreurs Zod:', error.errors)
         error.errors.forEach((err) => {
           addToast('error', err.message)
         })
@@ -195,7 +189,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       formDataToSend.append('pricePoints', formData.pricePoints.toString())
       formDataToSend.append('usedBoardId', formData.usedBoardId)
 
-      // Ajouter les images (uniquement celles qui existent)
       selectedFiles.forEach((file, index) => {
         if (file) {
           formDataToSend.append('images', file)
@@ -205,8 +198,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         }
       })
 
-      // Debug: Afficher toutes les données envoyées
-      console.log('📤 Données envoyées au serveur:')
+      console.log('Données envoyées au serveur:')
       for (const [key, value] of formDataToSend.entries()) {
         if (value instanceof File) {
           console.log(
@@ -217,7 +209,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         }
       }
 
-      console.log('🌐 Envoi vers /api/product...')
+      console.log('Envoi vers /api/product...')
       const response = await fetch('/api/product', {
         method: 'POST',
         body: formDataToSend,
@@ -227,9 +219,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.log('❌ Erreur serveur:', errorData)
+        console.log('Erreur serveur:', errorData)
 
-        // Afficher les détails des erreurs si disponibles
         if (errorData.details && Array.isArray(errorData.details)) {
           errorData.details.forEach((detail: string) => {
             addToast('error', detail)
@@ -241,11 +232,10 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       }
 
       const successData = await response.json()
-      console.log('✅ Succès:', successData)
+      console.log('Succès:', successData)
 
       addToast('success', 'Produit ajouté avec succès !')
 
-      // Reset du formulaire
       setFormData({
         name: '',
         description: '',
@@ -257,7 +247,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       setSelectedFiles([])
       setPreviewImages([])
     } catch (error) {
-      console.error('💥 Erreur catch:', error)
+      console.error('Erreur catch:', error)
       addToast(
         'error',
         error instanceof Error ? error.message : 'Une erreur est survenue'
@@ -399,12 +389,12 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                     <Info size={16} className="text-gray-600" />
                     <p className="text-sm text-gray-600">
                       Ajoutez au moins une photo montrant le produit. Vous
-                      pouvez ajouter jusqu&apos;à 5 photos (max 5MB chacune).
+                      pouvez ajouter jusqu&apos;à 3 photos (max 5MB chacune).
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[0, 1, 2, 3, 4].map((index) => (
+                    {[0, 1, 2].map((index) => (
                       <div
                         key={index}
                         className={`border border-dashed ${
@@ -453,7 +443,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
                     ))}
                   </div>
 
-                  {/* Indicateur du nombre d'images sélectionnées */}
                   {selectedFiles.length > 0 && (
                     <div className="mt-4 text-sm text-gray-600">
                       {selectedFiles.length} image(s) sélectionnée(s)

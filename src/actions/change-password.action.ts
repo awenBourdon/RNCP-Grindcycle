@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from '@/lib/auth'
-import { passwordSchema } from '@/lib/validation/authValidation'
+import { passwordSchema } from '@/lib/zod-validations/authValidation'
 import { APIError } from 'better-auth/api'
 import { headers } from 'next/headers'
 

@@ -1,3 +1,34 @@
+/**
+ * USED BOARD MANAGEMENT CONTROLLER
+ * 
+ * This controller manages all HTTP requests related to used skateboard submissions and processing
+ * in the recycling/marketplace system. It handles the complete lifecycle of used boards from
+ * user submission through admin processing and potential conversion to marketplace products.
+ * 
+ * Key Responsibilities:
+ * - Used board submission with dual input support (FormData with images / JSON)
+ * - Board status updates and points award processing by administrators
+ * - CRUD operations for used board management
+ * - User-specific board retrieval for account management
+ * - Integration with points system for recycling rewards
+ * 
+ * Supported Operations:
+ * - create(): Flexible board creation supporting both image upload and JSON submission
+ * - update(): Admin status updates with points calculation and award
+ * - delete(): Board removal with points rollback handling
+ * - getById(): Individual board details retrieval
+ * - getAll(): Complete board listing for admin management
+ * - getUserBoards(): User-specific board history for account dashboard
+ * 
+ * Features:
+ * - Intelligent request handling (auto-detects FormData vs JSON)
+ * - Comprehensive validation for both submission types
+ * - Points system integration for recycling rewards
+ * - Status workflow management (SENT → RECEIVED → points awarded)
+ * - Clean error handling with appropriate HTTP status codes
+ * - User permission isolation for data security
+ */
+
 import { type NextRequest, NextResponse } from 'next/server'
 import { BaseController } from './baseController'
 import { UsedBoardService } from '@/lib/server/services/usedBoardService'

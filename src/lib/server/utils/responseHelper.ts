@@ -1,11 +1,58 @@
+/**
+ * STANDARDIZED API RESPONSE BUILDER
+ * 
+ * This helper class provides a comprehensive set of static methods for creating consistent,
+ * well-structured HTTP responses across the entire API. It standardizes response formatting,
+ * status codes, and error handling patterns to ensure a uniform client experience and
+ * simplified response management throughout all controllers and services.
+ * 
+ * Core Responsibilities:
+ * - Standardized response format with consistent JSON structure
+ * - HTTP status code management with semantic meaning
+ * - Error response formatting with detailed error information
+ * - Success response patterns for different operation types
+ * - Special response types (redirects, downloads, custom headers)
+ * 
+ * Key Features:
+ * - Type-safe response building with generic support
+ * - Consistent error message formatting and categorization
+ * - Flexible response options with optional messages and details
+ * - Built-in support for validation errors with detailed field information
+ * - Custom header support for specialized responses
+ * - RESTful status code usage following HTTP standards
+ * 
+ * Response Format Standardization:
+ * All responses follow a consistent structure:
+ * - success: boolean indicating operation success/failure
+ * - data: actual response payload (for successful operations)
+ * - error: error message (for failed operations)
+ * - message: optional success/informational message
+ * - details: optional array of detailed error information
+ * 
+ * HTTP Status Code Usage:
+ * - 200 OK: Successful GET, PUT, PATCH operations
+ * - 201 Created: Successful POST operations creating new resources
+ * - 204 No Content: Successful DELETE operations
+ * - 400 Bad Request: Client errors, invalid input
+ * - 401 Unauthorized: Authentication required
+ * - 403 Forbidden: Access denied
+ * - 404 Not Found: Resource doesn't exist
+ * - 409 Conflict: Resource conflicts (duplicates)
+ * - 422 Unprocessable Entity: Validation errors
+ * - 500 Internal Server Error: Server-side errors
+ * 
+ * Usage Context:
+ * - Used by all controllers for consistent response formatting
+ * - Integrates with validation systems for error reporting
+ * - Supports both simple and complex response scenarios
+ * - Facilitates easy testing and client integration
+ */
+
 import { NextResponse } from 'next/server'
 import { ApiResponse } from '@/lib/server/types/api'
 import { HTTP_STATUS, API_MESSAGES } from '@/lib/server/config/constants'
 
 export class ResponseHelper {
-  /**
-   * Réponse de succès avec données
-   */
   static success<T>(
     data: T, 
     message?: string, 
@@ -19,9 +66,6 @@ export class ResponseHelper {
     return NextResponse.json(response, { status })
   }
 
-  /**
-   * Réponse de succès simple avec message
-   */
   static successMessage(
     message: string, 
     status: number = HTTP_STATUS.OK
@@ -33,9 +77,6 @@ export class ResponseHelper {
     return NextResponse.json(response, { status })
   }
 
-  /**
-   * Réponse d'erreur générique
-   */
   static error(
     error: string, 
     status: number = HTTP_STATUS.BAD_REQUEST, 
@@ -49,9 +90,6 @@ export class ResponseHelper {
     return NextResponse.json(response, { status })
   }
 
-  /**
-   * Erreur de validation
-   */
   static validationError(errors: string[]): NextResponse {
     return this.error(
       API_MESSAGES.INVALID_DATA, 
@@ -60,9 +98,6 @@ export class ResponseHelper {
     )
   }
 
-  /**
-   * Erreur serveur
-   */
   static serverError(message?: string): NextResponse {
     return this.error(
       message || API_MESSAGES.SERVER_ERROR, 
@@ -70,9 +105,6 @@ export class ResponseHelper {
     )
   }
 
-  /**
-   * Ressource non trouvée
-   */
   static notFound(message?: string): NextResponse {
     return this.error(
       message || API_MESSAGES.NOT_FOUND, 
@@ -80,9 +112,6 @@ export class ResponseHelper {
     )
   }
 
-  /**
-   * Non autorisé
-   */
   static unauthorized(message?: string): NextResponse {
     return this.error(
       message || API_MESSAGES.UNAUTHORIZED, 
@@ -90,9 +119,6 @@ export class ResponseHelper {
     )
   }
 
-  /**
-   * Accès interdit
-   */
   static forbidden(message?: string): NextResponse {
     return this.error(
       message || API_MESSAGES.FORBIDDEN, 
@@ -100,38 +126,23 @@ export class ResponseHelper {
     )
   }
 
-  /**
-   * Conflit (ressource déjà existante)
-   */
   static conflict(message: string): NextResponse {
     return this.error(message, HTTP_STATUS.CONFLICT)
   }
 
-  /**
-   * Création réussie
-   */
   static created<T>(data: T, message?: string): NextResponse {
     return this.success(data, message, HTTP_STATUS.CREATED)
   }
 
-  /**
-   * Réponse vide (No Content)
-   */
   static noContent(): NextResponse {
     return new NextResponse(null, { status: 204 })
   }
 
-  /**
-   * Redirection
-   */
   static redirect(url: string, permanent: boolean = false): NextResponse {
     const status = permanent ? 301 : 302
     return NextResponse.redirect(url, status)
   }
 
-  /**
-   * Réponse avec headers personnalisés
-   */
   static withHeaders<T>(
     data: T,
     headers: Record<string, string>,
@@ -148,6 +159,8 @@ export class ResponseHelper {
 
     return response
   }
+}
+
 
 //   /**
 //    * Réponse de téléchargement de fichier
@@ -168,4 +181,4 @@ export class ResponseHelper {
 
 //     return response
 //   }
- }
+ 
