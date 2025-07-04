@@ -159,65 +159,62 @@ export class UsedBoardValidator extends BaseValidator {
     }
   }
 
-  static validateUpdateData(body: unknown): ValidationResult & { 
-    data?: { 
-      boardId: string
-      updateData: Partial<UpdateUsedBoardData>
-    } 
-  } {
-    const errors: string[] = []
+ static validateUpdateData(body: unknown): ValidationResult & { 
+  data?: { 
+    boardId: string
+    updateData: Partial<UpdateUsedBoardData>
+  } 
+} {
+  const errors: string[] = []
 
-    if (!body || typeof body !== 'object') {
-      errors.push('Corps de la requête invalide')
-      return { isValid: false, errors }
-    }
+  if (!body || typeof body !== 'object') {
+    errors.push('Corps de la requête invalide')
+    return { isValid: false, errors }
+  }
 
-    const { boardId, status, pointsAwarded } = body as Record<string, unknown>
+  const { boardId, status, pointsAwarded } = body as Record<string, unknown>
 
-    const boardIdError = this.validateRequired(boardId, 'ID de la planche')
-    if (boardIdError) errors.push(boardIdError)
-    else {
-      const uuidError = this.validateUUID(boardId, 'ID de la planche')
-      if (uuidError) errors.push(uuidError)
-    }
+  const boardIdError = this.validateRequired(boardId, 'ID de la planche')
+  if (boardIdError) errors.push(boardIdError)
+  else {
+    const uuidError = this.validateUUID(boardId, 'ID de la planche')
+    if (uuidError) errors.push(uuidError)
+  }
 
-    const updateData: Partial<UpdateUsedBoardData> = {}
+  const updateData: Partial<UpdateUsedBoardData> = {}
 
-    if (status !== undefined) {
-      const statusError = this.validateEnum(status, UsedBoardStatus, 'Statut')
-      if (statusError) {
-        errors.push(statusError)
-      } else {
-        updateData.status = status as UsedBoardStatus
-        
-        if (status !== 'RECEIVED') {
-          updateData.pointsAwarded = undefined
-        }
-      }
-    }
-
-    if (pointsAwarded !== undefined) {
-      const pointsError = this.validateNumber(pointsAwarded, 'Points attribués', { min: 0, integer: true })
-      if (pointsError) {
-        errors.push(pointsError)
-      } else {
-        updateData.pointsAwarded = pointsAwarded as number
-      }
-    }
-
-    const isValid = errors.length === 0
-
-    return {
-      isValid,
-      errors,
-      ...(isValid && {
-        data: {
-          boardId: boardId as string,
-          updateData
-        }
-      })
+  if (status !== undefined) {
+    const statusError = this.validateEnum(status, UsedBoardStatus, 'Statut')
+    if (statusError) {
+      errors.push(statusError)
+    } else {
+      updateData.status = status as UsedBoardStatus
     }
   }
+
+
+  if (pointsAwarded !== undefined) {
+    const pointsError = this.validateNumber(pointsAwarded, 'Points attribués', { min: 0, integer: true })
+    if (pointsError) {
+      errors.push(pointsError)
+    } else {
+      updateData.pointsAwarded = pointsAwarded as number
+    }
+  }
+
+  const isValid = errors.length === 0
+
+  return {
+    isValid,
+    errors,
+    ...(isValid && {
+      data: {
+        boardId: boardId as string,
+        updateData
+      }
+    })
+  }
+}
 
   static validateDeleteData(boardId: unknown): ValidationResult & { data?: { boardId: string } } {
     const errors: string[] = []

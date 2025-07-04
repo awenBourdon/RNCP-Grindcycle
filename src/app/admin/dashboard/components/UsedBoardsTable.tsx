@@ -54,7 +54,6 @@ const StatusSelect = ({
   boardId,
   currentStatus,
   onUpdate,
-  currentPoints,
 }: StatusSelectProps) => {
   const [isPending, startTransition] = useTransition()
 
@@ -71,7 +70,6 @@ const StatusSelect = ({
           body: JSON.stringify({
             boardId,
             status: newStatus,
-            pointsAwarded: newStatus === 'RECEIVED' ? (currentPoints ?? 0) : 0,
           }),
         })
 
@@ -263,7 +261,7 @@ const PointsSelect = ({
 
       {!canEditPoints && (
         <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-          L'attribution des points est possible quand la planche est reçue,
+          L&apos;attribution des points est possible quand la planche est reçue,
           recyclée ou vendue.
         </div>
       )}
