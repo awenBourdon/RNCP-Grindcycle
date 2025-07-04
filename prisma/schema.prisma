@@ -18,6 +18,8 @@ enum UsedBoardStatus {
   VALIDATE_TO_SEND
   RECEIVED
   REJECTED
+  RECYCLED_TO_PRODUCT
+  SOLD  
 }
 
 enum BoardCondition {

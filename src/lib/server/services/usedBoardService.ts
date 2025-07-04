@@ -137,7 +137,10 @@ export class UsedBoardService {
         }
       })
 
-      if (oldBoard.pointsAwarded && oldBoard.pointsAwarded > 0 && oldBoard.status === 'RECEIVED') {
+      const pointsEligibleStatuses = ['RECEIVED', 'RECYCLED_TO_PRODUCT', 'SOLD']
+      
+      if (oldBoard.pointsAwarded && oldBoard.pointsAwarded > 0 && 
+          pointsEligibleStatuses.includes(oldBoard.status)) {
         await tx.pointsHistory.deleteMany({
           where: {
             userId: updatedBoard.userId,
@@ -147,7 +150,8 @@ export class UsedBoardService {
         })
       }
 
-      if (updatedBoard.pointsAwarded && updatedBoard.pointsAwarded > 0 && updatedBoard.status === 'RECEIVED') {
+      if (updatedBoard.pointsAwarded && updatedBoard.pointsAwarded > 0 && 
+          pointsEligibleStatuses.includes(updatedBoard.status)) {
         await tx.pointsHistory.create({
           data: {
             userId: updatedBoard.userId,
