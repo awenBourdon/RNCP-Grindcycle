@@ -31,7 +31,7 @@ export default function Catalog() {
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/product')
+      const response = await fetch('/api/product/available')
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`)

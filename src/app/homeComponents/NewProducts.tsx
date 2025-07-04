@@ -4,14 +4,48 @@ import { motion, useAnimation, useMotionValue } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import ProductCard from './ProductCard'
-import { products } from '@/lib/data'
+import { ProductType } from '@/lib/types'
+
+interface ApiResponse {
+  success: boolean
+  data: ProductType[]
+  error?: string
+}
 
 export default function NewProducts() {
   const controls = useAnimation()
   const [isMobile, setIsMobile] = useState(false)
+  const [products, setProducts] = useState<ProductType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const x = useMotionValue(0)
   const [, setIsPaused] = useState(false)
   const animationDuration = 45
+
+  const fetchLatestProducts = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/product/latest?limit=6')
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`)
+      }
+
+      const data: ApiResponse = await response.json()
+
+      if (data.success) {
+        setProducts(data.data)
+        setError(null)
+      } else {
+        setError(data.error || 'Erreur lors du chargement des produits')
+      }
+    } catch (err) {
+      console.error('Erreur fetch derniers produits:', err)
+      setError(err instanceof Error ? err.message : 'Erreur inconnue')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const startAnimation = () => {
     const startX = x.get()
@@ -31,6 +65,10 @@ export default function NewProducts() {
       },
     })
   }
+
+  useEffect(() => {
+    fetchLatestProducts()
+  }, [])
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -58,14 +96,14 @@ export default function NewProducts() {
       })
     }
 
-    if (!isMobile) {
+    if (!isMobile && products.length > 0) {
       startAnimation()
     }
 
     return () => {
       window.removeEventListener('resize', checkScreenSize)
     }
-  }, [isMobile, controls, x])
+  }, [isMobile, controls, x, products.length])
 
   const handleMouseEnter = () => {
     setIsPaused(true)
@@ -75,6 +113,58 @@ export default function NewProducts() {
   const handleMouseLeave = () => {
     setIsPaused(false)
     startAnimation()
+  }
+
+  if (loading) {
+    return (
+      <section className="py-24 bg-white text-[#010101]">
+        <div className="max-w-7xl mx-auto px-6 mb-16">
+          <h2 className="text-3xl font-normal mb-6">Nouveautés</h2>
+          <p className="text-lg text-gray-600 max-w-3xl">
+            Découvre nos dernières planches recyclées, chacune avec son histoire
+            et son caractère unique.
+          </p>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600"></div>
+          <span className="ml-3 text-gray-600">
+            Chargement des nouveautés...
+          </span>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="py-24 bg-white text-[#010101]">
+        <div className="max-w-7xl mx-auto px-6 mb-16">
+          <h2 className="text-3xl font-normal mb-6">Nouveautés</h2>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={fetchLatestProducts}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (products.length === 0) {
+    return (
+      <section className="py-24 bg-white text-[#010101]">
+        <div className="max-w-7xl mx-auto px-6 mb-16">
+          <h2 className="text-3xl font-normal mb-6">Nouveautés</h2>
+          <p className="text-lg text-gray-600 max-w-3xl">
+            Aucune nouveauté disponible pour le moment.
+          </p>
+        </div>
+      </section>
+    )
   }
 
   return (
