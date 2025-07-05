@@ -3,13 +3,21 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { User, X, Menu, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
+import { useAuth } from '@/contexts/AuthContext'
+
+interface Notification {
+  id: string
+  isRead: boolean
+}
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   const { getCartCount } = useCart()
+  const { user } = useAuth()
   const cartCount = getCartCount()
 
   useEffect(() => {
@@ -22,7 +30,6 @@ const Navbar = () => {
       setLastScrollY(window.scrollY)
       setIsScrolled(window.scrollY > 10)
     }
-
     window.addEventListener('scroll', handleScroll)
     return () => {
       window.removeEventListener('scroll', handleScroll)
@@ -38,12 +45,48 @@ const Navbar = () => {
       document.body.style.overflow = 'auto'
       document.body.style.position = 'static'
     }
-
     return () => {
       document.body.style.overflow = 'auto'
       document.body.style.position = 'static'
     }
   }, [isMenuOpen])
+
+  useEffect(() => {
+    const fetchUnreadNotifications = async () => {
+      if (!user?.id) return
+
+      try {
+        const response = await fetch(`/api/notification?userId=${user.id}`)
+        if (!response.ok) return
+
+        const notifications: Notification[] = await response.json()
+        const unreadNotifications = notifications.filter(
+          (notification) => !notification.isRead
+        )
+        setUnreadCount(unreadNotifications.length)
+      } catch {
+        setUnreadCount(0)
+      }
+    }
+
+    if (user?.id) {
+      fetchUnreadNotifications()
+    }
+  }, [user?.id])
+
+  useEffect(() => {
+    const baseTitle = 'Grindcycle'
+
+    if (user && unreadCount > 0) {
+      document.title = `${baseTitle} (${unreadCount})`
+    } else {
+      document.title = baseTitle
+    }
+
+    return () => {
+      document.title = baseTitle
+    }
+  }, [unreadCount, user])
 
   return (
     <header
@@ -91,10 +134,15 @@ const Navbar = () => {
           </Link>
           <Link
             href="/compte"
-            className="p-2 text-[#010101] hover:text-[#0a3d3f] transition-colors"
+            className="p-2 text-[#010101] hover:text-[#0a3d3f] transition-colors relative"
             aria-label="Mon compte"
           >
             <User size={20} />
+            {user && unreadCount > 0 && (
+              <span className="absolute -top-1 -right-2 bg-[#0a3d3f] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </Link>
           <Link
             href="/panier"
@@ -113,10 +161,15 @@ const Navbar = () => {
         <div className="flex md:hidden items-center space-x-4">
           <Link
             href="/compte"
-            className="p-2 text-[#010101] hover:text-[#0a3d3f] transition-colors"
+            className="p-2 text-[#010101] hover:text-[#0a3d3f] transition-colors relative"
             aria-label="Mon compte"
           >
             <User size={20} />
+            {user && unreadCount > 0 && (
+              <span className="absolute -top-1 -right-2 bg-[#0a3d3f] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </Link>
           <Link
             href="/panier"
@@ -170,9 +223,14 @@ const Navbar = () => {
             <Link
               href="/compte"
               onClick={() => setIsMenuOpen(false)}
-              className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all"
+              className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all relative flex items-center"
             >
               Mon compte
+              {user && unreadCount > 0 && (
+                <span className="ml-3 bg-[#0a3d3f] text-white text-sm font-bold rounded-full min-w-[24px] h-[24px] flex items-center justify-center">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </Link>
             <Link
               href="/panier"

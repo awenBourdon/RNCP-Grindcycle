@@ -9,6 +9,7 @@ import { ChangePasswordForm } from './components/ChangePasswordForm'
 import { User, Shield, Settings, Key } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { UserBoardsList } from './components/UserBoardsList'
+import { Notifications } from './components/Notifications'
 
 const ProfilePage = async () => {
   const headersList = await headers()
@@ -74,6 +75,7 @@ const ProfilePage = async () => {
           </div>
         </div>
 
+        <Notifications userId={session.user.id} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-8">
             <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -110,7 +112,7 @@ const ProfilePage = async () => {
                   Informations personnelles
                 </h2>
               </div>
-              <UpdateUserForm name={session.user.name} />
+              <UpdateUserForm name={session.user.name || ''} />
             </div>
           </div>
 

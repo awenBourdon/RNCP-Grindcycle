@@ -45,6 +45,11 @@ enum ProductStatus {
   PURCHASED
 }
 
+enum NotificationTarget {
+  USER
+  ADMIN
+}
+
 model User {
   id             String          @id @default(uuid())
   name           String
@@ -63,6 +68,7 @@ model User {
   posts          Post[]
   usedBoards     UsedBoard[]
   pointsHistory  PointsHistory[]
+  notifications  Notification[]
   @@map("user")
 }
 
@@ -163,6 +169,22 @@ model Product {
   @@map("product")
 }
 
+model Notification {
+  id          String              @id @default(uuid())
+  userId      String?             
+  user        User?               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  target      NotificationTarget  
+  description String              
+  isRead      Boolean             @default(false)
+  createdAt   DateTime            @default(now())
+  
+  @@map("notification")
+  @@index([userId, isRead])
+  @@index([target, isRead])
+  @@index([createdAt])
+}
+
 model Order {
   id             String   @id @default(uuid())
   totalAmount    Float
@@ -176,3 +198,5 @@ model Order {
   updatedAt      DateTime @updatedAt
   @@map("order")
 }
+
+
