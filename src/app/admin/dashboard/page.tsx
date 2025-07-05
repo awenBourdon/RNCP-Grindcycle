@@ -17,10 +17,11 @@ import {
   Package,
   Clock,
   CheckCircle,
-  XCircle,
+  ShoppingBag,
 } from 'lucide-react'
 import { UsedBoardsTable } from './components/UsedBoardsTable'
 import { AddProductForm } from './components/AddProductForm'
+import { ProductsTable } from './components/ProductsTable'
 
 const DashboardPage = async () => {
   const headersList = await headers()
@@ -53,6 +54,25 @@ const DashboardPage = async () => {
     },
   })
 
+  const products = await prisma.product.findMany({
+    include: {
+      usedBoard: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
   const sortedUsers = users.sort((a: { role: string }, b: { role: string }) => {
     if (a.role === 'ADMIN' && b.role !== 'ADMIN') return -1
     if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1
@@ -60,18 +80,21 @@ const DashboardPage = async () => {
   })
 
   const totalUsers = users.length
-  const adminUsers = users.filter((user) => user.role === 'ADMIN').length
-  const regularUsers = users.filter((user) => user.role === 'USER').length
 
   const totalBoards = usedBoards.length
   const pendingBoards = usedBoards.filter(
-    (board) => board.status === 'SENT'
+    (board) => board.status === 'PENDING_VALIDATION'
   ).length
   const receivedBoards = usedBoards.filter(
     (board) => board.status === 'RECEIVED'
   ).length
-  const rejectedBoards = usedBoards.filter(
-    (board) => board.status === 'REJECTED'
+
+  const totalProducts = products.length
+  const catalogProducts = products.filter(
+    (product) => product.status === 'CATALOG'
+  ).length
+  const purchasedProducts = products.filter(
+    (product) => product.status === 'PURCHASED'
   ).length
 
   return (
@@ -85,7 +108,7 @@ const DashboardPage = async () => {
               Dashboard Admin
             </h1>
             <p className="text-gray-600 text-lg">
-              Gestion des utilisateurs et planches GRINDCYCLE
+              Gestion des utilisateurs, planches et produits GRINDCYCLE
             </p>
           </div>
 
@@ -110,40 +133,6 @@ const DashboardPage = async () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">
-                    Administrateurs
-                  </p>
-                  <p className="text-2xl font-normal text-black mt-1">
-                    {adminUsers}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
-                  <Shield size={24} className="text-white" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm font-medium">
-                    Utilisateurs
-                  </p>
-                  <p className="text-2xl font-normal text-black mt-1">
-                    {regularUsers}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
-                  <Users size={24} className="text-white" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <div className="bg-white p-6 rounded-xl border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm font-medium">
                     Total Planches
                   </p>
                   <p className="text-2xl font-normal text-black mt-1">
@@ -160,13 +149,29 @@ const DashboardPage = async () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-600 text-sm font-medium">
-                    En attente
+                    Total Produits
                   </p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {totalProducts}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
+                  <ShoppingBag size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">À valider</p>
                   <p className="text-2xl font-normal text-black mt-1">
                     {pendingBoards}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
                   <Clock size={24} className="text-white" />
                 </div>
               </div>
@@ -189,13 +194,29 @@ const DashboardPage = async () => {
             <div className="bg-white p-6 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm font-medium">Rejetées</p>
+                  <p className="text-gray-600 text-sm font-medium">
+                    En catalogue
+                  </p>
                   <p className="text-2xl font-normal text-black mt-1">
-                    {rejectedBoards}
+                    {catalogProducts}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
-                  <XCircle size={24} className="text-white" />
+                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                  <Package size={24} className="text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm font-medium">Vendus</p>
+                  <p className="text-2xl font-normal text-black mt-1">
+                    {purchasedProducts}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
+                  <ShoppingBag size={24} className="text-white" />
                 </div>
               </div>
             </div>
@@ -294,23 +315,10 @@ const DashboardPage = async () => {
               </tbody>
             </table>
           </div>
-
-          {sortedUsers.length === 0 && (
-            <div className="px-6 py-12 text-center">
-              <Users size={48} className="mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">
-                Aucun utilisateur trouvé
-              </h3>
-              <p className="text-gray-500">
-                Il n&apos;y a actuellement aucun utilisateur dans la base de
-                données.
-              </p>
-            </div>
-          )}
         </div>
 
         <UsedBoardsTable usedBoards={usedBoards} />
-
+        <ProductsTable products={products} />
         <AddProductForm usedBoards={usedBoards} />
 
         <div className="mt-8 text-center">
