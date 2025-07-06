@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 
-const SignOutButton = () => {
+export const SignOutButton = () => {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
@@ -48,5 +48,3 @@ const SignOutButton = () => {
     </button>
   )
 }
-
-export default SignOutButton

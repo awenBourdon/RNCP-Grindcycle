@@ -1,5 +1,4 @@
 'use client'
-
 import type React from 'react'
 import { useState } from 'react'
 import { updateUser } from '@/lib/auth-client'

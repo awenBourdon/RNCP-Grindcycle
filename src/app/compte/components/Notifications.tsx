@@ -1,38 +1,51 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Bell, Check } from 'lucide-react'
 import { Notification } from '@/lib/types'
 
-export function Notifications({ userId }: { userId: string }) {
+export const UserNotifications = ({ userId }: { userId: string }) => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    const controller = new AbortController()
+
     const fetchNotifications = async () => {
       try {
-        const response = await fetch(`/api/notification?userId=${userId}`)
+        const response = await fetch(`/api/notification?userId=${userId}`, {
+          signal: controller.signal,
+        })
         const data = await response.json()
         const unreadNotifications = data.filter(
           (notification: Notification) => !notification.isRead
         )
         setNotifications(unreadNotifications)
       } catch (error) {
-        console.error(
-          'Erreur lors de la récupération des notifications:',
-          error
-        )
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error(
+            'Erreur lors de la récupération des notifications:',
+            error
+          )
+        }
       } finally {
-        setIsLoading(false)
+        if (!controller.signal.aborted) {
+          setIsLoading(false)
+        }
       }
     }
 
     if (userId) {
       fetchNotifications()
     }
+
+    return () => {
+      controller.abort()
+    }
   }, [userId])
 
   const handleMarkAsRead = async (notificationId: string) => {
+    const controller = new AbortController()
+
     try {
       const response = await fetch('/api/notification', {
         method: 'PUT',
@@ -40,6 +53,7 @@ export function Notifications({ userId }: { userId: string }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ notificationId, isRead: true }),
+        signal: controller.signal,
       })
 
       if (response.ok) {
@@ -50,10 +64,12 @@ export function Notifications({ userId }: { userId: string }) {
         )
       }
     } catch (error) {
-      console.error(
-        'Erreur lors du marquage de la notification comme lue:',
-        error
-      )
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error(
+          'Erreur lors du marquage de la notification comme lue:',
+          error
+        )
+      }
     }
   }
 
