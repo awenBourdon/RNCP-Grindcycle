@@ -11,7 +11,7 @@ import Spinner from '@/components/Spinner'
 
 type SignUpInput = z.infer<typeof signUpSchema>
 
-const RegisterForm = () => {
+export const RegisterForm = () => {
   const {
     register,
     handleSubmit,
@@ -121,5 +121,3 @@ const RegisterForm = () => {
     </form>
   )
 }
-
-export default RegisterForm
