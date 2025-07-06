@@ -6,7 +6,7 @@ import { CheckCircle, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
 
-export default function SuccessContent() {
+export const SuccessContent = () => {
   const { clearCart } = useCart()
   const searchParams = useSearchParams()
   const session_id = searchParams.get('session_id')
@@ -26,17 +26,18 @@ export default function SuccessContent() {
       return
     }
 
+    const controller = new AbortController()
+
     const fetchOrderDetails = async () => {
       try {
         const res = await fetch('/api/stripe/get-order-details', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ session_id }),
+          signal: controller.signal,
         })
 
         if (!res.ok) {
-          const errorText = await res.text()
-          console.error('Échec API:', res.status, errorText)
           setError('Impossible de récupérer les détails de la commande.')
           return
         }
@@ -45,16 +46,24 @@ export default function SuccessContent() {
         setOrderDetails(data)
         clearCart()
         sessionStorage.removeItem('shippingAddress')
-      } catch {
-        setError(
-          'Une erreur est survenue lors de la récupération de la commande.'
-        )
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          setError(
+            'Une erreur est survenue lors de la récupération de la commande.'
+          )
+        }
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchOrderDetails()
+
+    return () => {
+      controller.abort()
+    }
   }, [session_id, clearCart])
 
   if (loading) {

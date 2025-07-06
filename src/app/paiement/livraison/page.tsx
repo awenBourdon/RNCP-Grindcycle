@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
 // TODO : supprimer ou refaire bien (envoyer infos à stripe, mettre des regex et de la validation de données)
-
 export default function ShippingPage() {
   const router = useRouter()
   const { cartItems, getCartTotal, getShippingCost } = useCart()
