@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Bell, Check } from 'lucide-react'
-
-interface Notification {
-  id: string
-  description: string
-  isRead: boolean
-  createdAt: string
-}
+import { Notification } from '@/lib/types'
 
 export function Notifications({ userId }: { userId: string }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -113,13 +107,15 @@ export function Notifications({ userId }: { userId: string }) {
               </button>
             </div>
             <p className="text-xs mt-2 text-gray-500">
-              {new Date(notification.createdAt).toLocaleDateString('fr-FR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+              {notification.createdAt
+                ? new Date(notification.createdAt).toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : 'Date invalide'}
             </p>
           </div>
         ))}

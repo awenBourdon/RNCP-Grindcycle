@@ -4,11 +4,7 @@ import Link from 'next/link'
 import { User, X, Menu, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
-
-interface Notification {
-  id: string
-  isRead: boolean
-}
+import { Notification } from '@/lib/types'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)

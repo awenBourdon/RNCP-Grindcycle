@@ -8,7 +8,6 @@ import {
   DeleteUserButton,
 } from './components/DeleteUserButton'
 import { UserRoleSelect } from './components/UserRoleSelect'
-import type { User, UserRole } from '@/generated/prisma'
 import {
   Users,
   Shield,
@@ -18,10 +17,14 @@ import {
   Clock,
   CheckCircle,
   ShoppingBag,
+  BellRing,
 } from 'lucide-react'
 import { UsedBoardsTable } from './components/UsedBoardsTable'
 import { AddProductForm } from './components/AddProductForm'
 import { ProductsTable } from './components/ProductsTable'
+import { getAdminNotifications } from '@/lib/notification'
+import { AdminNotifications } from './components/AdminNotifications'
+import { User, Notification, UserRole } from '@/lib/types'
 
 const DashboardPage = async () => {
   const headersList = await headers()
@@ -30,57 +33,58 @@ const DashboardPage = async () => {
     headers: headersList,
   })
 
-  if (!session || session.user.role !== 'ADMIN')
+  if (!session || session.user.role !== 'ADMIN') {
     redirect('/authentification/connexion')
+  }
 
-  const users = await prisma.user.findMany({
-    orderBy: {
-      name: 'asc',
-    },
-  })
-
-  const usedBoards = await prisma.usedBoard.findMany({
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
+  const [users, usedBoards, products, adminNotifications] = await Promise.all([
+    prisma.user.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+    }),
+    prisma.usedBoard.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
-
-  const products = await prisma.product.findMany({
-    include: {
-      usedBoard: {
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    }),
+    prisma.product.findMany({
+      include: {
+        usedBoard: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
             },
           },
         },
       },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
+      orderBy: {
+        createdAt: 'desc',
+      },
+    }),
+    getAdminNotifications(),
+  ])
 
-  const sortedUsers = users.sort((a: { role: string }, b: { role: string }) => {
+  const sortedUsers = users.sort((a: User, b: User) => {
     if (a.role === 'ADMIN' && b.role !== 'ADMIN') return -1
     if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1
     return 0
   })
 
   const totalUsers = users.length
-
   const totalBoards = usedBoards.length
   const pendingBoards = usedBoards.filter(
     (board) => board.status === 'PENDING_VALIDATION'
@@ -88,13 +92,16 @@ const DashboardPage = async () => {
   const receivedBoards = usedBoards.filter(
     (board) => board.status === 'RECEIVED'
   ).length
-
   const totalProducts = products.length
   const catalogProducts = products.filter(
     (product) => product.status === 'CATALOG'
   ).length
   const purchasedProducts = products.filter(
     (product) => product.status === 'PURCHASED'
+  ).length
+
+  const unreadAdminNotifications = adminNotifications.filter(
+    (notif: Notification) => !notif.isRead
   ).length
 
   return (
@@ -104,12 +111,26 @@ const DashboardPage = async () => {
           <ReturnButton href="/compte" label="Compte" />
 
           <div className="mt-8 mb-8">
-            <h1 className="text-4xl md:text-5xl font-normal text-black mb-4">
-              Dashboard Admin
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Gestion des utilisateurs, planches et produits GRINDCYCLE
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-normal text-black mb-4">
+                  Dashboard Admin
+                </h1>
+                <p className="text-gray-600 text-lg">
+                  Gestion des utilisateurs, planches et produits GRINDCYCLE
+                </p>
+              </div>
+              {unreadAdminNotifications > 0 && (
+                <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 px-4 py-2 rounded-full">
+                  <BellRing size={20} className="text-orange-600" />
+                  <span className="text-sm font-medium text-orange-800">
+                    {unreadAdminNotifications} nouvelle
+                    {unreadAdminNotifications > 1 ? 's' : ''} notification
+                    {unreadAdminNotifications > 1 ? 's' : ''}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
@@ -222,6 +243,8 @@ const DashboardPage = async () => {
             </div>
           </div>
         </div>
+
+        <AdminNotifications notifications={adminNotifications} />
 
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-12">
           <div className="px-6 py-4 border-b border-gray-200">

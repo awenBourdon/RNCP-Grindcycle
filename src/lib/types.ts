@@ -29,3 +29,31 @@ export interface ErrorContext {
     message: string
   }
 }
+
+export interface Notification {
+  id: string
+  description?: string
+  isRead: boolean
+  createdAt?: string | Date
+}
+
+export interface User {
+  id: string
+  name?: string
+  email: string
+  role: UserRole
+}
+
+export type UserRole = 'ADMIN' | 'USER';
+
+export interface AdminNotification {
+  id: string
+  description: string
+  isRead: boolean
+  createdAt: string | Date
+  user?: {
+    id: string
+    name: string | null
+    email: string
+  } | null
+}
