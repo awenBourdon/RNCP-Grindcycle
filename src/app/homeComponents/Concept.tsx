@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Package } from 'lucide-react'
 
-export default function Concept() {
+export const Concept = () => {
   return (
     <section className="py-24 bg-[#f8f7f4] text-[#010101]">
       <div className="max-w-7xl mx-auto px-6">

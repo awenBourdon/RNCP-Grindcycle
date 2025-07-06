@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion, useAnimation, useMotionValue } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import ProductCard from './ProductCard'
+import { NewProductCard } from './ProductCard'
 import { ProductType } from '@/lib/types'
 
 interface ApiResponse {
@@ -12,7 +12,7 @@ interface ApiResponse {
   error?: string
 }
 
-export default function NewProducts() {
+export const NewProducts = () => {
   const controls = useAnimation()
   const [isMobile, setIsMobile] = useState(false)
   const [products, setProducts] = useState<ProductType[]>([])
@@ -68,6 +68,11 @@ export default function NewProducts() {
 
   useEffect(() => {
     fetchLatestProducts()
+
+    return () => {
+      // Nettoyage du fetch si le composant se démonte pendant la requête
+      // La requête fetch elle-même ne peut pas être annulée facilement sans AbortController
+    }
   }, [])
 
   useEffect(() => {
@@ -102,6 +107,7 @@ export default function NewProducts() {
 
     return () => {
       window.removeEventListener('resize', checkScreenSize)
+      controls.stop() // Arrêter l'animation au démontage
     }
   }, [isMobile, controls, x, products.length])
 
@@ -182,7 +188,7 @@ export default function NewProducts() {
           <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-8">
             {products.slice(0, 3).map((product) => (
               <Link key={product.id} href={`/produit/${product.id}`}>
-                <ProductCard product={product} />
+                <NewProductCard product={product} />
               </Link>
             ))}
           </div>
@@ -203,7 +209,7 @@ export default function NewProducts() {
                   key={`${product.id}-${index}`}
                   href={`/produit/${product.id}`}
                 >
-                  <ProductCard product={product} />
+                  <NewProductCard product={product} />
                 </Link>
               ))}
             </motion.div>

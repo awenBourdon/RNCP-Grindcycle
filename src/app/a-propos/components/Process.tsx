@@ -1,6 +1,6 @@
 import { Recycle, Axe, Sparkle } from 'lucide-react'
 
-const Process = () => (
+export const Process = () => (
   <section className="py-24 bg-white">
     <div className="max-w-7xl mx-auto px-6">
       <h2 className="text-3xl font-normal mb-16">Notre Processus</h2>
@@ -51,5 +51,3 @@ const Process = () => (
     </div>
   </section>
 )
-
-export default Process

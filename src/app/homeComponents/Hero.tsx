@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-export default function Hero() {
+export const Hero = () => {
   return (
     <section className="relative py-12 md:py-20 w-full bg-[#f8f7f4] text-[#010101] overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 flex items-center">

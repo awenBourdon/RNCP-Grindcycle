@@ -6,7 +6,7 @@ interface ProductCardProps {
   product: ProductType
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export const NewProductCard = ({ product }: ProductCardProps) => {
   console.log(product.imageUrl[0])
   return (
     <div className="group">

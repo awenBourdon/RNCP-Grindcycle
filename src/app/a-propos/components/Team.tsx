@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-const Team = () => (
+export const Team = () => (
   <section className="py-24 bg-white">
     <div className="max-w-7xl mx-auto px-6">
       <h2 className="text-3xl font-normal mb-16">Notre Équipe</h2>
@@ -57,5 +57,3 @@ const Team = () => (
     </div>
   </section>
 )
-
-export default Team

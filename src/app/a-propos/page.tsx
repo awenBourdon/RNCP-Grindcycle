@@ -1,10 +1,10 @@
-import ContactUs from '../homeComponents/ContactUs'
-import ToTop from '../homeComponents/ToTop'
-import Faq from './components/Faq'
-import Impact from './components/Impact'
-import Mission from './components/Mission'
-import Process from './components/Process'
-import Team from './components/Team'
+import { Mission } from './components/Mission'
+import { Process } from './components/Process'
+import { Team } from './components/Team'
+import { Impact } from './components/Impact'
+import { Faq } from './components/Faq'
+import { ContactUs } from '../homeComponents/ContactUs'
+import { ToTop } from '../homeComponents/ToTop'
 
 export default function AboutPage() {
   return (

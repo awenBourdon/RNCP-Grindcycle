@@ -1,4 +1,4 @@
-export default function About() {
+export const AboutUs = () => {
   return (
     <section className="py-24 bg-[#f8f7f4] text-[#010101]">
       <div className="max-w-7xl mx-auto px-6">
