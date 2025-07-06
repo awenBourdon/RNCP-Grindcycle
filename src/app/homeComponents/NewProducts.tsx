@@ -22,10 +22,12 @@ export const NewProducts = () => {
   const [, setIsPaused] = useState(false)
   const animationDuration = 45
 
-  const fetchLatestProducts = async () => {
+  const fetchLatestProducts = async (signal?: AbortSignal) => {
     try {
       setLoading(true)
-      const response = await fetch('/api/product/latest?limit=6')
+      const response = await fetch('/api/product/latest?limit=6', {
+        signal: signal,
+      })
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`)
@@ -40,10 +42,14 @@ export const NewProducts = () => {
         setError(data.error || 'Erreur lors du chargement des produits')
       }
     } catch (err) {
-      console.error('Erreur fetch derniers produits:', err)
-      setError(err instanceof Error ? err.message : 'Erreur inconnue')
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Erreur fetch derniers produits:', err)
+        setError(err.message)
+      }
     } finally {
-      setLoading(false)
+      if (!signal || !signal.aborted) {
+        setLoading(false)
+      }
     }
   }
 
@@ -67,11 +73,12 @@ export const NewProducts = () => {
   }
 
   useEffect(() => {
-    fetchLatestProducts()
+    const controller = new AbortController()
+
+    fetchLatestProducts(controller.signal)
 
     return () => {
-      // Nettoyage du fetch si le composant se démonte pendant la requête
-      // La requête fetch elle-même ne peut pas être annulée facilement sans AbortController
+      controller.abort()
     }
   }, [])
 
@@ -107,7 +114,7 @@ export const NewProducts = () => {
 
     return () => {
       window.removeEventListener('resize', checkScreenSize)
-      controls.stop() // Arrêter l'animation au démontage
+      controls.stop()
     }
   }, [isMobile, controls, x, products.length])
 
@@ -149,7 +156,7 @@ export const NewProducts = () => {
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <p className="text-red-600 mb-4">{error}</p>
             <button
-              onClick={fetchLatestProducts}
+              onClick={() => fetchLatestProducts()}
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
             >
               Réessayer

@@ -1,9 +1,7 @@
 'use client'
-
-import type React from 'react'
 import { useState, useEffect } from 'react'
-import ProductList from './ProductsList'
-import Filters from './Filters'
+import { ProductList } from './ProductsList'
+import { Filters } from './Filters'
 import Spinner from '@/components/Spinner'
 import { ProductType } from '@/lib/types'
 
@@ -13,7 +11,7 @@ interface ApiResponse {
   error?: string
 }
 
-export default function Catalog() {
+export const Catalog = () => {
   const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -28,10 +26,12 @@ export default function Catalog() {
     0, 200,
   ])
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (signal?: AbortSignal) => {
     try {
       setLoading(true)
-      const response = await fetch('/api/product/available')
+      const response = await fetch('/api/product/available', {
+        signal: signal,
+      })
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`)
@@ -46,15 +46,25 @@ export default function Catalog() {
         setError(data.error || 'Erreur lors du chargement des produits')
       }
     } catch (err) {
-      console.error('Erreur fetch produits:', err)
-      setError(err instanceof Error ? err.message : 'Erreur inconnue')
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Erreur fetch produits:', err)
+        setError(err.message)
+      }
     } finally {
-      setLoading(false)
+      if (!signal || !signal.aborted) {
+        setLoading(false)
+      }
     }
   }
 
   useEffect(() => {
-    fetchProducts()
+    const controller = new AbortController()
+
+    fetchProducts(controller.signal)
+
+    return () => {
+      controller.abort()
+    }
   }, [])
 
   const filteredProducts = products.filter((product) => {
@@ -121,7 +131,7 @@ export default function Catalog() {
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <button
-            onClick={fetchProducts}
+            onClick={() => fetchProducts()}
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
             Réessayer
