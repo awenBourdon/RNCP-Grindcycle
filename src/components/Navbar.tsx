@@ -6,7 +6,7 @@ import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { Notification } from '@/lib/types'
 
-const Navbar = () => {
+export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
@@ -48,11 +48,15 @@ const Navbar = () => {
   }, [isMenuOpen])
 
   useEffect(() => {
+    const controller = new AbortController()
+
     const fetchUnreadNotifications = async () => {
       if (!user?.id) return
 
       try {
-        const response = await fetch(`/api/notification?userId=${user.id}`)
+        const response = await fetch(`/api/notification?userId=${user.id}`, {
+          signal: controller.signal,
+        })
         if (!response.ok) return
 
         const notifications: Notification[] = await response.json()
@@ -60,13 +64,19 @@ const Navbar = () => {
           (notification) => !notification.isRead
         )
         setUnreadCount(unreadNotifications.length)
-      } catch {
-        setUnreadCount(0)
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          setUnreadCount(0)
+        }
       }
     }
 
     if (user?.id) {
       fetchUnreadNotifications()
+    }
+
+    return () => {
+      controller.abort()
     }
   }, [user?.id])
 
@@ -279,5 +289,3 @@ const Navbar = () => {
     </header>
   )
 }
-
-export default Navbar

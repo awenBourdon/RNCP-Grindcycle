@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { ProductList } from './ProductsList'
 import { Filters } from './Filters'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 import { ProductType } from '@/lib/types'
 
 interface ApiResponse {

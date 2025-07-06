@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { ProductType } from '@/lib/types'
 import { ProductDisplay } from './components/ProductDisplay'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 
 export default function ProductPage() {
   const params = useParams()

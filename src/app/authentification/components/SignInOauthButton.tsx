@@ -1,7 +1,7 @@
 'use client'
 import { useTransition } from 'react'
 import { signIn } from '@/lib/auth-client'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 import Image from 'next/image'
 
 interface SignInOauthButtonProps {

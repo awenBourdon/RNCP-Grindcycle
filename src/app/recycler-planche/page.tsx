@@ -1,6 +1,6 @@
 import { headers } from 'next/headers'
-import ToTop from '../homeComponents/ToTop'
-import RecycleForm from './components/RecycleForm'
+import { ToTop } from '../homeComponents/ToTop'
+import { RecycleForm } from './components/RecycleForm'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 

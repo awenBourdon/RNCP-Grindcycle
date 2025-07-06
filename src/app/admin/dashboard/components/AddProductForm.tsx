@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Upload, Info, CheckCircle, XCircle } from 'lucide-react'
 import { productSchema } from '@/lib/zod-validations/productValidation'
 import z from 'zod'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 
 interface UsedBoard {
   id: string

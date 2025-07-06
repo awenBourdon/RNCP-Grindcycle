@@ -18,7 +18,7 @@ import { ImageModal, useImageModal } from './ImageModal'
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 import type {
   UsedBoard,
   UsedBoardStatus,

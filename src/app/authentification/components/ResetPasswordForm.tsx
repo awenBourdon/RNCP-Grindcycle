@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 import { resetPassword } from '@/lib/auth-client'
 import { Lock } from 'lucide-react'
 import { toast } from 'sonner'
