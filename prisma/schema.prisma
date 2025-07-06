@@ -8,6 +8,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ================================
+// ENUMS
+// ================================
+
 enum UserRole {
   USER
   ADMIN
@@ -50,6 +54,10 @@ enum NotificationTarget {
   ADMIN
 }
 
+// ================================
+// AUTH AND USER
+// ================================
+
 model User {
   id             String          @id @default(uuid())
   name           String
@@ -63,12 +71,15 @@ model User {
   banExpires     DateTime?
   createdAt      DateTime
   updatedAt      DateTime
+  
+  // Relations
   sessions       Session[]
   accounts       Account[]
   posts          Post[]
   usedBoards     UsedBoard[]
   pointsHistory  PointsHistory[]
   notifications  Notification[]
+  
   @@map("user")
 }
 
@@ -83,6 +94,7 @@ model Session {
   impersonatedBy  String?
   userId          String
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   @@map("session")
 }
 
@@ -101,6 +113,7 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
+  
   @@map("account")
 }
 
@@ -111,8 +124,13 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime?
   updatedAt  DateTime?
+  
   @@map("verification")
 }
+
+// ================================
+// DELETE SOON
+// ================================
 
 model Post {
   id        String   @id @default(uuid())
@@ -122,8 +140,13 @@ model Post {
   content   String
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   @@map("posts")
 }
+
+// ================================
+// USEDBOARDS
+// ================================
 
 model UsedBoard {
   id             String           @id @default(uuid())
@@ -139,6 +162,7 @@ model UsedBoard {
   product        Product?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+  
   @@map("used_board")
 }
 
@@ -150,8 +174,13 @@ model PointsHistory {
   type          PointsType
   pointsAmount  Int
   createdAt     DateTime    @default(now())
+  
   @@map("points_history")
 }
+
+// ================================
+// PRODUCTS AND ORDERS
+// ================================
 
 model Product {
   id          String        @id @default(uuid())
@@ -166,14 +195,33 @@ model Product {
   usedBoardId String?       @unique
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  
   @@map("product")
 }
+
+model Order {
+  id                 String   @id @default(uuid())
+  totalAmount        Float
+  shippingCost       Float
+  shippingAddress    String?
+  shippingCity       String?
+  shippingPostalCode String?
+  shippingCountry    String?
+  shippingPhone      String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  @@map("order")
+}
+
+// ================================
+// NOTIFICATIONS
+// ================================
 
 model Notification {
   id          String              @id @default(uuid())
   userId      String?             
   user        User?               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
   target      NotificationTarget  
   description String              
   isRead      Boolean             @default(false)
@@ -184,19 +232,3 @@ model Notification {
   @@index([target, isRead])
   @@index([createdAt])
 }
-
-model Order {
-  id             String   @id @default(uuid())
-  totalAmount    Float
-  shippingCost   Float
-  shippingAddress String?
-  shippingCity   String?
-  shippingPostalCode String?
-  shippingCountry String?
-  shippingPhone  String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  @@map("order")
-}
-
-
