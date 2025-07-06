@@ -5,7 +5,6 @@ import { Toaster } from 'sonner'
 import { Footer } from '../components/Footer'
 import { Navbar } from '../components/Navbar'
 import { CartProvider } from '@/contexts/CartContext'
-import { AuthProvider } from '@/contexts/AuthContext'
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 
@@ -44,14 +43,12 @@ export default async function RootLayout({
   return (
     <html lang="fr">
       <body className={`${splineSans.className} antialiased`}>
-        <AuthProvider user={user}>
-          <CartProvider>
-            <Navbar />
-            {children}
-            <Toaster position="top-center" richColors />
-            <Footer />
-          </CartProvider>
-        </AuthProvider>
+        <CartProvider>
+          <Navbar user={user} />
+          {children}
+          <Toaster position="top-center" richColors />
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   )

@@ -1,19 +1,29 @@
+// components/Navbar.tsx
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { User, X, Menu, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
-import { useAuth } from '@/contexts/AuthContext'
 import { Notification } from '@/lib/types'
 
-export const Navbar = () => {
+interface NavbarUser {
+  id: string
+  name: string | null
+  email: string
+  role: string
+}
+
+interface NavbarProps {
+  user: NavbarUser | null
+}
+
+export const Navbar = ({ user }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isScrolled, setIsScrolled] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const { getCartCount } = useCart()
-  const { user } = useAuth()
   const cartCount = getCartCount()
 
   useEffect(() => {
