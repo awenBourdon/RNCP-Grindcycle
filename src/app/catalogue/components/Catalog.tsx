@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { ProductList } from './ProductsList'
 import { Filters } from './Filters'
 import { Spinner } from '@/components/Spinner'
+import { useAbortController } from '@/hooks/useAbortController'
 import { ProductType } from '@/lib/types'
 
 interface ApiResponse {
@@ -15,6 +16,7 @@ export const Catalog = () => {
   const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { createSignal } = useAbortController()
 
   const [filters, setFilters] = useState({
     types: [] as string[],
@@ -26,7 +28,9 @@ export const Catalog = () => {
     0, 200,
   ])
 
-  const fetchProducts = async (signal?: AbortSignal) => {
+  const fetchProducts = async () => {
+    const signal = createSignal()
+
     try {
       setLoading(true)
       const response = await fetch('/api/product/available', {
@@ -51,21 +55,15 @@ export const Catalog = () => {
         setError(err.message)
       }
     } finally {
-      if (!signal || !signal.aborted) {
+      if (!signal.aborted) {
         setLoading(false)
       }
     }
   }
 
   useEffect(() => {
-    const controller = new AbortController()
-
-    fetchProducts(controller.signal)
-
-    return () => {
-      controller.abort()
-    }
-  }, [])
+    fetchProducts()
+  }, [createSignal])
 
   const filteredProducts = products.filter((product) => {
     if (filters.types.length > 0 && !filters.types.includes(product.type))
@@ -131,7 +129,7 @@ export const Catalog = () => {
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <button
-            onClick={() => fetchProducts()}
+            onClick={fetchProducts}
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
             Réessayer

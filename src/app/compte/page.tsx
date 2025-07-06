@@ -9,7 +9,7 @@ import { ChangePasswordForm } from './components/ChangePasswordForm'
 import { User, Shield, Settings, Key } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { UserBoardsList } from './components/UserBoardsList'
-import { UserNotifications } from './components/Notifications'
+import { UserNotifications } from './components/UserNotifications'
 
 export default async function ProfilePage() {
   const headersList = await headers()

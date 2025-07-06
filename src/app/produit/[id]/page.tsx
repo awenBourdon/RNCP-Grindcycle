@@ -1,50 +1,50 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { ProductType } from '@/lib/types'
 import { ProductDisplay } from './components/ProductDisplay'
 import { Spinner } from '@/components/Spinner'
+import { useAbortController } from '@/hooks/useAbortController'
 
 export default function ProductPage() {
   const params = useParams()
   const { id } = params
   const [product, setProduct] = useState<ProductType | undefined>(undefined)
   const [loading, setLoading] = useState(true)
+  const { createSignal } = useAbortController()
 
-  useEffect(() => {
-    const controller = new AbortController()
+  const fetchProduct = useCallback(async () => {
+    if (typeof id === 'string') {
+      const signal = createSignal()
 
-    const fetchProduct = async () => {
-      if (typeof id === 'string') {
-        try {
-          const response = await fetch(`/api/product/${id}`, {
-            signal: controller.signal,
-          })
+      try {
+        const response = await fetch(`/api/product/${id}`, {
+          signal: signal,
+        })
 
-          if (response.ok) {
-            const data = await response.json()
-            if (data.success) {
-              setProduct(data.data)
-            }
-          }
-        } catch (error) {
-          if (error instanceof Error && error.name !== 'AbortError') {
-            console.error('Erreur lors du chargement du produit:', error)
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success) {
+            setProduct(data.data)
           }
         }
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Erreur lors du chargement du produit:', error)
+        }
+      } finally {
+        if (!signal.aborted) {
+          setLoading(false)
+        }
       }
-
-      if (!controller.signal.aborted) {
-        setLoading(false)
-      }
+    } else {
+      setLoading(false)
     }
+  }, [id, createSignal])
 
+  useEffect(() => {
     fetchProduct()
-
-    return () => {
-      controller.abort()
-    }
-  }, [id])
+  }, [fetchProduct])
 
   if (loading) {
     return (

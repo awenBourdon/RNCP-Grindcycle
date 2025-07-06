@@ -1,19 +1,21 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Bell, Check } from 'lucide-react'
+import { useAbortController } from '@/hooks/useAbortController'
 import { Notification } from '@/lib/types'
 
 export const UserNotifications = ({ userId }: { userId: string }) => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const { createSignal } = useAbortController()
 
   useEffect(() => {
-    const controller = new AbortController()
-
     const fetchNotifications = async () => {
+      const signal = createSignal()
+
       try {
         const response = await fetch(`/api/notification?userId=${userId}`, {
-          signal: controller.signal,
+          signal: signal,
         })
         const data = await response.json()
         const unreadNotifications = data.filter(
@@ -28,7 +30,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
           )
         }
       } finally {
-        if (!controller.signal.aborted) {
+        if (!signal.aborted) {
           setIsLoading(false)
         }
       }
@@ -37,14 +39,10 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
     if (userId) {
       fetchNotifications()
     }
-
-    return () => {
-      controller.abort()
-    }
-  }, [userId])
+  }, [userId, createSignal])
 
   const handleMarkAsRead = async (notificationId: string) => {
-    const controller = new AbortController()
+    const signal = createSignal()
 
     try {
       const response = await fetch('/api/notification', {
@@ -53,7 +51,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ notificationId, isRead: true }),
-        signal: controller.signal,
+        signal: signal,
       })
 
       if (response.ok) {

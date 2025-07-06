@@ -1,9 +1,9 @@
-// components/Navbar.tsx
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { User, X, Menu, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
+import { useAbortController } from '@/hooks/useAbortController'
 import { Notification } from '@/lib/types'
 
 interface NavbarUser {
@@ -24,6 +24,7 @@ export const Navbar = ({ user }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const { getCartCount } = useCart()
+  const { createSignal } = useAbortController()
   const cartCount = getCartCount()
 
   useEffect(() => {
@@ -58,14 +59,14 @@ export const Navbar = ({ user }: NavbarProps) => {
   }, [isMenuOpen])
 
   useEffect(() => {
-    const controller = new AbortController()
-
     const fetchUnreadNotifications = async () => {
       if (!user?.id) return
 
+      const signal = createSignal()
+
       try {
         const response = await fetch(`/api/notification?userId=${user.id}`, {
-          signal: controller.signal,
+          signal: signal,
         })
         if (!response.ok) return
 
@@ -84,11 +85,7 @@ export const Navbar = ({ user }: NavbarProps) => {
     if (user?.id) {
       fetchUnreadNotifications()
     }
-
-    return () => {
-      controller.abort()
-    }
-  }, [user?.id])
+  }, [user?.id, createSignal])
 
   useEffect(() => {
     const baseTitle = 'Grindcycle'

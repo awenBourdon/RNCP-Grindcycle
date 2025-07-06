@@ -1,9 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, useAnimation, useMotionValue } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { NewProductCard } from './ProductCard'
+import { useAbortController } from '@/hooks/useAbortController'
 import { ProductType } from '@/lib/types'
 
 interface ApiResponse {
@@ -21,8 +22,11 @@ export const NewProducts = () => {
   const x = useMotionValue(0)
   const [, setIsPaused] = useState(false)
   const animationDuration = 45
+  const { createSignal } = useAbortController()
 
-  const fetchLatestProducts = async (signal?: AbortSignal) => {
+  const fetchLatestProducts = useCallback(async () => {
+    const signal = createSignal()
+
     try {
       setLoading(true)
       const response = await fetch('/api/product/latest?limit=6', {
@@ -47,11 +51,11 @@ export const NewProducts = () => {
         setError(err.message)
       }
     } finally {
-      if (!signal || !signal.aborted) {
+      if (!signal.aborted) {
         setLoading(false)
       }
     }
-  }
+  }, [createSignal])
 
   const startAnimation = () => {
     const startX = x.get()
@@ -73,14 +77,8 @@ export const NewProducts = () => {
   }
 
   useEffect(() => {
-    const controller = new AbortController()
-
-    fetchLatestProducts(controller.signal)
-
-    return () => {
-      controller.abort()
-    }
-  }, [])
+    fetchLatestProducts()
+  }, [fetchLatestProducts])
 
   useEffect(() => {
     const checkScreenSize = () => {

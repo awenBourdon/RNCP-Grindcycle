@@ -1,15 +1,17 @@
 'use client'
 // TODO : refaire tout cette partie !
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { CheckCircle, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
+import { useAbortController } from '@/hooks/useAbortController'
 
 export const SuccessContent = () => {
   const { clearCart } = useCart()
   const searchParams = useSearchParams()
   const session_id = searchParams.get('session_id')
+  const { createSignal } = useAbortController()
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -19,52 +21,48 @@ export const SuccessContent = () => {
     currency?: string
   }>({})
 
-  useEffect(() => {
+  const fetchOrderDetails = useCallback(async () => {
     if (!session_id) {
       setError('Aucun identifiant de session fourni.')
       setLoading(false)
       return
     }
 
-    const controller = new AbortController()
+    const signal = createSignal()
 
-    const fetchOrderDetails = async () => {
-      try {
-        const res = await fetch('/api/stripe/get-order-details', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ session_id }),
-          signal: controller.signal,
-        })
+    try {
+      const res = await fetch('/api/stripe/get-order-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id }),
+        signal: signal,
+      })
 
-        if (!res.ok) {
-          setError('Impossible de récupérer les détails de la commande.')
-          return
-        }
+      if (!res.ok) {
+        setError('Impossible de récupérer les détails de la commande.')
+        return
+      }
 
-        const data = await res.json()
-        setOrderDetails(data)
-        clearCart()
-        sessionStorage.removeItem('shippingAddress')
-      } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          setError(
-            'Une erreur est survenue lors de la récupération de la commande.'
-          )
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false)
-        }
+      const data = await res.json()
+      setOrderDetails(data)
+      clearCart()
+      sessionStorage.removeItem('shippingAddress')
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        setError(
+          'Une erreur est survenue lors de la récupération de la commande.'
+        )
+      }
+    } finally {
+      if (!signal.aborted) {
+        setLoading(false)
       }
     }
+  }, [session_id, clearCart, createSignal])
 
+  useEffect(() => {
     fetchOrderDetails()
-
-    return () => {
-      controller.abort()
-    }
-  }, [session_id, clearCart])
+  }, [fetchOrderDetails])
 
   if (loading) {
     return <p className="text-center mt-20">Chargement...</p>
