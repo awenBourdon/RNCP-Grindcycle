@@ -1,5 +1,4 @@
 'use client'
-
 import { Hash, Eye, Trash2, Package } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -78,6 +77,8 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
   }
 
   const handleDeleteProduct = async (productId: string) => {
+    const controller = new AbortController()
+
     try {
       const response = await fetch('/api/product', {
         method: 'DELETE',
@@ -87,9 +88,8 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
         body: JSON.stringify({
           productId: productId,
         }),
+        signal: controller.signal,
       })
-
-      console.log('📡 Réponse:', response.status, response.statusText)
 
       if (response.ok) {
         toast.success('Produit supprimé avec succès')
@@ -97,8 +97,10 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
       } else {
         toast.error('Erreur lors de la suppression')
       }
-    } catch {
-      toast.error('Erreur lors de la suppression')
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        toast.error('Erreur lors de la suppression')
+      }
     }
   }
 

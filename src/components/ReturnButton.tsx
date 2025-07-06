@@ -6,7 +6,7 @@ interface ReturnButtonProps {
   label: string
 }
 
-const ReturnButton = ({ href, label }: ReturnButtonProps) => {
+export const ReturnButton = ({ href, label }: ReturnButtonProps) => {
   return (
     <Link
       href={href}
@@ -19,5 +19,3 @@ const ReturnButton = ({ href, label }: ReturnButtonProps) => {
     </Link>
   )
 }
-
-export default ReturnButton

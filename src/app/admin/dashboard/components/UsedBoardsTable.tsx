@@ -1,5 +1,4 @@
 'use client'
-
 import {
   Users,
   Hash,
@@ -63,6 +62,8 @@ const StatusSelect = ({
     const newStatus = evt.target.value as UsedBoardStatus
 
     startTransition(async () => {
+      const controller = new AbortController()
+
       try {
         const response = await fetch('/api/used-board', {
           method: 'PATCH',
@@ -73,19 +74,19 @@ const StatusSelect = ({
             boardId,
             status: newStatus,
           }),
+          signal: controller.signal,
         })
 
         if (!response.ok) {
-          const errorData = await response.json()
-          console.error('Erreur détaillée:', errorData)
           throw new Error('Erreur lors de la mise à jour')
         }
 
         toast.success('Statut mis à jour')
         onUpdate()
       } catch (error) {
-        toast.error('Erreur lors de la mise à jour du statut')
-        console.error(error)
+        if (error instanceof Error && error.name !== 'AbortError') {
+          toast.error('Erreur lors de la mise à jour du statut')
+        }
       }
     })
   }
@@ -190,6 +191,8 @@ const PointsSelect = ({
     const newPoints = evt.target.value === '' ? null : Number(evt.target.value)
 
     startTransition(async () => {
+      const controller = new AbortController()
+
       try {
         const response = await fetch('/api/used-board', {
           method: 'PATCH',
@@ -200,6 +203,7 @@ const PointsSelect = ({
             boardId,
             pointsAwarded: newPoints,
           }),
+          signal: controller.signal,
         })
 
         if (!response.ok) {
@@ -209,8 +213,9 @@ const PointsSelect = ({
         toast.success('Points mis à jour')
         onUpdate()
       } catch (error) {
-        toast.error('Erreur lors de la mise à jour des points')
-        console.error(error)
+        if (error instanceof Error && error.name !== 'AbortError') {
+          toast.error('Erreur lors de la mise à jour des points')
+        }
       }
     })
   }
@@ -332,9 +337,12 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
   }
 
   const handleDeleteBoard = async (boardId: string) => {
+    const controller = new AbortController()
+
     try {
       const response = await fetch(`/api/used-board?boardId=${boardId}`, {
         method: 'DELETE',
+        signal: controller.signal,
       })
 
       if (response.ok) {
@@ -344,8 +352,9 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
         toast.error('Erreur lors de la suppression')
       }
     } catch (error) {
-      console.error('Erreur:', error)
-      toast.error('Erreur lors de la suppression')
+      if (error instanceof Error && error.name !== 'AbortError') {
+        toast.error('Erreur lors de la suppression')
+      }
     }
   }
 
