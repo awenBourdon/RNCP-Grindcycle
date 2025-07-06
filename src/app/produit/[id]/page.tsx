@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { ProductType } from '@/lib/types'
-import ProductDisplay from './components/ProductDisplay'
+import { ProductDisplay } from './components/ProductDisplay'
 import Spinner from '@/components/Spinner'
 
 export default function ProductPage() {
@@ -12,10 +12,14 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const controller = new AbortController()
+
     const fetchProduct = async () => {
       if (typeof id === 'string') {
         try {
-          const response = await fetch(`/api/product/${id}`)
+          const response = await fetch(`/api/product/${id}`, {
+            signal: controller.signal,
+          })
 
           if (response.ok) {
             const data = await response.json()
@@ -24,13 +28,22 @@ export default function ProductPage() {
             }
           }
         } catch (error) {
-          console.error('Erreur lors du chargement du produit:', error)
+          if (error instanceof Error && error.name !== 'AbortError') {
+            console.error('Erreur lors du chargement du produit:', error)
+          }
         }
       }
-      setLoading(false)
+
+      if (!controller.signal.aborted) {
+        setLoading(false)
+      }
     }
 
     fetchProduct()
+
+    return () => {
+      controller.abort()
+    }
   }, [id])
 
   if (loading) {
