@@ -1,8 +1,7 @@
-'use client'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
 
-export default function Summary() {
+export const Summary = () => {
   const { getCartTotal, getShippingCost, clearCart } = useCart()
   const subtotal = getCartTotal()
   const shipping = getShippingCost()
