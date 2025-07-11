@@ -63,7 +63,7 @@ export const Catalog = () => {
 
   useEffect(() => {
     fetchProducts()
-  }, [createSignal])
+  }, [])
 
   const filteredProducts = products.filter((product) => {
     if (filters.types.length > 0 && !filters.types.includes(product.type))

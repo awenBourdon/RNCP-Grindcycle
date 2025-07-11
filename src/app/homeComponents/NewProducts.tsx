@@ -55,7 +55,7 @@ export const NewProducts = () => {
         setLoading(false)
       }
     }
-  }, [createSignal])
+  }, [])
 
   const startAnimation = () => {
     const startX = x.get()

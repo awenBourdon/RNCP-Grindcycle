@@ -39,7 +39,8 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
     if (userId) {
       fetchNotifications()
     }
-  }, [userId, createSignal])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId])
 
   const handleMarkAsRead = async (notificationId: string) => {
     const signal = createSignal()

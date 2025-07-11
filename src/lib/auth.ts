@@ -8,18 +8,27 @@ import { getValidDomains, normalizeName } from './utils'
 import { admin, magicLink } from 'better-auth/plugins'
 import { ac, roles } from './permissions'
 import { sendEmailAction } from '@/actions/send-email.action'
+import { 
+  getClientIP, 
+  checkRateLimit, 
+  RATE_LIMIT_MESSAGES,
+  type RateLimitAction 
+} from './rateLimit-auth'
 
 const prisma = new PrismaClient()
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
+  
   socialProviders: {
     google: {
       clientId: String(process.env.GOOGLE_CLIENT_ID),
       clientSecret: String(process.env.GOOGLE_CLIENT_SECRET),
     },
   },
+  
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 12,
@@ -40,6 +49,7 @@ export const auth = betterAuth({
       })
     },
   },
+  
   emailVerification: {
     sendOnSignUp: true,
     expiresIn: 60 * 60,
@@ -58,8 +68,38 @@ export const auth = betterAuth({
       })
     },
   },
+  
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      if (!ctx.request) {
+        return {
+          context: {
+            ...ctx,
+            body: {
+              ...ctx.body,
+              name: ctx.body && ctx.body.name ? normalizeName(ctx.body.name) : undefined,
+            },
+          },
+        }
+      }
+      
+      const ip = getClientIP(ctx.request)
+      
+      const rateLimitMap: Record<string, RateLimitAction> = {
+        '/sign-in/magic-link': 'magicLink',
+        '/sign-in/email': 'signIn',
+        '/sign-up/email': 'signUp',
+        '/forget-password': 'resetPassword',
+        '/verify-email': 'verifyEmail',
+      }
+      
+      const action = rateLimitMap[ctx.path]
+      if (action && !checkRateLimit(ip, action)) {
+        throw new APIError('TOO_MANY_REQUESTS', {
+          message: RATE_LIMIT_MESSAGES[action]
+        })
+      }
+      
       if (ctx.path === '/sign-up/email') {
         const email = String(ctx.body.email)
         const domain = email.split('@')[1].toLowerCase()
@@ -67,14 +107,12 @@ export const auth = betterAuth({
         const VALID_DOMAINS = getValidDomains()
         if (!VALID_DOMAINS.includes(domain)) {
           throw new APIError('BAD_REQUEST', {
-            message:
-              "Nom de domaine non-valable. Merci d'utiliser une adresse email valide",
+            message: "Nom de domaine non-valable. Merci d'utiliser une adresse email valide",
           })
         }
       }
 
-      const name =
-        ctx.body && ctx.body.name ? normalizeName(ctx.body.name) : undefined
+      const name = ctx.body && ctx.body.name ? normalizeName(ctx.body.name) : undefined
 
       return {
         context: {
@@ -87,6 +125,7 @@ export const auth = betterAuth({
       }
     }),
   },
+  
   databaseHooks: {
     user: {
       create: {
@@ -111,6 +150,7 @@ export const auth = betterAuth({
       },
     },
   },
+  
   user: {
     additionalFields: {
       role: {
@@ -119,14 +159,17 @@ export const auth = betterAuth({
       },
     },
   },
+  
   session: {
     expiresIn: 7 * 24 * 60 * 60,
   },
+  
   account: {
     accountLinking: {
       enabled: false,
     },
   },
+  
   advanced: {
     database: {
       generateId: false,
@@ -138,6 +181,7 @@ export const auth = betterAuth({
       partitioned: false,
     },
   },
+  
   plugins: [
     nextCookies(),
     admin({
