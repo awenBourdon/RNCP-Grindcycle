@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ProductList } from './ProductsList'
 import { Filters } from './Filters'
 import { Spinner } from '@/components/Spinner'
@@ -17,16 +18,47 @@ export const Catalog = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { createSignal } = useAbortController()
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
-  const [filters, setFilters] = useState({
-    types: [] as string[],
-    priceRange: [0, 200] as [number, number],
-    sizes: [] as number[],
-  })
+  const initializeFiltersFromUrl = () => {
+    const types = searchParams.get('types')?.split(',').filter(Boolean) || []
+    const minPrice = Number(searchParams.get('minPrice')) || 0
+    const maxPrice = Number(searchParams.get('maxPrice')) || 200
 
+    return {
+      types,
+      priceRange: [minPrice, maxPrice] as [number, number],
+      sizes: [] as number[],
+    }
+  }
+
+  const [filters, setFilters] = useState(initializeFiltersFromUrl)
   const [priceRangeValues, setPriceRangeValues] = useState<[number, number]>([
-    0, 200,
+    filters.priceRange[0],
+    filters.priceRange[1],
   ])
+
+  const updateUrl = (
+    newFilters: typeof filters,
+    newPriceRange: [number, number]
+  ) => {
+    const params = new URLSearchParams()
+
+    if (newFilters.types.length > 0) {
+      params.set('types', newFilters.types.join(','))
+    }
+
+    if (newPriceRange[0] !== 0 || newPriceRange[1] !== 200) {
+      params.set('minPrice', newPriceRange[0].toString())
+      params.set('maxPrice', newPriceRange[1].toString())
+    }
+
+    const queryString = params.toString()
+    const newUrl = queryString ? `?${queryString}` : window.location.pathname
+
+    router.push(newUrl, { scroll: false })
+  }
 
   const fetchProducts = async () => {
     const signal = createSignal()
@@ -65,14 +97,24 @@ export const Catalog = () => {
     fetchProducts()
   }, [])
 
+  useEffect(() => {
+    const newFilters = initializeFiltersFromUrl()
+    setFilters(newFilters)
+    setPriceRangeValues([newFilters.priceRange[0], newFilters.priceRange[1]])
+  }, [searchParams])
+
   const filteredProducts = products.filter((product) => {
-    if (filters.types.length > 0 && !filters.types.includes(product.type))
+    if (filters.types.length > 0 && !filters.types.includes(product.type)) {
       return false
+    }
+
     if (
       product.priceEuro < filters.priceRange[0] ||
       product.priceEuro > filters.priceRange[1]
-    )
+    ) {
       return false
+    }
+
     return true
   })
 
@@ -81,7 +123,10 @@ export const Catalog = () => {
       const newTypes = prev.types.includes(type)
         ? prev.types.filter((t) => t !== type)
         : [...prev.types, type]
-      return { ...prev, types: newTypes }
+
+      const newFilters = { ...prev, types: newTypes }
+      updateUrl(newFilters, priceRangeValues)
+      return newFilters
     })
   }
 
@@ -89,7 +134,7 @@ export const Catalog = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const newValue = Number.parseInt(e.target.value)
+    const newValue = Number.parseInt(e.target.value) || 0
     const newValues: [number, number] = [...priceRangeValues]
     newValues[index] = newValue
 
@@ -100,16 +145,25 @@ export const Catalog = () => {
     }
 
     setPriceRangeValues(newValues)
-    setFilters((prev) => ({ ...prev, priceRange: newValues }))
+
+    setFilters((prev) => {
+      const newFilters = { ...prev, priceRange: newValues }
+      updateUrl(newFilters, newValues)
+      return newFilters
+    })
   }
 
   const resetFilters = () => {
-    setFilters({
+    const resetFiltersData = {
       types: [],
-      priceRange: [0, 200],
+      priceRange: [0, 200] as [number, number],
       sizes: [],
-    })
-    setPriceRangeValues([0, 200])
+    }
+    const resetPriceRange: [number, number] = [0, 200]
+
+    setFilters(resetFiltersData)
+    setPriceRangeValues(resetPriceRange)
+    updateUrl(resetFiltersData, resetPriceRange)
   }
 
   if (loading) {
