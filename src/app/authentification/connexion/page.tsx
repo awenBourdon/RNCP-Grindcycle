@@ -1,10 +1,10 @@
-import LoginForm from '../components/LoginForm'
-import ReturnButton from '../../../components/ReturnButton'
+import { LoginForm } from '../components/LoginForm'
+import { ReturnButton } from '../../../components/ReturnButton'
 import Link from 'next/link'
 import { SignInOauthButton } from '../components/SignInOauthButton'
 import { MagicLinkLoginForm } from '../components/MagicLinkLoginForm'
 
-const LoginPage = () => {
+export default function LoginPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">
@@ -52,5 +52,3 @@ const LoginPage = () => {
     </div>
   )
 }
-
-export default LoginPage

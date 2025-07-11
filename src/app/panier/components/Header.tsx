@@ -1,7 +1,6 @@
-'use client'
 import { useCart } from '@/contexts/CartContext'
 
-export default function Header() {
+export const Header = () => {
   const { cartItems } = useCart()
   return (
     <>

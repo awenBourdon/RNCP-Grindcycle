@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
 
-export default function ToTop() {
+export const ToTop = () => {
   const [showButton, setShowButton] = useState(false)
 
   useEffect(() => {

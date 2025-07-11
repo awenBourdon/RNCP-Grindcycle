@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <footer className="bg-[#f8f7f4] text-[#010101] py-12">
       <div className="max-w-7xl mx-auto px-6">
@@ -150,5 +150,3 @@ const Footer = () => {
     </footer>
   )
 }
-
-export default Footer

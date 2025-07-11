@@ -1,4 +1,4 @@
-const Faq = () => (
+export const Faq = () => (
   <section className="py-24 bg-white">
     <div className="max-w-7xl mx-auto px-6">
       <h2 className="text-3xl font-normal mb-16">Questions Fréquentes</h2>
@@ -27,5 +27,3 @@ const Faq = () => (
     </div>
   </section>
 )
-
-export default Faq

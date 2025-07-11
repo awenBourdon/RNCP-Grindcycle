@@ -1,9 +1,9 @@
 'use client'
 import { useCart } from '@/contexts/CartContext'
-import EmptyCart from './components/EmptyCart'
-import Header from './components/Header'
-import Items from './components/ItemsList'
-import Summary from './components/Summary'
+import { EmptyCart } from './components/EmptyCart'
+import { Header } from './components/Header'
+import { Summary } from './components/Summary'
+import { ItemsList } from './components/ItemsList'
 
 export default function CartPage() {
   const { cartItems } = useCart()
@@ -19,7 +19,7 @@ export default function CartPage() {
       <div className="max-w-7xl mx-auto px-6">
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-            <Items />
+            <ItemsList />
             <Summary />
           </div>
         ) : (

@@ -1,10 +1,9 @@
 'use client'
-
-import type React from 'react'
 import { useState, useEffect } from 'react'
-import ProductList from './ProductsList'
-import Filters from './Filters'
-import Spinner from '@/components/Spinner'
+import { ProductList } from './ProductsList'
+import { Filters } from './Filters'
+import { Spinner } from '@/components/Spinner'
+import { useAbortController } from '@/hooks/useAbortController'
 import { ProductType } from '@/lib/types'
 
 interface ApiResponse {
@@ -13,10 +12,11 @@ interface ApiResponse {
   error?: string
 }
 
-export default function Catalog() {
+export const Catalog = () => {
   const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { createSignal } = useAbortController()
 
   const [filters, setFilters] = useState({
     types: [] as string[],
@@ -29,9 +29,13 @@ export default function Catalog() {
   ])
 
   const fetchProducts = async () => {
+    const signal = createSignal()
+
     try {
       setLoading(true)
-      const response = await fetch('/api/product/available')
+      const response = await fetch('/api/product/available', {
+        signal: signal,
+      })
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`)
@@ -46,10 +50,14 @@ export default function Catalog() {
         setError(data.error || 'Erreur lors du chargement des produits')
       }
     } catch (err) {
-      console.error('Erreur fetch produits:', err)
-      setError(err instanceof Error ? err.message : 'Erreur inconnue')
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Erreur fetch produits:', err)
+        setError(err.message)
+      }
     } finally {
-      setLoading(false)
+      if (!signal.aborted) {
+        setLoading(false)
+      }
     }
   }
 

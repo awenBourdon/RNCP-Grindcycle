@@ -13,3 +13,24 @@ body {
   background-color: #0a4d4f;
   color: #f8f7f4;
 }
+
+@media (min-width: 880px) {
+  .md-flex-880 {
+    display: flex;
+  }
+  .mobile-hide {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .md-flex-768 {
+    display: flex;
+  }
+}
+
+@media (max-width: 879px) {
+  .mobile-show {
+    display: flex !important;
+  }
+}

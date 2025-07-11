@@ -2,7 +2,7 @@
 import Marquee from 'react-fast-marquee'
 import { useEffect, useState } from 'react'
 
-export default function JoinMovement() {
+export const JoinMovement = () => {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {

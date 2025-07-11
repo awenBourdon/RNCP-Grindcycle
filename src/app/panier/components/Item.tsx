@@ -1,10 +1,9 @@
-'use client'
 import Image from 'next/image'
 import { X } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { CartItemType } from '@/lib/types'
 
-export default function CartItem({ item }: { item: CartItemType }) {
+export const Item = ({ item }: { item: CartItemType }) => {
   const { removeFromCart } = useCart()
 
   return (

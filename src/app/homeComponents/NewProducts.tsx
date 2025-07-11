@@ -1,9 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, useAnimation, useMotionValue } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import ProductCard from './ProductCard'
+import { NewProductCard } from './ProductCard'
+import { useAbortController } from '@/hooks/useAbortController'
 import { ProductType } from '@/lib/types'
 
 interface ApiResponse {
@@ -12,7 +13,7 @@ interface ApiResponse {
   error?: string
 }
 
-export default function NewProducts() {
+export const NewProducts = () => {
   const controls = useAnimation()
   const [isMobile, setIsMobile] = useState(false)
   const [products, setProducts] = useState<ProductType[]>([])
@@ -21,11 +22,16 @@ export default function NewProducts() {
   const x = useMotionValue(0)
   const [, setIsPaused] = useState(false)
   const animationDuration = 45
+  const { createSignal } = useAbortController()
 
-  const fetchLatestProducts = async () => {
+  const fetchLatestProducts = useCallback(async () => {
+    const signal = createSignal()
+
     try {
       setLoading(true)
-      const response = await fetch('/api/product/latest?limit=6')
+      const response = await fetch('/api/product/latest?limit=6', {
+        signal: signal,
+      })
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`)
@@ -40,12 +46,16 @@ export default function NewProducts() {
         setError(data.error || 'Erreur lors du chargement des produits')
       }
     } catch (err) {
-      console.error('Erreur fetch derniers produits:', err)
-      setError(err instanceof Error ? err.message : 'Erreur inconnue')
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Erreur fetch derniers produits:', err)
+        setError(err.message)
+      }
     } finally {
-      setLoading(false)
+      if (!signal.aborted) {
+        setLoading(false)
+      }
     }
-  }
+  }, [])
 
   const startAnimation = () => {
     const startX = x.get()
@@ -68,7 +78,7 @@ export default function NewProducts() {
 
   useEffect(() => {
     fetchLatestProducts()
-  }, [])
+  }, [fetchLatestProducts])
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -102,6 +112,7 @@ export default function NewProducts() {
 
     return () => {
       window.removeEventListener('resize', checkScreenSize)
+      controls.stop()
     }
   }, [isMobile, controls, x, products.length])
 
@@ -143,7 +154,7 @@ export default function NewProducts() {
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <p className="text-red-600 mb-4">{error}</p>
             <button
-              onClick={fetchLatestProducts}
+              onClick={() => fetchLatestProducts()}
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
             >
               Réessayer
@@ -182,7 +193,7 @@ export default function NewProducts() {
           <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-8">
             {products.slice(0, 3).map((product) => (
               <Link key={product.id} href={`/produit/${product.id}`}>
-                <ProductCard product={product} />
+                <NewProductCard product={product} />
               </Link>
             ))}
           </div>
@@ -203,7 +214,7 @@ export default function NewProducts() {
                   key={`${product.id}-${index}`}
                   href={`/produit/${product.id}`}
                 >
-                  <ProductCard product={product} />
+                  <NewProductCard product={product} />
                 </Link>
               ))}
             </motion.div>

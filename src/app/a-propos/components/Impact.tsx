@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
-const Impact = () => (
+export const Impact = () => (
   <section className="py-24 bg-white">
     <div className="max-w-7xl mx-auto px-6">
       <h2 className="text-3xl font-normal mb-16">Notre Impact</h2>
@@ -38,5 +38,3 @@ const Impact = () => (
     </div>
   </section>
 )
-
-export default Impact

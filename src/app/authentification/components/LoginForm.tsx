@@ -1,14 +1,13 @@
 'use client'
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 import Link from 'next/link'
 import { LogIn } from 'lucide-react'
 import { signInEmailAction } from '@/actions/sign-in-email.action'
 
-const LoginForm = () => {
+export const LoginForm = () => {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -93,5 +92,3 @@ const LoginForm = () => {
     </form>
   )
 }
-
-export default LoginForm

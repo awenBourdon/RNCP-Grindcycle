@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react'
 import Image from 'next/image'

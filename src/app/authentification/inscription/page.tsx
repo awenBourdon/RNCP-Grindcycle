@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import ReturnButton from '@/components/ReturnButton'
-import RegisterForm from '../components/RegisterForm'
+import { ReturnButton } from '@/components/ReturnButton'
+import { RegisterForm } from '../components/RegisterForm'
 import { SignInOauthButton } from '../components/SignInOauthButton'
 
-const RegisterPage = async () => {
+export default async function RegisterPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">
@@ -48,5 +48,3 @@ const RegisterPage = async () => {
     </div>
   )
 }
-
-export default RegisterPage

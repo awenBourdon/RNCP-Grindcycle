@@ -1,8 +1,7 @@
-'use client'
 import { useCart } from '@/contexts/CartContext'
-import Item from './Item'
+import { Item } from './Item'
 
-export default function Items() {
+export const ItemsList = () => {
   const { cartItems } = useCart()
 
   return (

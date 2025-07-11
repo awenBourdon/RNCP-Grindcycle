@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import ReturnButton from '@/components/ReturnButton'
+import { ReturnButton } from '@/components/ReturnButton'
 import { CheckCircle } from 'lucide-react'
 
 export default function SuccesPage() {

@@ -16,7 +16,7 @@ type FiltersProps = {
   priceRangeValues: [number, number]
 }
 
-const Filters: React.FC<FiltersProps> = ({
+export const Filters: React.FC<FiltersProps> = ({
   filters,
   handleTypeChange,
   handlePriceChange,
@@ -133,5 +133,3 @@ const Filters: React.FC<FiltersProps> = ({
     </div>
   )
 }
-
-export default Filters

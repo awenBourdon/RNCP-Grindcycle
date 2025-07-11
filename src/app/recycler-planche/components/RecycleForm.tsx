@@ -27,7 +27,7 @@ interface Toast {
   message: string
 }
 
-export default function RecycleForm({ userId }: RecycleFormProps) {
+export const RecycleForm = ({ userId }: RecycleFormProps) => {
   const [selectedCondition, setSelectedCondition] = useState<
     'GOOD' | 'AVERAGE' | 'BAD' | ''
   >('')

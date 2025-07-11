@@ -2,16 +2,16 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import SignOutButton from './components/SignOutButton'
-import ReturnButton from '../../components/ReturnButton'
+import { SignOutButton } from './components/SignOutButton'
+import { ReturnButton } from '../../components/ReturnButton'
 import { UpdateUserForm } from './components/UpdateUserForm'
 import { ChangePasswordForm } from './components/ChangePasswordForm'
 import { User, Shield, Settings, Key } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { UserBoardsList } from './components/UserBoardsList'
-import { Notifications } from './components/Notifications'
+import { UserNotifications } from './components/UserNotifications'
 
-const ProfilePage = async () => {
+export default async function ProfilePage() {
   const headersList = await headers()
 
   const session = await auth.api.getSession({
@@ -75,7 +75,7 @@ const ProfilePage = async () => {
           </div>
         </div>
 
-        <Notifications userId={session.user.id} />
+        <UserNotifications userId={session.user.id} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-8">
             <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -171,5 +171,3 @@ const ProfilePage = async () => {
     </div>
   )
 }
-
-export default ProfilePage

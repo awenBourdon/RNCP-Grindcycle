@@ -1,11 +1,10 @@
-import type { Metadata } from 'next'
-import './globals.css'
-import { Toaster } from 'sonner'
-import Footer from '../components/Footer'
-import Navbar from '../components/Navbar'
 import localFont from 'next/font/local'
+import './globals.css'
+import type { Metadata } from 'next'
+import { Toaster } from 'sonner'
+import { Footer } from '../components/Footer'
+import { Navbar } from '../components/Navbar'
 import { CartProvider } from '@/contexts/CartContext'
-import { AuthProvider } from '@/contexts/AuthContext'
 import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 
@@ -35,23 +34,18 @@ export default async function RootLayout({
   if (session?.user) {
     user = {
       id: session.user.id,
-      name: session.user.name,
-      email: session.user.email,
-      role: session.user.role,
     }
   }
 
   return (
     <html lang="fr">
       <body className={`${splineSans.className} antialiased`}>
-        <AuthProvider user={user}>
-          <CartProvider>
-            <Navbar />
-            {children}
-            <Toaster position="top-center" richColors />
-            <Footer />
-          </CartProvider>
-        </AuthProvider>
+        <CartProvider>
+          <Navbar user={user} />
+          {children}
+          <Toaster position="top-center" richColors />
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   )

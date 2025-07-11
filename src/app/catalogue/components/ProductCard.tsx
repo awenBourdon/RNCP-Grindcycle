@@ -6,7 +6,7 @@ type Props = {
   product: ProductType
 }
 
-export default function ProductCard({ product }: Props) {
+export const ProductCard = ({ product }: Props) => {
   return (
     <Link
       href={`/produit/${product.id}`}

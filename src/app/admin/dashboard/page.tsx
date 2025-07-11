@@ -1,5 +1,5 @@
 import { auth } from '@/lib/auth'
-import ReturnButton from '../../../components/ReturnButton'
+import { ReturnButton } from '../../../components/ReturnButton'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
@@ -26,7 +26,7 @@ import { getAdminNotifications } from '@/lib/notification'
 import { AdminNotifications } from './components/AdminNotifications'
 import { User, Notification, UserRole } from '@/lib/types'
 
-const DashboardPage = async () => {
+export default async function DashboardPage() {
   const headersList = await headers()
 
   const session = await auth.api.getSession({
@@ -357,5 +357,3 @@ const DashboardPage = async () => {
     </div>
   )
 }
-
-export default DashboardPage

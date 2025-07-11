@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -7,6 +8,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// ================================
+// ENUMS
+// ================================
 
 enum UserRole {
   USER
@@ -50,48 +55,55 @@ enum NotificationTarget {
   ADMIN
 }
 
+// ================================
+// AUTH AND USER
+// ================================
+
 model User {
-  id             String          @id @default(uuid())
-  name           String
-  email          String          @unique
-  emailVerified  Boolean
-  role           UserRole        @default(USER)
-  image          String[]
-  points         Int             @default(0)
-  banned         Boolean?
-  banReason      String?
-  banExpires     DateTime?
-  createdAt      DateTime
-  updatedAt      DateTime
-  sessions       Session[]
-  accounts       Account[]
-  posts          Post[]
-  usedBoards     UsedBoard[]
-  pointsHistory  PointsHistory[]
-  notifications  Notification[]
+  id            String          @id @default(uuid())
+  name          String
+  email         String          @unique
+  emailVerified Boolean
+  role          UserRole        @default(USER)
+  image         String[]
+  points        Int             @default(0)
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
+  createdAt     DateTime
+  updatedAt     DateTime
+  // Relations
+  sessions      Session[]
+  accounts      Account[]
+  posts         Post[]
+  usedBoards    UsedBoard[]
+  pointsHistory PointsHistory[]
+  notifications Notification[]
+
   @@map("user")
 }
 
 model Session {
-  id              String   @id @default(uuid())
-  expiresAt       DateTime
-  token           String   @unique
-  createdAt       DateTime
-  updatedAt       DateTime
-  ipAddress       String?
-  userAgent       String?
-  impersonatedBy  String?
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  expiresAt      DateTime
+  token          String   @unique
+  createdAt      DateTime
+  updatedAt      DateTime
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("session")
 }
 
 model Account {
-  id                    String   @id @default(uuid())
+  id                    String    @id @default(uuid())
   accountId             String
   providerId            String
   userId                String
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -101,18 +113,24 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
+
   @@map("account")
 }
 
 model Verification {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime?
   updatedAt  DateTime?
+
   @@map("verification")
 }
+
+// ================================
+// DELETE SOON
+// ================================
 
 model Post {
   id        String   @id @default(uuid())
@@ -122,36 +140,47 @@ model Post {
   content   String
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("posts")
 }
 
+// ================================
+// USEDBOARDS
+// ================================
+
 model UsedBoard {
-  id             String           @id @default(uuid())
+  id             String          @id @default(uuid())
   name           String
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
-  status         UsedBoardStatus  @default(PENDING_VALIDATION)
+  status         UsedBoardStatus @default(PENDING_VALIDATION)
   boardType      BoardType
   boardCondition BoardCondition?
   description    String?
   image          String[]
   pointsAwarded  Int?
   product        Product?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
   @@map("used_board")
 }
 
 model PointsHistory {
-  id            String      @id @default(uuid())
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  usedBoardId   String?
-  type          PointsType
-  pointsAmount  Int
-  createdAt     DateTime    @default(now())
+  id           String     @id @default(uuid())
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  usedBoardId  String?
+  type         PointsType
+  pointsAmount Int
+  createdAt    DateTime   @default(now())
+
   @@map("points_history")
 }
+
+// ================================
+// PRODUCTS AND ORDERS
+// ================================
 
 model Product {
   id          String        @id @default(uuid())
@@ -166,37 +195,40 @@ model Product {
   usedBoardId String?       @unique
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+
   @@map("product")
 }
 
+model Order {
+  id                 String   @id @default(uuid())
+  totalAmount        Float
+  shippingCost       Float
+  shippingAddress    String?
+  shippingCity       String?
+  shippingPostalCode String?
+  shippingCountry    String?
+  shippingPhone      String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("order")
+}
+
+// ================================
+// NOTIFICATIONS
+// ================================
+
 model Notification {
-  id          String              @id @default(uuid())
-  userId      String?             
-  user        User?               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  target      NotificationTarget  
-  description String              
-  isRead      Boolean             @default(false)
-  createdAt   DateTime            @default(now())
-  
+  id          String             @id @default(uuid())
+  userId      String?
+  user        User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  target      NotificationTarget
+  description String
+  isRead      Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+
   @@map("notification")
   @@index([userId, isRead])
   @@index([target, isRead])
   @@index([createdAt])
 }
-
-model Order {
-  id             String   @id @default(uuid())
-  totalAmount    Float
-  shippingCost   Float
-  shippingAddress String?
-  shippingCity   String?
-  shippingPostalCode String?
-  shippingCountry String?
-  shippingPhone  String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  @@map("order")
-}
-
-

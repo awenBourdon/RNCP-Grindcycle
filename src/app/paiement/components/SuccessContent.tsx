@@ -1,15 +1,17 @@
 'use client'
 // TODO : refaire tout cette partie !
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { CheckCircle, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
+import { useAbortController } from '@/hooks/useAbortController'
 
-export default function SuccessContent() {
+export const SuccessContent = () => {
   const { clearCart } = useCart()
   const searchParams = useSearchParams()
   const session_id = searchParams.get('session_id')
+  const { createSignal } = useAbortController()
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -19,43 +21,48 @@ export default function SuccessContent() {
     currency?: string
   }>({})
 
-  useEffect(() => {
+  const fetchOrderDetails = useCallback(async () => {
     if (!session_id) {
       setError('Aucun identifiant de session fourni.')
       setLoading(false)
       return
     }
 
-    const fetchOrderDetails = async () => {
-      try {
-        const res = await fetch('/api/stripe/get-order-details', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ session_id }),
-        })
+    const signal = createSignal()
 
-        if (!res.ok) {
-          const errorText = await res.text()
-          console.error('Échec API:', res.status, errorText)
-          setError('Impossible de récupérer les détails de la commande.')
-          return
-        }
+    try {
+      const res = await fetch('/api/stripe/get-order-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id }),
+        signal: signal,
+      })
 
-        const data = await res.json()
-        setOrderDetails(data)
-        clearCart()
-        sessionStorage.removeItem('shippingAddress')
-      } catch {
+      if (!res.ok) {
+        setError('Impossible de récupérer les détails de la commande.')
+        return
+      }
+
+      const data = await res.json()
+      setOrderDetails(data)
+      clearCart()
+      sessionStorage.removeItem('shippingAddress')
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
         setError(
           'Une erreur est survenue lors de la récupération de la commande.'
         )
-      } finally {
+      }
+    } finally {
+      if (!signal.aborted) {
         setLoading(false)
       }
     }
+  }, [session_id, clearCart, createSignal])
 
+  useEffect(() => {
     fetchOrderDetails()
-  }, [session_id, clearCart])
+  }, [fetchOrderDetails])
 
   if (loading) {
     return <p className="text-center mt-20">Chargement...</p>

@@ -1,12 +1,12 @@
 'use client'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 import { signOut } from '@/lib/auth-client'
 import type { ErrorContext } from '@/lib/types'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 
-const SignOutButton = () => {
+export const SignOutButton = () => {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
@@ -48,5 +48,3 @@ const SignOutButton = () => {
     </button>
   )
 }
-
-export default SignOutButton

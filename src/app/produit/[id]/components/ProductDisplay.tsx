@@ -4,14 +4,14 @@ import Image from 'next/image'
 import { useState, useTransition, useEffect } from 'react'
 import type { ProductType } from '@/lib/types'
 import { useCart } from '@/contexts/CartContext'
-import Spinner from '@/components/Spinner'
-import ReturnButton from '@/components/ReturnButton'
+import { Spinner } from '@/components/Spinner'
+import { ReturnButton } from '@/components/ReturnButton'
 
 type Props = {
   product: ProductType
 }
 
-export default function ProductDisplay({ product }: Props) {
+export const ProductDisplay = ({ product }: Props) => {
   const { addToCart, removeFromCart, isInCart } = useCart()
   const [isPending, startTransition] = useTransition()
   const [added, setAdded] = useState(false)

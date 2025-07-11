@@ -7,11 +7,11 @@ import { UserPlus, Mail, Lock } from 'lucide-react'
 import { z } from 'zod'
 import { signUpSchema } from '@/lib/zod-validations/authValidation'
 import { signUpEmailAction } from '@/actions/sign-up-email.action'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 
 type SignUpInput = z.infer<typeof signUpSchema>
 
-const RegisterForm = () => {
+export const RegisterForm = () => {
   const {
     register,
     handleSubmit,
@@ -121,5 +121,3 @@ const RegisterForm = () => {
     </form>
   )
 }
-
-export default RegisterForm

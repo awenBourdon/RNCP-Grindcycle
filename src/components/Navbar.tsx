@@ -3,17 +3,25 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { User, X, Menu, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAbortController } from '@/hooks/useAbortController'
 import { Notification } from '@/lib/types'
 
-const Navbar = () => {
+interface NavbarUser {
+  id: string
+}
+
+interface NavbarProps {
+  user: NavbarUser | null
+}
+
+export const Navbar = ({ user }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [isScrolled, setIsScrolled] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const { getCartCount } = useCart()
-  const { user } = useAuth()
+  const { createSignal } = useAbortController()
   const cartCount = getCartCount()
 
   useEffect(() => {
@@ -51,8 +59,13 @@ const Navbar = () => {
     const fetchUnreadNotifications = async () => {
       if (!user?.id) return
 
+      const signal = createSignal()
+
       try {
-        const response = await fetch(`/api/notification?userId=${user.id}`)
+        const response = await fetch(`/api/notification?userId=${user.id}`, {
+          signal: signal,
+          cache: 'force-cache',
+        })
         if (!response.ok) return
 
         const notifications: Notification[] = await response.json()
@@ -60,15 +73,29 @@ const Navbar = () => {
           (notification) => !notification.isRead
         )
         setUnreadCount(unreadNotifications.length)
-      } catch {
-        setUnreadCount(0)
+        if (user?.id) {
+          sessionStorage.setItem(
+            `unreadCount_${user.id}`,
+            unreadNotifications.length.toString()
+          )
+        }
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          setUnreadCount(0)
+        }
       }
+    }
+
+    // Vérifier d'abord le cache sessionStorage
+    const cachedCount = sessionStorage.getItem(`unreadCount_${user?.id}`)
+    if (cachedCount && user?.id) {
+      setUnreadCount(parseInt(cachedCount))
     }
 
     if (user?.id) {
       fetchUnreadNotifications()
     }
-  }, [user?.id])
+  }, [user?.id, createSignal])
 
   useEffect(() => {
     const baseTitle = 'Grindcycle'
@@ -92,7 +119,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center">
-          <div className="md:hidden mr-4">
+          <div className="mobile-show hidden mr-4">
             <button
               className="flex items-center justify-center p-1 text-[#010101] transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -103,13 +130,13 @@ const Navbar = () => {
           </div>
           <Link
             href="/"
-            className="text-2xl md:text-3xl font-bold tracking-tight text-[#010101] px-3 py-1"
+            className="text-2xl md-flex-768:text-3xl font-bold tracking-tight text-[#010101] px-3 py-1"
           >
             GRINDCYCLE
           </Link>
         </div>
 
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md-flex-880 items-center space-x-4">
           <Link
             href="/a-propos"
             className="px-4 py-1.5 font-medium text-[#010101] hover:text-[#0a3d3f] transition-colors"
@@ -154,7 +181,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="flex md:hidden items-center space-x-4">
+        <div className="flex mobile-hide items-center space-x-4">
           <Link
             href="/compte"
             className="p-2 text-[#010101] hover:text-[#0a3d3f] transition-colors relative"
@@ -231,9 +258,14 @@ const Navbar = () => {
             <Link
               href="/panier"
               onClick={() => setIsMenuOpen(false)}
-              className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all relative"
+              className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all relative flex items-center"
             >
               Panier
+              {cartCount > 0 && (
+                <span className="ml-3 bg-[#0a3d3f] text-white text-sm font-bold rounded-full min-w-[24px] h-[24px] flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </Link>
           </div>
 
@@ -279,5 +311,3 @@ const Navbar = () => {
     </header>
   )
 }
-
-export default Navbar

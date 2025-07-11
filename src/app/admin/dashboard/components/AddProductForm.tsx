@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Upload, Info, CheckCircle, XCircle } from 'lucide-react'
 import { productSchema } from '@/lib/zod-validations/productValidation'
 import z from 'zod'
-import Spinner from '@/components/Spinner'
+import { Spinner } from '@/components/Spinner'
 
 interface UsedBoard {
   id: string
@@ -109,17 +109,11 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   }
 
   const validateFormData = () => {
-    console.log('Validation côté client...')
-    console.log('FormData à valider:', formData)
-    console.log('Images sélectionnées:', selectedFiles.length)
-
     try {
       productSchema.parse(formData)
-      console.log('Validation Zod réussie')
 
       if (selectedFiles.length === 0) {
         addToast('error', 'Au moins une image est requise')
-        console.log('Aucune image sélectionnée')
         return false
       }
 
@@ -139,10 +133,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           'error',
           "Format d'image non supporté. Utilisez JPG, PNG, WebP ou GIF."
         )
-        console.log(
-          "Formats d'images invalides:",
-          invalidImages.map((f) => f.type)
-        )
         return false
       }
 
@@ -155,20 +145,12 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           'error',
           'Une ou plusieurs images sont trop volumineuses (max 5MB)'
         )
-        console.log(
-          'Images trop volumineuses:',
-          oversizedImages.map(
-            (f) => `${f.name}: ${(f.size / 1024 / 1024).toFixed(2)}MB`
-          )
-        )
         return false
       }
 
-      console.log('Validation complète réussie')
       return true
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.log('Erreurs Zod:', error.errors)
         error.errors.forEach((err) => {
           addToast('error', err.message)
         })
@@ -177,12 +159,11 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     }
   }
 
-  const updateUsedBoardStatus = async (usedBoardId: string) => {
+  const updateUsedBoardStatus = async (
+    usedBoardId: string,
+    signal?: AbortSignal
+  ) => {
     try {
-      console.log(
-        `Mise à jour du statut de la planche ${usedBoardId} vers RECYCLED_TO_PRODUCT`
-      )
-
       const response = await fetch('/api/used-board', {
         method: 'PATCH',
         headers: {
@@ -192,15 +173,16 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           boardId: usedBoardId,
           status: 'RECYCLED_TO_PRODUCT',
         }),
+        signal: signal,
       })
 
       if (!response.ok) {
-        console.error('Erreur lors de la mise à jour du statut de la planche')
-      } else {
-        console.log('Statut de la planche mis à jour avec succès')
+        throw new Error('Erreur lors de la mise à jour du statut de la planche')
       }
     } catch (error) {
-      console.error('Erreur mise à jour statut planche:', error)
+      if (error instanceof Error && error.name !== 'AbortError') {
+        throw error
+      }
     }
   }
 
@@ -208,12 +190,12 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    console.log('🚀 Début de soumission du formulaire')
-
     if (!validateFormData()) {
       setIsSubmitting(false)
       return
     }
+
+    const controller = new AbortController()
 
     try {
       const formDataToSend = new FormData()
@@ -224,37 +206,20 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       formDataToSend.append('pricePoints', formData.pricePoints.toString())
       formDataToSend.append('usedBoardId', formData.usedBoardId)
 
-      selectedFiles.forEach((file, index) => {
+      selectedFiles.forEach((file) => {
         if (file) {
           formDataToSend.append('images', file)
-          console.log(
-            `📷 Image ${index + 1} ajoutée: ${file.name} (${file.type}, ${(file.size / 1024).toFixed(1)}KB)`
-          )
         }
       })
 
-      console.log('Données envoyées au serveur:')
-      for (const [key, value] of formDataToSend.entries()) {
-        if (value instanceof File) {
-          console.log(
-            `  ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`
-          )
-        } else {
-          console.log(`  ${key}: "${value}"`)
-        }
-      }
-
-      console.log('Envoi vers /api/product...')
       const response = await fetch('/api/product', {
         method: 'POST',
         body: formDataToSend,
+        signal: controller.signal,
       })
-
-      console.log(`Réponse reçue: ${response.status} ${response.statusText}`)
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.log('Erreur serveur:', errorData)
 
         if (errorData.details && Array.isArray(errorData.details)) {
           errorData.details.forEach((detail: string) => {
@@ -266,11 +231,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         return
       }
 
-      const successData = await response.json()
-      console.log('Succès:', successData)
-
       if (formData.usedBoardId) {
-        await updateUsedBoardStatus(formData.usedBoardId)
+        await updateUsedBoardStatus(formData.usedBoardId, controller.signal)
       }
 
       addToast(
@@ -293,11 +255,9 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         router.refresh()
       }, 2000)
     } catch (error) {
-      console.error('Erreur catch:', error)
-      addToast(
-        'error',
-        error instanceof Error ? error.message : 'Une erreur est survenue'
-      )
+      if (error instanceof Error && error.name !== 'AbortError') {
+        addToast('error', error.message || 'Une erreur est survenue')
+      }
     } finally {
       setIsSubmitting(false)
     }

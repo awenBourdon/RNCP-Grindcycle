@@ -1,8 +1,7 @@
-'use client'
 import Link from 'next/link'
 import { ShoppingBag } from 'lucide-react'
 
-export default function EmptyCart() {
+export const EmptyCart = () => {
   return (
     <div className="flex flex-col items-center justify-center pt-16">
       <div className="w-20 h-20 bg-[#f8f7f4] rounded-full flex items-center justify-center mb-6">
