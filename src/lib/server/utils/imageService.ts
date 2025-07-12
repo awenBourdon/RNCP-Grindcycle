@@ -1,58 +1,8 @@
-/**
- * COMPREHENSIVE IMAGE MANAGEMENT SERVICE
- * 
- * This service provides a complete solution for image upload, validation, storage, and lifecycle
- * management in the skateboard marketplace application. It handles all aspects of image processing
- * from initial validation through storage, retrieval, and cleanup operations with robust error
- * handling and security measures throughout the entire workflow.
- * 
- * Core Capabilities:
- * - Multi-file image upload with comprehensive validation
- * - Context-aware image management (products vs used boards)
- * - Atomic upload operations with automatic rollback on failures
- * - Image lifecycle management with cleanup and optimization features
- * - Advanced file operations including moving between contexts
- * - Storage analytics and orphaned file detection
- * 
- * Key Features:
- * - Configurable validation (file count, size, type) based on context
- * - Automatic directory creation and management
- * - Unique filename generation to prevent conflicts
- * - Batch operations with detailed success/failure reporting
- * - Cross-context image migration capabilities
- * - Storage cleanup and maintenance utilities
- * 
- * Security & Validation:
- * - MIME type validation against whitelist of allowed image formats
- * - File size validation (individual and total) to prevent abuse
- * - Extension validation as additional security layer
- * - Filename sanitization and unique generation
- * - Path validation to prevent directory traversal attacks
- * 
- * Error Handling & Recovery:
- * - Atomic upload operations with automatic cleanup on failure
- * - Detailed error reporting for each validation step
- * - Rollback mechanisms for partial upload failures
- * - Graceful handling of file system errors
- * - Comprehensive logging for debugging and monitoring
- * 
- * Advanced Features:
- * - Factory pattern for service instance management
- * - Cross-service image migration (products ↔ used boards)
- * - Orphaned file detection and cleanup
- * - Storage statistics and analytics
- * - Flexible validation options for different use cases
- * 
- * Usage Context:
- * - Used by ProductService and UsedBoardService for image management
- * - Supports both single and multiple file upload scenarios
- * - Integrates with FileManager for low-level file operations
- * - Provides foundation for any image-related operations in the application
- */
-
+// lib/server/utils/imageService.ts
 import { API_MESSAGES } from '@/lib/server/config/constants'
-import { SupabaseStorageService } from '@/lib/server/services/supabaseStorageService'
 import { UPLOAD_CONFIG, isAllowedMimeType, isAllowedExtension } from '../config/upload'
+
+// Import dynamique de SupabaseStorageService
 
 export interface ImageValidationResult {
   isValid: boolean
@@ -74,14 +24,25 @@ export interface ImageProcessingOptions {
 export type ImageDirectory = 'products' | 'usedBoards'
 
 export class ImageService {
-  private storageService: SupabaseStorageService
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private storageService: any = null
   private maxFiles: number
   private minFiles: number
 
   constructor(private directory: ImageDirectory) {
-    this.storageService = new SupabaseStorageService(directory)
     this.maxFiles = UPLOAD_CONFIG.maxFiles[directory]
     this.minFiles = UPLOAD_CONFIG.minFiles[directory]
+    // Ne pas initialiser storageService ici
+  }
+
+  // Lazy loading du service de stockage
+  private async getStorageService() {
+    if (!this.storageService) {
+      // Import dynamique seulement quand nécessaire
+      const { SupabaseStorageService } = await import('@/lib/server/services/supabaseStorageService')
+      this.storageService = new SupabaseStorageService(this.directory)
+    }
+    return this.storageService
   }
 
   validate(files: File[], options: ImageProcessingOptions = {}): ImageValidationResult {
@@ -124,7 +85,9 @@ export class ImageService {
         }
       }
 
-      const storageResult = await this.storageService.uploadMultiple(files)
+      // Lazy loading du service
+      const storageService = await this.getStorageService()
+      const storageResult = await storageService.uploadMultiple(files)
 
       return {
         success: storageResult.success,
@@ -147,7 +110,8 @@ export class ImageService {
       throw new Error(`Validation échouée: ${validation.errors.join(', ')}`)
     }
 
-    const result = await this.storageService.uploadSingle(file)
+    const storageService = await this.getStorageService()
+    const result = await storageService.uploadSingle(file)
     
     if (!result.success || !result.publicUrl) {
       throw new Error(`Erreur upload: ${result.error || 'Erreur inconnue'}`)
@@ -161,14 +125,17 @@ export class ImageService {
       return { deleted: [], failed: [] }
     }
 
-    return await this.storageService.deleteMultiple(imageUrls)
+    const storageService = await this.getStorageService()
+    return await storageService.deleteMultiple(imageUrls)
   }
 
   async deleteSingle(imageUrl: string): Promise<boolean> {
     if (!imageUrl) return false
-    return await this.storageService.deleteSingle(imageUrl)
+    const storageService = await this.getStorageService()
+    return await storageService.deleteSingle(imageUrl)
   }
 
+  // Méthodes de validation (identiques à avant)
   private validateFileCount(files: File[]): string[] {
     const errors: string[] = []
 
@@ -225,5 +192,28 @@ export class ImageService {
     }
 
     return errors
+  }
+}
+
+export class ImageServiceFactory {
+  private static instances: Map<ImageDirectory, ImageService> = new Map()
+
+  static getService(directory: ImageDirectory): ImageService {
+    if (!this.instances.has(directory)) {
+      this.instances.set(directory, new ImageService(directory))
+    }
+    return this.instances.get(directory)!
+  }
+
+  static getProductImageService(): ImageService {
+    return this.getService('products')
+  }
+
+  static getUsedBoardImageService(): ImageService {
+    return this.getService('usedBoards')
+  }
+
+  static clearInstances(): void {
+    this.instances.clear()
   }
 }
