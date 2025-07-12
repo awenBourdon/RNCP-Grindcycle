@@ -76,7 +76,7 @@ export class UsedBoardService {
     data: Omit<CreateUsedBoardData, 'image'>, 
     imageFiles?: File[]
   ): Promise<UsedBoard> {
-    let imagePaths: string[] = []
+    let imageurls: string[] = []
 
     if (imageFiles && imageFiles.length > 0) {
       const imageResult = await this.imageService.uploadMultiple(imageFiles)
@@ -85,12 +85,12 @@ export class UsedBoardService {
         throw new Error(`Erreur upload images: ${imageResult.errors.join(', ')}`)
       }
       
-      imagePaths = imageResult.paths
+      imageurls = imageResult.urls
     }
 
     const usedBoardData: CreateUsedBoardData = {
       ...data,
-      image: imagePaths
+      image: imageurls
     }
 
     try {
@@ -98,8 +98,8 @@ export class UsedBoardService {
       await this.createBoardSubmissionNotifications(board)
       return board
     } catch (error) {
-      if (imagePaths.length > 0) {
-        await this.imageService.deleteMultiple(imagePaths)
+      if (imageurls.length > 0) {
+        await this.imageService.deleteMultiple(imageurls)
       }
       throw error
     }

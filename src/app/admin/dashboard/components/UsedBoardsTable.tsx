@@ -13,12 +13,14 @@ import {
   ShoppingCart,
   AlertCircle,
   Truck,
+  ImageIcon,
 } from 'lucide-react'
 import { ImageModal, useImageModal } from './ImageModal'
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Spinner } from '@/components/Spinner'
+import Image from 'next/image'
 import type {
   UsedBoard,
   UsedBoardStatus,
@@ -463,19 +465,42 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <span className="text-sm text-gray-600">
-                        {board.image.length}
-                      </span>
-                      {board.image.length > 0 && (
-                        <button
-                          onClick={() => handleViewImages(board)}
-                          className="text-[#0a3d3f] hover:text-[#0a3d3f]/80 p-1 transition-colors"
-                          title="Voir les images"
-                        >
-                          <Eye size={16} />
-                        </button>
+                    <div className="flex items-center justify-center gap-2">
+                      {board.image && board.image.length > 0 && (
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                          <Image
+                            src={board.image[0]}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                            width={40}
+                            height={40}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.style.display = 'none'
+                              target.nextElementSibling?.classList.remove(
+                                'hidden'
+                              )
+                            }}
+                          />
+                          <div className="hidden absolute inset-0 flex items-center justify-center">
+                            <ImageIcon size={16} className="text-gray-400" />
+                          </div>
+                        </div>
                       )}
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm text-gray-600">
+                          {board.image?.length || 0}
+                        </span>
+                        {board.image && board.image.length > 0 && (
+                          <button
+                            onClick={() => handleViewImages(board)}
+                            className="text-[#0a3d3f] hover:text-[#0a3d3f]/80 p-1 transition-colors"
+                            title="Voir les images"
+                          >
+                            <Eye size={16} />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-center">

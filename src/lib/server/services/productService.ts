@@ -71,19 +71,19 @@ export class ProductService {
       throw new Error(`Erreur upload images: ${imageResult.errors.join(', ')}`)
     }
 
-    if (imageResult.paths.length === 0) {
+    if (imageResult.urls.length === 0) {
       throw new Error(API_MESSAGES.AT_LEAST_ONE_IMAGE_REQUIRED)
     }
 
     const productData: CreateProductData = {
       ...data,
-      imageUrl: imageResult.paths
+      imageUrl: imageResult.urls
     }
 
     try {
       return await this.productRepository.create(productData)
     } catch (error) {
-      await this.imageService.deleteMultiple(imageResult.paths)
+      await this.imageService.deleteMultiple(imageResult.urls)
       throw error
     }
   }

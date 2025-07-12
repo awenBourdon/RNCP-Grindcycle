@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Download, ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 
 interface ImageModalProps {
@@ -22,6 +22,7 @@ export const ImageModal = ({
   description,
 }: ImageModalProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
 
   if (!isOpen || images.length === 0) return null
 
@@ -33,11 +34,27 @@ export const ImageModal = ({
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
   }
 
-  const downloadImage = () => {
-    const link = document.createElement('a')
-    link.href = images[currentImageIndex]
-    link.download = `planche_${boardId}_${currentImageIndex + 1}`
-    link.click()
+  const downloadImage = async () => {
+    try {
+      const response = await fetch(images[currentImageIndex])
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `planche_${boardId}_${currentImageIndex + 1}.jpg`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Erreur téléchargement:', error)
+      window.open(images[currentImageIndex], '_blank')
+    }
+  }
+
+  const handleImageError = (index: number) => {
+    setImageErrors((prev) => new Set([...prev, index]))
   }
 
   return (
@@ -72,17 +89,30 @@ export const ImageModal = ({
         </div>
 
         <div className="relative bg-gray-100 flex items-center justify-center min-h-[400px] max-h-[70vh]">
-          <Image
-            src={images[currentImageIndex]}
-            alt={`Image ${currentImageIndex + 1} de la planche`}
-            className="max-w-full max-h-full object-contain"
-            width={800}
-            height={500}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              target.src = '/placeholder-image.jpg'
-            }}
-          />
+          {imageErrors.has(currentImageIndex) ? (
+            <div className="flex flex-col items-center justify-center text-gray-400">
+              <ImageIcon size={64} />
+              <p className="mt-2 text-sm">Erreur de chargement</p>
+            </div>
+          ) : (
+            <Image
+              src={images[currentImageIndex]}
+              alt={`Image ${currentImageIndex + 1} de la planche`}
+              className="max-w-full max-h-full object-contain"
+              width={800}
+              height={600}
+              priority={currentImageIndex === 0}
+              quality={90}
+              onError={() => handleImageError(currentImageIndex)}
+              onLoad={() => {
+                setImageErrors((prev) => {
+                  const newSet = new Set(prev)
+                  newSet.delete(currentImageIndex)
+                  return newSet
+                })
+              }}
+            />
+          )}
 
           {images.length > 1 && (
             <>
@@ -115,17 +145,20 @@ export const ImageModal = ({
                       : 'border-gray-300 hover:border-gray-400'
                   }`}
                 >
-                  <Image
-                    src={image}
-                    alt={`Miniature ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    width={200}
-                    height={200}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.src = '/placeholder-image.jpg'
-                    }}
-                  />
+                  {imageErrors.has(index) ? (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <ImageIcon size={20} className="text-gray-400" />
+                    </div>
+                  ) : (
+                    <Image
+                      src={image}
+                      alt={`Miniature ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      width={64}
+                      height={64}
+                      onError={() => handleImageError(index)}
+                    />
+                  )}
                 </button>
               ))}
             </div>
@@ -134,9 +167,16 @@ export const ImageModal = ({
 
         <div className="p-4 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between gap-4">
-            <p className="text-sm text-gray-500 mt-1 line-clamp-4 flex-1">
-              {description}
-            </p>
+            <div className="flex-1">
+              <p className="text-sm text-gray-600">
+                Image {currentImageIndex + 1} sur {images.length}
+              </p>
+              {description && (
+                <p className="text-sm text-gray-500 mt-1 line-clamp-3">
+                  {description}
+                </p>
+              )}
+            </div>
             <button
               onClick={onClose}
               className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
@@ -181,6 +221,7 @@ export const useImageModal = () => {
     setCurrentBoardId('')
     setCurrentBoardName('')
     setCurrentUserName('')
+    setCurrentDescription('')
   }
 
   return {
