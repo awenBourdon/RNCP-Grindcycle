@@ -1,23 +1,3 @@
-/**
- * API CONFIGURATION CONSTANTS
- * 
- * This file centralizes all constant values used throughout the application's API layer.
- * It provides a single source of truth for error messages, HTTP status codes, pagination settings,
- * and business logic configuration to ensure consistency across the entire application.
- * 
- * Key Features:
- * - Standardized error and success messages in French for user-facing responses
- * - HTTP status codes enumeration for type-safe API responses
- * - Default pagination configuration for data fetching
- * - Points system configuration for the recycling/reward mechanism
- * 
- * Usage:
- * - Import specific constants in controllers, services, and validators
- * - Ensures consistent messaging and status codes across all API endpoints
- * - Facilitates easy maintenance and localization of user messages
- * - Provides centralized configuration for business rules (points system)
- */
-
 export const API_MESSAGES = {
   INVALID_DATA: 'Données invalides',
   SERVER_ERROR: 'Erreur interne du serveur',

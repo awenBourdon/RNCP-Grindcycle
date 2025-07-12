@@ -1,33 +1,3 @@
-/**
- * PRODUCT MANAGEMENT CONTROLLER
- * 
- * This controller handles all HTTP requests related to product management in the skateboard
- * marketplace application. It serves as the entry point for product-related API endpoints,
- * coordinating between request validation, business logic execution, and response formatting.
- * 
- * Key Responsibilities:
- * - Product CRUD operations (Create, Read, Update, Delete)
- * - Product purchase transactions with points system integration
- * - Image upload validation and processing for product listings
- * - Request/response transformation and error handling
- * - Integration with ProductService for business logic execution
- * 
- * Supported Operations:
- * - create(): Creates new products with image uploads (FormData)
- * - getAll(): Retrieves all products in the system
- * - getAvailable(): Fetches only available (non-purchased) products
- * - getById(): Gets specific product details by ID
- * - purchase(): Handles product purchase transactions with points
- * - delete(): Removes products (with business rule validation)
- * 
- * Features:
- * - Comprehensive input validation using ProductValidator
- * - Image upload handling with size and type validation
- * - Transactional purchase processing with error rollback
- * - Standardized error responses with appropriate HTTP status codes
- * - Clean separation between controller logic and business rules
- */
-
 import { type NextRequest, NextResponse } from 'next/server';
 import { BaseController } from './baseController';
 import { ProductService } from '@/lib/server/services/productService';

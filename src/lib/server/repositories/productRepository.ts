@@ -1,38 +1,3 @@
-/**
- * PRODUCT DATA ACCESS LAYER REPOSITORY
- * 
- * This repository implements the data access layer for product management, providing a clean
- * abstraction over Prisma ORM operations. It encapsulates all database interactions related
- * to products in the skateboard marketplace, ensuring consistent data retrieval patterns
- * and optimal query performance through strategic relation loading.
- * 
- * Core Responsibilities:
- * - CRUD operations for products with related data (used boards, users)
- * - Advanced filtering and search capabilities for product discovery
- * - Status-based queries for marketplace catalog management
- * - Price range and type filtering for enhanced user experience
- * - Counting and analytics operations for dashboard metrics
- * 
- * Key Features:
- * - Consistent relation loading with optimized select clauses
- * - Flexible filtering system supporting multiple criteria combinations
- * - Case-insensitive search across name and description fields
- * - Price range filtering for budget-conscious shopping
- * - Status workflow support (CATALOG vs PURCHASED products)
- * - Type-based categorization for board specialization
- * 
- * Query Optimization:
- * - Strategic use of select clauses to minimize data transfer
- * - Proper indexing support through where clause structure
- * - Relation loading only when needed to prevent N+1 queries
- * - Efficient counting operations for pagination and metrics
- * 
- * Data Relations:
- * - Products are linked to used boards (source of recycled materials)
- * - Used boards connect to original owners for transparency
- * - Consistent ordering by creation date for chronological listing
- */
-
 import { prisma } from '@/lib/prisma'
 import { BoardType, Product, ProductStatus } from '@/generated/prisma'
 import { CreateProductData, ProductFilters, ProductWithRelations } from '@/lib/server/types/product'
