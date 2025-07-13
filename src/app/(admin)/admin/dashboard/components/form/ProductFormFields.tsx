@@ -1,4 +1,5 @@
 import { BoardType } from '@/lib/types'
+import { formatBoardType } from '@/lib/zod-validations/boardsValidation'
 
 interface UsedBoard {
   id: string
@@ -28,19 +29,6 @@ interface ProductFormFieldsProps {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => void
-}
-
-const formatBoardType = (type: BoardType): string => {
-  switch (type) {
-    case BoardType.SKATE:
-      return 'Skate'
-    case BoardType.CRUISER:
-      return 'Cruiser'
-    case BoardType.LONG:
-      return 'Long'
-    default:
-      return type
-  }
 }
 
 export const ProductFormFields = ({
