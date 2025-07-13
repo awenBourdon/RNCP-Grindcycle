@@ -1,5 +1,5 @@
 import { headers } from 'next/headers'
-import { ToTop } from '../../homeComponents/ToTop'
+import { ToTop } from '../../../components/ui/ToTop'
 import { RecycleForm } from './components/RecycleForm'
 import { FormSteps } from './components/FormSteps'
 import { redirect } from 'next/navigation'

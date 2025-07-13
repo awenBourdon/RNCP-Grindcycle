@@ -4,24 +4,13 @@ import Link from 'next/link'
 import { ArrowLeft, Recycle } from 'lucide-react'
 import { toast } from 'sonner'
 import {
-  recycleFormSchema,
+  recycleSchema,
   IMAGE_CONFIG,
-} from '@/lib/zod-validations/usedBoardValidation'
+} from '@/lib/zod-validations/boardsValidation'
 import { FormFields } from './FormFields'
-import { ImageUpload } from './ImageUpload'
-import { Spinner } from '@/components/Spinner'
-
-enum BoardType {
-  SKATE = 'SKATE',
-  CRUISER = 'CRUISER',
-  LONG = 'LONG',
-}
-
-enum BoardCondition {
-  GOOD = 'GOOD',
-  AVERAGE = 'AVERAGE',
-  BAD = 'BAD',
-}
+import { ImageUpload } from '../../../../components/form/ImageUpload'
+import { Spinner } from '@/components/ui/Spinner'
+import { BoardCondition, BoardType } from '@/lib/types'
 
 interface RecycleFormProps {
   userId: string
@@ -125,14 +114,16 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         images: selectedFiles,
       }
 
-      const result = recycleFormSchema.safeParse(validationData)
+      const result = recycleSchema.safeParse(validationData)
 
       if (!result.success) {
         const fieldErrors: FormErrors = {}
-        result.error.errors.forEach((error) => {
-          const field = error.path.join('.')
-          fieldErrors[field] = error.message
-        })
+        result.error.errors.forEach(
+          (error: { path: unknown[]; message: string }) => {
+            const field = error.path.join('.')
+            fieldErrors[field] = error.message
+          }
+        )
         setErrors(fieldErrors)
         toast.error('Veuillez corriger les erreurs dans le formulaire')
         return
@@ -148,7 +139,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         apiFormData.append('description', result.data.description)
       }
 
-      result.data.images.forEach((file) => {
+      result.data.images.forEach((file: string | Blob) => {
         apiFormData.append('image', file)
       })
 

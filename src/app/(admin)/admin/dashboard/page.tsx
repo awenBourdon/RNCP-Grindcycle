@@ -1,5 +1,5 @@
 import { auth } from '@/lib/auth'
-import { ReturnButton } from '@/components/ReturnButton'
+import { ReturnButton } from '@/components/ui/ReturnButton'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
@@ -20,7 +20,7 @@ import {
   BellRing,
 } from 'lucide-react'
 import { UsedBoardsTable } from './components/UsedBoardsTable'
-import { AddProductForm } from './components/AddProductForm'
+import { AddProductForm } from './components/form/AddProductForm'
 import { ProductsTable } from './components/ProductsTable'
 import { getAdminNotifications } from '@/lib/notification'
 import { AdminNotifications } from './components/AdminNotifications'
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
     <div className="min-h-screen">
       <div className="px-6 py-40 container mx-auto max-w-7xl">
         <div className="mb-12">
-          <ReturnButton href="/compte" label="Compte" />
+          <ReturnButton href="/compte" label="Retourner sur le site" />
 
           <div className="mt-8 mb-8">
             <div className="flex items-center justify-between">

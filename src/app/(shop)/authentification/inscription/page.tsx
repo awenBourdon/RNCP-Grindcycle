@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ReturnButton } from '@/components/ReturnButton'
+import { ReturnButton } from '@/components/ui/ReturnButton'
 import { RegisterForm } from '../components/RegisterForm'
 import { SignInOauthButton } from '../components/SignInOauthButton'
 

@@ -1,4 +1,4 @@
-import { ReturnButton } from '@/components/ReturnButton'
+import { ReturnButton } from '@/components/ui/ReturnButton'
 import { redirect } from 'next/navigation'
 import { SendVerificationEmailForm } from '../components/SendVerificationEmailForm'
 import { AlertTriangle } from 'lucide-react'

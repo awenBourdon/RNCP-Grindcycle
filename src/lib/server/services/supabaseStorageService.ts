@@ -39,7 +39,7 @@ export class SupabaseStorageService {
         
         const { error } = await supabase.storage.createBucket('grindcycle-images', {
           public: true,
-          allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+          allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
           fileSizeLimit: 5242880,
         })
 

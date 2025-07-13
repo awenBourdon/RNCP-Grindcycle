@@ -1,4 +1,4 @@
-import { ReturnButton } from '@/components/ReturnButton'
+import { ReturnButton } from '@/components/ui/ReturnButton'
 
 export default function InscriptionSuccesPage() {
   return (

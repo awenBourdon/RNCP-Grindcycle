@@ -1,6 +1,6 @@
 'use client'
 import { deleteUserAction } from '@/actions/delete-user.action'
-import { Spinner } from '@/components/Spinner'
+import { Spinner } from '@/components/ui/Spinner'
 import { Trash2 } from 'lucide-react'
 import { useTransition } from 'react'
 

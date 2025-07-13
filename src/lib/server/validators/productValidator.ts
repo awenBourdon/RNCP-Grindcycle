@@ -1,3 +1,4 @@
+// // TODO : faire du DRY avec Zod -> overkill
 import { BoardType } from '@/generated/prisma'
 import { BaseValidator } from '@/lib/server/utils/baseValidator'
 import { ValidationResult } from '@/lib/server/types/api'
