@@ -1,5 +1,5 @@
 import { auth } from '@/lib/auth'
-import { ReturnButton } from '../../../components/ReturnButton'
+import { ReturnButton } from '@/components/ReturnButton'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
