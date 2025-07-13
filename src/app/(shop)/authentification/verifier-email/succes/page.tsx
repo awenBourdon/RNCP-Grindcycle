@@ -1,4 +1,4 @@
-import { ReturnButton } from '@/components/ReturnButton'
+import { ReturnButton } from '@/components/ui/ReturnButton'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
 

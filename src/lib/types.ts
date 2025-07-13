@@ -57,3 +57,15 @@ export interface AdminNotification {
     email: string
   } | null
 }
+
+export enum BoardType {
+  SKATE = 'SKATE',
+  CRUISER = 'CRUISER',
+  LONG = 'LONG',
+}
+
+export enum BoardCondition {
+  GOOD = 'GOOD',
+  AVERAGE = 'AVERAGE',
+  BAD = 'BAD',
+}

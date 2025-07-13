@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { LogIn, ShoppingCart, ArrowRight, User, Zap } from 'lucide-react'
-import { ReturnButton } from '@/components/ReturnButton'
+import { ReturnButton } from '@/components/ui/ReturnButton'
 
 export default async function RedirectPage() {
   const headersList = await headers()

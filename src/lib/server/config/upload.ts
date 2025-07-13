@@ -7,10 +7,9 @@ export const UPLOAD_CONFIG = {
     'image/jpg', 
     'image/png',
     'image/webp',
-    'image/gif'
   ] as const,
 
-  allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp', '.gif'] as const,
+  allowedExtensions: ['.jpg', '.jpeg', '.png', '.webp'] as const,
 
   maxFiles: {
     products: 3,

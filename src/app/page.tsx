@@ -1,12 +1,12 @@
-import { Navbar } from '@/components/Navbar'
-import { AboutUs } from './homeComponents/AboutUs'
-import { Concept } from './homeComponents/Concept'
-import { ContactUs } from './homeComponents/ContactUs'
-import { Hero } from './homeComponents/Hero'
-import { JoinMovement } from './homeComponents/JoinMouvement'
-import { NewProducts } from './homeComponents/NewProducts'
-import { ToTop } from './homeComponents/ToTop'
-import { Footer } from '@/components/Footer'
+import { Navbar } from '@/components/ui/Navbar'
+import { AboutUs } from '../components/landingPage/AboutUs'
+import { Concept } from '../components/landingPage/Concept'
+import { ContactUs } from '../components/landingPage/ContactUs'
+import { Hero } from '../components/landingPage/Hero'
+import { JoinMovement } from '../components/landingPage/JoinMouvement'
+import { NewProducts } from '../components/landingPage/NewProducts'
+import { ToTop } from '../components/ui/ToTop'
+import { Footer } from '@/components/ui/Footer'
 
 export default function HomePage() {
   return (

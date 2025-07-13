@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { ProductType } from '@/lib/types'
 import { ProductDisplay } from './components/ProductDisplay'
-import { Spinner } from '@/components/Spinner'
+import { Spinner } from '@/components/ui/Spinner'
 import { useAbortController } from '@/hooks/useAbortController'
 
 export default function ProductPage() {

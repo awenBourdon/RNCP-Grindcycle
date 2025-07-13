@@ -1,19 +1,8 @@
+import { BoardCondition, BoardType } from '@/lib/types'
 import {
   formatBoardType,
   formatBoardCondition,
-} from '@/lib/zod-validations/usedBoardValidation'
-
-enum BoardType {
-  SKATE = 'SKATE',
-  CRUISER = 'CRUISER',
-  LONG = 'LONG',
-}
-
-enum BoardCondition {
-  GOOD = 'GOOD',
-  AVERAGE = 'AVERAGE',
-  BAD = 'BAD',
-}
+} from '@/lib/zod-validations/boardsValidation'
 
 interface FormErrors {
   [key: string]: string

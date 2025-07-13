@@ -1,7 +1,7 @@
 'use client'
 import { useState, useTransition, useEffect } from 'react'
 import { signIn } from '@/lib/auth-client'
-import { Spinner } from '@/components/Spinner'
+import { Spinner } from '@/components/ui/Spinner'
 import Image from 'next/image'
 import { toast } from 'sonner'
 

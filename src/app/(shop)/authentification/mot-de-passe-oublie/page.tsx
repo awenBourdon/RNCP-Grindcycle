@@ -1,4 +1,4 @@
-import { ReturnButton } from '@/components/ReturnButton'
+import { ReturnButton } from '@/components/ui/ReturnButton'
 import { ForgotPasswordForm } from '../components/ForgotPasswordForm'
 
 export default function ForgotPasswordPage() {
