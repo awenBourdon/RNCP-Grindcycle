@@ -3,8 +3,8 @@ import { Process } from './components/Process'
 import { Team } from './components/Team'
 import { Impact } from './components/Impact'
 import { Faq } from './components/Faq'
-import { ContactUs } from '../homeComponents/ContactUs'
-import { ToTop } from '../homeComponents/ToTop'
+import { ContactUs } from '../../homeComponents/ContactUs'
+import { ToTop } from '../../homeComponents/ToTop'
 
 export default function AboutPage() {
   return (

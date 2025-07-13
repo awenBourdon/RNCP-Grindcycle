@@ -1,5 +1,5 @@
 import { Catalog } from './components/Catalog'
-import { ToTop } from '../homeComponents/ToTop'
+import { ToTop } from '../../homeComponents/ToTop'
 
 export default function CatalogPage() {
   return (

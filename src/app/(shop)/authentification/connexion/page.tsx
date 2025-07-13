@@ -1,5 +1,5 @@
 import { LoginForm } from '../components/LoginForm'
-import { ReturnButton } from '../../../components/ReturnButton'
+import { ReturnButton } from '@/components/ReturnButton'
 import Link from 'next/link'
 import { SignInOauthButton } from '../components/SignInOauthButton'
 import { MagicLinkLoginForm } from '../components/MagicLinkLoginForm'
