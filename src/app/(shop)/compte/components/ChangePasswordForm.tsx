@@ -1,10 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import {
-  changePasswordAction,
-  passwordSchema,
-} from '@/actions/change-password.action'
+import { changePasswordAction } from '@/actions/change-password.action'
+import { passwordSchema } from '@/lib/zod-validations/authValidation'
 import { z } from 'zod'
 import { Lock } from 'lucide-react'
 
@@ -32,24 +30,26 @@ export const ChangePasswordForm = () => {
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault()
     const formData = new FormData(evt.target as HTMLFormElement)
-
     const newPassword = formData.get('newPassword') as string
     if (!validatePassword(newPassword)) {
       return
     }
-
     setIsPending(true)
 
-    const { error } = await changePasswordAction(formData)
+    try {
+      const { error } = await changePasswordAction(formData)
 
-    if (error) {
-      toast.error(error)
-    } else {
-      toast.success('Mot de passe modifié avec succès.')
-      ;(evt.target as HTMLFormElement).reset()
+      if (error) {
+        toast.error(error)
+      } else {
+        toast.success('Mot de passe modifié avec succès.')
+        ;(evt.target as HTMLFormElement).reset()
+      }
+    } catch {
+      toast.error("Une erreur inattendue s'est produite")
+    } finally {
+      setIsPending(false)
     }
-
-    setIsPending(false)
   }
 
   return (

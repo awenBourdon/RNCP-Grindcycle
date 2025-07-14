@@ -18,8 +18,9 @@ export const SignOutButton = () => {
             toast.error(ctx.error.message)
           },
           onSuccess: () => {
-            toast.success('adieu :(')
+            toast.success('À Bientôt')
             router.push('/authentification/connexion')
+            router.refresh()
           },
         },
       })

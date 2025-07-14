@@ -12,6 +12,7 @@ export const RATE_LIMITS = {
   signUp: { max: 5, windowMs: 60 * 60 * 1000 },
   resetPassword: { max: 5, windowMs: 60 * 60 * 1000 },
   verifyEmail: { max: 5, windowMs: 60 * 60 * 1000 },
+  changePassword: { max: 2, windowMs: 15 * 60 * 1000 },
 
   createUsedBoard: { max: 10, windowMs: 10 * 60 * 1000 },
 } as const
@@ -83,6 +84,7 @@ export const RATE_LIMIT_MESSAGES = {
   signUp: 'Trop d\'inscriptions. Patiente 1 heure.',
   resetPassword: 'Trop de demandes de réinitialisation. Patiente 1 heure.',
   verifyEmail: 'Trop de tentatives de vérification. Patiente 1 heure.',
+  changePassword: 'Trop de tentatives de changement de mot de passe. Patiente 15 minutes.',
 
   createUsedBoard: 'Trop d\'envoi de planche. Attends 10 minutes avant de pouvoir en renvoyer.',
 } as const
