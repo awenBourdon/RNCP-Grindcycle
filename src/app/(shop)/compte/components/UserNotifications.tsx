@@ -14,7 +14,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
       const signal = createSignal()
 
       try {
-        const response = await fetch(`/api/notification?userId=${userId}`, {
+        const response = await fetch(`/api/notifications?userId=${userId}`, {
           signal: signal,
         })
         const data = await response.json()

@@ -62,7 +62,7 @@ export const Navbar = ({ user }: NavbarProps) => {
       const signal = createSignal()
 
       try {
-        const response = await fetch(`/api/notification?userId=${user.id}`, {
+        const response = await fetch(`/api/notifications?userId=${user.id}`, {
           signal: signal,
           cache: 'force-cache',
         })

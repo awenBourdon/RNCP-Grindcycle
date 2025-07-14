@@ -18,7 +18,7 @@ export default function ProductPage() {
       const signal = createSignal()
 
       try {
-        const response = await fetch(`/api/product/${id}`, {
+        const response = await fetch(`/api/products/${id}`, {
           signal: signal,
         })
 

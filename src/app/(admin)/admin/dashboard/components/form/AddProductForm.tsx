@@ -169,7 +169,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     signal?: AbortSignal
   ) => {
     try {
-      const response = await fetch('/api/used-board', {
+      const response = await fetch('/api/used-boards', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         }
       })
 
-      const response = await fetch('/api/product', {
+      const response = await fetch('/api/products', {
         method: 'POST',
         body: formDataToSend,
         signal: controller.signal,

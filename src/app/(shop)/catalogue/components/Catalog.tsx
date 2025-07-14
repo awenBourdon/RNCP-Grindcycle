@@ -65,7 +65,7 @@ export const Catalog = () => {
 
     try {
       setLoading(true)
-      const response = await fetch('/api/product/available', {
+      const response = await fetch('/api/products/available', {
         signal: signal,
       })
 
