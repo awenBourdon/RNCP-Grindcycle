@@ -13,7 +13,7 @@ import {
   checkRateLimit, 
   RATE_LIMIT_MESSAGES,
   type RateLimitAction 
-} from './rateLimit-auth'
+} from './rateLimit'
 
 const prisma = new PrismaClient()
 

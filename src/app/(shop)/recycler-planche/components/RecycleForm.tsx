@@ -30,6 +30,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [descriptionLength, setDescriptionLength] = useState(0)
+  const [isRateLimited, setIsRateLimited] = useState(false)
 
   const validateFile = (file: File): string | null => {
     if (file.size > IMAGE_CONFIG.maxSize) {
@@ -57,7 +58,6 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
       if (fileError) {
         const newErrors = { ...errors }
         newErrors[`image-${index}`] = fileError
-        setErrors(newErrors)
 
         if (file.size > IMAGE_CONFIG.maxSize) {
           newErrors[`image-${index}`] =
@@ -101,6 +101,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
     e.preventDefault()
     setIsSubmitting(true)
     setErrors({})
+    setIsRateLimited(false)
 
     try {
       const formData = new FormData(e.currentTarget)
@@ -148,9 +149,19 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         body: apiFormData,
       })
 
+      const responseData = await response.json()
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Erreur lors de la soumission')
+        if (response.status === 429) {
+          setIsRateLimited(true)
+          toast.error(
+            responseData.message ||
+              "Tu as atteint la limite d'envoi de planche. Attends 10 minutes avant de pouvoir en renvoyer.."
+          )
+          return
+        }
+
+        throw new Error(responseData.message || 'Erreur lors de la soumission')
       }
 
       toast.success(
@@ -163,6 +174,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
       setPreviewImages([])
       setErrors({})
       setDescriptionLength(0)
+      setIsRateLimited(false)
       ;(e.target as HTMLFormElement).reset()
     } catch (error) {
       console.error('Erreur soumission:', error)
@@ -204,6 +216,32 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         </div>
       </div>
 
+      {isRateLimited && (
+        <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-orange-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-orange-700">
+                Tu as atteint la limite d&apos;envoi de planche. Attends 10
+                minutes avant de pouvoir en renvoyer.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="space-y-16"
@@ -244,7 +282,8 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
               !selectedCondition ||
               !selectedType ||
               selectedFiles.length === 0 ||
-              isSubmitting
+              isSubmitting ||
+              isRateLimited
             }
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -252,6 +291,23 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
               <>
                 <Spinner />
                 Envoi en cours...
+              </>
+            ) : isRateLimited ? (
+              <>
+                <svg
+                  className="mr-2 h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Limite atteinte
               </>
             ) : (
               <>
