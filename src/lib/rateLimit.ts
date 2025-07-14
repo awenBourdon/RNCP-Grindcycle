@@ -12,6 +12,8 @@ export const RATE_LIMITS = {
   signUp: { max: 5, windowMs: 60 * 60 * 1000 },
   resetPassword: { max: 5, windowMs: 60 * 60 * 1000 },
   verifyEmail: { max: 5, windowMs: 60 * 60 * 1000 },
+
+  createUsedBoard: { max: 10, windowMs: 10 * 60 * 1000 },
 } as const
 
 export type RateLimitAction = keyof typeof RATE_LIMITS
@@ -75,12 +77,14 @@ export function getRateLimitInfo(ip: string, action: RateLimitAction) {
 }
 
 export const RATE_LIMIT_MESSAGES = {
-  social: "Trop de demandes de connexion avec Google. Veuillez patienter 5 minutes.",
-  magicLink: 'Trop de demandes de magic link. Veuillez patienter 5 minutes.',
-  signIn: 'Trop de tentatives de connexion. Veuillez patienter 5 minutes.',
-  signUp: 'Trop d\'inscriptions. Veuillez patienter 1 heure.',
-  resetPassword: 'Trop de demandes de réinitialisation. Veuillez patienter 1 heure.',
-  verifyEmail: 'Trop de tentatives de vérification. Veuillez patienter 1 heure.',
+  social: "Trop de demandes de connexion avec Google. Patiente 5 minutes.",
+  magicLink: 'Trop de demandes de magic link. Patiente 5 minutes.',
+  signIn: 'Trop de tentatives de connexion. Patiente 5 minutes.',
+  signUp: 'Trop d\'inscriptions. Patiente 1 heure.',
+  resetPassword: 'Trop de demandes de réinitialisation. Patiente 1 heure.',
+  verifyEmail: 'Trop de tentatives de vérification. Patiente 1 heure.',
+
+  createUsedBoard: 'Trop d\'envoi de planche. Attends 10 minutes avant de pouvoir en renvoyer.',
 } as const
 
 
