@@ -80,7 +80,7 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
     const controller = new AbortController()
 
     try {
-      const response = await fetch('/api/product', {
+      const response = await fetch('/api/products', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

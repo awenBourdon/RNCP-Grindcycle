@@ -17,7 +17,7 @@ export function AdminNotifications({ notifications }: AdminNotificationsProps) {
   const handleMarkAsRead = async (notificationId: string) => {
     setMarkingAsRead(notificationId)
     try {
-      const response = await fetch('/api/notification', {
+      const response = await fetch('/api/notifications', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

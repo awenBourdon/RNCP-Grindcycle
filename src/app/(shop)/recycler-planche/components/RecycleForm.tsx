@@ -144,7 +144,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         apiFormData.append('image', file)
       })
 
-      const response = await fetch('/api/used-board', {
+      const response = await fetch('/api/used-boards', {
         method: 'POST',
         body: apiFormData,
       })

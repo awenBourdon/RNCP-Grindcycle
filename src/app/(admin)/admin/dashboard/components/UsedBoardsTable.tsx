@@ -67,7 +67,7 @@ const StatusSelect = ({
       const controller = new AbortController()
 
       try {
-        const response = await fetch('/api/used-board', {
+        const response = await fetch('/api/used-boards', {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ const PointsSelect = ({
       const controller = new AbortController()
 
       try {
-        const response = await fetch('/api/used-board', {
+        const response = await fetch('/api/used-boards', {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -342,7 +342,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
     const controller = new AbortController()
 
     try {
-      const response = await fetch(`/api/used-board?boardId=${boardId}`, {
+      const response = await fetch(`/api/used-boards?boardId=${boardId}`, {
         method: 'DELETE',
         signal: controller.signal,
       })
