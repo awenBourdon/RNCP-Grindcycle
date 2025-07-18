@@ -1,9 +1,5 @@
-// lib/server/utils/imageService.ts
 import { API_MESSAGES } from '@/lib/server/config/constants'
 import { UPLOAD_CONFIG, isAllowedMimeType, isAllowedExtension } from '../config/upload'
-
-// Import dynamique de SupabaseStorageService
-
 export interface ImageValidationResult {
   isValid: boolean
   errors: string[]
@@ -32,13 +28,10 @@ export class ImageService {
   constructor(private directory: ImageDirectory) {
     this.maxFiles = UPLOAD_CONFIG.maxFiles[directory]
     this.minFiles = UPLOAD_CONFIG.minFiles[directory]
-    // Ne pas initialiser storageService ici
   }
 
-  // Lazy loading du service de stockage
   private async getStorageService() {
     if (!this.storageService) {
-      // Import dynamique seulement quand nécessaire
       const { SupabaseStorageService } = await import('@/lib/server/services/supabaseStorageService')
       this.storageService = new SupabaseStorageService(this.directory)
     }
@@ -85,7 +78,6 @@ export class ImageService {
         }
       }
 
-      // Lazy loading du service
       const storageService = await this.getStorageService()
       const storageResult = await storageService.uploadMultiple(files)
 
@@ -135,7 +127,6 @@ export class ImageService {
     return await storageService.deleteSingle(imageUrl)
   }
 
-  // Méthodes de validation (identiques à avant)
   private validateFileCount(files: File[]): string[] {
     const errors: string[] = []
 

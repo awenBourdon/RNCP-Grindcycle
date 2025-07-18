@@ -45,6 +45,10 @@ export const productSchema = z.object({
   priceEuro: z.number().min(0.01, "Min 0.01€").max(9999.99, "Max 9999.99€"),
   pricePoints: z.number().min(1, "Min 1 point").max(999999, "Max 999,999 points"),
   usedBoardId: z.string().min(1, "Planche requise"),
+  images: z
+    .array(imageFileSchema)
+    .min(1, "Au moins 1 photo")
+    .max(IMAGE_CONFIG.maxFiles, `Max ${IMAGE_CONFIG.maxFiles} photos`),
 });
 
 export type RecycleFormInput = z.infer<typeof recycleSchema>;
