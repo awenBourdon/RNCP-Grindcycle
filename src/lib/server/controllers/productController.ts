@@ -1,10 +1,21 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { BaseController } from './baseController';
 import { ProductService } from '@/lib/server/services/productService';
-import { ProductValidator } from '@/lib/server/validators/productValidator';
 import { ResponseHelper } from '@/lib/server/utils/responseHelper';
 import { API_MESSAGES } from '@/lib/server/config/constants';
 import { ImageService } from '@/lib/server/utils/imageService';
+import { ZodHelper } from '@/lib/server/utils/zodHelper';
+import { productSchema } from '@/lib/zod-validations/boardsValidation';
+import { z } from 'zod';
+
+const purchaseSchema = z.object({
+  productId: z.string(),
+  userId: z.string()
+});
+
+const deleteSchema = z.object({
+  productId: z.string()
+});
 
 export class ProductController extends BaseController {
   constructor(
@@ -18,8 +29,8 @@ export class ProductController extends BaseController {
     try {
       const formData = await this.extractFormData(req);
 
-      const validation = ProductValidator.validateCreateData(formData);
-      if (!validation.isValid || !validation.data) {
+      const validation = ZodHelper.validateFormData(productSchema, formData);
+      if (!validation.isValid) {
         return ResponseHelper.validationError(validation.errors);
       }
 
@@ -34,14 +45,13 @@ export class ProductController extends BaseController {
         );
       }
 
-      const product = await this.productService.createProduct(validation.data, images);
-
+      const product = await this.productService.createProduct(validation.data!, images);
       return ResponseHelper.created(product, API_MESSAGES.PRODUCT_CREATED);
     } catch (error) {
       return this.handleError(error, 'ProductController.create');
     }
   }
-
+  
   async getAll(): Promise<NextResponse> {
     try {
       const products = await this.productService.getAllProducts();
@@ -75,30 +85,14 @@ export class ProductController extends BaseController {
   async purchase(req: NextRequest): Promise<NextResponse> {
     try {
       const body = await this.extractJsonData(req);
-      const validation = ProductValidator.validatePurchaseData(body);
-
-      if (!validation.isValid || !validation.data) {
+      const validation = ZodHelper.validate(purchaseSchema, body);
+      if (!validation.isValid) {
         return ResponseHelper.validationError(validation.errors);
       }
 
-      const result = await this.productService.purchaseProduct(validation.data);
-
+      const result = await this.productService.purchaseProduct(validation.data!);
       return ResponseHelper.success(result, API_MESSAGES.PRODUCT_PURCHASED);
     } catch (error) {
-      if (error instanceof Error) {
-        const knownErrors = [
-          API_MESSAGES.PRODUCT_NOT_FOUND,
-          API_MESSAGES.PRODUCT_ALREADY_PURCHASED,
-          API_MESSAGES.INSUFFICIENT_POINTS,
-        ];
-
-        const errorMessage = error.message as typeof knownErrors[number];
-
-        if (knownErrors.includes(errorMessage)) {
-          return ResponseHelper.error(errorMessage, 400);
-        }
-      }
-
       return this.handleError(error, 'ProductController.purchase');
     }
   }
@@ -106,29 +100,15 @@ export class ProductController extends BaseController {
   async delete(req: NextRequest): Promise<NextResponse> {
     try {
       const body = await this.extractJsonData(req);
-      const validation = ProductValidator.validateDeleteData(body);
-
-      if (!validation.isValid || !validation.data) {
+      
+      const validation = ZodHelper.validate(deleteSchema, body);
+      if (!validation.isValid) {
         return ResponseHelper.validationError(validation.errors);
       }
 
-      await this.productService.deleteProduct(validation.data.productId);
-
+      await this.productService.deleteProduct(validation.data!.productId);
       return ResponseHelper.successMessage(API_MESSAGES.PRODUCT_DELETED);
     } catch (error) {
-      if (error instanceof Error) {
-        const knownErrors = [
-          API_MESSAGES.PRODUCT_NOT_FOUND,
-          'Impossible de supprimer un produit acheté',
-        ];
-
-        const errorMessage = error.message as typeof knownErrors[number];
-
-        if (knownErrors.includes(errorMessage)) {
-          return ResponseHelper.error(errorMessage, 400);
-        }
-      }
-
       return this.handleError(error, 'ProductController.delete');
     }
   }
