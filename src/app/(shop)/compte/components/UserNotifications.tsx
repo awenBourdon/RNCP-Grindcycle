@@ -46,7 +46,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
     const signal = createSignal()
 
     try {
-      const response = await fetch('/api/notification', {
+      const response = await fetch('/api/notifications', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

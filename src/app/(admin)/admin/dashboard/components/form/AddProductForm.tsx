@@ -140,15 +140,12 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     setErrors({})
 
     try {
-      productSchema.parse(formData)
-
-      if (selectedFiles.length === 0) {
-        setErrors((prev) => ({
-          ...prev,
-          images: 'Au moins une image est requise',
-        }))
-        return false
+      const completeFormData = {
+        ...formData,
+        images: selectedFiles,
       }
+
+      productSchema.parse(completeFormData)
 
       return true
     } catch (error) {
