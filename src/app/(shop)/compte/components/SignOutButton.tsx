@@ -1,10 +1,11 @@
-'use client'
-import { Spinner } from '@/components/ui/Spinner'
-import { signOut } from '@/lib/auth-client'
-import type { ErrorContext } from '@/lib/types'
-import { useRouter } from 'next/navigation'
-import { useTransition } from 'react'
-import { toast } from 'sonner'
+"use client"
+
+import { Spinner } from "@/components/ui/Spinner"
+import { signOut } from "@/lib/auth-client"
+import type { ErrorContext } from "@/lib/types"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { toast } from "sonner"
 
 export const SignOutButton = () => {
   const [isPending, startTransition] = useTransition()
@@ -18,8 +19,8 @@ export const SignOutButton = () => {
             toast.error(ctx.error.message)
           },
           onSuccess: () => {
-            toast.success('À Bientôt')
-            router.push('/authentification/connexion')
+            toast.success("À Bientôt")
+            router.push("/authentification/connexion")
             router.refresh()
           },
         },
@@ -32,10 +33,10 @@ export const SignOutButton = () => {
       onClick={handleClick}
       disabled={isPending}
       className={`
-        text-red-800 hover:text-red-900 transition-colors
-        border-b border-transparent hover:border-red-800
-        pb-0.5 text-sm font-medium
-        ${isPending ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}
+        px-6 py-3 border border-gray-300 text-gray-700 rounded-full
+        hover:border-[#0a3d3f] hover:text-[#0a3d3f] transition-colors
+        text-sm font-medium
+        ${isPending ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
       {isPending ? (
@@ -44,7 +45,7 @@ export const SignOutButton = () => {
           <span className="ml-2">Déconnexion...</span>
         </span>
       ) : (
-        'Se déconnecter'
+        "Se déconnecter"
       )}
     </button>
   )
