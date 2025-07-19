@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 
-export default async function ComptePage() {
+export default async function ProfilePage() {
   const headersList = await headers()
 
   const session = await auth.api.getSession({

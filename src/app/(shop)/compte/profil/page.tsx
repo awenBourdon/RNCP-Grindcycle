@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { Session } from '@/lib/types'
 import { UpdateUserForm } from '../components/UpdateUserForm'
 
-export default async function ProfilPage() {
+export default async function UpdatePage() {
   const headersList = await headers()
   const session = (await auth.api.getSession({
     headers: headersList,

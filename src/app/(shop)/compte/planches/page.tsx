@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { Session } from '@/lib/types'
 import { UsedBoardsList } from '../components/UsedBoardsList'
 
-export default async function PlanchesPage() {
+export default async function UsedBoardsPage() {
   const headersList = await headers()
   const session = (await auth.api.getSession({
     headers: headersList,

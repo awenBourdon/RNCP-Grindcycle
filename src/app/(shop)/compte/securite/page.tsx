@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { ChangePasswordForm } from '../components/ChangePasswordForm'
 import { Session } from '@/lib/types'
 
-export default async function SecuritePage() {
+export default async function ChangePasswordPage() {
   const headersList = await headers()
   const session = (await auth.api.getSession({
     headers: headersList,
