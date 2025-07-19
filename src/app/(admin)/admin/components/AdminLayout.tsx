@@ -1,22 +1,10 @@
-"use client"
-
-import type React from "react"
-import { usePathname } from "next/navigation"
-import { ReturnButton } from "@/components/ui/ReturnButton"
-import { AdminNavbar } from "./AdminNavbar"
-import { AdminHeader } from "./AdminHeader"
-
-interface User {
-  id: string
-  name: string | null
-  email: string
-  role: string
-  createdAt: Date
-}
-
-interface Session {
-  user: User
-}
+'use client'
+import type React from 'react'
+import { usePathname } from 'next/navigation'
+import { ReturnButton } from '@/components/ui/ReturnButton'
+import { AdminNavbar } from './AdminNavbar'
+import { AdminHeader } from './AdminHeader'
+import { Session } from '@/lib/types'
 
 interface AdminLayoutProps {
   session: Session

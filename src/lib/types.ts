@@ -41,7 +41,7 @@ export interface Notification {
 
 export interface User {
   id: string
-  name?: string
+  name?: string| null
   email: string
   role: UserRole
   createdAt: Date
