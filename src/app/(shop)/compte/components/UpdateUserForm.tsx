@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { updateUser } from '@/lib/auth-client'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { User } from 'lucide-react'
 
 interface UpdateUserFormProps {
   name: string
@@ -46,28 +47,43 @@ export const UpdateUserForm = ({ name }: UpdateUserFormProps) => {
   }
 
   return (
-    <form className="max-w-sm w-full space-y-4" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="name" className="text-sm font-medium text-gray-700">
-          Nom
-        </label>
-        <input
-          id="name"
-          name="name"
-          defaultValue={name}
-          className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
-        />
+    <div className="bg-[#f8f7f4] rounded-xl p-8">
+      <div className="flex items-center mb-8">
+        <User size={24} className="text-[#0a3d3f] mr-3" />
+        <h2 className="text-2xl font-normal text-[#010101]">
+          Informations personnelles
+        </h2>
       </div>
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-2 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
-          isPending ? 'opacity-70 cursor-not-allowed' : ''
-        }`}
-      >
-        {isPending ? 'Mise à jour en cours...' : 'Valider'}
-      </button>
-    </form>
+      <div className="max-w-md">
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-[#010101] mb-2"
+            >
+              Nom d&apos;utilisateur
+            </label>
+            <input
+              id="name"
+              name="name"
+              defaultValue={name}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+              placeholder="Ton nom d'utilisateur"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isPending}
+            className={`w-full px-6 py-3 bg-[#0a3d3f] text-white rounded-lg font-medium hover:bg-[#0a4d4f] transition-colors ${
+              isPending ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
+          >
+            {isPending ? 'Mise à jour en cours...' : 'Mettre à jour'}
+          </button>
+        </form>
+      </div>
+    </div>
   )
 }

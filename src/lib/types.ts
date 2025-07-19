@@ -1,3 +1,5 @@
+import { UsedBoardStatus } from "@/generated/prisma"
+
 export interface ProductType {
   id: string
   name: string
@@ -42,6 +44,7 @@ export interface User {
   name?: string
   email: string
   role: UserRole
+  createdAt: Date
 }
 
 export type UserRole = 'ADMIN' | 'USER';
@@ -68,4 +71,18 @@ export enum BoardCondition {
   GOOD = 'GOOD',
   AVERAGE = 'AVERAGE',
   BAD = 'BAD',
+}
+
+export interface UsedBoard {
+  id: string
+  name: string | null
+  image: string[]
+  description: string | null
+  createdAt: Date
+  status: UsedBoardStatus
+  pointsAwarded: number | null
+}
+
+export interface Session {
+  user: User
 }
