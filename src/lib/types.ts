@@ -41,7 +41,7 @@ export interface Notification {
 
 export interface User {
   id: string
-  name?: string| null
+  name?: string
   email: string
   role: UserRole
   createdAt: Date
@@ -84,5 +84,11 @@ export interface UsedBoard {
 }
 
 export interface Session {
-  user: User
+  user: {
+    id: string
+    name?: string
+    email: string
+    role: string
+    createdAt: Date
+  }
 }
