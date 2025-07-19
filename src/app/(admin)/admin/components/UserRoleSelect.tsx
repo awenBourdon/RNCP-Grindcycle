@@ -20,7 +20,6 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
 
   const handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
     const newRole = evt.target.value as UserRole
-
     startTransition(async () => {
       try {
         const canChangeRole = await admin.hasPermission({
@@ -28,12 +27,10 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
             user: ['set-role'],
           },
         })
-
         if (!canChangeRole || canChangeRole.error) {
           toast.error('Interdit')
           return
         }
-
         await admin.setRole({
           userId,
           role: newRole,
@@ -57,12 +54,6 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
     return userRole === 'ADMIN' ? <Shield size={14} /> : <User size={14} />
   }
 
-  const getRoleColor = (userRole: UserRole) => {
-    return userRole === 'ADMIN'
-      ? 'text-[#0a3d3f] bg-[#0a3d3f]/10'
-      : 'text-gray-600 bg-gray-100'
-  }
-
   return (
     <div className="relative inline-flex items-center">
       <div className="relative">
@@ -70,28 +61,14 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
           value={role}
           onChange={handleChange}
           disabled={role === 'ADMIN' || isPending}
-          className={`
-            appearance-none
-            pl-8 pr-8 py-2
-            text-sm font-medium
-            border border-gray-200
-            rounded-full
-            cursor-pointer
-            transition-all duration-200
-            focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f]
-            disabled:opacity-50 disabled:cursor-not-allowed
-            hover:border-gray-300
-            ${getRoleColor(role)}
-          `}
+          className="appearance-none pl-8 pr-8 py-2 text-sm font-medium border border-gray-200 rounded-full cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f] disabled:opacity-50 disabled:cursor-not-allowed hover:border-gray-300 bg-white text-[#010101]"
         >
           <option value="ADMIN">Administrateur</option>
           <option value="USER">Utilisateur</option>
         </select>
-
-        <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none text-[#0a3d3f]">
           {getRoleIcon(role)}
         </div>
-
         <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none">
           {isPending ? (
             <Spinner />

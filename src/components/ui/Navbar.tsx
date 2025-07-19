@@ -156,7 +156,7 @@ export const Navbar = ({ user }: NavbarProps) => {
             RECYCLER MA PLANCHE
           </Link>
           <Link
-            href="/compte"
+            href="/compte/profil"
             className="p-2 text-[#010101] hover:text-[#0a3d3f] transition-colors relative"
             aria-label="Mon compte"
           >
@@ -183,7 +183,7 @@ export const Navbar = ({ user }: NavbarProps) => {
 
         <div className="flex mobile-hide items-center space-x-4">
           <Link
-            href="/compte"
+            href="/compte/profil"
             className="p-2 text-[#010101] hover:text-[#0a3d3f] transition-colors relative"
             aria-label="Mon compte"
           >
@@ -244,7 +244,7 @@ export const Navbar = ({ user }: NavbarProps) => {
               À propos
             </Link>
             <Link
-              href="/compte"
+              href="/compte/profil"
               onClick={() => setIsMenuOpen(false)}
               className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all relative flex items-center"
             >

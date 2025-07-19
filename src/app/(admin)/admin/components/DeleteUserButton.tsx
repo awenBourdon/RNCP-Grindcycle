@@ -19,7 +19,7 @@ export const DeleteUserButton = ({ userId }: DeleteUserButtonProps) => {
 
   return (
     <button
-      className="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 rounded-full h-9 w-9 p-0 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+      className="bg-white hover:bg-gray-50 text-gray-600 hover:text-[#0a3d3f] border border-gray-200 rounded-full h-9 w-9 p-0 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
       disabled={isPending}
       onClick={handleClick}
     >
@@ -32,7 +32,7 @@ export const DeleteUserButton = ({ userId }: DeleteUserButtonProps) => {
 export const PlaceholderDeleteUserButton = () => {
   return (
     <button
-      className="bg-gray-50 text-gray-300 border border-gray-100 rounded-full h-9 w-9 p-0 cursor-not-allowed opacity-50 flex items-center justify-center"
+      className="bg-gray-100 text-gray-300 border border-gray-200 rounded-full h-9 w-9 p-0 cursor-not-allowed opacity-50 flex items-center justify-center"
       disabled
     >
       <span className="sr-only">Supprimer utilisateur</span>
