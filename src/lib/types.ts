@@ -86,7 +86,7 @@ export interface UsedBoard {
 export interface Session {
   user: {
     id: string
-    name?: string
+    name: string | null
     email: string
     role: string
     createdAt: Date
