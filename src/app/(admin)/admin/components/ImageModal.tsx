@@ -39,7 +39,6 @@ export const ImageModal = ({
       const response = await fetch(images[currentImageIndex])
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
-
       const link = document.createElement('a')
       link.href = url
       link.download = `planche_${boardId}_${currentImageIndex + 1}.jpg`
@@ -60,9 +59,9 @@ export const ImageModal = ({
   return (
     <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-[#f8f7f4]">
           <div>
-            <h3 className="text-lg font-medium text-gray-900">
+            <h3 className="text-lg font-medium text-[#010101]">
               {name ? `Photos de ${name}` : 'Photos de la planche'}
             </h3>
           </div>
@@ -74,20 +73,19 @@ export const ImageModal = ({
             )}
             <button
               onClick={downloadImage}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-white rounded-lg transition-colors"
+              className="p-2 text-gray-600 hover:text-[#0a3d3f] hover:bg-white rounded-lg transition-colors"
               title="Télécharger la photo"
             >
               <Download size={20} />
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-white rounded-lg transition-colors"
+              className="p-2 text-gray-600 hover:text-[#0a3d3f] hover:bg-white rounded-lg transition-colors"
             >
               <X size={20} />
             </button>
           </div>
         </div>
-
         <div className="relative bg-gray-100 flex items-center justify-center min-h-[400px] max-h-[70vh]">
           {imageErrors.has(currentImageIndex) ? (
             <div className="flex flex-col items-center justify-center text-gray-400">
@@ -96,7 +94,7 @@ export const ImageModal = ({
             </div>
           ) : (
             <Image
-              src={images[currentImageIndex]}
+              src={images[currentImageIndex] || '/placeholder.svg'}
               alt={`Image ${currentImageIndex + 1} de la planche`}
               className="max-w-full max-h-full object-contain"
               width={800}
@@ -113,7 +111,6 @@ export const ImageModal = ({
               }}
             />
           )}
-
           {images.length > 1 && (
             <>
               <button
@@ -131,9 +128,8 @@ export const ImageModal = ({
             </>
           )}
         </div>
-
         {images.length > 1 && (
-          <div className="p-4 border-t border-gray-200 bg-gray-50">
+          <div className="p-4 border-t border-gray-200 bg-[#f8f7f4]">
             <div className="flex gap-2 overflow-x-auto pb-2">
               {images.map((image, index) => (
                 <button
@@ -151,7 +147,7 @@ export const ImageModal = ({
                     </div>
                   ) : (
                     <Image
-                      src={image}
+                      src={image || '/placeholder.svg'}
                       alt={`Miniature ${index + 1}`}
                       className="w-full h-full object-cover"
                       width={64}
@@ -164,8 +160,7 @@ export const ImageModal = ({
             </div>
           </div>
         )}
-
-        <div className="p-4 border-t border-gray-200 bg-gray-50">
+        <div className="p-4 border-t border-gray-200 bg-[#f8f7f4]">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
               <p className="text-sm text-gray-600">
@@ -179,14 +174,13 @@ export const ImageModal = ({
             </div>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className="px-4 py-2 bg-[#0a3d3f] text-white rounded-lg hover:bg-[#0a4d4f] transition-colors"
             >
               Fermer
             </button>
           </div>
         </div>
       </div>
-
       <div className="absolute inset-0 -z-10" onClick={onClose} />
     </div>
   )

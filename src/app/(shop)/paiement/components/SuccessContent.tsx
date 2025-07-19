@@ -58,7 +58,7 @@ export const SuccessContent = () => {
         setLoading(false)
       }
     }
-  }, [session_id, clearCart, createSignal])
+  }, [session_id])
 
   useEffect(() => {
     fetchOrderDetails()

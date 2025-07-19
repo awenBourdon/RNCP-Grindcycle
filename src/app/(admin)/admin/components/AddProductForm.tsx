@@ -1,16 +1,19 @@
 'use client'
+
+import type React from 'react'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Upload, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { ZodError } from 'zod'
 import { Spinner } from '@/components/ui/Spinner'
-import { ProductFormFields } from './ProductFormFields'
 import { ImageUpload } from '@/components/form/ImageUpload'
 import {
   IMAGE_CONFIG,
   productSchema,
 } from '@/lib/zod-validations/boardsValidation'
+import { ProductFormFields } from './ProductFormFields'
 
 interface UsedBoard {
   id: string
@@ -37,7 +40,6 @@ interface FormErrors {
 
 export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   const router = useRouter()
-
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
@@ -46,7 +48,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     pricePoints: 0,
     usedBoardId: '',
   })
-
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewImages, setPreviewImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -138,15 +139,12 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
 
   const validateFormData = () => {
     setErrors({})
-
     try {
       const completeFormData = {
         ...formData,
         images: selectedFiles,
       }
-
       productSchema.parse(completeFormData)
-
       return true
     } catch (error) {
       if (error instanceof ZodError) {
@@ -177,7 +175,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         }),
         signal: signal,
       })
-
       if (!response.ok) {
         throw new Error('Erreur lors de la mise à jour du statut de la planche')
       }
@@ -199,7 +196,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     }
 
     const controller = new AbortController()
-
     try {
       const formDataToSend = new FormData()
       formDataToSend.append('name', formData.name)
@@ -233,7 +229,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       toast.success(
         'Produit ajouté avec succès ! La planche a été marquée comme recyclée.'
       )
-
       setFormData({
         name: '',
         description: '',
@@ -259,34 +254,32 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pb-8">
-      <div className="mb-12">
-        <div className="flex items-start gap-6">
-          <div className="bg-[#0a3d3f] p-3 rounded-full text-white">
-            <Upload size={24} />
-          </div>
-          <div>
-            <h2 className="text-3xl font-normal mb-6">
-              Ajouter un nouveau produit
-            </h2>
-            <p className="text-gray-600 max-w-3xl">
-              Remplissez ce formulaire pour ajouter un nouveau produit au
-              catalogue. La planche sélectionnée sera automatiquement marquée
-              comme recyclée.
-            </p>
-          </div>
+    <div className="bg-[#f8f7f4] rounded-xl p-8">
+      <div className="flex items-start gap-6 mb-8">
+        <div className="bg-[#0a3d3f] p-3 rounded-full text-white">
+          <Upload size={24} />
+        </div>
+        <div>
+          <h2 className="text-2xl font-normal text-[#010101] mb-2">
+            Ajouter un nouveau produit
+          </h2>
+          <p className="text-gray-600 max-w-3xl">
+            Remplissez ce formulaire pour ajouter un nouveau produit au
+            catalogue. La planche sélectionnée sera automatiquement marquée
+            comme recyclée.
+          </p>
         </div>
       </div>
 
       {availableUsedBoards.length === 0 && (
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
           <div className="flex items-center gap-3">
-            <Info size={20} className="text-orange-600" />
+            <Info size={20} className="text-gray-600" />
             <div>
-              <h3 className="font-medium text-orange-800">
+              <h3 className="font-medium text-[#010101]">
                 Aucune planche disponible
               </h3>
-              <p className="text-orange-700 text-sm">
+              <p className="text-gray-600 text-sm">
                 Il n&apos;y a actuellement aucune planche avec le statut
                 &quot;Reçue&quot; disponible pour être recyclée en produit.
               </p>
@@ -297,22 +290,20 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
 
       <form
         onSubmit={handleSubmit}
-        className="space-y-16"
+        className="space-y-8"
         encType="multipart/form-data"
       >
-        <div>
-          <h3 className="text-2xl font-normal mb-8">
+        <div className="bg-white rounded-lg p-6">
+          <h3 className="text-lg font-medium text-[#010101] mb-6">
             Informations sur le produit
           </h3>
-
-          <div className="space-y-8">
+          <div className="space-y-6">
             <ProductFormFields
               formData={formData}
               availableUsedBoards={availableUsedBoards}
               errors={errors}
               onChange={handleChange}
             />
-
             <ImageUpload
               selectedFiles={selectedFiles}
               previewImages={previewImages}
