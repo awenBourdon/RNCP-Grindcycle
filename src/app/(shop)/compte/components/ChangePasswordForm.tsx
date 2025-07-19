@@ -1,104 +1,121 @@
-"use client"
+'use client'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { changePasswordAction } from '@/actions/change-password.action'
+import { passwordSchema } from '@/lib/zod-validations/authValidation'
+import { z } from 'zod'
+import { Key, Lock } from 'lucide-react'
 
-import type React from "react"
-import { useState } from "react"
-import { toast } from "sonner"
-import { changePasswordAction } from "@/actions/change-password.action"
-import { passwordSchema } from "@/lib/zod-validations/authValidation"
-import { z } from "zod"
+const passwordSchemaZod = passwordSchema
 
 export const ChangePasswordForm = () => {
   const [isPending, setIsPending] = useState(false)
+  const [errors, setErrors] = useState({
+    newPassword: '',
+  })
+
+  const validatePassword = (password: string) => {
+    try {
+      passwordSchemaZod.parse(password)
+      setErrors({ newPassword: '' })
+      return true
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setErrors({ newPassword: err.errors[0].message })
+      }
+      return false
+    }
+  }
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault()
     const formData = new FormData(evt.target as HTMLFormElement)
-    const currentPassword = String(formData.get("currentPassword"))
-    const newPassword = String(formData.get("newPassword"))
-    const confirmPassword = String(formData.get("confirmPassword"))
+    const newPassword = formData.get('newPassword') as string
+    if (!validatePassword(newPassword)) {
+      return
+    }
+    setIsPending(true)
 
     try {
-      // Validate with your Zod schema
-      passwordSchema.parse({ password: newPassword })
+      const { error } = await changePasswordAction(formData)
 
-      if (newPassword !== confirmPassword) {
-        return toast.error("Les mots de passe ne correspondent pas")
-      }
-
-      setIsPending(true)
-
-      const result = await changePasswordAction({
-        currentPassword,
-        newPassword,
-      })
-
-      if (result.success) {
-        toast.success("Mot de passe modifié avec succès")
+      if (error) {
+        toast.error(error)
+      } else {
+        toast.success('Mot de passe modifié avec succès.')
         ;(evt.target as HTMLFormElement).reset()
-      } else {
-        toast.error(result.error || "Erreur lors de la modification")
       }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        toast.error(error.errors[0]?.message || "Mot de passe invalide")
-      } else {
-        toast.error("Une erreur est survenue")
-      }
+    } catch {
+      toast.error("Une erreur inattendue s'est produite")
     } finally {
       setIsPending(false)
     }
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="currentPassword" className="block text-sm font-medium text-[#010101] mb-2">
-          Mot de passe actuel
-        </label>
-        <input
-          id="currentPassword"
-          name="currentPassword"
-          type="password"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
-          placeholder="Votre mot de passe actuel"
-        />
+    <div className="bg-[#f8f7f4] rounded-xl p-8">
+      <div className="flex items-center mb-8">
+        <Key size={24} className="text-[#0a3d3f] mr-3" />
+        <h2 className="text-2xl font-normal text-[#010101]">Sécurité</h2>
       </div>
 
-      <div>
-        <label htmlFor="newPassword" className="block text-sm font-medium text-[#010101] mb-2">
-          Nouveau mot de passe
-        </label>
-        <input
-          id="newPassword"
-          name="newPassword"
-          type="password"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
-          placeholder="Votre nouveau mot de passe"
-        />
-      </div>
+      <div className="max-w-md">
+        <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="currentPassword"
+              className="text-sm font-medium text-gray-700"
+            >
+              Mot de passe actuel
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <Lock size={16} className="text-gray-400" />
+              </div>
+              <input
+                type="password"
+                id="currentPassword"
+                name="currentPassword"
+                autoComplete="off"
+                className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+              />
+            </div>
+          </div>
 
-      <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-[#010101] mb-2">
-          Confirmer le nouveau mot de passe
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
-          placeholder="Confirmez votre nouveau mot de passe"
-        />
-      </div>
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="newPassword"
+              className="text-sm font-medium text-gray-700"
+            >
+              Nouveau mot de passe
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <Lock size={16} className="text-gray-400" />
+              </div>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+              />
+            </div>
+            {errors.newPassword && (
+              <p className="text-red-500 text-xs mt-1">{errors.newPassword}</p>
+            )}
+          </div>
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className={`w-full px-6 py-3 bg-[#0a3d3f] text-white rounded-lg font-medium hover:bg-[#0a4d4f] transition-colors ${
-          isPending ? "opacity-70 cursor-not-allowed" : ""
-        }`}
-      >
-        {isPending ? "Modification en cours..." : "Changer le mot de passe"}
-      </button>
-    </form>
+          <button
+            type="submit"
+            disabled={isPending}
+            className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-2 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
+              isPending ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
+          >
+            {isPending ? 'Modification en cours...' : 'Valider'}
+          </button>
+        </form>
+      </div>
+    </div>
   )
 }

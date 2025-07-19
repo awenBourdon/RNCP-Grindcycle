@@ -1,19 +1,8 @@
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
-import { AccountInfoSection } from "../components/sections/AccountInfoSection"
-
-interface User {
-  id: string
-  name: string | null
-  email: string
-  role: string
-  createdAt: Date
-}
-
-interface Session {
-  user: User
-}
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { Session } from '@/lib/types'
+import { InfoSection } from '../components/InfoSection'
 
 export default async function InformationsPage() {
   const headersList = await headers()
@@ -21,7 +10,7 @@ export default async function InformationsPage() {
     headers: headersList,
   })) as Session | null
 
-  if (!session) redirect("/authentification/connexion")
+  if (!session) redirect('/authentification/connexion')
 
-  return <AccountInfoSection session={session} />
+  return <InfoSection session={session} />
 }

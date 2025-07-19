@@ -1,19 +1,8 @@
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
-import { ProfileSection } from "../components/sections/ProfileSection"
-
-interface User {
-  id: string
-  name: string | null
-  email: string
-  role: string
-  createdAt: Date
-}
-
-interface Session {
-  user: User
-}
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { Session } from '@/lib/types'
+import { UpdateUserForm } from '../components/UpdateUserForm'
 
 export default async function ProfilPage() {
   const headersList = await headers()
@@ -21,7 +10,7 @@ export default async function ProfilPage() {
     headers: headersList,
   })) as Session | null
 
-  if (!session) redirect("/authentification/connexion")
+  if (!session) redirect('/authentification/connexion')
 
-  return <ProfileSection name={session.user.name || ""} />
+  return <UpdateUserForm name={session.user.name || ''} />
 }

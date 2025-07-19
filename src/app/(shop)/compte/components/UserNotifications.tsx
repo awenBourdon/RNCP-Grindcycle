@@ -100,7 +100,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
           <h3 className="text-lg font-medium text-[#010101] mb-2">
             Aucune notification
           </h3>
-          <p className="text-gray-600">Vous êtes à jour !</p>
+          <p className="text-gray-600">Tu es à jour !</p>
         </div>
       ) : (
         <div className="space-y-4">

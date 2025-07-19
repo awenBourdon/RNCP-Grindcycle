@@ -1,22 +1,9 @@
-"use client"
-
-import type React from "react"
-import { usePathname } from "next/navigation"
-import { ReturnButton } from "@/components/ui/ReturnButton"
-import { AccountSidebar } from "./AccountSidebar"
-import { AccountHeader } from "./AccountHeader"
-
-interface User {
-  id: string
-  name: string | null
-  email: string
-  role: string
-  createdAt: Date
-}
-
-interface Session {
-  user: User
-}
+'use client'
+import type React from 'react'
+import { usePathname } from 'next/navigation'
+import { AccountSidebar } from './AccountSidebar'
+import { AccountHeader } from './AccountHeader'
+import { Session } from '@/lib/types'
 
 interface AccountLayoutProps {
   session: Session
@@ -28,14 +15,12 @@ export const AccountLayout = ({ session, children }: AccountLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
         <div className="mb-8">
-          <ReturnButton href="/" label="Accueil" />
+          <AccountHeader session={session} />
         </div>
 
-        <AccountHeader session={session} />
-
-        <div className="flex flex-col lg:flex-row gap-8 mt-8">
+        <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-80 flex-shrink-0">
             <AccountSidebar currentPath={pathname} />
           </div>

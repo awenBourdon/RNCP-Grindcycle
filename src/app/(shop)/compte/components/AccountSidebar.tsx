@@ -1,8 +1,7 @@
-"use client"
-
-import type React from "react"
-import Link from "next/link"
-import { User, Settings, Key, Package, Bell } from "lucide-react"
+'use client'
+import type React from 'react'
+import Link from 'next/link'
+import { User, Settings, Key, Package, Bell } from 'lucide-react'
 
 interface SidebarItem {
   id: string
@@ -16,11 +15,26 @@ interface AccountSidebarProps {
 }
 
 const sidebarItems: SidebarItem[] = [
-  { id: "profil", label: "Profil", icon: User, href: "/compte/profil" },
-  { id: "securite", label: "Sécurité", icon: Key, href: "/compte/securite" },
-  { id: "informations", label: "Informations", icon: Settings, href: "/compte/informations" },
-  { id: "planches", label: "Mes planches", icon: Package, href: "/compte/planches" },
-  { id: "notifications", label: "Notifications", icon: Bell, href: "/compte/notifications" },
+  { id: 'profil', label: 'Profil', icon: User, href: '/compte/profil' },
+  { id: 'securite', label: 'Sécurité', icon: Key, href: '/compte/securite' },
+  {
+    id: 'informations',
+    label: 'Informations',
+    icon: Settings,
+    href: '/compte/informations',
+  },
+  {
+    id: 'planches',
+    label: 'Mes planches',
+    icon: Package,
+    href: '/compte/planches',
+  },
+  {
+    id: 'notifications',
+    label: 'Notifications',
+    icon: Bell,
+    href: '/compte/notifications',
+  },
 ]
 
 export const AccountSidebar = ({ currentPath }: AccountSidebarProps) => {
@@ -37,7 +51,9 @@ export const AccountSidebar = ({ currentPath }: AccountSidebarProps) => {
               key={item.id}
               href={item.href}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                isActive ? "bg-[#0a3d3f] text-white shadow-sm" : "text-[#010101] hover:bg-white hover:shadow-sm"
+                isActive
+                  ? 'bg-[#0a3d3f] text-white shadow-sm'
+                  : 'text-[#010101] hover:bg-white hover:shadow-sm'
               }`}
             >
               <Icon size={20} />
