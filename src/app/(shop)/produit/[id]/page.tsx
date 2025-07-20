@@ -25,7 +25,8 @@ async function getProduct(id: string) {
       },
     })
     return product
-  } catch {
+  } catch (error) {
+    console.error('Erreur lors de la récupération du produit:', error)
     return null
   }
 }
@@ -40,7 +41,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-32">
       <ProductDisplay product={product} />
     </div>
   )

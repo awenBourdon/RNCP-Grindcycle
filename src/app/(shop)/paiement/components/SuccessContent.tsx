@@ -112,18 +112,11 @@ export const SuccessContent = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
             <Link
-              href="/catalogue"
+              href="/"
               className="inline-flex items-center justify-center rounded-full text-sm font-medium px-6 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors"
             >
-              Continuer mes achats
+              Retourner sur le site
               <ArrowRight size={16} className="ml-2" />
-            </Link>
-
-            <Link
-              href="/compte"
-              className="inline-flex items-center justify-center rounded-full text-sm font-medium px-6 py-3 border border-[#0a3d3f] text-[#0a3d3f] hover:bg-[#0a3d3f] hover:text-white transition-colors"
-            >
-              Mon compte
             </Link>
           </div>
         </div>

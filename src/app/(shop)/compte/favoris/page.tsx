@@ -5,6 +5,20 @@ import { redirect } from 'next/navigation'
 import { Heart } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { BoardType } from '@/generated/prisma'
+
+const getBoardTypeText = (type: BoardType) => {
+  switch (type) {
+    case 'SKATE':
+      return 'Skateboard'
+    case 'CRUISER':
+      return 'Cruiser'
+    case 'LONG':
+      return 'Longboard'
+    default:
+      return type
+  }
+}
 
 export default async function FavorisPage() {
   const headersList = await headers()
@@ -62,13 +76,12 @@ export default async function FavorisPage() {
               </div>
               <div className="p-4">
                 <h3 className="font-medium mb-1">{product.name}</h3>
-                <p className="text-sm text-gray-500 mb-2">{product.type}</p>
+                <p className="text-sm text-gray-500 mb-2">
+                  {getBoardTypeText(product.type)}
+                </p>
                 <p className="text-[#0a3d3f] font-medium">
                   {product.priceEuro}€
                 </p>
-                {product.status === 'PURCHASED' && (
-                  <p className="text-red-500 text-sm mt-1">Vendu</p>
-                )}
               </div>
             </Link>
           ))}
