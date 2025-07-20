@@ -62,7 +62,6 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
         <h3 className="text-lg font-medium text-[#010101]">Admin panel</h3>
       </div>
 
-      {/* Desktop Navigation */}
       <nav className="hidden lg:block">
         <div className="grid grid-cols-3 xl:grid-cols-6 gap-3">
           {navItems.map((item) => {
@@ -87,7 +86,6 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
       <nav className="lg:hidden">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {navItems.map((item) => {

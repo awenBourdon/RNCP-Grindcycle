@@ -102,6 +102,9 @@ export const NotificationTemplates = {
   boardSold: (boardName: string, points: number) => 
     `La planche issu de "${boardName}" a été vendu ! Merci pour Ta contribution. ${points} points attribués.`,
 
+  favoriteProductPurchased: (productName: string) => 
+    `"${productName}" a été acheté.`,
+
   newBoardSubmitted: (userName: string, boardName: string) => 
     `Nouvelle planche soumise par ${userName} : "${boardName}"`,
     

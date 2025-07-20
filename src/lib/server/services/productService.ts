@@ -1,4 +1,4 @@
-import { ProductStatus, UsedBoardStatus, BoardCondition, UsedBoard } from '@/generated/prisma'
+import { ProductStatus } from '@/generated/prisma'
 import { ProductRepository } from '@/lib/server/repositories/productRepository'
 import { CreateProductData, PurchaseProductData, ProductWithRelations } from '@/lib/server/types/product'
 import { ImageService } from '@/lib/server/utils/imageService'
@@ -6,10 +6,10 @@ import { API_MESSAGES } from '@/lib/server/config/constants'
 import { prisma } from '@/lib/prisma'
 import { PointsType } from '@/generated/prisma'
 import { InterfaceProductRepository } from '../repositories/interfaces/interfaceProductRepository'
+import { createNotification, NotificationTemplates } from './notificationsService'
 
 export interface PurchaseResult {
   product: ProductWithRelations
-  usedBoard: UsedBoard
 }
 
 export class ProductService {
@@ -38,7 +38,20 @@ export class ProductService {
     }
 
     try {
-      return await this.productRepository.create(productData)
+      const product = await this.productRepository.create(productData)
+
+      if (product.usedBoard && product.usedBoard.user) {
+        await createNotification({
+          userId: product.usedBoard.user.id,
+          target: 'USER',
+          description: NotificationTemplates.boardRecycled(
+            product.usedBoard.name,
+            product.name
+          )
+        })
+      }
+      
+      return product
     } catch (error) {
       await this.imageService.deleteMultiple(imageResult.urls)
       throw error
@@ -70,24 +83,11 @@ export class ProductService {
       throw new Error(API_MESSAGES.PRODUCT_ALREADY_PURCHASED)
     }
 
-    return await prisma.$transaction(async (tx) => {
-      const usedBoard = await tx.usedBoard.create({
-        data: {
-          name: product.name,
-          user: { connect: { id: data.userId } },
-          status: UsedBoardStatus.RECEIVED,
-          boardCondition: BoardCondition.GOOD,
-          boardType: product.type,
-          image: product.imageUrl,
-          pointsAwarded: product.pricePoints,
-        },
-      })
-
+    const result = await prisma.$transaction(async (tx) => {
       const updatedProduct = await tx.product.update({
         where: { id: data.productId },
         data: {
           status: ProductStatus.PURCHASED,
-          usedBoard: { connect: { id: usedBoard.id } },
         },
         include: {
           usedBoard: {
@@ -104,17 +104,76 @@ export class ProductService {
       await tx.pointsHistory.create({
         data: {
           user: { connect: { id: data.userId } },
-          usedBoardId: usedBoard.id,
           type: PointsType.PURCHASE,
           pointsAmount: -product.pricePoints,
         },
       })
 
       return { 
-        product: updatedProduct, 
-        usedBoard 
+        product: updatedProduct
       }
     })
+
+    await this.handlePostPurchaseActions(data.productId, data.userId, product.name)
+
+    return result
+  }
+
+  private async handlePostPurchaseActions(
+    productId: string, 
+    buyerId: string, 
+    productName: string
+  ): Promise<void> {
+    try {
+      await Promise.all([
+        this.notifyFavoriteUsersAndCleanup(productId, buyerId, productName),
+      ])
+    } catch (error) {
+      console.error('Erreur actions post-achat:', error)
+    }
+  }
+
+  private async notifyFavoriteUsersAndCleanup(
+    productId: string, 
+    buyerId: string, 
+    productName: string
+  ): Promise<void> {
+    try {
+      const favoritesWithUsers = await prisma.favorite.findMany({
+        where: { 
+          productId,
+          userId: { not: buyerId }
+        },
+        include: {
+          user: { select: { id: true, name: true } }
+        }
+      })
+
+      if (favoritesWithUsers.length === 0) {
+        return
+      }
+
+      await prisma.$transaction(async (tx) => {
+        const notifications = favoritesWithUsers.map(favorite => ({
+          userId: favorite.userId,
+          target: 'USER' as const,
+          description: NotificationTemplates.favoriteProductPurchased(productName),
+          isRead: false
+        }))
+
+        await tx.notification.createMany({
+          data: notifications
+        })
+
+        await tx.favorite.deleteMany({
+          where: { productId }
+        })
+      })
+
+      console.log(`${favoritesWithUsers.length} utilisateurs notifiés pour le produit "${productName}"`)
+    } catch (error) {
+      console.error('Erreur notification favoris:', error)
+    }
   }
 
   async deleteProduct(id: string): Promise<void> {
@@ -129,5 +188,32 @@ export class ProductService {
     }
 
     await this.productRepository.delete(id)
+  }
+
+  async updateProductStatus(id: string, status: ProductStatus): Promise<ProductWithRelations> {
+    return await this.productRepository.update(id, { status })
+  }
+
+  async getProductsByStatus(status: ProductStatus): Promise<ProductWithRelations[]> {
+    return await this.productRepository.findAll({ status })
+  }
+
+  async searchProducts(searchTerm: string): Promise<ProductWithRelations[]> {
+    return await this.productRepository.findAll({ search: searchTerm })
+  }
+
+  async getProductStats() {
+    const [total, available, purchased] = await Promise.all([
+      prisma.product.count(),
+      prisma.product.count({ where: { status: ProductStatus.CATALOG } }),
+      prisma.product.count({ where: { status: ProductStatus.PURCHASED } })
+    ])
+
+    return {
+      total,
+      available,
+      purchased,
+      soldPercentage: total > 0 ? Math.round((purchased / total) * 100) : 0
+    }
   }
 }

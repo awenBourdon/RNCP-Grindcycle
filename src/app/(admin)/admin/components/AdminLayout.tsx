@@ -18,7 +18,7 @@ export const AdminLayout = ({ session, children }: AdminLayoutProps) => {
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-6 sm:mb-8">
-          <ReturnButton href="/compte" label="Retourner sur le site" />
+          <ReturnButton href="/compte/profil" label="Retourner sur le site" />
         </div>
 
         <AdminHeader session={session} />

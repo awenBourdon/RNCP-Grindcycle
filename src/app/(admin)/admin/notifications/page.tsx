@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-import { getAdminNotifications } from '@/lib/notification'
+import { getAdminNotifications } from '@/lib/server/services/notificationsService'
 import { AdminNotifications } from '../components/AdminNotifications'
 
 export default async function AdminNotificationsPage() {

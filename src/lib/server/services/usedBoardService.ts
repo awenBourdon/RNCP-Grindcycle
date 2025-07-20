@@ -5,7 +5,7 @@ import { ImageService } from '@/lib/server/utils/imageService'
 import { API_MESSAGES } from '@/lib/server/config/constants'
 import { prisma } from '@/lib/prisma'
 import { InterfaceUsedBoardRepository } from '../repositories/interfaces/interfaceUsedBoardRepository'
-import { createNotification, NotificationTemplates } from '@/lib/notification'
+import { createNotification, NotificationTemplates } from './notificationsService'
 
 type PrismaTransaction = Omit<typeof prisma, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>
 
