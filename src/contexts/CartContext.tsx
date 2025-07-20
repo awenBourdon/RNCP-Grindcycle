@@ -36,14 +36,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItemType[]>([])
 
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart')
-    if (savedCart) {
-      try {
+    let isMounted = true
+
+    try {
+      const savedCart = localStorage.getItem('cart')
+      if (savedCart && isMounted) {
         setCartItems(JSON.parse(savedCart))
-      } catch (error) {
-        console.error('Erreur lors du chargement du panier:', error)
-        localStorage.removeItem('cart')
       }
+    } catch (error) {
+      console.error('Erreur lors du chargement du panier:', error)
+      localStorage.removeItem('cart')
+    }
+
+    return () => {
+      isMounted = false
     }
   }, [])
 

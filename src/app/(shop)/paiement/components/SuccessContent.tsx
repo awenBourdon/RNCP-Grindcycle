@@ -28,6 +28,7 @@ export const SuccessContent = () => {
       return
     }
 
+    let isMounted = true
     const signal = createSignal()
 
     try {
@@ -39,26 +40,35 @@ export const SuccessContent = () => {
       })
 
       if (!res.ok) {
-        setError('Impossible de récupérer les détails de la commande.')
+        if (isMounted) {
+          setError('Impossible de récupérer les détails de la commande.')
+        }
         return
       }
 
       const data = await res.json()
-      setOrderDetails(data)
-      clearCart()
-      sessionStorage.removeItem('shippingAddress')
+
+      if (isMounted) {
+        setOrderDetails(data)
+        clearCart()
+        sessionStorage.removeItem('shippingAddress')
+      }
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
+      if (error instanceof Error && error.name !== 'AbortError' && isMounted) {
         setError(
           'Une erreur est survenue lors de la récupération de la commande.'
         )
       }
     } finally {
-      if (!signal.aborted) {
+      if (!signal.aborted && isMounted) {
         setLoading(false)
       }
     }
-  }, [session_id])
+
+    return () => {
+      isMounted = false
+    }
+  }, [session_id, createSignal, clearCart])
 
   useEffect(() => {
     fetchOrderDetails()
