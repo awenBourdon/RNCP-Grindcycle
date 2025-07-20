@@ -1,10 +1,9 @@
-"use client"
-
-import { Hash, Eye, Trash2, Package } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import Image from "next/image"
-import type { Product, ProductStatus, BoardType } from "@/generated/prisma"
+'use client'
+import { Hash, Eye, Trash2, Package } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import Image from 'next/image'
+import type { Product, ProductStatus, BoardType } from '@/generated/prisma'
 
 interface ProductWithUsedBoard extends Product {
   usedBoard?: {
@@ -24,12 +23,12 @@ interface ProductsTableProps {
 
 const getBoardTypeText = (type: BoardType) => {
   switch (type) {
-    case "SKATE":
-      return "Skateboard"
-    case "CRUISER":
-      return "Cruiser"
-    case "LONG":
-      return "Longboard"
+    case 'SKATE':
+      return 'Skateboard'
+    case 'CRUISER':
+      return 'Cruiser'
+    case 'LONG':
+      return 'Longboard'
     default:
       return type
   }
@@ -37,10 +36,10 @@ const getBoardTypeText = (type: BoardType) => {
 
 const getStatusText = (status: ProductStatus) => {
   switch (status) {
-    case "CATALOG":
-      return "En catalogue"
-    case "PURCHASED":
-      return "Acheté"
+    case 'CATALOG':
+      return 'En catalogue'
+    case 'PURCHASED':
+      return 'Acheté'
     default:
       return status
   }
@@ -56,10 +55,10 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
   const handleDeleteProduct = async (productId: string) => {
     const controller = new AbortController()
     try {
-      const response = await fetch("/api/products", {
-        method: "DELETE",
+      const response = await fetch('/api/products', {
+        method: 'DELETE',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           productId: productId,
@@ -67,14 +66,14 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
         signal: controller.signal,
       })
       if (response.ok) {
-        toast.success("Produit supprimé avec succès")
+        toast.success('Produit supprimé avec succès')
         router.refresh()
       } else {
-        toast.error("Erreur lors de la suppression")
+        toast.error('Erreur lors de la suppression')
       }
     } catch (error) {
-      if (error instanceof Error && error.name !== "AbortError") {
-        toast.error("Erreur lors de la suppression")
+      if (error instanceof Error && error.name !== 'AbortError') {
+        toast.error('Erreur lors de la suppression')
       }
     }
   }
@@ -83,9 +82,11 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
     <div className="bg-[#f8f7f4] rounded-xl p-8">
       <div className="flex items-center mb-8">
         <Package size={24} className="text-[#0a3d3f] mr-3" />
-        <h2 className="text-2xl font-normal text-[#010101]">Produits du catalogue</h2>
+        <h2 className="text-2xl font-normal text-[#010101]">
+          Produits du catalogue
+        </h2>
         <span className="ml-4 text-sm text-gray-600">
-          {products.length} produit{products.length !== 1 ? "s" : ""} au total
+          {products.length} produit{products.length !== 1 ? 's' : ''} au total
         </span>
       </div>
 
@@ -100,20 +101,41 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                     ID
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">Image</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">Nom du produit</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">Type</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">Prix €</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">Points</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">Statut</th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">Planche d&apos;origine</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">Date création</th>
-                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">Actions</th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">
+                  Image
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">
+                  Nom du produit
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
+                  Type
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
+                  Prix €
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
+                  Points
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
+                  Statut
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-medium text-gray-600">
+                  Planche d&apos;origine
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
+                  Date création
+                </th>
+                <th className="px-6 py-4 text-center text-sm font-medium text-gray-600">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                <tr
+                  key={product.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
                   <td className="px-6 py-4">
                     <span className="text-sm font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">
                       {product.id.slice(0, 8)}
@@ -123,7 +145,7 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                     <div className="w-16 h-16 relative">
                       {product.imageUrl && product.imageUrl.length > 0 ? (
                         <Image
-                          src={product.imageUrl[0] || "/placeholder.svg"}
+                          src={product.imageUrl[0] || '/placeholder.svg'}
                           alt={product.name}
                           fill
                           className="object-cover rounded-lg"
@@ -137,9 +159,13 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                   </td>
                   <td className="px-6 py-4">
                     <div>
-                      <h3 className="text-sm font-medium text-[#010101]">{product.name}</h3>
+                      <h3 className="text-sm font-medium text-[#010101]">
+                        {product.name}
+                      </h3>
                       {product.description && (
-                        <p className="text-xs text-gray-500 mt-1 line-clamp-2 max-w-xs">{product.description}</p>
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-2 max-w-xs">
+                          {product.description}
+                        </p>
                       )}
                     </div>
                   </td>
@@ -149,10 +175,14 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="text-sm font-medium text-[#010101]">{product.priceEuro.toFixed(2)} €</span>
+                    <span className="text-sm font-medium text-[#010101]">
+                      {product.priceEuro.toFixed(2)} €
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="text-sm font-medium text-[#0a3d3f]">{product.pricePoints} pts</span>
+                    <span className="text-sm font-medium text-[#0a3d3f]">
+                      {product.pricePoints} pts
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border bg-white text-[#010101] border-gray-200">
@@ -162,16 +192,22 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                   <td className="px-6 py-4">
                     {product.usedBoard ? (
                       <div className="text-sm">
-                        <p className="font-medium text-[#010101]">{product.usedBoard.name}</p>
-                        <p className="text-xs text-gray-500">de {product.usedBoard.user.name}</p>
+                        <p className="font-medium text-[#010101]">
+                          {product.usedBoard.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          de {product.usedBoard.user.name}
+                        </p>
                       </div>
                     ) : (
-                      <span className="text-sm text-gray-500 italic">Aucune planche liée</span>
+                      <span className="text-sm text-gray-500 italic">
+                        Aucune planche liée
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className="text-sm text-gray-600">
-                      {new Date(product.createdAt).toLocaleDateString("fr-FR")}
+                      {new Date(product.createdAt).toLocaleDateString('fr-FR')}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -200,8 +236,12 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
         {products.length === 0 && (
           <div className="px-6 py-12 text-center">
             <Package size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-600 mb-2">Aucun produit trouvé</h3>
-            <p className="text-gray-500">Il n&apos;y a actuellement aucun produit dans le catalogue.</p>
+            <h3 className="text-lg font-medium text-gray-600 mb-2">
+              Aucun produit trouvé
+            </h3>
+            <p className="text-gray-500">
+              Il n&apos;y a actuellement aucun produit dans le catalogue.
+            </p>
           </div>
         )}
       </div>

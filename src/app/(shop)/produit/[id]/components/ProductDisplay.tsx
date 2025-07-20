@@ -1,108 +1,144 @@
 'use client'
-import { ShoppingCart, X } from 'lucide-react'
-import Image from 'next/image'
 import { useState, useTransition, useEffect } from 'react'
-import type { ProductType } from '@/lib/types'
 import { useCart } from '@/contexts/CartContext'
-import { Spinner } from '@/components/ui/Spinner'
 import { ReturnButton } from '@/components/ui/ReturnButton'
-
-type Props = {
+import { toast } from 'sonner'
+import { ProductImageGallery } from './ProductImageGallery'
+import { ProductInfo } from './ProductInfo'
+import { ProductActions } from './ProductActions'
+import { ProductType } from '@/lib/types'
+import { useAbortController } from '@/hooks/useAbortController'
+interface ProductDisplayProps {
   product: ProductType
 }
 
-export const ProductDisplay = ({ product }: Props) => {
+interface FavoriteResponse {
+  success: boolean
+  data: Array<{ productId: string }>
+}
+
+export const ProductDisplay = ({ product }: ProductDisplayProps) => {
+  const cartProduct = {
+    ...product,
+    description: product.description ?? undefined,
+  }
+
   const { addToCart, removeFromCart, isInCart } = useCart()
   const [isPending, startTransition] = useTransition()
   const [added, setAdded] = useState(false)
+  const [favorites, setFavorites] = useState<string[]>([])
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
     setAdded(isInCart(product))
   }, [product, isInCart])
 
+  const { createSignal } = useAbortController()
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const signal = createSignal()
+
+      try {
+        const response = await fetch('/api/favorites', {
+          signal: signal,
+        })
+
+        if (response.status === 401) {
+          setIsAuthenticated(false)
+          return
+        }
+
+        setIsAuthenticated(true)
+        const data: FavoriteResponse = await response.json()
+
+        if (data && data.success) {
+          setFavorites(data.data.map((f) => f.productId))
+        }
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          setIsAuthenticated(false)
+        }
+      }
+    }
+
+    fetchFavorites()
+  }, [])
+
+  const isFavorite = favorites.includes(product.id)
+  const isAvailable = product.status === 'CATALOG'
+
+  const toggleFavorite = async () => {
+    if (isLoadingFavorites || !isAuthenticated) return
+
+    setIsLoadingFavorites(true)
+    try {
+      if (isFavorite) {
+        const response = await fetch(`/api/favorites?productId=${product.id}`, {
+          method: 'DELETE',
+        })
+        if (response.ok) {
+          setFavorites((prev) => prev.filter((id) => id !== product.id))
+          toast.success('Retiré des favoris')
+        }
+      } else {
+        const response = await fetch('/api/favorites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ productId: product.id }),
+        })
+        if (response.ok) {
+          setFavorites((prev) => [...prev, product.id])
+          toast.success('Ajouté aux favoris')
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour des favoris:', error)
+      toast.error('Une erreur est survenue')
+    } finally {
+      setIsLoadingFavorites(false)
+    }
+  }
+
   const handleToggleCart = () => {
     startTransition(() => {
       if (added) {
-        removeFromCart(product)
+        removeFromCart(cartProduct)
+        toast.success('Retiré du panier')
       } else {
-        addToCart(product)
+        addToCart(cartProduct)
+        toast.success('Ajouté au panier')
       }
       setAdded(!added)
     })
   }
 
   return (
-    <div>
+    <div className="space-y-6 sm:space-y-8">
       <ReturnButton href="/catalogue" label="Catalogue" />
 
-      <div className="grid md:grid-cols-2 gap-16 items-start">
-        <div className="w-full aspect-[3/4] relative overflow-hidden rounded-xl">
-          <Image
-            src={product.imageUrl[0]}
-            alt={product.name}
-            fill
-            className="object-cover bg-gray-500"
+      <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+        <ProductImageGallery
+          images={product.imageUrl || []}
+          productName={product.name}
+        />
+
+        <div className="space-y-6 lg:space-y-8">
+          <ProductInfo product={product} />
+          <ProductActions
+            product={product}
+            added={added}
+            handleToggleCart={handleToggleCart}
+            isPending={isPending}
+            isAvailable={isAvailable}
+            isAuthenticated={isAuthenticated}
+            isFavorite={isFavorite}
+            isLoadingFavorites={isLoadingFavorites}
+            toggleFavorite={toggleFavorite}
           />
-        </div>
-
-        <div>
-          <h1 className="text-3xl font-normal mb-6">{product.name}</h1>
-          <p className="text-gray-600 text-lg mb-8">
-            {product.description ||
-              'Pas de description disponible pour cette planche.'}
-          </p>
-
-          <div className="space-y-4 mb-8">
-            <div className="flex items-center border-b border-gray-200 pb-3">
-              <span className="w-24 font-medium">Type :</span>
-              <span className="text-gray-600 capitalize">{product.type}</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-8">
-            <div className="text-[#0a3d3f]">
-              <span className="text-3xl font-normal">
-                {product.priceEuro} €
-              </span>
-            </div>
-            {product.pricePoints && (
-              <span className="text-sm text-gray-600">
-                ou {product.pricePoints} points
-              </span>
-            )}
-          </div>
-
-          <button
-            onClick={handleToggleCart}
-            disabled={isPending}
-            className="mt-8 w-full px-6 py-4 text-lg font-normal rounded-full transition-colors flex items-center justify-center bg-[#0a3d3f] text-white hover:bg-[#0a4d4f]"
-          >
-            <div className="flex items-center justify-center min-w-[180px]">
-              {isPending ? (
-                <Spinner />
-              ) : added ? (
-                <>
-                  <X className="w-5 h-5 mr-2" />
-                  <span>Retirer du panier</span>
-                </>
-              ) : (
-                <>
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  <span>Ajouter au panier</span>
-                </>
-              )}
-            </div>
-          </button>
-
-          <div className="mt-8 p-6 bg-[#f8f7f4] rounded-lg">
-            <p className="text-gray-600">
-              <span className="font-medium">Livraison gratuite</span> à partir
-              de 100€ d&apos;achat
-            </p>
-            <p className="text-gray-600 mt-2">
-              <span className="font-medium">Retour gratuit</span> sous 14 jours
-            </p>
-          </div>
         </div>
       </div>
     </div>

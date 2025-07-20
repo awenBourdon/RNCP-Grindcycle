@@ -72,13 +72,14 @@ model User {
   banExpires    DateTime?
   createdAt     DateTime
   updatedAt     DateTime
+
   // Relations
   sessions      Session[]
   accounts      Account[]
-  posts         Post[]
   usedBoards    UsedBoard[]
   pointsHistory PointsHistory[]
   notifications Notification[]
+  favorites     Favorite[]
 
   @@map("user")
 }
@@ -129,22 +130,6 @@ model Verification {
 }
 
 // ================================
-// DELETE SOON
-// ================================
-
-model Post {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String
-  content   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("posts")
-}
-
-// ================================
 // USEDBOARDS
 // ================================
 
@@ -192,6 +177,7 @@ model Product {
   imageUrl    String[]
   status      ProductStatus @default(CATALOG)
   usedBoard   UsedBoard?    @relation(fields: [usedBoardId], references: [id])
+  favorites   Favorite[]
   usedBoardId String?       @unique
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -231,4 +217,20 @@ model Notification {
   @@index([userId, isRead])
   @@index([target, isRead])
   @@index([createdAt])
+}
+
+// ================================
+// FAVORITES
+// ================================
+
+model Favorite {
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@id([userId, productId])
+  @@map("favorite")
 }

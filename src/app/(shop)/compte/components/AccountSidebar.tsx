@@ -1,7 +1,7 @@
 'use client'
 import type React from 'react'
 import Link from 'next/link'
-import { User, Settings, Key, Package, Bell } from 'lucide-react'
+import { User, Settings, Key, Package, Bell, Heart } from 'lucide-react'
 
 interface SidebarItem {
   id: string
@@ -34,6 +34,12 @@ const sidebarItems: SidebarItem[] = [
     label: 'Notifications',
     icon: Bell,
     href: '/compte/notifications',
+  },
+  {
+    id: 'favoris',
+    label: 'favoris',
+    icon: Heart,
+    href: '/compte/favoris',
   },
 ]
 

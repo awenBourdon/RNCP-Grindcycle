@@ -1,19 +1,29 @@
-import { UsedBoardStatus } from "@/generated/prisma"
+import { 
+  UsedBoardStatus, 
+  BoardType, 
+  BoardCondition,
+  UserRole 
+} from "@/generated/prisma"
 
 export interface ProductType {
   id: string
   name: string
-  description?: string
-  type: string
+  description?: string | null
+  type: BoardType
   priceEuro: number
-  pricePoints: number
+  pricePoints: number | null
   imageUrl: string[]
   status: string
   usedBoard?: {
     id: string
     name: string
-    boardType: string
-  }
+    boardType: BoardType
+    user?: {
+      id: string
+      name: string
+      email: string
+    }
+  } | null
 }
 
 export type CartItemType = {
@@ -47,8 +57,6 @@ export interface User {
   createdAt: Date
 }
 
-export type UserRole = 'ADMIN' | 'USER';
-
 export interface AdminNotification {
   id: string
   description: string
@@ -59,18 +67,6 @@ export interface AdminNotification {
     name: string | null
     email: string
   } | null
-}
-
-export enum BoardType {
-  SKATE = 'SKATE',
-  CRUISER = 'CRUISER',
-  LONG = 'LONG',
-}
-
-export enum BoardCondition {
-  GOOD = 'GOOD',
-  AVERAGE = 'AVERAGE',
-  BAD = 'BAD',
 }
 
 export interface UsedBoard {
@@ -92,3 +88,4 @@ export interface Session {
     createdAt: Date
   }
 }
+export { BoardType, BoardCondition, UsedBoardStatus, UserRole }

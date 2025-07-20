@@ -11,7 +11,7 @@ import {
 type CartContextType = {
   cartItems: CartItemType[]
   addToCart: (product: ProductType) => void
-  removeFromCart: (product: ProductType | string) => void // string au lieu de number
+  removeFromCart: (product: ProductType | string) => void
   clearCart: () => void
   getCartTotal: () => number
   getCartCount: () => number

@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
-import { getAdminNotifications } from '@/lib/notification'
 import { DashboardStats } from '../components/DashboardStats'
+import { getAdminNotifications } from '@/lib/server/services/notificationsService'
 
 export default async function DashboardPage() {
   const headersList = await headers()
