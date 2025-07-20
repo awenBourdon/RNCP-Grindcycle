@@ -34,6 +34,7 @@ export const Navbar = ({ user }: NavbarProps) => {
       setLastScrollY(window.scrollY)
       setIsScrolled(window.scrollY > 10)
     }
+
     window.addEventListener('scroll', handleScroll)
     return () => {
       window.removeEventListener('scroll', handleScroll)
@@ -49,6 +50,7 @@ export const Navbar = ({ user }: NavbarProps) => {
       document.body.style.overflow = 'auto'
       document.body.style.position = 'static'
     }
+
     return () => {
       document.body.style.overflow = 'auto'
       document.body.style.position = 'static'
@@ -56,6 +58,8 @@ export const Navbar = ({ user }: NavbarProps) => {
   }, [isMenuOpen])
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchUnreadNotifications = async () => {
       if (!user?.id) return
 
@@ -72,28 +76,38 @@ export const Navbar = ({ user }: NavbarProps) => {
         const unreadNotifications = notifications.filter(
           (notification) => !notification.isRead
         )
-        setUnreadCount(unreadNotifications.length)
-        if (user?.id) {
-          sessionStorage.setItem(
-            `unreadCount_${user.id}`,
-            unreadNotifications.length.toString()
-          )
+
+        if (isMounted) {
+          setUnreadCount(unreadNotifications.length)
+          if (user?.id) {
+            sessionStorage.setItem(
+              `unreadCount_${user.id}`,
+              unreadNotifications.length.toString()
+            )
+          }
         }
       } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
+        if (
+          error instanceof Error &&
+          error.name !== 'AbortError' &&
+          isMounted
+        ) {
           setUnreadCount(0)
         }
       }
     }
 
-    // Vérifier d'abord le cache sessionStorage
     const cachedCount = sessionStorage.getItem(`unreadCount_${user?.id}`)
-    if (cachedCount && user?.id) {
+    if (cachedCount && user?.id && isMounted) {
       setUnreadCount(parseInt(cachedCount))
     }
 
     if (user?.id) {
       fetchUnreadNotifications()
+    }
+
+    return () => {
+      isMounted = false
     }
   }, [user?.id, createSignal])
 

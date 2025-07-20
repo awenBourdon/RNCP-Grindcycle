@@ -29,14 +29,15 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
   const [favorites, setFavorites] = useState<string[]>([])
   const [isLoadingFavorites, setIsLoadingFavorites] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { createSignal } = useAbortController()
 
   useEffect(() => {
     setAdded(isInCart(product))
   }, [product, isInCart])
 
-  const { createSignal } = useAbortController()
-
   useEffect(() => {
+    let isMounted = true
+
     const fetchFavorites = async () => {
       const signal = createSignal()
 
@@ -46,25 +47,38 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
         })
 
         if (response.status === 401) {
-          setIsAuthenticated(false)
+          if (isMounted) {
+            setIsAuthenticated(false)
+          }
           return
         }
 
-        setIsAuthenticated(true)
+        if (isMounted) {
+          setIsAuthenticated(true)
+        }
+
         const data: FavoriteResponse = await response.json()
 
-        if (data && data.success) {
+        if (data && data.success && isMounted) {
           setFavorites(data.data.map((f) => f.productId))
         }
       } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
+        if (
+          error instanceof Error &&
+          error.name !== 'AbortError' &&
+          isMounted
+        ) {
           setIsAuthenticated(false)
         }
       }
     }
 
     fetchFavorites()
-  }, [])
+
+    return () => {
+      isMounted = false
+    }
+  }, [createSignal])
 
   const isFavorite = favorites.includes(product.id)
   const isAvailable = product.status === 'CATALOG'
