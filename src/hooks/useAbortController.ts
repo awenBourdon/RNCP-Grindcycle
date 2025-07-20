@@ -1,25 +1,25 @@
 'use client'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 
 export const useAbortController = () => {
   const controllersRef = useRef<Set<AbortController>>(new Set())
   
-  const createSignal = (): AbortSignal => {
+  const createSignal = useCallback((): AbortSignal => {
     const controller = new AbortController()
     controllersRef.current.add(controller)
     return controller.signal
-  }
+  }, [])
   
-  const abortAll = () => {
+  const abortAll = useCallback(() => {
     controllersRef.current.forEach(controller => controller.abort())
     controllersRef.current.clear()
-  }
+  }, [])
   
   useEffect(() => {
     return () => {
       abortAll()
     }
-  }, [])
+  }, [abortAll])
   
   return { createSignal, abortAll }
 }

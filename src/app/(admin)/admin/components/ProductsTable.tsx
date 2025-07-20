@@ -53,28 +53,32 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
   }
 
   const handleDeleteProduct = async (productId: string) => {
+    let isMounted = true
     const controller = new AbortController()
+
     try {
       const response = await fetch('/api/products', {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId: productId,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: productId }),
         signal: controller.signal,
       })
-      if (response.ok) {
+
+      if (response.ok && isMounted) {
         toast.success('Produit supprimé avec succès')
         router.refresh()
-      } else {
+      } else if (isMounted) {
         toast.error('Erreur lors de la suppression')
       }
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
+      if (error instanceof Error && error.name !== 'AbortError' && isMounted) {
         toast.error('Erreur lors de la suppression')
       }
+    }
+
+    return () => {
+      isMounted = false
+      controller.abort()
     }
   }
 

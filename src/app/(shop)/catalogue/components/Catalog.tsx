@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ProductList } from './ProductsList'
 import { Filters } from './Filters'
@@ -21,7 +21,7 @@ export const Catalog = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const initializeFiltersFromUrl = () => {
+  const initializeFiltersFromUrl = useCallback(() => {
     const types = searchParams.get('types')?.split(',').filter(Boolean) || []
     const minPrice = Number(searchParams.get('minPrice')) || 0
     const maxPrice = Number(searchParams.get('maxPrice')) || 200
@@ -31,7 +31,7 @@ export const Catalog = () => {
       priceRange: [minPrice, maxPrice] as [number, number],
       sizes: [] as number[],
     }
-  }
+  }, [searchParams])
 
   const [filters, setFilters] = useState(initializeFiltersFromUrl)
   const [priceRangeValues, setPriceRangeValues] = useState<[number, number]>([
@@ -39,32 +39,45 @@ export const Catalog = () => {
     filters.priceRange[1],
   ])
 
-  const updateUrl = (
-    newFilters: typeof filters,
-    newPriceRange: [number, number]
-  ) => {
-    const params = new URLSearchParams()
+  const [pendingUrl, setPendingUrl] = useState<string | null>(null)
 
-    if (newFilters.types.length > 0) {
-      params.set('types', newFilters.types.join(','))
+  const updateUrl = useCallback(
+    (newFilters: typeof filters, newPriceRange: [number, number]) => {
+      const params = new URLSearchParams()
+
+      if (newFilters.types.length > 0) {
+        params.set('types', newFilters.types.join(','))
+      }
+
+      if (newPriceRange[0] !== 0 || newPriceRange[1] !== 200) {
+        params.set('minPrice', newPriceRange[0].toString())
+        params.set('maxPrice', newPriceRange[1].toString())
+      }
+
+      const queryString = params.toString()
+      const newUrl = queryString ? `?${queryString}` : window.location.pathname
+
+      setPendingUrl(newUrl)
+    },
+    []
+  )
+
+  useEffect(() => {
+    if (pendingUrl) {
+      router.push(pendingUrl, { scroll: false })
+      setPendingUrl(null)
     }
+  }, [pendingUrl, router])
 
-    if (newPriceRange[0] !== 0 || newPriceRange[1] !== 200) {
-      params.set('minPrice', newPriceRange[0].toString())
-      params.set('maxPrice', newPriceRange[1].toString())
-    }
-
-    const queryString = params.toString()
-    const newUrl = queryString ? `?${queryString}` : window.location.pathname
-
-    router.push(newUrl, { scroll: false })
-  }
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
+    let isMounted = true
     const signal = createSignal()
 
     try {
-      setLoading(true)
+      if (isMounted) {
+        setLoading(true)
+      }
+
       const response = await fetch('/api/products/available', {
         signal: signal,
       })
@@ -75,33 +88,37 @@ export const Catalog = () => {
 
       const data: ApiResponse = await response.json()
 
-      if (data.success) {
+      if (data.success && isMounted) {
         setProducts(data.data)
         setError(null)
-      } else {
+      } else if (isMounted) {
         setError(data.error || 'Erreur lors du chargement des produits')
       }
     } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError') {
+      if (err instanceof Error && err.name !== 'AbortError' && isMounted) {
         console.error('Erreur fetch produits:', err)
         setError(err.message)
       }
     } finally {
-      if (!signal.aborted) {
+      if (!signal.aborted && isMounted) {
         setLoading(false)
       }
     }
-  }
+
+    return () => {
+      isMounted = false
+    }
+  }, [createSignal])
 
   useEffect(() => {
     fetchProducts()
-  }, [])
+  }, [fetchProducts])
 
   useEffect(() => {
     const newFilters = initializeFiltersFromUrl()
     setFilters(newFilters)
     setPriceRangeValues([newFilters.priceRange[0], newFilters.priceRange[1]])
-  }, [searchParams])
+  }, [initializeFiltersFromUrl])
 
   const filteredProducts = products.filter((product) => {
     if (filters.types.length > 0 && !filters.types.includes(product.type)) {
@@ -118,42 +135,45 @@ export const Catalog = () => {
     return true
   })
 
-  const handleTypeChange = (type: string) => {
-    setFilters((prev) => {
-      const newTypes = prev.types.includes(type)
-        ? prev.types.filter((t) => t !== type)
-        : [...prev.types, type]
+  const handleTypeChange = useCallback(
+    (type: string) => {
+      setFilters((prev) => {
+        const newTypes = prev.types.includes(type)
+          ? prev.types.filter((t) => t !== type)
+          : [...prev.types, type]
 
-      const newFilters = { ...prev, types: newTypes }
-      updateUrl(newFilters, priceRangeValues)
-      return newFilters
-    })
-  }
+        const newFilters = { ...prev, types: newTypes }
+        updateUrl(newFilters, priceRangeValues)
+        return newFilters
+      })
+    },
+    [priceRangeValues, updateUrl]
+  )
 
-  const handlePriceChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    const newValue = Number.parseInt(e.target.value) || 0
-    const newValues: [number, number] = [...priceRangeValues]
-    newValues[index] = newValue
+  const handlePriceChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+      const newValue = Number.parseInt(e.target.value) || 0
+      const newValues: [number, number] = [...priceRangeValues]
+      newValues[index] = newValue
 
-    if (index === 0 && newValue > priceRangeValues[1]) {
-      newValues[1] = newValue
-    } else if (index === 1 && newValue < priceRangeValues[0]) {
-      newValues[0] = newValue
-    }
+      if (index === 0 && newValue > priceRangeValues[1]) {
+        newValues[1] = newValue
+      } else if (index === 1 && newValue < priceRangeValues[0]) {
+        newValues[0] = newValue
+      }
 
-    setPriceRangeValues(newValues)
+      setPriceRangeValues(newValues)
 
-    setFilters((prev) => {
-      const newFilters = { ...prev, priceRange: newValues }
-      updateUrl(newFilters, newValues)
-      return newFilters
-    })
-  }
+      setFilters((prev) => {
+        const newFilters = { ...prev, priceRange: newValues }
+        updateUrl(newFilters, newValues)
+        return newFilters
+      })
+    },
+    [priceRangeValues, updateUrl]
+  )
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     const resetFiltersData = {
       types: [],
       priceRange: [0, 200] as [number, number],
@@ -164,7 +184,7 @@ export const Catalog = () => {
     setFilters(resetFiltersData)
     setPriceRangeValues(resetPriceRange)
     updateUrl(resetFiltersData, resetPriceRange)
-  }
+  }, [updateUrl])
 
   if (loading) {
     return (

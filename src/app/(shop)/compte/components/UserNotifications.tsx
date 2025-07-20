@@ -10,6 +10,8 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
   const { createSignal } = useAbortController()
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchNotifications = async () => {
       const signal = createSignal()
       try {
@@ -20,7 +22,10 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
         const unreadNotifications = data.filter(
           (notification: Notification) => !notification.isRead
         )
-        setNotifications(unreadNotifications)
+
+        if (isMounted) {
+          setNotifications(unreadNotifications)
+        }
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error(
@@ -29,7 +34,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
           )
         }
       } finally {
-        if (!signal.aborted) {
+        if (isMounted && !signal.aborted) {
           setIsLoading(false)
         }
       }
@@ -38,7 +43,11 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
     if (userId) {
       fetchNotifications()
     }
-  }, [userId])
+
+    return () => {
+      isMounted = false
+    }
+  }, [userId, createSignal])
 
   const handleMarkAsRead = async (notificationId: string) => {
     const signal = createSignal()
