@@ -5,8 +5,8 @@ import { ResponseHelper } from '@/lib/server/utils/responseHelper';
 import { API_MESSAGES } from '@/lib/server/config/constants';
 import { ImageService } from '@/lib/server/utils/imageService';
 import { ZodHelper } from '@/lib/server/utils/zodHelper';
-import { productSchema } from '@/lib/zod-validations/boardsValidation';
 import { z } from 'zod';
+import { productSchema } from '@/lib/validations/boardsValidation';
 
 const purchaseSchema = z.object({
   productId: z.string(),
@@ -35,7 +35,7 @@ export class ProductController extends BaseController {
       }
 
       const images = formData.getAll('images') as File[];
-      const imageValidation = this.imageService.validate(images);
+      const imageValidation = await this.imageService.validate(images);
 
       if (!imageValidation.isValid) {
         return ResponseHelper.error(

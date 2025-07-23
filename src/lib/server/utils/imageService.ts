@@ -1,20 +1,25 @@
 import { API_MESSAGES } from '@/lib/server/config/constants'
 import { UPLOAD_CONFIG, isAllowedMimeType, isAllowedExtension } from '../config/upload'
+import { EnhancedImageValidator } from '@/lib/validations/imagesValidations'
+
 export interface ImageValidationResult {
   isValid: boolean
   errors: string[]
+  warnings: string[]
 }
 
 export interface ImageUploadResult {
   success: boolean
   urls: string[]
   errors: string[]
+  warnings: string[]
 }
 
 export interface ImageProcessingOptions {
   validateCount?: boolean
   validateSize?: boolean
   validateType?: boolean
+  enhancedValidation?: boolean
 }
 
 export type ImageDirectory = 'products' | 'usedBoards'
@@ -38,9 +43,16 @@ export class ImageService {
     return this.storageService
   }
 
-  validate(files: File[], options: ImageProcessingOptions = {}): ImageValidationResult {
-    const { validateCount = true, validateSize = true, validateType = true } = options
+  async validate(files: File[], options: ImageProcessingOptions = {}): Promise<ImageValidationResult> {
+    const { 
+      validateCount = true, 
+      validateSize = true, 
+      validateType = true,
+      enhancedValidation = false
+    } = options
+
     const errors: string[] = []
+    const warnings: string[] = []
 
     if (validateCount) {
       const countErrors = this.validateFileCount(files)
@@ -48,7 +60,7 @@ export class ImageService {
     }
 
     if (files.length === 0 && validateCount) {
-      return { isValid: false, errors }
+      return { isValid: false, errors, warnings }
     }
 
     if (validateSize) {
@@ -56,60 +68,116 @@ export class ImageService {
       if (totalSizeError) errors.push(totalSizeError)
     }
 
-    files.forEach((file, index) => {
-      const fileErrors = this.validateSingleFile(file, index + 1, { validateSize, validateType })
-      errors.push(...fileErrors)
-    })
+    if (enhancedValidation) {
+      try {
+        const enhancedResults = await EnhancedImageValidator.validateMultipleImages(files)
+        
+        errors.push(...enhancedResults.globalErrors)
+        
+        enhancedResults.results.forEach((result, index) => {
+          if (!result.validation.isValid) {
+            result.validation.errors.forEach(error => {
+              errors.push(`Image ${index + 1}: ${error}`)
+            })
+          }
+          
+          result.validation.warnings.forEach(warning => {
+            warnings.push(`Image ${index + 1}: ${warning}`)
+          })
+        })
+      } catch (error) {
+        console.warn('Validation avancée échouée, utilisation de la validation basique:', error)
+        files.forEach((file, index) => {
+          const fileErrors = this.validateSingleFile(file, index + 1, { validateSize, validateType })
+          errors.push(...fileErrors)
+        })
+      }
+    } else {
+      files.forEach((file, index) => {
+        const fileErrors = this.validateSingleFile(file, index + 1, { validateSize, validateType })
+        errors.push(...fileErrors)
+      })
+    }
 
     return {
       isValid: errors.length === 0,
       errors,
+      warnings,
     }
   }
 
   async uploadMultiple(files: File[], options: ImageProcessingOptions = {}): Promise<ImageUploadResult> {
     try {
-      const validation = this.validate(files, options)
+      const validation = await this.validate(files, {
+        ...options,
+        enhancedValidation: false
+      })
+      
       if (!validation.isValid) {
         return {
           success: false,
           urls: [],
           errors: validation.errors,
+          warnings: validation.warnings,
         }
       }
 
+      const renamedFiles = files.map(file => {
+        const secureFilename = EnhancedImageValidator.generateSecureFilename(file.name)
+        return new File([file], secureFilename, { type: file.type })
+      })
+
       const storageService = await this.getStorageService()
-      const storageResult = await storageService.uploadMultiple(files)
+      const storageResult = await storageService.uploadMultiple(renamedFiles)
+
+      if (!storageResult.success) {
+        console.error('[IMAGE_UPLOAD] Échec upload:', {
+          directory: this.directory,
+          fileCount: files.length,
+          errors: storageResult.errors
+        })
+      } else {
+        console.info('[IMAGE_UPLOAD] Upload réussi:', {
+          directory: this.directory,
+          fileCount: files.length,
+          uploadedCount: storageResult.successfulUploads.length
+        })
+      }
 
       return {
         success: storageResult.success,
         urls: storageResult.successfulUploads,
         errors: storageResult.errors,
+        warnings: validation.warnings,
       }
+
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue'
+      
+      console.error('[IMAGE_UPLOAD] Erreur lors de l\'upload:', {
+        directory: this.directory,
+        fileCount: files.length,
+        error: errorMessage
+      })
+
       return {
         success: false,
         urls: [],
-        errors: [`Erreur générale: ${errorMessage}`],
+        errors: [`Erreur d'upload: ${errorMessage}`],
+        warnings: [],
       }
     }
   }
 
   async uploadSingle(file: File, options: ImageProcessingOptions = {}): Promise<string> {
-    const validation = this.validate([file], { ...options, validateCount: false })
-    if (!validation.isValid) {
-      throw new Error(`Validation échouée: ${validation.errors.join(', ')}`)
-    }
-
-    const storageService = await this.getStorageService()
-    const result = await storageService.uploadSingle(file)
+    const result = await this.uploadMultiple([file], options)
     
-    if (!result.success || !result.publicUrl) {
-      throw new Error(`Erreur upload: ${result.error || 'Erreur inconnue'}`)
+    if (!result.success || result.urls.length === 0) {
+      const errorMsg = result.errors.join(', ') || 'Échec de l\'upload'
+      throw new Error(errorMsg)
     }
 
-    return result.publicUrl
+    return result.urls[0]
   }
 
   async deleteMultiple(imageUrls: string[]): Promise<{ deleted: string[]; failed: string[] }> {
@@ -156,7 +224,11 @@ export class ImageService {
     return null
   }
 
-  private validateSingleFile(file: File, index: number, options: { validateSize?: boolean; validateType?: boolean } = {}): string[] {
+  private validateSingleFile(
+    file: File, 
+    index: number, 
+    options: { validateSize?: boolean; validateType?: boolean } = {}
+  ): string[] {
     const { validateSize = true, validateType = true } = options
     const errors: string[] = []
 

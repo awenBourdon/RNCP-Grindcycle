@@ -7,7 +7,6 @@ interface ProductCardProps {
 }
 
 export const NewProductCard = ({ product }: ProductCardProps) => {
-  console.log(product.imageUrl[0])
   return (
     <div className="group">
       <div className="relative w-72 h-96 bg-white overflow-hidden rounded-xl">

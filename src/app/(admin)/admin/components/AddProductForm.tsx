@@ -9,10 +9,7 @@ import { toast } from 'sonner'
 import { ZodError } from 'zod'
 import { Spinner } from '@/components/ui/Spinner'
 import { ImageUpload } from '@/components/form/ImageUpload'
-import {
-  IMAGE_CONFIG,
-  productSchema,
-} from '@/lib/zod-validations/boardsValidation'
+import { IMAGE_CONFIG, productSchema } from '@/lib/validations/boardsValidation'
 import { ProductFormFields } from './ProductFormFields'
 
 interface UsedBoard {

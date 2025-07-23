@@ -11,6 +11,11 @@ export async function middleware(req: NextRequest) {
   const { nextUrl } = req
   const pathname = nextUrl.pathname
 
+  // CVE-2025-29927
+  if (req.headers.get('x-middleware-subrequest')) {
+    return new NextResponse('Forbidden', { status: 403 })
+  }
+
   const sessionCookie = getSessionCookie(req)
   const googleAuthCookie = req.cookies.get('google-auth')
   const isLoggedIn = !!sessionCookie || !!googleAuthCookie

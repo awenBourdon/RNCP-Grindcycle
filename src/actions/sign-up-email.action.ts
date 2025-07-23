@@ -1,6 +1,6 @@
 'use server'
 import { auth, ErrorCode } from '@/lib/auth'
-import { signUpSchema } from '@/lib/zod-validations/authValidation'
+import { signUpSchema } from '@/lib/validations/authValidation'
 import { APIError } from 'better-auth/api'
 
 export async function signUpEmailAction(formData: FormData) {

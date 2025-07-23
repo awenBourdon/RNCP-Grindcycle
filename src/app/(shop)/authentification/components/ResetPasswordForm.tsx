@@ -6,7 +6,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { resetPassword } from '@/lib/auth-client'
 import { Lock } from 'lucide-react'
 import { toast } from 'sonner'
-import { resetPasswordSchema } from '@/lib/zod-validations/authValidation'
+import { resetPasswordSchema } from '@/lib/validations/authValidation'
 import { z } from 'zod'
 
 interface ResetPasswordFormProps {

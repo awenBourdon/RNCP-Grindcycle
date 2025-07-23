@@ -19,38 +19,51 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          // XSS
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block'
           },
-          // MIME sniffing
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff'
           },
-          // Clickjacking
           {
             key: 'X-Frame-Options',
             value: 'DENY'
           },
-          // Politique de référent
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
           },
-          // Content Security Policy avec Supabase
+          // HTTPS obligatoire - à décommenter en prod
+          // {
+          //   key: 'Strict-Transport-Security',
+          //   value: 'max-age=63072000; includeSubDomains; preload'
+          // },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'
+          },
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https: *.supabase.co",
-              "font-src 'self'",
+              "img-src 'self' data: blob: https: *.supabase.co",
+              "font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com",
               "connect-src 'self' *.supabase.co",
               "frame-ancestors 'none'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "upgrade-insecure-requests"
             ].join('; ')
+          },
+          // CVE-2025-29927
+          {
+            key: 'X-Block-Middleware-Bypass',
+            value: 'true'
           }
         ]
       }
