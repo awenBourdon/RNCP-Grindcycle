@@ -3,6 +3,7 @@ import { Hash, Eye, Trash2, Package } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import Image from 'next/image'
+import { useAbortController } from '@/hooks/useAbortController'
 import type { Product, ProductStatus, BoardType } from '@/generated/prisma'
 
 interface ProductWithUsedBoard extends Product {
@@ -47,39 +48,43 @@ const getStatusText = (status: ProductStatus) => {
 
 export const ProductsTable = ({ products }: ProductsTableProps) => {
   const router = useRouter()
+  const { createSignal } = useAbortController()
 
   const handleViewProduct = (productId: string) => {
     router.push(`/produit/${productId}`)
   }
 
   const handleDeleteProduct = async (productId: string) => {
-    let isMounted = true
-    const controller = new AbortController()
+    const signal = createSignal()
 
     try {
       const response = await fetch('/api/products', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: productId }),
-        signal: controller.signal,
+        signal: signal,
       })
 
-      if (response.ok && isMounted) {
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`)
+      }
+
+      if (!signal.aborted) {
         toast.success('Produit supprimé avec succès')
         router.refresh()
-      } else if (isMounted) {
-        toast.error('Erreur lors de la suppression')
       }
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError' && isMounted) {
-        toast.error('Erreur lors de la suppression')
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error('Erreur suppression produit:', error)
+        if (!signal.aborted) {
+          toast.error('Erreur lors de la suppression')
+        }
       }
     }
+  }
 
-    return () => {
-      isMounted = false
-      controller.abort()
-    }
+  const handleConfirmDelete = (productId: string) => {
+    handleDeleteProduct(productId)
   }
 
   return (
@@ -224,8 +229,8 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                         <Eye size={16} />
                       </button>
                       <button
-                        onClick={() => handleDeleteProduct(product.id)}
-                        className="text-gray-600 hover:text-[#0a3d3f] p-1 transition-colors"
+                        onClick={() => handleConfirmDelete(product.id)}
+                        className="text-gray-600 hover:text-red-600 p-1 transition-colors"
                         title="Supprimer le produit"
                       >
                         <Trash2 size={16} />

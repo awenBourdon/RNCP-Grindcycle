@@ -51,8 +51,6 @@ export const Filters: React.FC<FiltersProps> = ({
     }
 
     document.addEventListener('mousedown', handleClickOutside)
-
-    // ✅ Cleanup
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
