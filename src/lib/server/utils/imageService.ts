@@ -48,7 +48,7 @@ export class ImageService {
       validateCount = true, 
       validateSize = true, 
       validateType = true,
-      enhancedValidation = true
+      enhancedValidation = false
     } = options
 
     const errors: string[] = []
@@ -69,23 +69,30 @@ export class ImageService {
     }
 
     if (enhancedValidation) {
-      const enhancedResults = await EnhancedImageValidator.validateMultipleImages(files)
-      
-      errors.push(...enhancedResults.globalErrors)
-      
-      enhancedResults.results.forEach((result, index) => {
-        if (!result.validation.isValid) {
-          result.validation.errors.forEach(error => {
-            errors.push(`Image ${index + 1}: ${error}`)
-          })
-        }
+      try {
+        const enhancedResults = await EnhancedImageValidator.validateMultipleImages(files)
         
-        result.validation.warnings.forEach(warning => {
-          warnings.push(`Image ${index + 1}: ${warning}`)
+        errors.push(...enhancedResults.globalErrors)
+        
+        enhancedResults.results.forEach((result, index) => {
+          if (!result.validation.isValid) {
+            result.validation.errors.forEach(error => {
+              errors.push(`Image ${index + 1}: ${error}`)
+            })
+          }
+          
+          result.validation.warnings.forEach(warning => {
+            warnings.push(`Image ${index + 1}: ${warning}`)
+          })
         })
-      })
+      } catch (error) {
+        console.warn('Validation avancée échouée, utilisation de la validation basique:', error)
+        files.forEach((file, index) => {
+          const fileErrors = this.validateSingleFile(file, index + 1, { validateSize, validateType })
+          errors.push(...fileErrors)
+        })
+      }
     } else {
-      // Validation basique uniquement
       files.forEach((file, index) => {
         const fileErrors = this.validateSingleFile(file, index + 1, { validateSize, validateType })
         errors.push(...fileErrors)
@@ -103,7 +110,7 @@ export class ImageService {
     try {
       const validation = await this.validate(files, {
         ...options,
-        enhancedValidation: true
+        enhancedValidation: false
       })
       
       if (!validation.isValid) {

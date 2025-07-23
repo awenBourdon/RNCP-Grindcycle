@@ -1,6 +1,5 @@
 import { isAllowedExtension, isAllowedMimeType, UPLOAD_CONFIG } from "../server/config/upload"
 
-
 export interface EnhancedImageValidationResult {
   isValid: boolean
   errors: string[]
@@ -60,8 +59,8 @@ export class EnhancedImageValidator {
       }
 
       if (!result.details) {
-  result.details = {};
-}
+        result.details = {};
+      }
 
       const contentValidation = this.scanContent(buffer)
       if (contentValidation.suspicious) {
@@ -267,12 +266,7 @@ export class EnhancedImageValidator {
   }
 
   private static async fileToArrayBuffer(file: File): Promise<ArrayBuffer> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as ArrayBuffer)
-      reader.onerror = () => reject(reader.error)
-      reader.readAsArrayBuffer(file)
-    })
+    return await file.arrayBuffer()
   }
 
   static generateSecureFilename(originalName: string): string {
