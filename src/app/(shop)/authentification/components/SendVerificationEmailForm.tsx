@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Spinner } from '@/components/ui/Spinner'
 import { sendVerificationEmail } from '@/lib/auth-client'
 import { Mail, Send } from 'lucide-react'
-import { emailVerificationSchema } from '@/lib/zod-validations/authValidation'
+import { emailVerificationSchema } from '@/lib/validations/authValidation'
 
 export const SendVerificationEmailForm = () => {
   const [email, setEmail] = useState('')

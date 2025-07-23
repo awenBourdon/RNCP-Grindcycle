@@ -4,7 +4,7 @@ import { UsedBoardService } from '@/lib/server/services/usedBoardService'
 import { ResponseHelper } from '@/lib/server/utils/responseHelper'
 import { API_MESSAGES } from '@/lib/server/config/constants'
 import { ZodHelper } from '@/lib/server/utils/zodHelper'
-import { recycleSchema } from '@/lib/zod-validations/boardsValidation'
+import { recycleSchema } from '@/lib/validations/boardsValidation'
 import { z } from 'zod'
 import { UsedBoardStatus } from '@/generated/prisma'
 

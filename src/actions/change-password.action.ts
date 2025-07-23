@@ -1,7 +1,7 @@
 'use server'
 import { auth } from '@/lib/auth'
 import { checkRateLimit, getClientIP, RATE_LIMIT_MESSAGES } from '@/lib/rateLimit'
-import { passwordSchema } from '@/lib/zod-validations/authValidation'
+import { passwordSchema } from '@/lib/validations/authValidation'
 import { APIError } from 'better-auth/api'
 import { headers } from 'next/headers'
 

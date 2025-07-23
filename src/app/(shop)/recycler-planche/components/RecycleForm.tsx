@@ -3,10 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Recycle } from 'lucide-react'
 import { toast } from 'sonner'
-import {
-  recycleSchema,
-  IMAGE_CONFIG,
-} from '@/lib/zod-validations/boardsValidation'
+import { recycleSchema, IMAGE_CONFIG } from '@/lib/validations/boardsValidation'
 import { FormFields } from './FormFields'
 import { ImageUpload } from '../../../../components/form/ImageUpload'
 import { Spinner } from '@/components/ui/Spinner'

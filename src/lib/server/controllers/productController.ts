@@ -5,7 +5,7 @@ import { ResponseHelper } from '@/lib/server/utils/responseHelper';
 import { API_MESSAGES } from '@/lib/server/config/constants';
 import { ImageService } from '@/lib/server/utils/imageService';
 import { ZodHelper } from '@/lib/server/utils/zodHelper';
-import { productSchema } from '@/lib/zod-validations/boardsValidation';
+import { productSchema } from '@/lib/validations/boardsValidation';
 import { z } from 'zod';
 
 const purchaseSchema = z.object({

@@ -2,7 +2,7 @@ import { BoardCondition, BoardType } from '@/lib/types'
 import {
   formatBoardType,
   formatBoardCondition,
-} from '@/lib/zod-validations/boardsValidation'
+} from '@/lib/validations/boardsValidation'
 
 interface FormErrors {
   [key: string]: string
