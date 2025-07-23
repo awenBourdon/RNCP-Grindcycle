@@ -36,8 +36,6 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
   }, [product, isInCart])
 
   useEffect(() => {
-    let isMounted = true
-
     const fetchFavorites = async () => {
       const signal = createSignal()
 
@@ -47,38 +45,31 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
         })
 
         if (response.status === 401) {
-          if (isMounted) {
-            setIsAuthenticated(false)
-          }
+          setIsAuthenticated(false)
           return
         }
 
-        if (isMounted) {
-          setIsAuthenticated(true)
+        setIsAuthenticated(true)
+
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des favoris')
         }
 
         const data: FavoriteResponse = await response.json()
 
-        if (data && data.success && isMounted) {
+        if (data && data.success) {
           setFavorites(data.data.map((f) => f.productId))
         }
       } catch (error) {
-        if (
-          error instanceof Error &&
-          error.name !== 'AbortError' &&
-          isMounted
-        ) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Erreur favoris:', error)
           setIsAuthenticated(false)
         }
       }
     }
 
     fetchFavorites()
-
-    return () => {
-      isMounted = false
-    }
-  }, [createSignal])
+  }, [createSignal]) // ✅ Dépendances correctes
 
   const isFavorite = favorites.includes(product.id)
   const isAvailable = product.status === 'CATALOG'

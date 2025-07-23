@@ -29,6 +29,8 @@ export const NewProducts = () => {
 
     try {
       setLoading(true)
+      setError(null)
+
       const response = await fetch('/api/products/latest?limit=6', {
         signal: signal,
       })
@@ -55,7 +57,11 @@ export const NewProducts = () => {
         setLoading(false)
       }
     }
-  }, [])
+  }, [createSignal])
+
+  useEffect(() => {
+    fetchLatestProducts()
+  }, [fetchLatestProducts])
 
   const startAnimation = () => {
     const startX = x.get()

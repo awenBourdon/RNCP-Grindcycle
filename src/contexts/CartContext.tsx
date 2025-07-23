@@ -5,6 +5,8 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
+  useMemo,
   type ReactNode,
 } from 'react'
 
@@ -34,82 +36,131 @@ export const useCart = () => useContext(CartContext)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItemType[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    let isMounted = true
-
     try {
       const savedCart = localStorage.getItem('cart')
-      if (savedCart && isMounted) {
-        setCartItems(JSON.parse(savedCart))
+      if (savedCart) {
+        const parsedCart: CartItemType[] = JSON.parse(savedCart)
+
+        if (Array.isArray(parsedCart)) {
+          const validCart = parsedCart.filter(
+            (item) =>
+              item.id &&
+              item.name &&
+              typeof item.priceEuro === 'number' &&
+              typeof item.quantity === 'number' &&
+              item.quantity > 0
+          )
+          setCartItems(validCart)
+        }
       }
     } catch (error) {
       console.error('Erreur lors du chargement du panier:', error)
       localStorage.removeItem('cart')
-    }
-
-    return () => {
-      isMounted = false
+    } finally {
+      setIsLoaded(true)
     }
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems))
-  }, [cartItems])
+    if (!isLoaded) return
 
-  const addToCart = (product: ProductType) => {
-    setCartItems((prevItems) => [
-      ...prevItems,
-      {
-        id: product.id,
-        name: product.name,
-        type: product.type,
-        priceEuro: product.priceEuro,
-        quantity: 1,
-        imageUrl: product.imageUrl,
-      },
-    ])
-  }
+    const timeoutId = setTimeout(() => {
+      try {
+        localStorage.setItem('cart', JSON.stringify(cartItems))
+      } catch (error) {
+        console.error('Erreur lors de la sauvegarde du panier:', error)
+      }
+    }, 300)
 
-  const removeFromCart = (productOrId: ProductType | string) => {
+    return () => clearTimeout(timeoutId)
+  }, [cartItems, isLoaded])
+
+  const addToCart = useCallback((product: ProductType) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === product.id)
+
+      if (existingItem) {
+        return prevItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      }
+
+      return [
+        ...prevItems,
+        {
+          id: product.id,
+          name: product.name,
+          type: product.type,
+          priceEuro: product.priceEuro,
+          quantity: 1,
+          imageUrl: product.imageUrl,
+        },
+      ]
+    })
+  }, [])
+
+  const removeFromCart = useCallback((productOrId: ProductType | string) => {
     const id = typeof productOrId === 'string' ? productOrId : productOrId.id
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id))
-  }
+  }, [])
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCartItems([])
-  }
+  }, [])
 
-  const getCartTotal = () => {
+  const cartTotal = useMemo(() => {
     return cartItems.reduce(
       (total, item) => total + item.priceEuro * item.quantity,
       0
     )
-  }
+  }, [cartItems])
 
-  const getCartCount = () => {
+  const cartCount = useMemo(() => {
     return cartItems.reduce((total, item) => total + item.quantity, 0)
-  }
+  }, [cartItems])
 
-  const getShippingCost = () => {
-    const subtotal = getCartTotal()
-    return subtotal >= 100 ? 0 : 9.9
-  }
+  const shippingCost = useMemo(() => {
+    return cartTotal >= 100 ? 0 : 9.9
+  }, [cartTotal])
 
-  const isInCart = (product: ProductType) => {
-    return cartItems.some((item) => item.id === product.id)
-  }
+  const getCartTotal = useCallback(() => cartTotal, [cartTotal])
+  const getCartCount = useCallback(() => cartCount, [cartCount])
+  const getShippingCost = useCallback(() => shippingCost, [shippingCost])
 
-  const contextValue: CartContextType = {
-    cartItems,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    getCartTotal,
-    getCartCount,
-    getShippingCost,
-    isInCart,
-  }
+  const isInCart = useCallback(
+    (product: ProductType) => {
+      return cartItems.some((item) => item.id === product.id)
+    },
+    [cartItems]
+  )
+
+  const contextValue = useMemo<CartContextType>(
+    () => ({
+      cartItems,
+      addToCart,
+      removeFromCart,
+      clearCart,
+      getCartTotal,
+      getCartCount,
+      getShippingCost,
+      isInCart,
+    }),
+    [
+      cartItems,
+      addToCart,
+      removeFromCart,
+      clearCart,
+      getCartTotal,
+      getCartCount,
+      getShippingCost,
+      isInCart,
+    ]
+  )
 
   return (
     <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>

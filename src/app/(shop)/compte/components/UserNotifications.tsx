@@ -10,47 +10,33 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
   const { createSignal } = useAbortController()
 
   useEffect(() => {
-    let isMounted = true
-
     const fetchNotifications = async () => {
+      if (!userId) return
       const signal = createSignal()
+
       try {
         const response = await fetch(`/api/notifications?userId=${userId}`, {
           signal: signal,
         })
+
         const data = await response.json()
         const unreadNotifications = data.filter(
           (notification: Notification) => !notification.isRead
         )
-
-        if (isMounted) {
-          setNotifications(unreadNotifications)
-        }
-      } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          console.error(
-            'Erreur lors de la récupération des notifications:',
-            error
-          )
-        }
+        setNotifications(unreadNotifications)
+      } catch {
       } finally {
-        if (isMounted && !signal.aborted) {
+        if (!signal.aborted) {
           setIsLoading(false)
         }
       }
     }
-
-    if (userId) {
-      fetchNotifications()
-    }
-
-    return () => {
-      isMounted = false
-    }
+    fetchNotifications()
   }, [userId, createSignal])
 
   const handleMarkAsRead = async (notificationId: string) => {
     const signal = createSignal()
+
     try {
       const response = await fetch('/api/notifications', {
         method: 'PUT',
@@ -60,6 +46,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
         body: JSON.stringify({ notificationId, isRead: true }),
         signal: signal,
       })
+
       if (response.ok) {
         setNotifications((prevNotifications) =>
           prevNotifications.filter(
@@ -67,14 +54,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
           )
         )
       }
-    } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
-        console.error(
-          'Erreur lors du marquage de la notification comme lue:',
-          error
-        )
-      }
-    }
+    } catch {}
   }
 
   if (isLoading) {

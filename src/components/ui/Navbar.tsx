@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { User, X, Menu, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
@@ -26,19 +26,19 @@ export const Navbar = ({ user }: NavbarProps) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > lastScrollY) {
+      const currentScrollY = window.scrollY
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsVisible(false)
       } else {
         setIsVisible(true)
       }
-      setLastScrollY(window.scrollY)
-      setIsScrolled(window.scrollY > 10)
+
+      setLastScrollY(currentScrollY)
+      setIsScrolled(currentScrollY > 10)
     }
 
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [lastScrollY])
 
   useEffect(() => {
@@ -57,59 +57,63 @@ export const Navbar = ({ user }: NavbarProps) => {
     }
   }, [isMenuOpen])
 
-  useEffect(() => {
-    let isMounted = true
+  const fetchUnreadNotifications = useCallback(async () => {
+    if (!user?.id) return
 
-    const fetchUnreadNotifications = async () => {
-      if (!user?.id) return
+    const signal = createSignal()
 
-      const signal = createSignal()
+    try {
+      const response = await fetch(`/api/notifications?userId=${user.id}`, {
+        signal: signal,
+        cache: 'no-cache',
+      })
 
-      try {
-        const response = await fetch(`/api/notifications?userId=${user.id}`, {
-          signal: signal,
-          cache: 'force-cache',
-        })
-        if (!response.ok) return
+      if (!response.ok) {
+        return
+      }
 
-        const notifications: Notification[] = await response.json()
-        const unreadNotifications = notifications.filter(
-          (notification) => !notification.isRead
-        )
+      const notifications: Notification[] = await response.json()
+      const unreadNotifications = notifications.filter(
+        (notification) => !notification.isRead
+      )
 
-        if (isMounted) {
-          setUnreadCount(unreadNotifications.length)
-          if (user?.id) {
-            sessionStorage.setItem(
-              `unreadCount_${user.id}`,
-              unreadNotifications.length.toString()
-            )
-          }
+      if (!signal.aborted) {
+        setUnreadCount(unreadNotifications.length)
+
+        if (user?.id) {
+          sessionStorage.setItem(
+            `unreadCount_${user.id}`,
+            unreadNotifications.length.toString()
+          )
         }
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          error.name !== 'AbortError' &&
-          isMounted
-        ) {
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        if (!signal.aborted) {
           setUnreadCount(0)
         }
       }
     }
+  }, [user?.id, createSignal])
 
-    const cachedCount = sessionStorage.getItem(`unreadCount_${user?.id}`)
-    if (cachedCount && user?.id && isMounted) {
-      setUnreadCount(parseInt(cachedCount))
+  useEffect(() => {
+    const cachedCount = user?.id
+      ? sessionStorage.getItem(`unreadCount_${user.id}`)
+      : null
+
+    if (cachedCount !== null) {
+      const count = parseInt(cachedCount, 10)
+      if (!isNaN(count)) {
+        setUnreadCount(count)
+      }
     }
 
     if (user?.id) {
       fetchUnreadNotifications()
+    } else {
+      setUnreadCount(0)
     }
-
-    return () => {
-      isMounted = false
-    }
-  }, [user?.id, createSignal])
+  }, [user?.id, fetchUnreadNotifications])
 
   useEffect(() => {
     const baseTitle = 'Grindcycle'
@@ -124,6 +128,10 @@ export const Navbar = ({ user }: NavbarProps) => {
       document.title = baseTitle
     }
   }, [unreadCount, user])
+
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false)
+  }, [])
 
   return (
     <header
@@ -150,7 +158,7 @@ export const Navbar = ({ user }: NavbarProps) => {
           </Link>
         </div>
 
-        <div className="hidden md-flex-880 items-center space-x-4">
+        <nav className="hidden md-flex-880 items-center space-x-4">
           <Link
             href="/a-propos"
             className="px-4 py-1.5 font-medium text-[#010101] hover:text-[#0a3d3f] transition-colors"
@@ -193,7 +201,7 @@ export const Navbar = ({ user }: NavbarProps) => {
               </span>
             )}
           </Link>
-        </div>
+        </nav>
 
         <div className="flex mobile-hide items-center space-x-4">
           <Link
@@ -227,39 +235,40 @@ export const Navbar = ({ user }: NavbarProps) => {
         <div className="fixed inset-0 bg-[#f8f7f4] z-50 flex flex-col h-screen w-screen">
           <div className="flex items-center justify-between p-5">
             <button
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               aria-label="Fermer le menu"
-              className="text-[#010101]"
+              className="text-[#010101] p-1"
             >
               <X size={24} />
             </button>
             <Link
               href="/"
               className="text-2xl font-bold tracking-tight text-[#010101] px-3 py-1"
+              onClick={closeMenu}
             >
               GRINDCYCLE
             </Link>
             <div className="w-10"></div>
           </div>
 
-          <div className="flex flex-col p-8 text-3xl font-bold space-y-6">
+          <nav className="flex flex-col p-8 text-3xl font-bold space-y-6">
             <Link
               href="/catalogue"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all"
             >
               Catalogue
             </Link>
             <Link
               href="/a-propos"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all"
             >
               À propos
             </Link>
             <Link
               href="/compte/profil"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all relative flex items-center"
             >
               Mon compte
@@ -271,7 +280,7 @@ export const Navbar = ({ user }: NavbarProps) => {
             </Link>
             <Link
               href="/panier"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="text-[#010101] border-b border-gray-200 pb-2 hover:pl-2 transition-all relative flex items-center"
             >
               Panier
@@ -281,40 +290,40 @@ export const Navbar = ({ user }: NavbarProps) => {
                 </span>
               )}
             </Link>
-          </div>
+          </nav>
 
           <div className="flex flex-col px-8 text-lg space-y-4">
             <Link
               href="/faq"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
             >
               FAQ
             </Link>
             <Link
               href="/contact"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
             >
               Contact
             </Link>
             <Link
               href="/privacy"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
             >
               Politique de confidentialité
             </Link>
             <Link
               href="/terms"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
             >
               Conditions d&apos;utilisation
             </Link>
             <Link
               href="/recycler-planche/redirect"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="inline-flex h-14 items-center justify-center rounded-full px-10 py-4 text-lg font-medium uppercase tracking-wide text-white bg-[#0a3d3f] hover:bg-[#0a4d4f] transition-colors mt-4"
             >
               RECYCLER MA PLANCHE

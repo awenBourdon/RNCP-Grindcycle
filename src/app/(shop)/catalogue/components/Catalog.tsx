@@ -70,17 +70,13 @@ export const Catalog = () => {
   }, [pendingUrl, router])
 
   const fetchProducts = useCallback(async () => {
-    let isMounted = true
     const signal = createSignal()
 
     try {
-      if (isMounted) {
-        setLoading(true)
-      }
+      setLoading(true)
+      setError(null)
 
-      const response = await fetch('/api/products/available', {
-        signal: signal,
-      })
+      const response = await fetch('/api/products/available', { signal })
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`)
@@ -88,25 +84,19 @@ export const Catalog = () => {
 
       const data: ApiResponse = await response.json()
 
-      if (data.success && isMounted) {
+      if (data.success) {
         setProducts(data.data)
-        setError(null)
-      } else if (isMounted) {
+      } else {
         setError(data.error || 'Erreur lors du chargement des produits')
       }
     } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError' && isMounted) {
-        console.error('Erreur fetch produits:', err)
+      if (err instanceof Error && err.name !== 'AbortError') {
         setError(err.message)
       }
     } finally {
-      if (!signal.aborted && isMounted) {
+      if (!signal.aborted) {
         setLoading(false)
       }
-    }
-
-    return () => {
-      isMounted = false
     }
   }, [createSignal])
 
