@@ -18,15 +18,19 @@ export const UpdateUserForm = ({ name }: UpdateUserFormProps) => {
     evt.preventDefault();
     const formData = new FormData(evt.target as HTMLFormElement);
     const name = String(formData.get('name'));
-    const image = String(formData.get('image'));
+    let image = String(formData.get('image')) || null;
 
-    if (!name && !image) {
-      return toast.error('Veuillez entrer un nom ou une image');
+    if (!image || image === 'null') {
+      image = null;
+    }
+
+    if (!name) {
+      return toast.error('Veuillez entrer un nom');
     }
 
     await updateUser({
       ...(name && { name }),
-      image,
+      ...(image !== null && { image }),
       fetchOptions: {
         onRequest: () => {
           setIsPending(true);

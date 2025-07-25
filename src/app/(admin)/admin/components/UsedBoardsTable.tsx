@@ -27,6 +27,8 @@ import type {
   BoardCondition,
 } from '@/generated/prisma';
 import { useImageModal } from '@/hooks/useImageModal';
+import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
+import { deleteUsedBoardAction } from '@/actions/used-boards/delete-used-board';
 
 interface UsedBoardWithUser extends UsedBoard {
   user: {
@@ -64,28 +66,17 @@ const StatusSelect = ({
   const handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = evt.target.value as UsedBoardStatus;
     startTransition(async () => {
-      const controller = new AbortController();
       try {
-        const response = await fetch('/api/used-boards', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            boardId,
-            status: newStatus,
-          }),
-          signal: controller.signal,
-        });
-        if (!response.ok) {
-          throw new Error('Erreur lors de la mise à jour');
+        const result = await updateUsedBoardAction(boardId, newStatus);
+        if (result.success) {
+          toast.success(result.message || 'Statut mis à jour');
+          onUpdate();
+        } else {
+          toast.error(result.error || 'Erreur lors de la mise à jour');
         }
-        toast.success('Statut mis à jour');
-        onUpdate();
       } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          toast.error('Erreur lors de la mise à jour du statut');
-        }
+        console.error('Erreur mise à jour statut:', error);
+        toast.error('Erreur lors de la mise à jour du statut');
       }
     });
   };
@@ -152,30 +143,24 @@ const PointsSelect = ({
   const [isPending, startTransition] = useTransition();
 
   const handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
-    const newPoints = evt.target.value === '' ? null : Number(evt.target.value);
+    const newPoints =
+      evt.target.value === '' ? undefined : Number(evt.target.value);
     startTransition(async () => {
-      const controller = new AbortController();
       try {
-        const response = await fetch('/api/used-boards', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            boardId,
-            pointsAwarded: newPoints,
-          }),
-          signal: controller.signal,
-        });
-        if (!response.ok) {
-          throw new Error('Erreur lors de la mise à jour');
+        const result = await updateUsedBoardAction(
+          boardId,
+          undefined,
+          newPoints
+        );
+        if (result.success) {
+          toast.success(result.message || 'Points mis à jour');
+          onUpdate();
+        } else {
+          toast.error(result.error || 'Erreur lors de la mise à jour');
         }
-        toast.success('Points mis à jour');
-        onUpdate();
       } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          toast.error('Erreur lors de la mise à jour des points');
-        }
+        console.error('Erreur mise à jour points:', error);
+        toast.error('Erreur lors de la mise à jour des points');
       }
     });
   };
@@ -261,22 +246,17 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
   };
 
   const handleDeleteBoard = async (boardId: string) => {
-    const controller = new AbortController();
     try {
-      const response = await fetch(`/api/used-boards?boardId=${boardId}`, {
-        method: 'DELETE',
-        signal: controller.signal,
-      });
-      if (response.ok) {
-        toast.success('Planche supprimée');
+      const result = await deleteUsedBoardAction(boardId);
+      if (result.success) {
+        toast.success(result.message || 'Planche supprimée');
         router.refresh();
       } else {
-        toast.error('Erreur lors de la suppression');
+        toast.error(result.error || 'Erreur lors de la suppression');
       }
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
-        toast.error('Erreur lors de la suppression');
-      }
+      console.error('Erreur suppression planche:', error);
+      toast.error('Erreur lors de la suppression');
     }
   };
 
@@ -440,7 +420,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => handleDeleteBoard(board.id)}
-                        className="text-gray-600 hover:text-[#0a3d3f] p-1 transition-colors"
+                        className="text-gray-600 hover:text-[#0a3d3f] p-1 transition-colors cursor-pointer"
                         title="Supprimer la planche"
                       >
                         <Trash2 size={16} />

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { UserPlus, Mail, Lock } from 'lucide-react';
 import { z } from 'zod';
 import { signUpSchema } from '@/lib/validations/authValidation';
-import { signUpEmailAction } from '@/actions/sign-up-email.action';
+import { signUpEmailAction } from '@/actions/auth/sign-up-email.action';
 import { Spinner } from '@/components/ui/Spinner';
 
 type SignUpInput = z.infer<typeof signUpSchema>;

@@ -11,7 +11,9 @@ import {
   productSchema,
 } from '@/lib/validations/boardsValidation';
 import { ProductFormFields } from './ProductFormFields';
-import { createProductAction } from '@/actions/product.actions';
+import { createProductAction } from '@/actions/products/add-product';
+import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
+import { UsedBoardStatus } from '@/generated/prisma';
 
 interface UsedBoard {
   id: string;
@@ -178,29 +180,44 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         formDataToSend.append('images', file);
       });
 
-      const result = await createProductAction(formDataToSend);
+      const productResult = await createProductAction(formDataToSend);
 
-      if (result.success) {
-        toast.success(result.message);
-
-        setFormData({
-          name: '',
-          description: '',
-          type: '',
-          priceEuro: 0,
-          pricePoints: 0,
-          usedBoardId: '',
-        });
-        setSelectedFiles([]);
-        setPreviewImages([]);
-        setErrors({});
-
-        setTimeout(() => {
-          router.refresh();
-        }, 1000);
-      } else {
-        toast.error(result.error);
+      if (!productResult.success) {
+        toast.error(productResult.error);
+        return;
       }
+
+      const updateResult = await updateUsedBoardAction(
+        formData.usedBoardId,
+        UsedBoardStatus.RECYCLED_TO_PRODUCT
+      );
+
+      if (!updateResult.success) {
+        toast.error(
+          `Produit créé mais erreur mise à jour planche: ${updateResult.error}`
+        );
+        return;
+      }
+
+      toast.success(
+        'Produit créé avec succès ! La planche a été marquée comme recyclée.'
+      );
+
+      setFormData({
+        name: '',
+        description: '',
+        type: '',
+        priceEuro: 0,
+        pricePoints: 0,
+        usedBoardId: '',
+      });
+      setSelectedFiles([]);
+      setPreviewImages([]);
+      setErrors({});
+
+      setTimeout(() => {
+        router.refresh();
+      }, 1000);
     } catch (error) {
       console.error('Erreur création produit:', error);
       toast.error('Une erreur est survenue');
@@ -281,7 +298,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
               isPending ||
               availableUsedBoards.length === 0
             }
-            className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending ? (
               <>

@@ -3,8 +3,8 @@ import { useTransition } from 'react';
 import { Bell, Check, User, Calendar } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { markNotificationAsReadAction } from '@/actions/notification.actions';
 import type { AdminNotification } from '@/lib/types';
+import { markNotificationAsReadAction } from '@/actions/notifications/mark-as-read.action';
 
 interface AdminNotificationsProps {
   notifications: AdminNotification[];

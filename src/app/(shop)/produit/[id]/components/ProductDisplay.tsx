@@ -8,7 +8,7 @@ import { ProductInfo } from './ProductInfo';
 import { ProductActions } from './ProductActions';
 import { ProductType } from '@/lib/types';
 import { useAbortController } from '@/hooks/useAbortController';
-import { toggleFavoriteAction } from '@/actions/favorite.actions';
+import { favoritesAction } from '@/actions/favorites/favorite.action';
 
 interface ProductDisplayProps {
   product: ProductType;
@@ -81,7 +81,7 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
 
     startFavoriteTransition(async () => {
       try {
-        const result = await toggleFavoriteAction(product.id);
+        const result = await favoritesAction(product.id);
 
         if (result.success) {
           if (result.action === 'added') {

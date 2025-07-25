@@ -72,9 +72,10 @@ export const Navbar = ({ user }: NavbarProps) => {
         return;
       }
 
-      const notifications: Notification[] = await response.json();
+      const result = await response.json();
+      const notifications: Notification[] = result.data;
       const unreadNotifications = notifications.filter(
-        (notification) => !notification.isRead
+        (notification: Notification) => !notification.isRead
       );
 
       if (!signal.aborted) {
