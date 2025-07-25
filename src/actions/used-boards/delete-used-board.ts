@@ -1,0 +1,37 @@
+'use server';
+import { revalidatePath } from 'next/cache';
+import { UsedBoardService } from '@/lib/server/services/usedBoardService';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+
+const usedBoardService = new UsedBoardService();
+
+export async function deleteUsedBoardAction(boardId: string) {
+  const headersList = await headers();
+  const session = await auth.api.getSession({ headers: headersList });
+
+  if (!session || session.user.role !== 'ADMIN') {
+    return {
+      success: false,
+      error: 'Non autorisé',
+    };
+  }
+
+  try {
+    await usedBoardService.deleteUsedBoard(boardId);
+
+    revalidatePath('/admin/planches');
+    revalidatePath('/compte/planches');
+
+    return {
+      success: true,
+      message: 'Planche supprimée avec succès',
+    };
+  } catch (error) {
+    console.error('Erreur suppression planche:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur serveur',
+    };
+  }
+}

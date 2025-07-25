@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { changePasswordAction } from '@/actions/change-password.action';
+import { changePasswordAction } from '@/actions/auth/change-password.action';
 import { passwordSchema } from '@/lib/validations/authValidation';
 import { z } from 'zod';
 import { Key, Lock } from 'lucide-react';

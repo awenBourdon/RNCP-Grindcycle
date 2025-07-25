@@ -3,9 +3,9 @@ import { Hash, Eye, Trash2, Package } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import { deleteProductAction } from '@/actions/product.actions';
 import type { Product, ProductStatus, BoardType } from '@/generated/prisma';
 import { useTransition } from 'react';
+import { deleteProductAction } from '@/actions/products/delete-product';
 
 interface ProductWithUsedBoard extends Product {
   usedBoard?: {
@@ -39,7 +39,7 @@ const getBoardTypeText = (type: BoardType) => {
 const getStatusText = (status: ProductStatus) => {
   switch (status) {
     case 'CATALOG':
-      return 'En catalogue';
+      return 'Disponible';
     case 'PURCHASED':
       return 'Acheté';
     default:

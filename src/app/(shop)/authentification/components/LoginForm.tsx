@@ -5,7 +5,7 @@ import { useTransition } from 'react';
 import { Spinner } from '@/components/ui/Spinner';
 import Link from 'next/link';
 import { LogIn } from 'lucide-react';
-import { signInEmailAction } from '@/actions/sign-in-email.action';
+import { signInEmailAction } from '@/actions/auth/sign-in-email.action';
 
 export const LoginForm = () => {
   const [isPending, startTransition] = useTransition();

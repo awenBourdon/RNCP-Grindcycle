@@ -7,7 +7,7 @@ import { createAuthMiddleware, APIError } from 'better-auth/api';
 import { getValidDomains, normalizeName } from './utils';
 import { admin, magicLink } from 'better-auth/plugins';
 import { ac, roles } from './permissions';
-import { sendEmailAction } from '@/actions/send-email.action';
+import { sendEmailAction } from '@/actions/emails/send-email.action';
 import {
   getClientIP,
   checkRateLimit,

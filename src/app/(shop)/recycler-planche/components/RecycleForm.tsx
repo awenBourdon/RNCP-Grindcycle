@@ -8,11 +8,11 @@ import { FormFields } from './FormFields';
 import { ImageUpload } from '../../../../components/form/ImageUpload';
 import { Spinner } from '@/components/ui/Spinner';
 import { BoardCondition, BoardType } from '@/lib/types';
-import { createUsedBoardAction } from '@/actions/usedBoard.actions';
 import {
   recycleSchema,
   IMAGE_CONFIG,
 } from '@/lib/validations/boardsValidation';
+import { createUsedBoardAction } from '@/actions/used-boards/add-used-board.action';
 
 interface RecycleFormProps {
   userId: string;
@@ -235,7 +235,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
               isPending ||
               isRateLimited
             }
-            className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed  cursor-pointer "
           >
             {isPending ? (
               <>
@@ -260,7 +260,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
                 Limite atteinte
               </>
             ) : (
-              <div className=" cursor-pointer flex items-center">
+              <div className="flex items-center">
                 <Recycle className="mr-2 h-5 w-5" />
                 Soumettre ma planche
               </div>

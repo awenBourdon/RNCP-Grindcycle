@@ -3,12 +3,10 @@
 import { useState, useEffect, useTransition } from 'react';
 import { Bell, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  markNotificationAsReadAction,
-  markAllNotificationsAsReadAction,
-} from '@/actions/notification.actions';
 import type { Notification } from '@/lib/types';
 import { useAbortController } from '@/hooks/useAbortController';
+import { markNotificationAsReadAction } from '@/actions/notifications/mark-as-read.action';
+import { markAllNotificationsAsReadAction } from '@/actions/notifications/mark-all-as-read.action';
 
 export const UserNotifications = ({ userId }: { userId: string }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
