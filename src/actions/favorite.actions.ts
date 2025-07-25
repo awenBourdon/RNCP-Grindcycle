@@ -26,6 +26,7 @@ export async function addToFavoritesAction(productId: string) {
       return {
         success: false,
         error: 'ID produit invalide',
+        details: validation.error.errors.map(e => e.message),
       };
     }
 
@@ -65,7 +66,7 @@ export async function addToFavoritesAction(productId: string) {
     console.error('Erreur ajout favoris:', error);
     return {
       success: false,
-      error: 'Erreur serveur',
+      error: error instanceof Error ? error.message : 'Erreur serveur',
     };
   }
 }
@@ -87,6 +88,7 @@ export async function removeFromFavoritesAction(productId: string) {
       return {
         success: false,
         error: 'ID produit invalide',
+        details: validation.error.errors.map(e => e.message),
       };
     }
 
@@ -108,7 +110,92 @@ export async function removeFromFavoritesAction(productId: string) {
     console.error('Erreur suppression favoris:', error);
     return {
       success: false,
-      error: 'Erreur serveur',
+      error: error instanceof Error ? error.message : 'Erreur serveur',
+    };
+  }
+}
+
+export async function toggleFavoriteAction(productId: string) {
+  const headersList = await headers();
+  const session = await auth.api.getSession({ headers: headersList });
+
+  if (!session) {
+    return {
+      success: false,
+      error: 'Non connecté',
+    };
+  }
+
+  try {
+    const validation = favoriteSchema.safeParse({ productId });
+    if (!validation.success) {
+      return {
+        success: false,
+        error: 'ID produit invalide',
+        details: validation.error.errors.map(e => e.message),
+      };
+    }
+
+    const existingFavorite = await prisma.favorite.findUnique({
+      where: {
+        userId_productId: {
+          userId: session.user.id,
+          productId,
+        },
+      },
+    });
+
+    if (existingFavorite) {
+      await prisma.favorite.delete({
+        where: {
+          userId_productId: {
+            userId: session.user.id,
+            productId,
+          },
+        },
+      });
+
+      revalidatePath('/compte/favoris');
+      revalidatePath(`/produit/${productId}`);
+
+      return {
+        success: true,
+        message: 'Retiré des favoris',
+        action: 'removed',
+      };
+    } else {
+      const product = await prisma.product.findUnique({
+        where: { id: productId },
+      });
+
+      if (!product) {
+        return {
+          success: false,
+          error: 'Produit non trouvé',
+        };
+      }
+
+      await prisma.favorite.create({
+        data: {
+          userId: session.user.id,
+          productId,
+        },
+      });
+
+      revalidatePath('/compte/favoris');
+      revalidatePath(`/produit/${productId}`);
+
+      return {
+        success: true,
+        message: 'Ajouté aux favoris',
+        action: 'added',
+      };
+    }
+  } catch (error) {
+    console.error('Erreur toggle favoris:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erreur serveur',
     };
   }
 }

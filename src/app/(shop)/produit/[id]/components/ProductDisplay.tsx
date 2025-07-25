@@ -8,6 +8,8 @@ import { ProductInfo } from './ProductInfo';
 import { ProductActions } from './ProductActions';
 import { ProductType } from '@/lib/types';
 import { useAbortController } from '@/hooks/useAbortController';
+import { toggleFavoriteAction } from '@/actions/favorite.actions';
+
 interface ProductDisplayProps {
   product: ProductType;
 }
@@ -25,9 +27,9 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
 
   const { addToCart, removeFromCart, isInCart } = useCart();
   const [isPending, startTransition] = useTransition();
+  const [isFavoritePending, startFavoriteTransition] = useTransition();
   const [added, setAdded] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { createSignal } = useAbortController();
 
@@ -75,37 +77,27 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
   const isAvailable = product.status === 'CATALOG';
 
   const toggleFavorite = async () => {
-    if (isLoadingFavorites || !isAuthenticated) return;
+    if (isFavoritePending || !isAuthenticated) return;
 
-    setIsLoadingFavorites(true);
-    try {
-      if (isFavorite) {
-        const response = await fetch(`/api/favorites?productId=${product.id}`, {
-          method: 'DELETE',
-        });
-        if (response.ok) {
-          setFavorites((prev) => prev.filter((id) => id !== product.id));
-          toast.success('Retiré des favoris');
+    startFavoriteTransition(async () => {
+      try {
+        const result = await toggleFavoriteAction(product.id);
+
+        if (result.success) {
+          if (result.action === 'added') {
+            setFavorites((prev) => [...prev, product.id]);
+          } else {
+            setFavorites((prev) => prev.filter((id) => id !== product.id));
+          }
+          toast.success(result.message);
+        } else {
+          toast.error(result.error);
         }
-      } else {
-        const response = await fetch('/api/favorites', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ productId: product.id }),
-        });
-        if (response.ok) {
-          setFavorites((prev) => [...prev, product.id]);
-          toast.success('Ajouté aux favoris');
-        }
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour des favoris:', error);
+        toast.error('Une erreur est survenue');
       }
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour des favoris:', error);
-      toast.error('Une erreur est survenue');
-    } finally {
-      setIsLoadingFavorites(false);
-    }
+    });
   };
 
   const handleToggleCart = () => {
@@ -141,7 +133,7 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
             isAvailable={isAvailable}
             isAuthenticated={isAuthenticated}
             isFavorite={isFavorite}
-            isLoadingFavorites={isLoadingFavorites}
+            isLoadingFavorites={isFavoritePending}
             toggleFavorite={toggleFavorite}
           />
         </div>
