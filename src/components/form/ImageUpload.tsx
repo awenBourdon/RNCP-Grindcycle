@@ -63,7 +63,7 @@ export const ImageUpload = ({
                 {previewImages[index] ? (
                   <>
                     <Image
-                      src={previewImages[index] || '/placeholder.svg'}
+                      src={previewImages[index] || '/placeholder.webp'}
                       alt={`Aperçu ${index + 1}`}
                       fill
                       className="object-contain p-2 rounded-lg"

@@ -68,7 +68,7 @@ export default async function FavorisPage() {
             >
               <div className="aspect-[3/4] relative">
                 <Image
-                  src={product.imageUrl[0] || '/placeholder.svg'}
+                  src={product.imageUrl[0] || '/placeholder.webp'}
                   alt={product.name}
                   fill
                   className="object-cover"

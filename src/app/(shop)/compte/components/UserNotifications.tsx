@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Bell, Check } from 'lucide-react'
-import { useAbortController } from '@/hooks/useAbortController'
 import type { Notification } from '@/lib/types'
+import { useAbortController } from '@/hooks/useAbortController'
 
 export const UserNotifications = ({ userId }: { userId: string }) => {
   const [notifications, setNotifications] = useState<Notification[]>([])

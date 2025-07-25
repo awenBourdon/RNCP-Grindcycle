@@ -10,7 +10,7 @@ export const Item = ({ item }: { item: CartItemType }) => {
     <div className="flex flex-col sm:flex-row gap-6 pb-10 border-b border-gray-200">
       <div className="relative w-full sm:w-48 h-64 bg-[#f8f7f4] rounded-xl overflow-hidden">
         <Image
-          src={item.imageUrl[0]}
+          src={item.imageUrl[0] || '/placeholder.webp'}
           alt={item.name}
           fill
           className="object-cover"

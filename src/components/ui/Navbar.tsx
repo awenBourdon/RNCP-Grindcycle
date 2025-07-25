@@ -3,8 +3,8 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { User, X, Menu, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
-import { useAbortController } from '@/hooks/useAbortController'
 import { Notification } from '@/lib/types'
+import { useAbortController } from '@/hooks/useAbortController'
 
 interface NavbarUser {
   id: string

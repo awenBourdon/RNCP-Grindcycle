@@ -94,7 +94,7 @@ export const ImageModal = ({
             </div>
           ) : (
             <Image
-              src={images[currentImageIndex] || '/placeholder.svg'}
+              src={images[currentImageIndex] || '/placeholder.webp'}
               alt={`Image ${currentImageIndex + 1} de la planche`}
               className="max-w-full max-h-full object-contain"
               width={800}
@@ -147,7 +147,7 @@ export const ImageModal = ({
                     </div>
                   ) : (
                     <Image
-                      src={image || '/placeholder.svg'}
+                      src={image || '/placeholder.webp'}
                       alt={`Miniature ${index + 1}`}
                       className="w-full h-full object-cover"
                       width={64}
@@ -184,48 +184,4 @@ export const ImageModal = ({
       <div className="absolute inset-0 -z-10" onClick={onClose} />
     </div>
   )
-}
-
-export const useImageModal = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [currentImages, setCurrentImages] = useState<string[]>([])
-  const [currentBoardId, setCurrentBoardId] = useState('')
-  const [currentBoardName, setCurrentBoardName] = useState('')
-  const [currentUserName, setCurrentUserName] = useState('')
-  const [currentDescription, setCurrentDescription] = useState('')
-
-  const openModal = (
-    images: string[],
-    boardId: string,
-    boardName?: string,
-    userName?: string,
-    description?: string
-  ) => {
-    setCurrentImages(images)
-    setCurrentBoardId(boardId)
-    setCurrentBoardName(boardName || '')
-    setCurrentUserName(userName || '')
-    setCurrentDescription(description || '')
-    setIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setIsOpen(false)
-    setCurrentImages([])
-    setCurrentBoardId('')
-    setCurrentBoardName('')
-    setCurrentUserName('')
-    setCurrentDescription('')
-  }
-
-  return {
-    isOpen,
-    images: currentImages,
-    boardId: currentBoardId,
-    name: currentBoardName,
-    userName: currentUserName,
-    description: currentDescription,
-    openModal,
-    closeModal,
-  }
 }

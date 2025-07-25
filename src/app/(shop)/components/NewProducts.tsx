@@ -4,8 +4,8 @@ import { motion, useAnimation, useMotionValue } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { NewProductCard } from './ProductCard'
-import { useAbortController } from '@/hooks/useAbortController'
 import { ProductType } from '@/lib/types'
+import { useAbortController } from '@/hooks/useAbortController'
 
 interface ApiResponse {
   success: boolean

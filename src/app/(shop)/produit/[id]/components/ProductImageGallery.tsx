@@ -31,7 +31,7 @@ export const ProductImageGallery = ({
     <div className="space-y-4">
       <div className="relative w-full aspect-square overflow-hidden rounded-2xl bg-gray-100 shadow-lg">
         <Image
-          src={displayImages[currentImageIndex] || '/placeholder.svg'}
+          src={displayImages[currentImageIndex] || '/placeholder.webp'}
           alt={`${productName} - Image ${currentImageIndex + 1}`}
           fill
           className="object-cover transition-all duration-300"
@@ -76,7 +76,7 @@ export const ProductImageGallery = ({
               }`}
             >
               <Image
-                src={image || '/placeholder.svg'}
+                src={image || '/placeholder.webp'}
                 alt={`${productName} - Miniature ${index + 1}`}
                 width={96}
                 height={96}

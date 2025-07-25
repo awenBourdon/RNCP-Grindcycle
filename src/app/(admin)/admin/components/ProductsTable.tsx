@@ -3,8 +3,8 @@ import { Hash, Eye, Trash2, Package } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import Image from 'next/image'
-import { useAbortController } from '@/hooks/useAbortController'
 import type { Product, ProductStatus, BoardType } from '@/generated/prisma'
+import { useAbortController } from '@/hooks/useAbortController'
 
 interface ProductWithUsedBoard extends Product {
   usedBoard?: {
@@ -154,7 +154,7 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                     <div className="w-16 h-16 relative">
                       {product.imageUrl && product.imageUrl.length > 0 ? (
                         <Image
-                          src={product.imageUrl[0] || '/placeholder.svg'}
+                          src={product.imageUrl[0] || '/placeholder.webp'}
                           alt={product.name}
                           fill
                           className="object-cover rounded-lg"

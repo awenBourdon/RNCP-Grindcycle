@@ -91,7 +91,7 @@ export const UsedBoardsList = ({ userBoards }: UsedBoardsListProps) => {
               <div className="flex-shrink-0">
                 {board.image && board.image.length > 0 ? (
                   <Image
-                    src={board.image[0] || '/placeholder.svg'}
+                    src={board.image[0] || '/placeholder.webp'}
                     alt={`Image planche ${board.name || board.id}`}
                     width={80}
                     height={80}

@@ -15,7 +15,7 @@ import {
   Truck,
   ImageIcon,
 } from 'lucide-react'
-import { ImageModal, useImageModal } from './ImageModal'
+import { ImageModal } from './ImageModal'
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -26,6 +26,7 @@ import type {
   UsedBoardStatus,
   BoardCondition,
 } from '@/generated/prisma'
+import { useImageModal } from '@/hooks/useImageModal'
 
 interface UsedBoardWithUser extends UsedBoard {
   user: {
@@ -389,7 +390,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                         {board.image && board.image.length > 0 && (
                           <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
                             <Image
-                              src={board.image[0] || '/placeholder.svg'}
+                              src={board.image[0] || '/placeholder.webp'}
                               alt="Preview"
                               className="w-full h-full object-cover"
                               width={40}
@@ -402,7 +403,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                                 )
                               }}
                             />
-                            <div className="hidden absolute inset-0 flex items-center justify-center">
+                            <div className="hidden absolute inset-0 items-center justify-center">
                               <ImageIcon size={16} className="text-gray-400" />
                             </div>
                           </div>

@@ -6,11 +6,12 @@ export const Team = () => (
       <h2 className="text-3xl font-normal mb-16">Notre Équipe</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div>
-          <div className="relative aspect-square mb-4 overflow-hidden rounded-xl bg-gray-500">
+          <div className="relative aspect-square mb-4 overflow-hidden rounded-xl">
             <Image
-              src="/placeholder.svg?height=400&width=400"
+              src="/placeholder.webp"
               alt="Alex Dupont"
-              fill
+              width={400}
+              height={400}
               className="object-cover"
             />
           </div>
@@ -18,11 +19,12 @@ export const Team = () => (
           <p className="text-gray-600">Fondateur</p>
         </div>
         <div>
-          <div className="relative aspect-square mb-4 overflow-hidden rounded-xl bg-gray-500">
+          <div className="relative aspect-square mb-4 overflow-hidden rounded-xl">
             <Image
-              src="/placeholder.svg?height=400&width=400"
+              src="/placeholder.webp"
               alt="Marie Leroy"
-              fill
+              width={400}
+              height={400}
               className="object-cover"
             />
           </div>
@@ -30,11 +32,12 @@ export const Team = () => (
           <p className="text-gray-600">Designer</p>
         </div>
         <div>
-          <div className="relative aspect-square mb-4 overflow-hidden rounded-xl bg-gray-500">
+          <div className="relative aspect-square mb-4 overflow-hidden rounded-xl">
             <Image
-              src="/placeholder.svg?height=400&width=400"
+              src="/placeholder.webp"
               alt="Thomas Martin"
-              fill
+              width={400}
+              height={400}
               className="object-cover"
             />
           </div>
@@ -42,11 +45,12 @@ export const Team = () => (
           <p className="text-gray-600">Artisan</p>
         </div>
         <div>
-          <div className="relative aspect-square mb-4 overflow-hidden rounded-xl bg-gray-500">
+          <div className="relative aspect-square mb-4 overflow-hidden rounded-xl">
             <Image
-              src="/placeholder.svg?height=400&width=400"
+              src="/placeholder.webp"
               alt="Julie Moreau"
-              fill
+              width={400}
+              height={400}
               className="object-cover"
             />
           </div>

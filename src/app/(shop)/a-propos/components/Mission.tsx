@@ -20,12 +20,13 @@ export const Mission = () => (
             passion et responsabilité environnementale.
           </p>
         </div>
-        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-gray-500">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
           <Image
-            src="/placeholder.svg?height=800&width=600"
+            src="/placeholder.webp"
             alt="Atelier GRINDCYCLE"
-            fill
             className="object-cover"
+            width={600}
+            height={400}
           />
         </div>
       </div>

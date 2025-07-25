@@ -4,8 +4,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { ProductList } from './ProductsList'
 import { Filters } from './Filters'
 import { Spinner } from '@/components/ui/Spinner'
-import { useAbortController } from '@/hooks/useAbortController'
 import { ProductType } from '@/lib/types'
+import { useAbortController } from '@/hooks/useAbortController'
 
 interface ApiResponse {
   success: boolean

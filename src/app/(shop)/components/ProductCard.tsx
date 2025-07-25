@@ -11,7 +11,7 @@ export const NewProductCard = ({ product }: ProductCardProps) => {
     <div className="group">
       <div className="relative w-72 h-96 bg-white overflow-hidden rounded-xl">
         <Image
-          src={product.imageUrl[0]}
+          src={product.imageUrl[0] || '/placeholder.webp'}
           alt={product.name}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
