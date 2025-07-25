@@ -9,4 +9,4 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testMatch: ['**/__tests__/**/*.(ts|tsx)', '**/?(*.)+(spec|test).(ts|tsx)'],
-}
+};

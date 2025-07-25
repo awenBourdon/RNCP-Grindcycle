@@ -1,16 +1,16 @@
-'use client'
-import Marquee from 'react-fast-marquee'
-import { useEffect, useState } from 'react'
+'use client';
+import Marquee from 'react-fast-marquee';
+import { useEffect, useState } from 'react';
 
 export const JoinMovement = () => {
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640)
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <section className="py-16 bg-white text-[#010101]">
@@ -40,5 +40,5 @@ export const JoinMovement = () => {
         )}
       </div>
     </section>
-  )
-}
+  );
+};

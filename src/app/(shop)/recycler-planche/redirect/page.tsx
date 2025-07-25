@@ -1,18 +1,18 @@
-import Link from 'next/link'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation'
-import { LogIn, UserPlus } from 'lucide-react'
-import { ReturnButton } from '@/components/ui/ReturnButton'
+import Link from 'next/link';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { LogIn, UserPlus } from 'lucide-react';
+import { ReturnButton } from '@/components/ui/ReturnButton';
 
 const RedirectPage = async () => {
-  const headersList = await headers()
+  const headersList = await headers();
   const session = await auth.api.getSession({
     headers: headersList,
-  })
+  });
 
   if (session) {
-    redirect('/recycler-planche')
+    redirect('/recycler-planche');
   }
 
   return (
@@ -80,7 +80,7 @@ const RedirectPage = async () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RedirectPage
+export default RedirectPage;

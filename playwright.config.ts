@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test'
+import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './src/tests/e2e',
@@ -7,4 +7,4 @@ export default defineConfig({
     browserName: 'chromium',
     headless: true,
   },
-})
+});

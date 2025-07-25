@@ -1,27 +1,27 @@
-'use client'
-import { Spinner } from '@/components/ui/Spinner'
-import { forgetPassword } from '@/lib/auth-client'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { Mail, ArrowRight } from 'lucide-react'
-import type React from 'react'
+'use client';
+import { Spinner } from '@/components/ui/Spinner';
+import { forgetPassword } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Mail, ArrowRight } from 'lucide-react';
+import type React from 'react';
 
 export const ForgotPasswordForm = () => {
-  const [isPending, setIsPending] = useState(false) // TODO : Mettre UseTransition
-  const router = useRouter()
+  const [isPending, setIsPending] = useState(false); // TODO : Mettre UseTransition
+  const router = useRouter();
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.currentTarget)
-    const email = String(formData.get('email'))
+    evt.preventDefault();
+    const formData = new FormData(evt.currentTarget);
+    const email = String(formData.get('email'));
 
     if (!email) {
-      toast.error('Merci de renseigner ton adresse email.')
-      return
+      toast.error('Merci de renseigner ton adresse email.');
+      return;
     }
 
-    setIsPending(true)
+    setIsPending(true);
 
     try {
       await forgetPassword({
@@ -31,18 +31,18 @@ export const ForgotPasswordForm = () => {
           onRequest: () => {},
           onResponse: () => {},
           onError: (ctx) => {
-            toast.error(ctx.error.message)
+            toast.error(ctx.error.message);
           },
           onSuccess: () => {
-            toast.success('Le lien de réinitialisation a été envoyé.')
-            router.push('/authentification/mot-de-passe-oublie/succes')
+            toast.success('Le lien de réinitialisation a été envoyé.');
+            router.push('/authentification/mot-de-passe-oublie/succes');
           },
         },
-      })
+      });
     } finally {
       setTimeout(() => {
-        setIsPending(false)
-      }, 800)
+        setIsPending(false);
+      }, 800);
     }
   }
 
@@ -83,5 +83,5 @@ export const ForgotPasswordForm = () => {
         )}
       </button>
     </form>
-  )
-}
+  );
+};

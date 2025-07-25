@@ -1,41 +1,41 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { Bell, Check } from 'lucide-react'
-import type { Notification } from '@/lib/types'
-import { useAbortController } from '@/hooks/useAbortController'
+'use client';
+import { useState, useEffect } from 'react';
+import { Bell, Check } from 'lucide-react';
+import type { Notification } from '@/lib/types';
+import { useAbortController } from '@/hooks/useAbortController';
 
 export const UserNotifications = ({ userId }: { userId: string }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const { createSignal } = useAbortController()
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { createSignal } = useAbortController();
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      if (!userId) return
-      const signal = createSignal()
+      if (!userId) return;
+      const signal = createSignal();
 
       try {
         const response = await fetch(`/api/notifications?userId=${userId}`, {
           signal: signal,
-        })
+        });
 
-        const data = await response.json()
+        const data = await response.json();
         const unreadNotifications = data.filter(
           (notification: Notification) => !notification.isRead
-        )
-        setNotifications(unreadNotifications)
+        );
+        setNotifications(unreadNotifications);
       } catch {
       } finally {
         if (!signal.aborted) {
-          setIsLoading(false)
+          setIsLoading(false);
         }
       }
-    }
-    fetchNotifications()
-  }, [userId, createSignal])
+    };
+    fetchNotifications();
+  }, [userId, createSignal]);
 
   const handleMarkAsRead = async (notificationId: string) => {
-    const signal = createSignal()
+    const signal = createSignal();
 
     try {
       const response = await fetch('/api/notifications', {
@@ -45,17 +45,17 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
         },
         body: JSON.stringify({ notificationId, isRead: true }),
         signal: signal,
-      })
+      });
 
       if (response.ok) {
         setNotifications((prevNotifications) =>
           prevNotifications.filter(
             (notification) => notification.id !== notificationId
           )
-        )
+        );
       }
     } catch {}
-  }
+  };
 
   if (isLoading) {
     return (
@@ -68,7 +68,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0a3d3f]"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -131,5 +131,5 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};

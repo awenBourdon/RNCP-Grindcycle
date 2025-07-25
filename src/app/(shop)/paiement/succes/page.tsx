@@ -1,6 +1,6 @@
-'use client'
-import { Suspense } from 'react'
-import { SuccessContent } from '../components/SuccessContent'
+'use client';
+import { Suspense } from 'react';
+import { SuccessContent } from '../components/SuccessContent';
 
 // TODO : refaire cette page en SSR
 export default function SuccessPage() {
@@ -8,5 +8,5 @@ export default function SuccessPage() {
     <Suspense fallback={<div className="text-center py-20">Chargement...</div>}>
       <SuccessContent />
     </Suspense>
-  )
+  );
 }

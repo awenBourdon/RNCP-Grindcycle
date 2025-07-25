@@ -1,8 +1,8 @@
-import type { NextConfig } from 'next'
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['@node-rs/argon2'],
-  
+
   images: {
     remotePatterns: [
       {
@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   async headers() {
     return [
       {
@@ -21,19 +21,19 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'X-XSS-Protection',
-            value: '1; mode=block'
+            value: '1; mode=block',
           },
           {
             key: 'X-Content-Type-Options',
-            value: 'nosniff'
+            value: 'nosniff',
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY'
+            value: 'DENY',
           },
           {
             key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin'
+            value: 'strict-origin-when-cross-origin',
           },
           // HTTPS obligatoire - à décommenter en prod
           // {
@@ -42,7 +42,8 @@ const nextConfig: NextConfig = {
           // },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'
+            value:
+              'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
           },
           {
             key: 'Content-Security-Policy',
@@ -51,24 +52,23 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https: *.supabase.co",
-              "font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com",
               "connect-src 'self' *.supabase.co",
               "frame-ancestors 'none'",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
-              "upgrade-insecure-requests"
-            ].join('; ')
+              'upgrade-insecure-requests',
+            ].join('; '),
           },
           // CVE-2025-29927
           {
             key: 'X-Block-Middleware-Bypass',
-            value: 'true'
-          }
-        ]
-      }
-    ]
+            value: 'true',
+          },
+        ],
+      },
+    ];
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

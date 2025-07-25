@@ -1,31 +1,31 @@
-'use client'
-import { useState, useTransition, useEffect } from 'react'
-import { signIn } from '@/lib/auth-client'
-import { Spinner } from '@/components/ui/Spinner'
-import Image from 'next/image'
-import { toast } from 'sonner'
+'use client';
+import { useState, useTransition, useEffect } from 'react';
+import { signIn } from '@/lib/auth-client';
+import { Spinner } from '@/components/ui/Spinner';
+import Image from 'next/image';
+import { toast } from 'sonner';
 
 interface SignInOauthButtonProps {
-  signUp?: boolean
+  signUp?: boolean;
 }
 
 export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
-  const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
-  const action = signUp ? "S'inscrire" : 'Se connecter'
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const action = signUp ? "S'inscrire" : 'Se connecter';
 
   // TODO : Ouvrir dans une modale || fenêtre
 
   useEffect(() => {
     if (error) {
-      toast.error(error)
-      const timer = setTimeout(() => setError(null), 100)
-      return () => clearTimeout(timer)
+      toast.error(error);
+      const timer = setTimeout(() => setError(null), 100);
+      return () => clearTimeout(timer);
     }
-  }, [error])
+  }, [error]);
 
   function handleClick() {
-    setError(null)
+    setError(null);
 
     startTransition(async () => {
       try {
@@ -35,39 +35,39 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
           errorCallbackURL: '/authentification/erreur',
           fetchOptions: {
             onError: async (context) => {
-              const { response } = context
+              const { response } = context;
 
               if (response.status === 429) {
                 try {
-                  const errorData = await response.json()
+                  const errorData = await response.json();
                   setError(
                     errorData?.message ||
                       'Trop de tentatives de connexion. Retente dans 5 minutes.'
-                  )
+                  );
                 } catch {
                   setError(
                     'Trop de tentatives de connexion. Retente dans 5 minutes.'
-                  )
+                  );
                 }
-                return
+                return;
               }
 
               if (response.status >= 400) {
                 try {
-                  const errorData = await response.json()
-                  setError(errorData?.message || 'Erreur lors de la connexion')
+                  const errorData = await response.json();
+                  setError(errorData?.message || 'Erreur lors de la connexion');
                 } catch {
-                  setError('Erreur lors de la connexion')
+                  setError('Erreur lors de la connexion');
                 }
               }
             },
           },
-        })
+        });
       } catch (err) {
-        console.error('Erreur connexion Google:', err)
-        setError('Erreur lors de la connexion avec Google')
+        console.error('Erreur connexion Google:', err);
+        setError('Erreur lors de la connexion avec Google');
       }
-    })
+    });
   }
 
   return (
@@ -93,5 +93,5 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
         </>
       )}
     </button>
-  )
-}
+  );
+};

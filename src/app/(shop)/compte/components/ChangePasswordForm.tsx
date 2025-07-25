@@ -1,54 +1,54 @@
-'use client'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { changePasswordAction } from '@/actions/change-password.action'
-import { passwordSchema } from '@/lib/validations/authValidation'
-import { z } from 'zod'
-import { Key, Lock } from 'lucide-react'
+'use client';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { changePasswordAction } from '@/actions/change-password.action';
+import { passwordSchema } from '@/lib/validations/authValidation';
+import { z } from 'zod';
+import { Key, Lock } from 'lucide-react';
 
-const passwordSchemaZod = passwordSchema
+const passwordSchemaZod = passwordSchema;
 
 export const ChangePasswordForm = () => {
-  const [isPending, setIsPending] = useState(false)
+  const [isPending, setIsPending] = useState(false);
   const [errors, setErrors] = useState({
     newPassword: '',
-  })
+  });
 
   const validatePassword = (password: string) => {
     try {
-      passwordSchemaZod.parse(password)
-      setErrors({ newPassword: '' })
-      return true
+      passwordSchemaZod.parse(password);
+      setErrors({ newPassword: '' });
+      return true;
     } catch (err) {
       if (err instanceof z.ZodError) {
-        setErrors({ newPassword: err.errors[0].message })
+        setErrors({ newPassword: err.errors[0].message });
       }
-      return false
+      return false;
     }
-  }
+  };
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.target as HTMLFormElement)
-    const newPassword = formData.get('newPassword') as string
+    evt.preventDefault();
+    const formData = new FormData(evt.target as HTMLFormElement);
+    const newPassword = formData.get('newPassword') as string;
     if (!validatePassword(newPassword)) {
-      return
+      return;
     }
-    setIsPending(true)
+    setIsPending(true);
 
     try {
-      const { error } = await changePasswordAction(formData)
+      const { error } = await changePasswordAction(formData);
 
       if (error) {
-        toast.error(error)
+        toast.error(error);
       } else {
-        toast.success('Mot de passe modifié avec succès.')
-        ;(evt.target as HTMLFormElement).reset()
+        toast.success('Mot de passe modifié avec succès.');
+        (evt.target as HTMLFormElement).reset();
       }
     } catch {
-      toast.error("Une erreur inattendue s'est produite")
+      toast.error("Une erreur inattendue s'est produite");
     } finally {
-      setIsPending(false)
+      setIsPending(false);
     }
   }
 
@@ -117,5 +117,5 @@ export const ChangePasswordForm = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};

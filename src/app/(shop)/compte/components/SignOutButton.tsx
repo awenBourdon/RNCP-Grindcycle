@@ -1,31 +1,31 @@
-'use client'
+'use client';
 
-import { Spinner } from '@/components/ui/Spinner'
-import { signOut } from '@/lib/auth-client'
-import type { ErrorContext } from '@/lib/types'
-import { useRouter } from 'next/navigation'
-import { useTransition } from 'react'
-import { toast } from 'sonner'
+import { Spinner } from '@/components/ui/Spinner';
+import { signOut } from '@/lib/auth-client';
+import type { ErrorContext } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { toast } from 'sonner';
 
 export const SignOutButton = () => {
-  const [isPending, startTransition] = useTransition()
-  const router = useRouter()
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   async function handleClick() {
     startTransition(async () => {
       await signOut({
         fetchOptions: {
           onError: (ctx: ErrorContext) => {
-            toast.error(ctx.error.message)
+            toast.error(ctx.error.message);
           },
           onSuccess: () => {
-            toast.success('À Bientôt')
-            router.push('/authentification/connexion')
-            router.refresh()
+            toast.success('À Bientôt');
+            router.push('/authentification/connexion');
+            router.refresh();
           },
         },
-      })
-    })
+      });
+    });
   }
 
   return (
@@ -48,5 +48,5 @@ export const SignOutButton = () => {
         'Se déconnecter'
       )}
     </button>
-  )
-}
+  );
+};

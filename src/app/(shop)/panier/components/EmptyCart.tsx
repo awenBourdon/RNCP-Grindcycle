@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { ShoppingBag } from 'lucide-react'
+import Link from 'next/link';
+import { ShoppingBag } from 'lucide-react';
 
 export const EmptyCart = () => {
   return (
@@ -21,5 +21,5 @@ export const EmptyCart = () => {
         Découvrir nos planches
       </Link>
     </div>
-  )
-}
+  );
+};

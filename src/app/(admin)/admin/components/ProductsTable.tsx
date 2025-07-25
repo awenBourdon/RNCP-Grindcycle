@@ -1,61 +1,61 @@
-'use client'
-import { Hash, Eye, Trash2, Package } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import Image from 'next/image'
-import type { Product, ProductStatus, BoardType } from '@/generated/prisma'
-import { useAbortController } from '@/hooks/useAbortController'
+'use client';
+import { Hash, Eye, Trash2, Package } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import Image from 'next/image';
+import type { Product, ProductStatus, BoardType } from '@/generated/prisma';
+import { useAbortController } from '@/hooks/useAbortController';
 
 interface ProductWithUsedBoard extends Product {
   usedBoard?: {
-    id: string
-    name: string
+    id: string;
+    name: string;
     user: {
-      id: string
-      name: string
-      email: string
-    }
-  } | null
+      id: string;
+      name: string;
+      email: string;
+    };
+  } | null;
 }
 
 interface ProductsTableProps {
-  products: ProductWithUsedBoard[]
+  products: ProductWithUsedBoard[];
 }
 
 const getBoardTypeText = (type: BoardType) => {
   switch (type) {
     case 'SKATE':
-      return 'Skateboard'
+      return 'Skateboard';
     case 'CRUISER':
-      return 'Cruiser'
+      return 'Cruiser';
     case 'LONG':
-      return 'Longboard'
+      return 'Longboard';
     default:
-      return type
+      return type;
   }
-}
+};
 
 const getStatusText = (status: ProductStatus) => {
   switch (status) {
     case 'CATALOG':
-      return 'En catalogue'
+      return 'En catalogue';
     case 'PURCHASED':
-      return 'Acheté'
+      return 'Acheté';
     default:
-      return status
+      return status;
   }
-}
+};
 
 export const ProductsTable = ({ products }: ProductsTableProps) => {
-  const router = useRouter()
-  const { createSignal } = useAbortController()
+  const router = useRouter();
+  const { createSignal } = useAbortController();
 
   const handleViewProduct = (productId: string) => {
-    router.push(`/produit/${productId}`)
-  }
+    router.push(`/produit/${productId}`);
+  };
 
   const handleDeleteProduct = async (productId: string) => {
-    const signal = createSignal()
+    const signal = createSignal();
 
     try {
       const response = await fetch('/api/products', {
@@ -63,29 +63,29 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: productId }),
         signal: signal,
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`)
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
       }
 
       if (!signal.aborted) {
-        toast.success('Produit supprimé avec succès')
-        router.refresh()
+        toast.success('Produit supprimé avec succès');
+        router.refresh();
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
-        console.error('Erreur suppression produit:', error)
+        console.error('Erreur suppression produit:', error);
         if (!signal.aborted) {
-          toast.error('Erreur lors de la suppression')
+          toast.error('Erreur lors de la suppression');
         }
       }
     }
-  }
+  };
 
   const handleConfirmDelete = (productId: string) => {
-    handleDeleteProduct(productId)
-  }
+    handleDeleteProduct(productId);
+  };
 
   return (
     <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -255,5 +255,5 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};

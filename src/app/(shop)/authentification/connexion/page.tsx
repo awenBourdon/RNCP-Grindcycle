@@ -1,8 +1,8 @@
-import { LoginForm } from '../components/LoginForm'
-import { ReturnButton } from '@/components/ui/ReturnButton'
-import Link from 'next/link'
-import { SignInOauthButton } from '../components/SignInOauthButton'
-import { MagicLinkLoginForm } from '../components/MagicLinkLoginForm'
+import { LoginForm } from '../components/LoginForm';
+import { ReturnButton } from '@/components/ui/ReturnButton';
+import Link from 'next/link';
+import { SignInOauthButton } from '../components/SignInOauthButton';
+import { MagicLinkLoginForm } from '../components/MagicLinkLoginForm';
 
 export default function LoginPage() {
   return (
@@ -50,5 +50,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

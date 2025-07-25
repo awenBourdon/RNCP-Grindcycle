@@ -1,7 +1,7 @@
-import Link from 'next/link'
-import { ReturnButton } from '@/components/ui/ReturnButton'
-import { RegisterForm } from '../components/RegisterForm'
-import { SignInOauthButton } from '../components/SignInOauthButton'
+import Link from 'next/link';
+import { ReturnButton } from '@/components/ui/ReturnButton';
+import { RegisterForm } from '../components/RegisterForm';
+import { SignInOauthButton } from '../components/SignInOauthButton';
 
 export default async function RegisterPage() {
   return (
@@ -46,5 +46,5 @@ export default async function RegisterPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

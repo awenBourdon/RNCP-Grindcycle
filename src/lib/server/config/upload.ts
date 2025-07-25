@@ -4,7 +4,7 @@ export const UPLOAD_CONFIG = {
 
   allowedMimeTypes: [
     'image/jpeg',
-    'image/jpg', 
+    'image/jpg',
     'image/png',
     'image/webp',
   ] as const,
@@ -13,35 +13,40 @@ export const UPLOAD_CONFIG = {
 
   maxFiles: {
     products: 3,
-    usedBoards: 3
+    usedBoards: 3,
   },
 
   minFiles: {
     products: 1,
-    usedBoards: 1
+    usedBoards: 1,
   },
 
   supabaseFolders: {
     products: 'products',
-    usedBoards: 'used-boards'
+    usedBoards: 'used-boards',
   },
 
   imageDimensions: {
     maxWidth: 2048,
     maxHeight: 2048,
-    thumbnailSize: 300
-  }
-} as const
+    thumbnailSize: 300,
+  },
+} as const;
 
+export type UploadDirectory = keyof typeof UPLOAD_CONFIG.supabaseFolders;
+export type AllowedMimeType = (typeof UPLOAD_CONFIG.allowedMimeTypes)[number];
+export type AllowedExtension = (typeof UPLOAD_CONFIG.allowedExtensions)[number];
 
-export type UploadDirectory = keyof typeof UPLOAD_CONFIG.supabaseFolders
-export type AllowedMimeType = typeof UPLOAD_CONFIG.allowedMimeTypes[number]
-export type AllowedExtension = typeof UPLOAD_CONFIG.allowedExtensions[number]
-
-export function isAllowedMimeType(mimeType: string): mimeType is AllowedMimeType {
-  return UPLOAD_CONFIG.allowedMimeTypes.includes(mimeType as AllowedMimeType)
+export function isAllowedMimeType(
+  mimeType: string
+): mimeType is AllowedMimeType {
+  return UPLOAD_CONFIG.allowedMimeTypes.includes(mimeType as AllowedMimeType);
 }
 
-export function isAllowedExtension(extension: string): extension is AllowedExtension {
-  return UPLOAD_CONFIG.allowedExtensions.includes(extension as AllowedExtension)
+export function isAllowedExtension(
+  extension: string
+): extension is AllowedExtension {
+  return UPLOAD_CONFIG.allowedExtensions.includes(
+    extension as AllowedExtension
+  );
 }

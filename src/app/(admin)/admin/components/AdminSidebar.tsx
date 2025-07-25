@@ -1,5 +1,5 @@
-'use client'
-import Link from 'next/link'
+'use client';
+import Link from 'next/link';
 import {
   BarChart3,
   Users,
@@ -7,17 +7,17 @@ import {
   ShoppingBag,
   Bell,
   Plus,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface SidebarItem {
-  id: string
-  label: string
-  icon: React.ComponentType<{ size?: number }>
-  href: string
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number }>;
+  href: string;
 }
 
 interface AdminSidebarProps {
-  currentPath: string
+  currentPath: string;
 }
 
 const sidebarItems: SidebarItem[] = [
@@ -52,7 +52,7 @@ const sidebarItems: SidebarItem[] = [
     icon: Plus,
     href: '/admin/ajouter-produit',
   },
-]
+];
 
 export const AdminSidebar = ({ currentPath }: AdminSidebarProps) => {
   return (
@@ -62,8 +62,8 @@ export const AdminSidebar = ({ currentPath }: AdminSidebarProps) => {
       </h3>
       <nav className="space-y-2">
         {sidebarItems.map((item) => {
-          const Icon = item.icon
-          const isActive = currentPath === item.href
+          const Icon = item.icon;
+          const isActive = currentPath === item.href;
 
           return (
             <Link
@@ -78,9 +78,9 @@ export const AdminSidebar = ({ currentPath }: AdminSidebarProps) => {
               <Icon size={20} />
               <span className="font-medium">{item.label}</span>
             </Link>
-          )
+          );
         })}
       </nav>
     </div>
-  )
-}
+  );
+};

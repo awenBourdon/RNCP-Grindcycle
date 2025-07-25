@@ -1,137 +1,137 @@
-'use client'
-import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
-import { User, X, Menu, ShoppingCart } from 'lucide-react'
-import { useCart } from '@/contexts/CartContext'
-import { Notification } from '@/lib/types'
-import { useAbortController } from '@/hooks/useAbortController'
+'use client';
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { User, X, Menu, ShoppingCart } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { Notification } from '@/lib/types';
+import { useAbortController } from '@/hooks/useAbortController';
 
 interface NavbarUser {
-  id: string
+  id: string;
 }
 
 interface NavbarProps {
-  user: NavbarUser | null
+  user: NavbarUser | null;
 }
 
 export const Navbar = ({ user }: NavbarProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [unreadCount, setUnreadCount] = useState(0)
-  const { getCartCount } = useCart()
-  const { createSignal } = useAbortController()
-  const cartCount = getCartCount()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { getCartCount } = useCart();
+  const { createSignal } = useAbortController();
+  const cartCount = getCartCount();
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
+      const currentScrollY = window.scrollY;
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false)
+        setIsVisible(false);
       } else {
-        setIsVisible(true)
+        setIsVisible(true);
       }
 
-      setLastScrollY(currentScrollY)
-      setIsScrolled(currentScrollY > 10)
-    }
+      setLastScrollY(currentScrollY);
+      setIsScrolled(currentScrollY > 10);
+    };
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [lastScrollY])
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = 'hidden'
-      document.body.style.position = 'fixed'
-      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
     } else {
-      document.body.style.overflow = 'auto'
-      document.body.style.position = 'static'
+      document.body.style.overflow = 'auto';
+      document.body.style.position = 'static';
     }
 
     return () => {
-      document.body.style.overflow = 'auto'
-      document.body.style.position = 'static'
-    }
-  }, [isMenuOpen])
+      document.body.style.overflow = 'auto';
+      document.body.style.position = 'static';
+    };
+  }, [isMenuOpen]);
 
   const fetchUnreadNotifications = useCallback(async () => {
-    if (!user?.id) return
+    if (!user?.id) return;
 
-    const signal = createSignal()
+    const signal = createSignal();
 
     try {
       const response = await fetch(`/api/notifications?userId=${user.id}`, {
         signal: signal,
         cache: 'no-cache',
-      })
+      });
 
       if (!response.ok) {
-        return
+        return;
       }
 
-      const notifications: Notification[] = await response.json()
+      const notifications: Notification[] = await response.json();
       const unreadNotifications = notifications.filter(
         (notification) => !notification.isRead
-      )
+      );
 
       if (!signal.aborted) {
-        setUnreadCount(unreadNotifications.length)
+        setUnreadCount(unreadNotifications.length);
 
         if (user?.id) {
           sessionStorage.setItem(
             `unreadCount_${user.id}`,
             unreadNotifications.length.toString()
-          )
+          );
         }
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
         if (!signal.aborted) {
-          setUnreadCount(0)
+          setUnreadCount(0);
         }
       }
     }
-  }, [user?.id, createSignal])
+  }, [user?.id, createSignal]);
 
   useEffect(() => {
     const cachedCount = user?.id
       ? sessionStorage.getItem(`unreadCount_${user.id}`)
-      : null
+      : null;
 
     if (cachedCount !== null) {
-      const count = parseInt(cachedCount, 10)
+      const count = parseInt(cachedCount, 10);
       if (!isNaN(count)) {
-        setUnreadCount(count)
+        setUnreadCount(count);
       }
     }
 
     if (user?.id) {
-      fetchUnreadNotifications()
+      fetchUnreadNotifications();
     } else {
-      setUnreadCount(0)
+      setUnreadCount(0);
     }
-  }, [user?.id, fetchUnreadNotifications])
+  }, [user?.id, fetchUnreadNotifications]);
 
   useEffect(() => {
-    const baseTitle = 'Grindcycle'
+    const baseTitle = 'Grindcycle';
 
     if (user && unreadCount > 0) {
-      document.title = `${baseTitle} (${unreadCount})`
+      document.title = `${baseTitle} (${unreadCount})`;
     } else {
-      document.title = baseTitle
+      document.title = baseTitle;
     }
 
     return () => {
-      document.title = baseTitle
-    }
-  }, [unreadCount, user])
+      document.title = baseTitle;
+    };
+  }, [unreadCount, user]);
 
   const closeMenu = useCallback(() => {
-    setIsMenuOpen(false)
-  }, [])
+    setIsMenuOpen(false);
+  }, []);
 
   return (
     <header
@@ -332,5 +332,5 @@ export const Navbar = ({ user }: NavbarProps) => {
         </div>
       )}
     </header>
-  )
-}
+  );
+};

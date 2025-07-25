@@ -1,8 +1,8 @@
-import { useCart } from '@/contexts/CartContext'
-import { Item } from './Item'
+import { useCart } from '@/contexts/CartContext';
+import { Item } from './Item';
 
 export const ItemsList = () => {
-  const { cartItems } = useCart()
+  const { cartItems } = useCart();
 
   return (
     <div className="lg:col-span-2 space-y-10">
@@ -10,5 +10,5 @@ export const ItemsList = () => {
         <Item key={item.id} item={item} />
       ))}
     </div>
-  )
-}
+  );
+};

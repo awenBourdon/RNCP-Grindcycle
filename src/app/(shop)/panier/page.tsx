@@ -1,12 +1,12 @@
-'use client'
-import { useCart } from '@/contexts/CartContext'
-import { EmptyCart } from './components/EmptyCart'
-import { Header } from './components/Header'
-import { Summary } from './components/Summary'
-import { ItemsList } from './components/ItemsList'
+'use client';
+import { useCart } from '@/contexts/CartContext';
+import { EmptyCart } from './components/EmptyCart';
+import { Header } from './components/Header';
+import { Summary } from './components/Summary';
+import { ItemsList } from './components/ItemsList';
 
 export default function CartPage() {
-  const { cartItems } = useCart()
+  const { cartItems } = useCart();
 
   return (
     <div className="min-h-screen">
@@ -27,5 +27,5 @@ export default function CartPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

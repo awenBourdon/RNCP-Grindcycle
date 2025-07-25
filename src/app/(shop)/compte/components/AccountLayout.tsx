@@ -1,17 +1,17 @@
-'use client'
-import type React from 'react'
-import { usePathname } from 'next/navigation'
-import { AccountSidebar } from './AccountSidebar'
-import { AccountHeader } from './AccountHeader'
-import { Session } from '@/lib/types'
+'use client';
+import type React from 'react';
+import { usePathname } from 'next/navigation';
+import { AccountSidebar } from './AccountSidebar';
+import { AccountHeader } from './AccountHeader';
+import { Session } from '@/lib/types';
 
 interface AccountLayoutProps {
-  session: Session
-  children: React.ReactNode
+  session: Session;
+  children: React.ReactNode;
 }
 
 export const AccountLayout = ({ session, children }: AccountLayoutProps) => {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <div className="min-h-screen bg-white">
@@ -29,5 +29,5 @@ export const AccountLayout = ({ session, children }: AccountLayoutProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

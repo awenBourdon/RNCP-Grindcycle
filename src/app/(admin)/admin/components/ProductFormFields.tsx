@@ -1,34 +1,34 @@
-import { BoardType } from '@/lib/types'
-import { formatBoardType } from '@/lib/validations/boardsValidation'
+import { BoardType } from '@/lib/types';
+import { formatBoardType } from '@/lib/validations/boardsValidation';
 
 interface UsedBoard {
-  id: string
-  name: string
-  status: string
+  id: string;
+  name: string;
+  status: string;
 }
 
 interface FormData {
-  name: string
-  description: string
-  type: string
-  priceEuro: number
-  pricePoints: number
-  usedBoardId: string
+  name: string;
+  description: string;
+  type: string;
+  priceEuro: number;
+  pricePoints: number;
+  usedBoardId: string;
 }
 
 interface FormErrors {
-  [key: string]: string
+  [key: string]: string;
 }
 
 interface ProductFormFieldsProps {
-  formData: FormData
-  availableUsedBoards: UsedBoard[]
-  errors: FormErrors
+  formData: FormData;
+  availableUsedBoards: UsedBoard[];
+  errors: FormErrors;
   onChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
-  ) => void
+  ) => void;
 }
 
 export const ProductFormFields = ({
@@ -38,21 +38,21 @@ export const ProductFormFields = ({
   onChange,
 }: ProductFormFieldsProps) => {
   const priceEuroError =
-    formData.priceEuro < 0 ? 'Le prix ne peut pas être négatif' : null
+    formData.priceEuro < 0 ? 'Le prix ne peut pas être négatif' : null;
   const pricePointsError =
     formData.pricePoints < 0
       ? 'Le nombre de points ne peut pas être négatif'
-      : null
+      : null;
   const nameError =
     formData.name.length > 100
       ? 'Le nom ne peut pas dépasser 100 caractères'
-      : null
+      : null;
   const descriptionError =
     formData.description.length > 1000
       ? 'La description ne peut pas dépasser 1000 caractères'
-      : null
+      : null;
 
-  const isSelectDisabled = availableUsedBoards.length === 0
+  const isSelectDisabled = availableUsedBoards.length === 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -259,5 +259,5 @@ export const ProductFormFields = ({
         )}
       </div>
     </div>
-  )
-}
+  );
+};

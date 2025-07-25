@@ -1,17 +1,17 @@
-'use client'
-import type React from 'react'
-import Link from 'next/link'
-import { User, Settings, Key, Package, Bell, Heart } from 'lucide-react'
+'use client';
+import type React from 'react';
+import Link from 'next/link';
+import { User, Settings, Key, Package, Bell, Heart } from 'lucide-react';
 
 interface SidebarItem {
-  id: string
-  label: string
-  icon: React.ComponentType<{ size?: number }>
-  href: string
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number }>;
+  href: string;
 }
 
 interface AccountSidebarProps {
-  currentPath: string
+  currentPath: string;
 }
 
 const sidebarItems: SidebarItem[] = [
@@ -41,7 +41,7 @@ const sidebarItems: SidebarItem[] = [
     icon: Heart,
     href: '/compte/favoris',
   },
-]
+];
 
 export const AccountSidebar = ({ currentPath }: AccountSidebarProps) => {
   return (
@@ -49,8 +49,8 @@ export const AccountSidebar = ({ currentPath }: AccountSidebarProps) => {
       <h3 className="text-lg font-medium text-[#010101] mb-6">Mon compte</h3>
       <nav className="space-y-2">
         {sidebarItems.map((item) => {
-          const Icon = item.icon
-          const isActive = currentPath === item.href
+          const Icon = item.icon;
+          const isActive = currentPath === item.href;
 
           return (
             <Link
@@ -65,9 +65,9 @@ export const AccountSidebar = ({ currentPath }: AccountSidebarProps) => {
               <Icon size={20} />
               <span className="font-medium">{item.label}</span>
             </Link>
-          )
+          );
         })}
       </nav>
     </div>
-  )
-}
+  );
+};

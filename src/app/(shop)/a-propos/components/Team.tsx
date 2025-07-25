@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from 'next/image';
 
 export const Team = () => (
   <section className="py-24 bg-white">
@@ -60,4 +60,4 @@ export const Team = () => (
       </div>
     </div>
   </section>
-)
+);

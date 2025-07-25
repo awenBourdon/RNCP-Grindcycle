@@ -1,16 +1,16 @@
-import { ReturnButton } from '@/components/ui/ReturnButton'
-import { redirect } from 'next/navigation'
-import { SendVerificationEmailForm } from '../components/SendVerificationEmailForm'
-import { AlertTriangle } from 'lucide-react'
+import { ReturnButton } from '@/components/ui/ReturnButton';
+import { redirect } from 'next/navigation';
+import { SendVerificationEmailForm } from '../components/SendVerificationEmailForm';
+import { AlertTriangle } from 'lucide-react';
 
 interface PageProps {
-  searchParams: Promise<{ error: string }>
+  searchParams: Promise<{ error: string }>;
 }
 
 export default async function VerifyPage({ searchParams }: PageProps) {
-  const error = (await searchParams).error
+  const error = (await searchParams).error;
 
-  if (!error) redirect('/compte')
+  if (!error) redirect('/compte');
 
   return (
     <div className="min-h-screen bg-white">
@@ -48,5 +48,5 @@ export default async function VerifyPage({ searchParams }: PageProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

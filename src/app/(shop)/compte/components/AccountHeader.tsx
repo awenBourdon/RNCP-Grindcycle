@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import { Shield } from 'lucide-react'
-import { SignOutButton } from './SignOutButton'
-import { Session } from '@/lib/types'
+import Link from 'next/link';
+import { Shield } from 'lucide-react';
+import { SignOutButton } from './SignOutButton';
+import { Session } from '@/lib/types';
 
 interface AccountHeaderProps {
-  session: Session
+  session: Session;
 }
 
 export const AccountHeader = ({ session }: AccountHeaderProps) => {
@@ -42,5 +42,5 @@ export const AccountHeader = ({ session }: AccountHeaderProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

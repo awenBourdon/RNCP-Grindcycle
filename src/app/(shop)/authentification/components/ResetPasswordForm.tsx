@@ -1,66 +1,66 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Spinner } from '@/components/ui/Spinner'
-import { resetPassword } from '@/lib/auth-client'
-import { Lock } from 'lucide-react'
-import { toast } from 'sonner'
-import { resetPasswordSchema } from '@/lib/validations/authValidation'
-import { z } from 'zod'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Spinner } from '@/components/ui/Spinner';
+import { resetPassword } from '@/lib/auth-client';
+import { Lock } from 'lucide-react';
+import { toast } from 'sonner';
+import { resetPasswordSchema } from '@/lib/validations/authValidation';
+import { z } from 'zod';
 
 interface ResetPasswordFormProps {
-  token: string
+  token: string;
 }
 
 export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
   const [formData, setFormData] = useState({
     password: '',
     confirmPassword: '',
-  })
-  const [isPending, setIsPending] = useState(false)
+  });
+  const [isPending, setIsPending] = useState(false);
   const [errors, setErrors] = useState({
     password: '',
     confirmPassword: '',
-  })
-  const router = useRouter()
+  });
+  const router = useRouter();
 
   const validatePassword = () => {
     try {
-      resetPasswordSchema.parse(formData)
-      setErrors({ password: '', confirmPassword: '' })
-      return true
+      resetPasswordSchema.parse(formData);
+      setErrors({ password: '', confirmPassword: '' });
+      return true;
     } catch (err) {
       if (err instanceof z.ZodError) {
-        const newErrors = { password: '', confirmPassword: '' }
+        const newErrors = { password: '', confirmPassword: '' };
         err.errors.forEach((error) => {
           if (error.path && typeof error.path[0] === 'string') {
-            const field = error.path[0] as keyof typeof newErrors
-            newErrors[field] = error.message
+            const field = error.path[0] as keyof typeof newErrors;
+            newErrors[field] = error.message;
           }
-        })
-        setErrors(newErrors)
+        });
+        setErrors(newErrors);
       }
-      return false
+      return false;
     }
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
+    evt.preventDefault();
 
     if (!validatePassword()) {
-      return
+      return;
     }
 
-    setIsPending(true)
+    setIsPending(true);
 
     try {
       await resetPassword({
@@ -70,18 +70,18 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
           onRequest: () => {},
           onResponse: () => {},
           onError: (ctx) => {
-            toast.error(ctx.error.message)
+            toast.error(ctx.error.message);
           },
           onSuccess: () => {
-            toast.success('Mot de passe changé avec succès.')
-            router.push('/authentification/connexion')
+            toast.success('Mot de passe changé avec succès.');
+            router.push('/authentification/connexion');
           },
         },
-      })
+      });
     } catch (err) {
-      console.error(err)
+      console.error(err);
     } finally {
-      setIsPending(false)
+      setIsPending(false);
     }
   }
 
@@ -146,5 +146,5 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
         {isPending ? <Spinner /> : 'Réinitialiser ton mot de passe'}
       </button>
     </form>
-  )
-}
+  );
+};

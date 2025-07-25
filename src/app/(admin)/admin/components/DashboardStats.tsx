@@ -5,21 +5,21 @@ import {
   Clock,
   CheckCircle,
   BellRing,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface Stats {
-  totalUsers: number
-  totalBoards: number
-  pendingBoards: number
-  receivedBoards: number
-  totalProducts: number
-  catalogProducts: number
-  purchasedProducts: number
-  unreadNotifications: number
+  totalUsers: number;
+  totalBoards: number;
+  pendingBoards: number;
+  receivedBoards: number;
+  totalProducts: number;
+  catalogProducts: number;
+  purchasedProducts: number;
+  unreadNotifications: number;
 }
 
 interface DashboardStatsProps {
-  stats: Stats
+  stats: Stats;
 }
 
 export const DashboardStats = ({ stats }: DashboardStatsProps) => {
@@ -151,5 +151,5 @@ export const DashboardStats = ({ stats }: DashboardStatsProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

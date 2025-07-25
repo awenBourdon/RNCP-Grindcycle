@@ -1,19 +1,19 @@
-'use client'
-import { ShoppingCart, X } from 'lucide-react'
-import { Spinner } from '@/components/ui/Spinner'
-import { FavoriteButton } from './FavoriteButton'
-import { ProductType } from '@/lib/types'
+'use client';
+import { ShoppingCart, X } from 'lucide-react';
+import { Spinner } from '@/components/ui/Spinner';
+import { FavoriteButton } from './FavoriteButton';
+import { ProductType } from '@/lib/types';
 
 interface ProductActionsProps {
-  product: ProductType
-  added: boolean
-  handleToggleCart: () => void
-  isPending: boolean
-  isAvailable: boolean
-  isAuthenticated: boolean
-  isFavorite: boolean
-  isLoadingFavorites: boolean
-  toggleFavorite: () => Promise<void>
+  product: ProductType;
+  added: boolean;
+  handleToggleCart: () => void;
+  isPending: boolean;
+  isAvailable: boolean;
+  isAuthenticated: boolean;
+  isFavorite: boolean;
+  isLoadingFavorites: boolean;
+  toggleFavorite: () => Promise<void>;
 }
 
 export const ProductActions = ({
@@ -82,5 +82,5 @@ export const ProductActions = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

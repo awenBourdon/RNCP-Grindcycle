@@ -10,11 +10,11 @@ import { productSchema } from '@/lib/validations/boardsValidation';
 
 const purchaseSchema = z.object({
   productId: z.string(),
-  userId: z.string()
+  userId: z.string(),
 });
 
 const deleteSchema = z.object({
-  productId: z.string()
+  productId: z.string(),
 });
 
 export class ProductController extends BaseController {
@@ -45,13 +45,16 @@ export class ProductController extends BaseController {
         );
       }
 
-      const product = await this.productService.createProduct(validation.data!, images);
+      const product = await this.productService.createProduct(
+        validation.data!,
+        images
+      );
       return ResponseHelper.created(product, API_MESSAGES.PRODUCT_CREATED);
     } catch (error) {
       return this.handleError(error, 'ProductController.create');
     }
   }
-  
+
   async getAll(): Promise<NextResponse> {
     try {
       const products = await this.productService.getAllProducts();
@@ -75,7 +78,10 @@ export class ProductController extends BaseController {
       const product = await this.productService.getProductById(productId);
       return ResponseHelper.success(product);
     } catch (error) {
-      if (error instanceof Error && error.message === API_MESSAGES.PRODUCT_NOT_FOUND) {
+      if (
+        error instanceof Error &&
+        error.message === API_MESSAGES.PRODUCT_NOT_FOUND
+      ) {
         return ResponseHelper.notFound(error.message);
       }
       return this.handleError(error, 'ProductController.getById');
@@ -90,7 +96,9 @@ export class ProductController extends BaseController {
         return ResponseHelper.validationError(validation.errors);
       }
 
-      const result = await this.productService.purchaseProduct(validation.data!);
+      const result = await this.productService.purchaseProduct(
+        validation.data!
+      );
       return ResponseHelper.success(result, API_MESSAGES.PRODUCT_PURCHASED);
     } catch (error) {
       return this.handleError(error, 'ProductController.purchase');
@@ -100,7 +108,7 @@ export class ProductController extends BaseController {
   async delete(req: NextRequest): Promise<NextResponse> {
     try {
       const body = await this.extractJsonData(req);
-      
+
       const validation = ZodHelper.validate(deleteSchema, body);
       if (!validation.isValid) {
         return ResponseHelper.validationError(validation.errors);

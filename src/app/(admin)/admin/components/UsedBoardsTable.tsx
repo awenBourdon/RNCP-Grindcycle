@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import {
   Users,
   Hash,
@@ -14,44 +14,44 @@ import {
   AlertCircle,
   Truck,
   ImageIcon,
-} from 'lucide-react'
-import { ImageModal } from './ImageModal'
-import { useTransition } from 'react'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import { Spinner } from '@/components/ui/Spinner'
-import Image from 'next/image'
+} from 'lucide-react';
+import { ImageModal } from './ImageModal';
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { Spinner } from '@/components/ui/Spinner';
+import Image from 'next/image';
 import type {
   UsedBoard,
   UsedBoardStatus,
   BoardCondition,
-} from '@/generated/prisma'
-import { useImageModal } from '@/hooks/useImageModal'
+} from '@/generated/prisma';
+import { useImageModal } from '@/hooks/useImageModal';
 
 interface UsedBoardWithUser extends UsedBoard {
   user: {
-    id: string
-    name: string
-    email: string
-  }
+    id: string;
+    name: string;
+    email: string;
+  };
 }
 
 interface UsedBoardsTableProps {
-  usedBoards: UsedBoardWithUser[]
+  usedBoards: UsedBoardWithUser[];
 }
 
 interface StatusSelectProps {
-  boardId: string
-  currentStatus: UsedBoardStatus
-  onUpdate: () => void
-  currentPoints: number | null
+  boardId: string;
+  currentStatus: UsedBoardStatus;
+  onUpdate: () => void;
+  currentPoints: number | null;
 }
 
 interface PointsSelectProps {
-  boardId: string
-  currentPoints: number | null
-  currentStatus: UsedBoardStatus
-  onUpdate: () => void
+  boardId: string;
+  currentPoints: number | null;
+  currentStatus: UsedBoardStatus;
+  onUpdate: () => void;
 }
 
 const StatusSelect = ({
@@ -59,12 +59,12 @@ const StatusSelect = ({
   currentStatus,
   onUpdate,
 }: StatusSelectProps) => {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition();
 
   const handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
-    const newStatus = evt.target.value as UsedBoardStatus
+    const newStatus = evt.target.value as UsedBoardStatus;
     startTransition(async () => {
-      const controller = new AbortController()
+      const controller = new AbortController();
       try {
         const response = await fetch('/api/used-boards', {
           method: 'PATCH',
@@ -76,40 +76,40 @@ const StatusSelect = ({
             status: newStatus,
           }),
           signal: controller.signal,
-        })
+        });
         if (!response.ok) {
-          throw new Error('Erreur lors de la mise à jour')
+          throw new Error('Erreur lors de la mise à jour');
         }
-        toast.success('Statut mis à jour')
-        onUpdate()
+        toast.success('Statut mis à jour');
+        onUpdate();
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
-          toast.error('Erreur lors de la mise à jour du statut')
+          toast.error('Erreur lors de la mise à jour du statut');
         }
       }
-    })
-  }
+    });
+  };
 
   const getStatusIcon = (status: UsedBoardStatus) => {
     switch (status) {
       case 'PENDING_VALIDATION':
-        return <AlertCircle size={14} />
+        return <AlertCircle size={14} />;
       case 'VALIDATED':
-        return <CheckCircle size={14} />
+        return <CheckCircle size={14} />;
       case 'REJECTED':
-        return <XCircle size={14} />
+        return <XCircle size={14} />;
       case 'SENT':
-        return <Truck size={14} />
+        return <Truck size={14} />;
       case 'RECEIVED':
-        return <CheckCircle size={14} />
+        return <CheckCircle size={14} />;
       case 'RECYCLED_TO_PRODUCT':
-        return <Recycle size={14} />
+        return <Recycle size={14} />;
       case 'SOLD':
-        return <ShoppingCart size={14} />
+        return <ShoppingCart size={14} />;
       default:
-        return <Clock size={14} />
+        return <Clock size={14} />;
     }
-  }
+  };
 
   return (
     <div className="relative inline-flex items-center">
@@ -140,8 +140,8 @@ const StatusSelect = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const PointsSelect = ({
   boardId,
@@ -149,12 +149,12 @@ const PointsSelect = ({
   currentStatus,
   onUpdate,
 }: PointsSelectProps) => {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition();
 
   const handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
-    const newPoints = evt.target.value === '' ? null : Number(evt.target.value)
+    const newPoints = evt.target.value === '' ? null : Number(evt.target.value);
     startTransition(async () => {
-      const controller = new AbortController()
+      const controller = new AbortController();
       try {
         const response = await fetch('/api/used-boards', {
           method: 'PATCH',
@@ -166,24 +166,24 @@ const PointsSelect = ({
             pointsAwarded: newPoints,
           }),
           signal: controller.signal,
-        })
+        });
         if (!response.ok) {
-          throw new Error('Erreur lors de la mise à jour')
+          throw new Error('Erreur lors de la mise à jour');
         }
-        toast.success('Points mis à jour')
-        onUpdate()
+        toast.success('Points mis à jour');
+        onUpdate();
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
-          toast.error('Erreur lors de la mise à jour des points')
+          toast.error('Erreur lors de la mise à jour des points');
         }
       }
-    })
-  }
+    });
+  };
 
   const canEditPoints =
     currentStatus === 'RECEIVED' ||
     currentStatus === 'RECYCLED_TO_PRODUCT' ||
-    currentStatus === 'SOLD'
+    currentStatus === 'SOLD';
 
   return (
     <div className="relative inline-flex items-center group">
@@ -216,8 +216,8 @@ const PointsSelect = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
   const {
@@ -228,26 +228,26 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
     openModal,
     closeModal,
     description,
-  } = useImageModal()
-  const router = useRouter()
+  } = useImageModal();
+  const router = useRouter();
 
   const handleUpdate = () => {
-    router.refresh()
-  }
+    router.refresh();
+  };
 
   const getConditionText = (condition: BoardCondition | null) => {
-    if (!condition) return 'Non défini'
+    if (!condition) return 'Non défini';
     switch (condition) {
       case 'GOOD':
-        return 'Bon état'
+        return 'Bon état';
       case 'AVERAGE':
-        return 'État moyen'
+        return 'État moyen';
       case 'BAD':
-        return 'Mauvais état'
+        return 'Mauvais état';
       default:
-        return condition
+        return condition;
     }
-  }
+  };
 
   const handleViewImages = (board: UsedBoardWithUser) => {
     if (board.image.length > 0) {
@@ -256,29 +256,29 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
         board.id,
         board.user.name,
         board?.description ?? undefined
-      )
+      );
     }
-  }
+  };
 
   const handleDeleteBoard = async (boardId: string) => {
-    const controller = new AbortController()
+    const controller = new AbortController();
     try {
       const response = await fetch(`/api/used-boards?boardId=${boardId}`, {
         method: 'DELETE',
         signal: controller.signal,
-      })
+      });
       if (response.ok) {
-        toast.success('Planche supprimée')
-        router.refresh()
+        toast.success('Planche supprimée');
+        router.refresh();
       } else {
-        toast.error('Erreur lors de la suppression')
+        toast.error('Erreur lors de la suppression');
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
-        toast.error('Erreur lors de la suppression')
+        toast.error('Erreur lors de la suppression');
       }
     }
-  }
+  };
 
   return (
     <>
@@ -396,11 +396,11 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                               width={40}
                               height={40}
                               onError={(e) => {
-                                const target = e.target as HTMLImageElement
-                                target.style.display = 'none'
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
                                 target.nextElementSibling?.classList.remove(
                                   'hidden'
-                                )
+                                );
                               }}
                             />
                             <div className="hidden absolute inset-0 items-center justify-center">
@@ -474,5 +474,5 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
         description={description}
       />
     </>
-  )
-}
+  );
+};

@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from 'next/image';
 
 export const Mission = () => (
   <section className="py-24 bg-white">
@@ -32,4 +32,4 @@ export const Mission = () => (
       </div>
     </div>
   </section>
-)
+);

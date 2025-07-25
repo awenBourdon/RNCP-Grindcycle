@@ -1,9 +1,9 @@
-import { ArrowLeftIcon } from 'lucide-react'
-import Link from 'next/link'
+import { ArrowLeftIcon } from 'lucide-react';
+import Link from 'next/link';
 
 interface ReturnButtonProps {
-  href: string
-  label: string
+  href: string;
+  label: string;
 }
 
 export const ReturnButton = ({ href, label }: ReturnButtonProps) => {
@@ -17,5 +17,5 @@ export const ReturnButton = ({ href, label }: ReturnButtonProps) => {
         {label}
       </span>
     </Link>
-  )
-}
+  );
+};

@@ -1,18 +1,18 @@
-'use client'
-import type React from 'react'
-import { usePathname } from 'next/navigation'
-import { ReturnButton } from '@/components/ui/ReturnButton'
-import { AdminNavbar } from './AdminNavbar'
-import { AdminHeader } from './AdminHeader'
-import { Session } from '@/lib/types'
+'use client';
+import type React from 'react';
+import { usePathname } from 'next/navigation';
+import { ReturnButton } from '@/components/ui/ReturnButton';
+import { AdminNavbar } from './AdminNavbar';
+import { AdminHeader } from './AdminHeader';
+import { Session } from '@/lib/types';
 
 interface AdminLayoutProps {
-  session: Session
-  children: React.ReactNode
+  session: Session;
+  children: React.ReactNode;
 }
 
 export const AdminLayout = ({ session, children }: AdminLayoutProps) => {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <div className="min-h-screen bg-white">
@@ -30,5 +30,5 @@ export const AdminLayout = ({ session, children }: AdminLayoutProps) => {
         <div className="mt-6 sm:mt-8">{children}</div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,24 +1,24 @@
-import localFont from 'next/font/local'
-import './globals.css'
-import type { Metadata } from 'next'
-import { Toaster } from 'sonner'
-import { CartProvider } from '@/contexts/CartContext'
+import localFont from 'next/font/local';
+import './globals.css';
+import type { Metadata } from 'next';
+import { Toaster } from 'sonner';
+import { CartProvider } from '@/contexts/CartContext';
 
 const splineSans = localFont({
   src: '../../public/fonts/SplineSans.ttf',
   weight: '100 900',
   variable: '--font-splineSans',
-})
+});
 
 export const metadata: Metadata = {
   description:
     "Grindcycle, la plateforme d'e-commerce de vente de skate recyclés",
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="fr">
@@ -29,5 +29,5 @@ export default function RootLayout({
         </CartProvider>
       </body>
     </html>
-  )
+  );
 }

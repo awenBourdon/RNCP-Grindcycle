@@ -1,21 +1,21 @@
-import { BoardType, ProductType } from '@/lib/types'
+import { BoardType, ProductType } from '@/lib/types';
 
 interface ProductInfoProps {
-  product: ProductType
+  product: ProductType;
 }
 
 const getBoardTypeText = (type: BoardType) => {
   switch (type) {
     case 'SKATE':
-      return 'Skateboard'
+      return 'Skateboard';
     case 'CRUISER':
-      return 'Cruiser'
+      return 'Cruiser';
     case 'LONG':
-      return 'Longboard'
+      return 'Longboard';
     default:
-      return type
+      return type;
   }
-}
+};
 
 export const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
@@ -58,5 +58,5 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};

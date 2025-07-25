@@ -4,9 +4,17 @@ import { BoardCondition, BoardType } from '../types';
 export const IMAGE_CONFIG = {
   maxSize: 5 * 1024 * 1024,
   maxFiles: 3,
-  acceptedFormats: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'] as const,
+  acceptedFormats: [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+  ] as const,
   acceptedFormatsDisplay: 'JPG, PNG, WebP, GIF',
-  get maxSizeMB() { return this.maxSize / (1024 * 1024) }
+  get maxSizeMB() {
+    return this.maxSize / (1024 * 1024);
+  },
 } as const;
 
 const imageFileSchema = z
@@ -16,38 +24,42 @@ const imageFileSchema = z
     `Taille max: ${IMAGE_CONFIG.maxSizeMB}MB`
   )
   .refine(
-    (file) => (IMAGE_CONFIG.acceptedFormats as readonly string[]).includes(file.type),
+    (file) =>
+      (IMAGE_CONFIG.acceptedFormats as readonly string[]).includes(file.type),
     `Formats acceptés: ${IMAGE_CONFIG.acceptedFormatsDisplay}`
   );
 
 export const recycleSchema = z.object({
-  userId: z.string().min(1, "ID utilisateur requis"),
-  name: z.string().min(1, "Nom requis").max(100, "Max 100 caractères"),
+  userId: z.string().min(1, 'ID utilisateur requis'),
+  name: z.string().min(1, 'Nom requis').max(100, 'Max 100 caractères'),
   boardType: z.nativeEnum(BoardType, {
-    errorMap: () => ({ message: "Type invalide" }),
+    errorMap: () => ({ message: 'Type invalide' }),
   }),
   boardCondition: z.nativeEnum(BoardCondition, {
-    errorMap: () => ({ message: "État invalide" }),
+    errorMap: () => ({ message: 'État invalide' }),
   }),
-  description: z.string().max(500, "Max 500 caractères").optional(),
+  description: z.string().max(500, 'Max 500 caractères').optional(),
   images: z
     .array(imageFileSchema)
-    .min(1, "Au moins 1 photo")
+    .min(1, 'Au moins 1 photo')
     .max(IMAGE_CONFIG.maxFiles, `Max ${IMAGE_CONFIG.maxFiles} photos`),
 });
 
 export const productSchema = z.object({
-  name: z.string().min(1, "Nom requis").max(100, "Max 100 caractères"),
-  description: z.string().max(1000, "Max 1000 caractères").optional(),
+  name: z.string().min(1, 'Nom requis').max(100, 'Max 100 caractères'),
+  description: z.string().max(1000, 'Max 1000 caractères').optional(),
   type: z.nativeEnum(BoardType, {
-    errorMap: () => ({ message: "Type invalide" }),
+    errorMap: () => ({ message: 'Type invalide' }),
   }),
-  priceEuro: z.number().min(0.01, "Min 0.01€").max(9999.99, "Max 9999.99€"),
-  pricePoints: z.number().min(1, "Min 1 point").max(999999, "Max 999,999 points"),
-  usedBoardId: z.string().min(1, "Planche requise"),
+  priceEuro: z.number().min(0.01, 'Min 0.01€').max(9999.99, 'Max 9999.99€'),
+  pricePoints: z
+    .number()
+    .min(1, 'Min 1 point')
+    .max(999999, 'Max 999,999 points'),
+  usedBoardId: z.string().min(1, 'Planche requise'),
   images: z
     .array(imageFileSchema)
-    .min(1, "Au moins 1 photo")
+    .min(1, 'Au moins 1 photo')
     .max(IMAGE_CONFIG.maxFiles, `Max ${IMAGE_CONFIG.maxFiles} photos`),
 });
 

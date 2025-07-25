@@ -1,5 +1,5 @@
-import { ArrowRight } from 'lucide-react'
-import Link from 'next/link'
+import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export const Impact = () => (
   <section className="py-24 bg-white">
@@ -37,4 +37,4 @@ export const Impact = () => (
       </div>
     </div>
   </section>
-)
+);

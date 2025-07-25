@@ -1,34 +1,34 @@
-'use client'
+'use client';
 // TODO : refaire tout cette partie !
-import { useEffect, useState, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { CheckCircle, ArrowRight } from 'lucide-react'
-import Link from 'next/link'
-import { useCart } from '@/contexts/CartContext'
-import { useAbortController } from '@/hooks/useAbortController'
+import { useEffect, useState, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { CheckCircle, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { useCart } from '@/contexts/CartContext';
+import { useAbortController } from '@/hooks/useAbortController';
 
 export const SuccessContent = () => {
-  const { clearCart } = useCart()
-  const searchParams = useSearchParams()
-  const session_id = searchParams.get('session_id')
-  const { createSignal } = useAbortController()
+  const { clearCart } = useCart();
+  const searchParams = useSearchParams();
+  const session_id = searchParams.get('session_id');
+  const { createSignal } = useAbortController();
 
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [orderDetails, setOrderDetails] = useState<{
-    email?: string
-    amount_total?: number
-    currency?: string
-  }>({})
+    email?: string;
+    amount_total?: number;
+    currency?: string;
+  }>({});
 
   const fetchOrderDetails = useCallback(async () => {
     if (!session_id) {
-      setError('Aucun identifiant de session fourni.')
-      setLoading(false)
-      return
+      setError('Aucun identifiant de session fourni.');
+      setLoading(false);
+      return;
     }
 
-    const signal = createSignal()
+    const signal = createSignal();
 
     try {
       const res = await fetch('/api/stripe/get-order-details', {
@@ -36,37 +36,37 @@ export const SuccessContent = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ session_id }),
         signal: signal,
-      })
+      });
 
       if (!res.ok) {
-        setError('Impossible de récupérer les détails de la commande.')
-        return
+        setError('Impossible de récupérer les détails de la commande.');
+        return;
       }
 
-      const data = await res.json()
+      const data = await res.json();
 
-      setOrderDetails(data)
-      clearCart()
-      sessionStorage.removeItem('shippingAddress')
+      setOrderDetails(data);
+      clearCart();
+      sessionStorage.removeItem('shippingAddress');
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
         setError(
           'Une erreur est survenue lors de la récupération de la commande.'
-        )
+        );
       }
     } finally {
       if (!signal.aborted) {
-        setLoading(false)
+        setLoading(false);
       }
     }
-  }, [session_id, createSignal, clearCart])
+  }, [session_id, createSignal, clearCart]);
 
   useEffect(() => {
-    fetchOrderDetails()
-  }, [fetchOrderDetails])
+    fetchOrderDetails();
+  }, [fetchOrderDetails]);
 
   if (loading) {
-    return <p className="text-center mt-20">Chargement...</p>
+    return <p className="text-center mt-20">Chargement...</p>;
   }
 
   if (error) {
@@ -80,7 +80,7 @@ export const SuccessContent = () => {
           Retour à l&apos;accueil
         </Link>
       </div>
-    )
+    );
   }
 
   return (
@@ -123,5 +123,5 @@ export const SuccessContent = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

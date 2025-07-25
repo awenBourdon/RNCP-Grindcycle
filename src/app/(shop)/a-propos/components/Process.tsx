@@ -1,4 +1,4 @@
-import { Recycle, Axe, Sparkle } from 'lucide-react'
+import { Recycle, Axe, Sparkle } from 'lucide-react';
 
 export const Process = () => (
   <section className="py-24 bg-white">
@@ -50,4 +50,4 @@ export const Process = () => (
       </div>
     </div>
   </section>
-)
+);

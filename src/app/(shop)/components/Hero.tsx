@@ -1,6 +1,6 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 export const Hero = () => {
   return (
@@ -56,5 +56,5 @@ export const Hero = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

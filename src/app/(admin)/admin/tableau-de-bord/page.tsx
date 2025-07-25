@@ -1,19 +1,19 @@
-import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
-import { prisma } from '@/lib/prisma'
-import { DashboardStats } from '../components/DashboardStats'
-import { getAdminNotifications } from '@/lib/server/services/notificationsService'
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { prisma } from '@/lib/prisma';
+import { DashboardStats } from '../components/DashboardStats';
+import { getAdminNotifications } from '@/lib/server/services/notificationsService';
 
 export default async function DashboardPage() {
-  const headersList = await headers()
+  const headersList = await headers();
 
   const session = await auth.api.getSession({
     headers: headersList,
-  })
+  });
 
   if (!session || session.user.role !== 'ADMIN') {
-    redirect('/authentification/connexion')
+    redirect('/authentification/connexion');
   }
 
   const [users, usedBoards, products, adminNotifications] = await Promise.all([
@@ -21,7 +21,7 @@ export default async function DashboardPage() {
     prisma.usedBoard.findMany(),
     prisma.product.findMany(),
     getAdminNotifications(),
-  ])
+  ]);
 
   const stats = {
     totalUsers: users.length,
@@ -39,7 +39,7 @@ export default async function DashboardPage() {
     ).length,
     unreadNotifications: adminNotifications.filter((notif) => !notif.isRead)
       .length,
-  }
+  };
 
-  return <DashboardStats stats={stats} />
+  return <DashboardStats stats={stats} />;
 }

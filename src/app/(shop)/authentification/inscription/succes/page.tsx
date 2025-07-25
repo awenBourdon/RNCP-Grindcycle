@@ -1,4 +1,4 @@
-import { ReturnButton } from '@/components/ui/ReturnButton'
+import { ReturnButton } from '@/components/ui/ReturnButton';
 
 export default function InscriptionSuccesPage() {
   return (
@@ -26,5 +26,5 @@ export default function InscriptionSuccesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

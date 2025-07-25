@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { ProductType } from '@/lib/types'
+import Link from 'next/link';
+import Image from 'next/image';
+import { ProductType } from '@/lib/types';
 
 type Props = {
-  product: ProductType
-}
+  product: ProductType;
+};
 
 export const ProductCard = ({ product }: Props) => {
   return (
@@ -33,5 +33,5 @@ export const ProductCard = ({ product }: Props) => {
         )}
       </div>
     </Link>
-  )
-}
+  );
+};

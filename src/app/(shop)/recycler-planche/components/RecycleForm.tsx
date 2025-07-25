@@ -1,107 +1,110 @@
-'use client'
-import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Recycle } from 'lucide-react'
-import { toast } from 'sonner'
-import { recycleSchema, IMAGE_CONFIG } from '@/lib/validations/boardsValidation'
-import { FormFields } from './FormFields'
-import { ImageUpload } from '../../../../components/form/ImageUpload'
-import { Spinner } from '@/components/ui/Spinner'
-import { BoardCondition, BoardType } from '@/lib/types'
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, Recycle } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  recycleSchema,
+  IMAGE_CONFIG,
+} from '@/lib/validations/boardsValidation';
+import { FormFields } from './FormFields';
+import { ImageUpload } from '../../../../components/form/ImageUpload';
+import { Spinner } from '@/components/ui/Spinner';
+import { BoardCondition, BoardType } from '@/lib/types';
 
 interface RecycleFormProps {
-  userId: string
+  userId: string;
 }
 
 interface FormErrors {
-  [key: string]: string
+  [key: string]: string;
 }
 
 export const RecycleForm = ({ userId }: RecycleFormProps) => {
   const [selectedCondition, setSelectedCondition] = useState<
     BoardCondition | ''
-  >('')
-  const [selectedType, setSelectedType] = useState<BoardType | ''>('')
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [previewImages, setPreviewImages] = useState<string[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState<FormErrors>({})
-  const [descriptionLength, setDescriptionLength] = useState(0)
-  const [isRateLimited, setIsRateLimited] = useState(false)
+  >('');
+  const [selectedType, setSelectedType] = useState<BoardType | ''>('');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [descriptionLength, setDescriptionLength] = useState(0);
+  const [isRateLimited, setIsRateLimited] = useState(false);
 
   const validateFile = (file: File): string | null => {
     if (file.size > IMAGE_CONFIG.maxSize) {
-      return `La taille de l'image ne doit pas dépasser ${IMAGE_CONFIG.maxSize / (1024 * 1024)}MB`
+      return `La taille de l'image ne doit pas dépasser ${IMAGE_CONFIG.maxSize / (1024 * 1024)}MB`;
     }
 
-    const acceptedTypes = IMAGE_CONFIG.acceptedFormats as readonly string[]
+    const acceptedTypes = IMAGE_CONFIG.acceptedFormats as readonly string[];
     if (!acceptedTypes.includes(file.type)) {
-      return `Format non supporté. Utilisez ${IMAGE_CONFIG.acceptedFormatsDisplay}`
+      return `Format non supporté. Utilisez ${IMAGE_CONFIG.acceptedFormatsDisplay}`;
     }
-    return null
-  }
+    return null;
+  };
 
   const formatFileSize = (bytes: number): string => {
-    return (bytes / (1024 * 1024)).toFixed(1) + 'MB'
-  }
+    return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
+  };
 
   const handleImageUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      const fileError = validateFile(file)
+      const fileError = validateFile(file);
       if (fileError) {
-        const newErrors = { ...errors }
-        newErrors[`image-${index}`] = fileError
+        const newErrors = { ...errors };
+        newErrors[`image-${index}`] = fileError;
 
         if (file.size > IMAGE_CONFIG.maxSize) {
           newErrors[`image-${index}`] =
-            `Fichier trop volumineux (${formatFileSize(file.size)}) - Maximum ${IMAGE_CONFIG.maxSize / (1024 * 1024)}MB`
+            `Fichier trop volumineux (${formatFileSize(file.size)}) - Maximum ${IMAGE_CONFIG.maxSize / (1024 * 1024)}MB`;
         }
-        setErrors(newErrors)
-        return
+        setErrors(newErrors);
+        return;
       }
 
-      const newFiles = [...selectedFiles]
-      newFiles[index] = file
-      setSelectedFiles(newFiles)
+      const newFiles = [...selectedFiles];
+      newFiles[index] = file;
+      setSelectedFiles(newFiles);
 
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
-          const newImages = [...previewImages]
-          newImages[index] = reader.result
-          setPreviewImages(newImages)
+          const newImages = [...previewImages];
+          newImages[index] = reader.result;
+          setPreviewImages(newImages);
         }
-      }
-      reader.readAsDataURL(file)
+      };
+      reader.readAsDataURL(file);
 
-      const newErrors = { ...errors }
-      delete newErrors[`image-${index}`]
-      delete newErrors.images
-      setErrors(newErrors)
+      const newErrors = { ...errors };
+      delete newErrors[`image-${index}`];
+      delete newErrors.images;
+      setErrors(newErrors);
     }
-  }
+  };
 
   const removeImage = (index: number) => {
-    const newFiles = selectedFiles.filter((_, i) => i !== index)
-    setSelectedFiles(newFiles)
+    const newFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(newFiles);
 
-    const newImages = [...previewImages]
-    newImages[index] = ''
-    setPreviewImages(newImages)
-  }
+    const newImages = [...previewImages];
+    newImages[index] = '';
+    setPreviewImages(newImages);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setErrors({})
-    setIsRateLimited(false)
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrors({});
+    setIsRateLimited(false);
 
     try {
-      const formData = new FormData(e.currentTarget)
+      const formData = new FormData(e.currentTarget);
 
       const validationData = {
         userId,
@@ -110,78 +113,78 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         boardCondition: selectedCondition,
         description: (formData.get('description') as string) || undefined,
         images: selectedFiles,
-      }
+      };
 
-      const result = recycleSchema.safeParse(validationData)
+      const result = recycleSchema.safeParse(validationData);
 
       if (!result.success) {
-        const fieldErrors: FormErrors = {}
+        const fieldErrors: FormErrors = {};
         result.error.errors.forEach(
           (error: { path: unknown[]; message: string }) => {
-            const field = error.path.join('.')
-            fieldErrors[field] = error.message
+            const field = error.path.join('.');
+            fieldErrors[field] = error.message;
           }
-        )
-        setErrors(fieldErrors)
-        toast.error('Veuillez corriger les erreurs dans le formulaire')
-        return
+        );
+        setErrors(fieldErrors);
+        toast.error('Veuillez corriger les erreurs dans le formulaire');
+        return;
       }
 
-      const apiFormData = new FormData()
-      apiFormData.append('userId', userId)
-      apiFormData.append('name', result.data.name)
-      apiFormData.append('boardCondition', result.data.boardCondition)
-      apiFormData.append('boardType', result.data.boardType)
+      const apiFormData = new FormData();
+      apiFormData.append('userId', userId);
+      apiFormData.append('name', result.data.name);
+      apiFormData.append('boardCondition', result.data.boardCondition);
+      apiFormData.append('boardType', result.data.boardType);
 
       if (result.data.description) {
-        apiFormData.append('description', result.data.description)
+        apiFormData.append('description', result.data.description);
       }
 
       result.data.images.forEach((file: string | Blob) => {
-        apiFormData.append('image', file)
-      })
+        apiFormData.append('image', file);
+      });
 
       const response = await fetch('/api/used-boards', {
         method: 'POST',
         body: apiFormData,
-      })
+      });
 
-      const responseData = await response.json()
+      const responseData = await response.json();
 
       if (!response.ok) {
         if (response.status === 429) {
-          setIsRateLimited(true)
+          setIsRateLimited(true);
           toast.error(
             responseData.message ||
               "Tu as atteint la limite d'envoi de planche. Attends 10 minutes avant de pouvoir en renvoyer.."
-          )
-          return
+          );
+          return;
         }
 
-        throw new Error(responseData.message || 'Erreur lors de la soumission')
+        throw new Error(responseData.message || 'Erreur lors de la soumission');
       }
 
       toast.success(
         "Planche soumise avec succès ! Notre équipe va l'évaluer et te contacter bientôt."
-      )
+      );
 
-      setSelectedCondition('')
-      setSelectedType('')
-      setSelectedFiles([])
-      setPreviewImages([])
-      setErrors({})
-      setDescriptionLength(0)
-      setIsRateLimited(false)
-      ;(e.target as HTMLFormElement).reset()
+      setSelectedCondition('');
+      setSelectedType('');
+      setSelectedFiles([]);
+      setPreviewImages([]);
+      setErrors({});
+      setDescriptionLength(0);
+      setIsRateLimited(false);
+      (e.target as HTMLFormElement).reset();
     } catch (error) {
-      console.error('Erreur soumission:', error)
+      console.error('Erreur soumission:', error);
       toast.error(
         error instanceof Error ? error.message : 'Une erreur est survenue'
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-6 pb-8">
@@ -287,7 +290,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
             {isSubmitting ? (
               <>
                 <Spinner />
-                Envoi en cours...
+                <p className="ml-2">Envoi en cours...</p>
               </>
             ) : isRateLimited ? (
               <>
@@ -316,5 +319,5 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};

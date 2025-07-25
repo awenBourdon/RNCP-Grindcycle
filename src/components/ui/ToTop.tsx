@@ -1,22 +1,22 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { ArrowUp } from 'lucide-react'
+'use client';
+import { useEffect, useState } from 'react';
+import { ArrowUp } from 'lucide-react';
 
 export const ToTop = () => {
-  const [showButton, setShowButton] = useState(false)
+  const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowButton(window.scrollY > 300)
-    }
+      setShowButton(window.scrollY > 300);
+    };
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     showButton && (
@@ -28,5 +28,5 @@ export const ToTop = () => {
         <ArrowUp className="w-6 h-6" />
       </button>
     )
-  )
-}
+  );
+};

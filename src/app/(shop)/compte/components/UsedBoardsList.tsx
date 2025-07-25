@@ -1,5 +1,5 @@
-import Image from 'next/image'
-import type { UsedBoardStatus } from '@/generated/prisma'
+import Image from 'next/image';
+import type { UsedBoardStatus } from '@/generated/prisma';
 import {
   Clock,
   CheckCircle,
@@ -9,54 +9,54 @@ import {
   AlertCircle,
   Truck,
   Package,
-} from 'lucide-react'
-import { UsedBoard } from '@/lib/types'
+} from 'lucide-react';
+import { UsedBoard } from '@/lib/types';
 
 interface UsedBoardsListProps {
-  userBoards: UsedBoard[]
+  userBoards: UsedBoard[];
 }
 
 const getStatusText = (status: UsedBoardStatus) => {
   switch (status) {
     case 'PENDING_VALIDATION':
-      return 'À valider'
+      return 'À valider';
     case 'VALIDATED':
-      return 'Validé'
+      return 'Validé';
     case 'REJECTED':
-      return 'Rejeté'
+      return 'Rejeté';
     case 'SENT':
-      return 'Envoyé'
+      return 'Envoyé';
     case 'RECEIVED':
-      return 'Reçu'
+      return 'Reçu';
     case 'RECYCLED_TO_PRODUCT':
-      return 'Recyclé en produit'
+      return 'Recyclé en produit';
     case 'SOLD':
-      return 'Vendu'
+      return 'Vendu';
     default:
-      return status
+      return status;
   }
-}
+};
 
 const getStatusIcon = (status: UsedBoardStatus) => {
   switch (status) {
     case 'PENDING_VALIDATION':
-      return <AlertCircle size={16} />
+      return <AlertCircle size={16} />;
     case 'VALIDATED':
-      return <CheckCircle size={16} />
+      return <CheckCircle size={16} />;
     case 'REJECTED':
-      return <XCircle size={16} />
+      return <XCircle size={16} />;
     case 'SENT':
-      return <Truck size={16} />
+      return <Truck size={16} />;
     case 'RECEIVED':
-      return <CheckCircle size={16} />
+      return <CheckCircle size={16} />;
     case 'RECYCLED_TO_PRODUCT':
-      return <Recycle size={16} />
+      return <Recycle size={16} />;
     case 'SOLD':
-      return <ShoppingCart size={16} />
+      return <ShoppingCart size={16} />;
     default:
-      return <Clock size={16} />
+      return <Clock size={16} />;
   }
-}
+};
 
 export const UsedBoardsList = ({ userBoards }: UsedBoardsListProps) => {
   return (
@@ -156,5 +156,5 @@ export const UsedBoardsList = ({ userBoards }: UsedBoardsListProps) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};

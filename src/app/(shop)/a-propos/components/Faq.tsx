@@ -26,4 +26,4 @@ export const Faq = () => (
       </div>
     </div>
   </section>
-)
+);

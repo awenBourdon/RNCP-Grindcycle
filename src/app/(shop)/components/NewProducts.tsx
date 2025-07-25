@@ -1,71 +1,71 @@
-'use client'
-import { useState, useEffect, useCallback } from 'react'
-import { motion, useAnimation, useMotionValue } from 'framer-motion'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import { NewProductCard } from './ProductCard'
-import { ProductType } from '@/lib/types'
-import { useAbortController } from '@/hooks/useAbortController'
+'use client';
+import { useState, useEffect, useCallback } from 'react';
+import { motion, useAnimation, useMotionValue } from 'framer-motion';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { NewProductCard } from './ProductCard';
+import { ProductType } from '@/lib/types';
+import { useAbortController } from '@/hooks/useAbortController';
 
 interface ApiResponse {
-  success: boolean
-  data: ProductType[]
-  error?: string
+  success: boolean;
+  data: ProductType[];
+  error?: string;
 }
 
 export const NewProducts = () => {
-  const controls = useAnimation()
-  const [isMobile, setIsMobile] = useState(false)
-  const [products, setProducts] = useState<ProductType[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const x = useMotionValue(0)
-  const [, setIsPaused] = useState(false)
-  const animationDuration = 45
-  const { createSignal } = useAbortController()
+  const controls = useAnimation();
+  const [isMobile, setIsMobile] = useState(false);
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const x = useMotionValue(0);
+  const [, setIsPaused] = useState(false);
+  const animationDuration = 45;
+  const { createSignal } = useAbortController();
 
   const fetchLatestProducts = useCallback(async () => {
-    const signal = createSignal()
+    const signal = createSignal();
 
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       const response = await fetch('/api/products/latest?limit=6', {
         signal: signal,
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`)
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
       }
 
-      const data: ApiResponse = await response.json()
+      const data: ApiResponse = await response.json();
 
       if (data.success) {
-        setProducts(data.data)
-        setError(null)
+        setProducts(data.data);
+        setError(null);
       } else {
-        setError(data.error || 'Erreur lors du chargement des produits')
+        setError(data.error || 'Erreur lors du chargement des produits');
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.error('Erreur fetch derniers produits:', err)
-        setError(err.message)
+        console.error('Erreur fetch derniers produits:', err);
+        setError(err.message);
       }
     } finally {
       if (!signal.aborted) {
-        setLoading(false)
+        setLoading(false);
       }
     }
-  }, [createSignal])
+  }, [createSignal]);
 
   useEffect(() => {
-    fetchLatestProducts()
-  }, [fetchLatestProducts])
+    fetchLatestProducts();
+  }, [fetchLatestProducts]);
 
   const startAnimation = () => {
-    const startX = x.get()
-    const endX = '-50%'
+    const startX = x.get();
+    const endX = '-50%';
 
     controls.start({
       x: [startX, endX],
@@ -79,23 +79,23 @@ export const NewProducts = () => {
           repeat: Number.POSITIVE_INFINITY,
         },
       },
-    })
-  }
+    });
+  };
 
   useEffect(() => {
-    fetchLatestProducts()
-  }, [fetchLatestProducts])
+    fetchLatestProducts();
+  }, [fetchLatestProducts]);
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    checkScreenSize()
-    window.addEventListener('resize', checkScreenSize)
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
 
     const startAnimation = () => {
-      const startX = x.get()
-      const endX = '-50%'
+      const startX = x.get();
+      const endX = '-50%';
 
       controls.start({
         x: [startX, endX],
@@ -109,28 +109,28 @@ export const NewProducts = () => {
             repeat: Number.POSITIVE_INFINITY,
           },
         },
-      })
-    }
+      });
+    };
 
     if (!isMobile && products.length > 0) {
-      startAnimation()
+      startAnimation();
     }
 
     return () => {
-      window.removeEventListener('resize', checkScreenSize)
-      controls.stop()
-    }
-  }, [isMobile, controls, x, products.length])
+      window.removeEventListener('resize', checkScreenSize);
+      controls.stop();
+    };
+  }, [isMobile, controls, x, products.length]);
 
   const handleMouseEnter = () => {
-    setIsPaused(true)
-    controls.stop()
-  }
+    setIsPaused(true);
+    controls.stop();
+  };
 
   const handleMouseLeave = () => {
-    setIsPaused(false)
-    startAnimation()
-  }
+    setIsPaused(false);
+    startAnimation();
+  };
 
   if (loading) {
     return (
@@ -149,7 +149,7 @@ export const NewProducts = () => {
           </span>
         </div>
       </section>
-    )
+    );
   }
 
   if (error) {
@@ -168,7 +168,7 @@ export const NewProducts = () => {
           </div>
         </div>
       </section>
-    )
+    );
   }
 
   if (products.length === 0) {
@@ -181,7 +181,7 @@ export const NewProducts = () => {
           </p>
         </div>
       </section>
-    )
+    );
   }
 
   return (
@@ -240,5 +240,5 @@ export const NewProducts = () => {
         </Link>
       </div>
     </section>
-  )
-}
+  );
+};

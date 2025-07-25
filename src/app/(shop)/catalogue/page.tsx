@@ -1,5 +1,5 @@
-import { Catalog } from './components/Catalog'
-import { ToTop } from '../../../components/ui/ToTop'
+import { Catalog } from './components/Catalog';
+import { ToTop } from '../../../components/ui/ToTop';
 
 export default function CatalogPage() {
   return (
@@ -16,5 +16,5 @@ export default function CatalogPage() {
       </div>
       <ToTop />
     </div>
-  )
+  );
 }

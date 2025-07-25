@@ -1,16 +1,22 @@
-'use client'
-import { useState } from 'react'
-import { X, ChevronLeft, ChevronRight, Download, ImageIcon } from 'lucide-react'
-import Image from 'next/image'
+'use client';
+import { useState } from 'react';
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  ImageIcon,
+} from 'lucide-react';
+import Image from 'next/image';
 
 interface ImageModalProps {
-  images: string[]
-  isOpen: boolean
-  onClose: () => void
-  boardId: string
-  name?: string
-  userName?: string
-  description?: string
+  images: string[];
+  isOpen: boolean;
+  onClose: () => void;
+  boardId: string;
+  name?: string;
+  userName?: string;
+  description?: string;
 }
 
 export const ImageModal = ({
@@ -21,40 +27,40 @@ export const ImageModal = ({
   name,
   description,
 }: ImageModalProps) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
-  if (!isOpen || images.length === 0) return null
+  if (!isOpen || images.length === 0) return null;
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length)
-  }
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)
-  }
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
 
   const downloadImage = async () => {
     try {
-      const response = await fetch(images[currentImageIndex])
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `planche_${boardId}_${currentImageIndex + 1}.jpg`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
+      const response = await fetch(images[currentImageIndex]);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `planche_${boardId}_${currentImageIndex + 1}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Erreur téléchargement:', error)
-      window.open(images[currentImageIndex], '_blank')
+      console.error('Erreur téléchargement:', error);
+      window.open(images[currentImageIndex], '_blank');
     }
-  }
+  };
 
   const handleImageError = (index: number) => {
-    setImageErrors((prev) => new Set([...prev, index]))
-  }
+    setImageErrors((prev) => new Set([...prev, index]));
+  };
 
   return (
     <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
@@ -104,10 +110,10 @@ export const ImageModal = ({
               onError={() => handleImageError(currentImageIndex)}
               onLoad={() => {
                 setImageErrors((prev) => {
-                  const newSet = new Set(prev)
-                  newSet.delete(currentImageIndex)
-                  return newSet
-                })
+                  const newSet = new Set(prev);
+                  newSet.delete(currentImageIndex);
+                  return newSet;
+                });
               }}
             />
           )}
@@ -183,5 +189,5 @@ export const ImageModal = ({
       </div>
       <div className="absolute inset-0 -z-10" onClick={onClose} />
     </div>
-  )
-}
+  );
+};

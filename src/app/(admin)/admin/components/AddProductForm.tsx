@@ -1,42 +1,45 @@
-'use client'
+'use client';
 
-import type React from 'react'
+import type React from 'react';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Upload, Info } from 'lucide-react'
-import { toast } from 'sonner'
-import { ZodError } from 'zod'
-import { Spinner } from '@/components/ui/Spinner'
-import { ImageUpload } from '@/components/form/ImageUpload'
-import { IMAGE_CONFIG, productSchema } from '@/lib/validations/boardsValidation'
-import { ProductFormFields } from './ProductFormFields'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Upload, Info } from 'lucide-react';
+import { toast } from 'sonner';
+import { ZodError } from 'zod';
+import { Spinner } from '@/components/ui/Spinner';
+import { ImageUpload } from '@/components/form/ImageUpload';
+import {
+  IMAGE_CONFIG,
+  productSchema,
+} from '@/lib/validations/boardsValidation';
+import { ProductFormFields } from './ProductFormFields';
 
 interface UsedBoard {
-  id: string
-  name: string
-  status: string
+  id: string;
+  name: string;
+  status: string;
 }
 
 interface AddProductFormProps {
-  usedBoards: UsedBoard[]
+  usedBoards: UsedBoard[];
 }
 
 interface FormData {
-  name: string
-  description: string
-  type: string
-  priceEuro: number
-  pricePoints: number
-  usedBoardId: string
+  name: string;
+  description: string;
+  type: string;
+  priceEuro: number;
+  pricePoints: number;
+  usedBoardId: string;
 }
 
 interface FormErrors {
-  [key: string]: string
+  [key: string]: string;
 }
 
 export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
-  const router = useRouter()
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
@@ -44,117 +47,117 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     priceEuro: 0,
     pricePoints: 0,
     usedBoardId: '',
-  })
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-  const [previewImages, setPreviewImages] = useState<string[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState<FormErrors>({})
+  });
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const availableUsedBoards = usedBoards.filter(
     (board) => board.status === 'RECEIVED'
-  )
+  );
 
   const validateFile = (file: File): string | null => {
     if (file.size > IMAGE_CONFIG.maxSize) {
-      return `Fichier trop volumineux (${(file.size / (1024 * 1024)).toFixed(1)}MB) - Maximum ${IMAGE_CONFIG.maxSizeMB}MB`
+      return `Fichier trop volumineux (${(file.size / (1024 * 1024)).toFixed(1)}MB) - Maximum ${IMAGE_CONFIG.maxSizeMB}MB`;
     }
     if (
       !(IMAGE_CONFIG.acceptedFormats as readonly string[]).includes(file.type)
     ) {
-      return `Format non supporté. Utilisez ${IMAGE_CONFIG.acceptedFormatsDisplay}`
+      return `Format non supporté. Utilisez ${IMAGE_CONFIG.acceptedFormatsDisplay}`;
     }
-    return null
-  }
+    return null;
+  };
 
   const handleImageUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      const fileError = validateFile(file)
+      const fileError = validateFile(file);
       if (fileError) {
-        const newErrors = { ...errors }
-        newErrors[`image-${index}`] = fileError
-        setErrors(newErrors)
-        return
+        const newErrors = { ...errors };
+        newErrors[`image-${index}`] = fileError;
+        setErrors(newErrors);
+        return;
       }
 
-      const newFiles = [...selectedFiles]
-      newFiles[index] = file
-      setSelectedFiles(newFiles.filter(Boolean))
+      const newFiles = [...selectedFiles];
+      newFiles[index] = file;
+      setSelectedFiles(newFiles.filter(Boolean));
 
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
-          const newImages = [...previewImages]
-          newImages[index] = reader.result
-          setPreviewImages(newImages)
+          const newImages = [...previewImages];
+          newImages[index] = reader.result;
+          setPreviewImages(newImages);
         }
-      }
-      reader.readAsDataURL(file)
+      };
+      reader.readAsDataURL(file);
 
-      const newErrors = { ...errors }
-      delete newErrors[`image-${index}`]
-      delete newErrors.images
-      setErrors(newErrors)
+      const newErrors = { ...errors };
+      delete newErrors[`image-${index}`];
+      delete newErrors.images;
+      setErrors(newErrors);
     }
-  }
+  };
 
   const removeImage = (index: number) => {
-    const newFiles = [...selectedFiles]
-    newFiles.splice(index, 1)
-    setSelectedFiles(newFiles)
+    const newFiles = [...selectedFiles];
+    newFiles.splice(index, 1);
+    setSelectedFiles(newFiles);
 
-    const newImages = [...previewImages]
-    newImages.splice(index, 1)
-    setPreviewImages(newImages)
+    const newImages = [...previewImages];
+    newImages.splice(index, 1);
+    setPreviewImages(newImages);
 
-    const newErrors = { ...errors }
-    delete newErrors[`image-${index}`]
-    setErrors(newErrors)
-  }
+    const newErrors = { ...errors };
+    delete newErrors[`image-${index}`];
+    setErrors(newErrors);
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]:
         name === 'priceEuro' || name === 'pricePoints' ? Number(value) : value,
-    }))
+    }));
 
     if (errors[name]) {
-      const newErrors = { ...errors }
-      delete newErrors[name]
-      setErrors(newErrors)
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
     }
-  }
+  };
 
   const validateFormData = () => {
-    setErrors({})
+    setErrors({});
     try {
       const completeFormData = {
         ...formData,
         images: selectedFiles,
-      }
-      productSchema.parse(completeFormData)
-      return true
+      };
+      productSchema.parse(completeFormData);
+      return true;
     } catch (error) {
       if (error instanceof ZodError) {
-        const fieldErrors: FormErrors = {}
+        const fieldErrors: FormErrors = {};
         error.errors.forEach((err) => {
-          const field = err.path.join('.')
-          fieldErrors[field] = err.message
-        })
-        setErrors(fieldErrors)
+          const field = err.path.join('.');
+          fieldErrors[field] = err.message;
+        });
+        setErrors(fieldErrors);
       }
-      return false
+      return false;
     }
-  }
+  };
 
   const updateUsedBoardStatus = async (
     usedBoardId: string,
@@ -171,61 +174,63 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           status: 'RECYCLED_TO_PRODUCT',
         }),
         signal: signal,
-      })
+      });
       if (!response.ok) {
-        throw new Error('Erreur lors de la mise à jour du statut de la planche')
+        throw new Error(
+          'Erreur lors de la mise à jour du statut de la planche'
+        );
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
-        throw error
+        throw error;
       }
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     if (!validateFormData()) {
-      setIsSubmitting(false)
-      toast.error('Veuillez corriger les erreurs dans le formulaire')
-      return
+      setIsSubmitting(false);
+      toast.error('Veuillez corriger les erreurs dans le formulaire');
+      return;
     }
 
-    const controller = new AbortController()
+    const controller = new AbortController();
     try {
-      const formDataToSend = new FormData()
-      formDataToSend.append('name', formData.name)
-      formDataToSend.append('description', formData.description)
-      formDataToSend.append('type', formData.type)
-      formDataToSend.append('priceEuro', formData.priceEuro.toString())
-      formDataToSend.append('pricePoints', formData.pricePoints.toString())
-      formDataToSend.append('usedBoardId', formData.usedBoardId)
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('type', formData.type);
+      formDataToSend.append('priceEuro', formData.priceEuro.toString());
+      formDataToSend.append('pricePoints', formData.pricePoints.toString());
+      formDataToSend.append('usedBoardId', formData.usedBoardId);
 
       selectedFiles.forEach((file) => {
         if (file) {
-          formDataToSend.append('images', file)
+          formDataToSend.append('images', file);
         }
-      })
+      });
 
       const response = await fetch('/api/products', {
         method: 'POST',
         body: formDataToSend,
         signal: controller.signal,
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Erreur lors de la soumission')
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur lors de la soumission');
       }
 
       if (formData.usedBoardId) {
-        await updateUsedBoardStatus(formData.usedBoardId, controller.signal)
+        await updateUsedBoardStatus(formData.usedBoardId, controller.signal);
       }
 
       toast.success(
         'Produit ajouté avec succès ! La planche a été marquée comme recyclée.'
-      )
+      );
       setFormData({
         name: '',
         description: '',
@@ -233,22 +238,22 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         priceEuro: 0,
         pricePoints: 0,
         usedBoardId: '',
-      })
-      setSelectedFiles([])
-      setPreviewImages([])
-      setErrors({})
+      });
+      setSelectedFiles([]);
+      setPreviewImages([]);
+      setErrors({});
 
       setTimeout(() => {
-        router.refresh()
-      }, 2000)
+        router.refresh();
+      }, 2000);
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
-        toast.error(error.message || 'Une erreur est survenue')
+        toast.error(error.message || 'Une erreur est survenue');
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -341,5 +346,5 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         </div>
       </form>
     </div>
-  )
-}
+  );
+};

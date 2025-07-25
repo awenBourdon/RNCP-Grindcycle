@@ -1,10 +1,10 @@
-import Image from 'next/image'
-import { X } from 'lucide-react'
-import { useCart } from '@/contexts/CartContext'
-import { CartItemType } from '@/lib/types'
+import Image from 'next/image';
+import { X } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { CartItemType } from '@/lib/types';
 
 export const Item = ({ item }: { item: CartItemType }) => {
-  const { removeFromCart } = useCart()
+  const { removeFromCart } = useCart();
 
   return (
     <div className="flex flex-col sm:flex-row gap-6 pb-10 border-b border-gray-200">
@@ -35,5 +35,5 @@ export const Item = ({ item }: { item: CartItemType }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

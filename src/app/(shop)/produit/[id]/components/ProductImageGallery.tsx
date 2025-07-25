@@ -1,31 +1,31 @@
-'use client'
-import { useState } from 'react'
-import Image from 'next/image'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+'use client';
+import { useState } from 'react';
+import Image from 'next/image';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ProductImageGalleryProps {
-  images: string[]
-  productName: string
+  images: string[];
+  productName: string;
 }
 
 export const ProductImageGallery = ({
   images,
   productName,
 }: ProductImageGalleryProps) => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const displayImages =
-    images.length > 0 ? images : ['/placeholder.svg?height=400&width=400']
+    images.length > 0 ? images : ['/placeholder.svg?height=400&width=400'];
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % displayImages.length)
-  }
+    setCurrentImageIndex((prev) => (prev + 1) % displayImages.length);
+  };
 
   const prevImage = () => {
     setCurrentImageIndex(
       (prev) => (prev - 1 + displayImages.length) % displayImages.length
-    )
-  }
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -87,5 +87,5 @@ export const ProductImageGallery = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};

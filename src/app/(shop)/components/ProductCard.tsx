@@ -1,9 +1,9 @@
-'use client'
-import { ProductType } from '@/lib/types'
-import Image from 'next/image'
+'use client';
+import { ProductType } from '@/lib/types';
+import Image from 'next/image';
 
 interface ProductCardProps {
-  product: ProductType
+  product: ProductType;
 }
 
 export const NewProductCard = ({ product }: ProductCardProps) => {
@@ -33,5 +33,5 @@ export const NewProductCard = ({ product }: ProductCardProps) => {
         </span>
       </div>
     </div>
-  )
-}
+  );
+};

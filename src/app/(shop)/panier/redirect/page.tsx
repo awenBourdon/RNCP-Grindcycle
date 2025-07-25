@@ -1,16 +1,16 @@
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { LogIn, ShoppingCart, ArrowRight, User, Zap } from 'lucide-react'
-import { ReturnButton } from '@/components/ui/ReturnButton'
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import { LogIn, ShoppingCart, ArrowRight, User, Zap } from 'lucide-react';
+import { ReturnButton } from '@/components/ui/ReturnButton';
 
 export default async function RedirectPage() {
-  const headersList = await headers()
-  const session = await auth.api.getSession({ headers: headersList })
+  const headersList = await headers();
+  const session = await auth.api.getSession({ headers: headersList });
 
   if (session) {
-    redirect('/paiement/livraison')
+    redirect('/paiement/livraison');
   }
 
   return (
@@ -108,5 +108,5 @@ export default async function RedirectPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

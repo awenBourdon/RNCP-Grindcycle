@@ -1,6 +1,6 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, Package } from 'lucide-react'
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, Package } from 'lucide-react';
 
 export const Concept = () => {
   return (
@@ -191,5 +191,5 @@ export const Concept = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

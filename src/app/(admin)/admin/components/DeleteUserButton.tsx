@@ -1,21 +1,21 @@
-'use client'
-import { deleteUserAction } from '@/actions/delete-user.action'
-import { Spinner } from '@/components/ui/Spinner'
-import { Trash2 } from 'lucide-react'
-import { useTransition } from 'react'
+'use client';
+import { deleteUserAction } from '@/actions/delete-user.action';
+import { Spinner } from '@/components/ui/Spinner';
+import { Trash2 } from 'lucide-react';
+import { useTransition } from 'react';
 
 interface DeleteUserButtonProps {
-  userId: string
+  userId: string;
 }
 
 export const DeleteUserButton = ({ userId }: DeleteUserButtonProps) => {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
     startTransition(async () => {
-      await deleteUserAction({ userId })
-    })
-  }
+      await deleteUserAction({ userId });
+    });
+  };
 
   return (
     <button
@@ -26,8 +26,8 @@ export const DeleteUserButton = ({ userId }: DeleteUserButtonProps) => {
       <span className="sr-only">Supprimer utilisateur</span>
       {isPending ? <Spinner /> : <Trash2 size={16} />}
     </button>
-  )
-}
+  );
+};
 
 export const PlaceholderDeleteUserButton = () => {
   return (
@@ -38,5 +38,5 @@ export const PlaceholderDeleteUserButton = () => {
       <span className="sr-only">Supprimer utilisateur</span>
       <Trash2 size={16} />
     </button>
-  )
-}
+  );
+};

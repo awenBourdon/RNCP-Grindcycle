@@ -1,6 +1,6 @@
-import Link from 'next/link'
-import { ReturnButton } from '@/components/ui/ReturnButton'
-import { CheckCircle } from 'lucide-react'
+import Link from 'next/link';
+import { ReturnButton } from '@/components/ui/ReturnButton';
+import { CheckCircle } from 'lucide-react';
 
 export default function SuccesPage() {
   return (
@@ -53,5 +53,5 @@ export default function SuccesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

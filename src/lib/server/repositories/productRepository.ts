@@ -1,7 +1,11 @@
-import { prisma } from '@/lib/prisma'
-import { BoardType, Product, ProductStatus } from '@/generated/prisma'
-import { CreateProductData, ProductFilters, ProductWithRelations } from '@/lib/server/types/product'
-import { InterfaceProductRepository } from './interfaces/interfaceProductRepository'
+import { prisma } from '@/lib/prisma';
+import { BoardType, Product, ProductStatus } from '@/generated/prisma';
+import {
+  CreateProductData,
+  ProductFilters,
+  ProductWithRelations,
+} from '@/lib/server/types/product';
+import { InterfaceProductRepository } from './interfaces/interfaceProductRepository';
 
 export class ProductRepository implements InterfaceProductRepository {
   async create(data: CreateProductData): Promise<ProductWithRelations> {
@@ -23,10 +27,10 @@ export class ProductRepository implements InterfaceProductRepository {
             name: true,
             boardType: true,
             boardCondition: true,
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    });
   }
 
   async findById(id: string): Promise<ProductWithRelations | null> {
@@ -43,42 +47,42 @@ export class ProductRepository implements InterfaceProductRepository {
               select: {
                 id: true,
                 name: true,
-                email: true
-              }
-            }
-          }
-        }
-      }
-    })
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async findAll(filters?: ProductFilters): Promise<ProductWithRelations[]> {
-    const where: Record<string, unknown> = {}
+    const where: Record<string, unknown> = {};
 
     if (filters?.status) {
-      where.status = filters.status
+      where.status = filters.status;
     }
 
     if (filters?.types && filters.types.length > 0) {
-      where.type = { in: filters.types }
+      where.type = { in: filters.types };
     }
 
     if (filters?.priceRange) {
       where.priceEuro = {
         gte: filters.priceRange[0],
-        lte: filters.priceRange[1]
-      }
+        lte: filters.priceRange[1],
+      };
     }
 
     if (filters?.search) {
       where.OR = [
         { name: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } }
-      ]
+        { description: { contains: filters.search, mode: 'insensitive' } },
+      ];
     }
 
     if (filters?.usedBoardId) {
-      where.usedBoardId = filters.usedBoardId
+      where.usedBoardId = filters.usedBoardId;
     }
 
     return await prisma.product.findMany({
@@ -90,20 +94,23 @@ export class ProductRepository implements InterfaceProductRepository {
             name: true,
             boardType: true,
             boardCondition: true,
-          }
-        }
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
+        createdAt: 'desc',
+      },
+    });
   }
 
   async findAvailable(): Promise<ProductWithRelations[]> {
-    return this.findAll({ status: ProductStatus.CATALOG })
+    return this.findAll({ status: ProductStatus.CATALOG });
   }
 
-  async update(id: string, data: Partial<Product>): Promise<ProductWithRelations> {
+  async update(
+    id: string,
+    data: Partial<Product>
+  ): Promise<ProductWithRelations> {
     return await prisma.product.update({
       where: { id },
       data,
@@ -114,19 +121,21 @@ export class ProductRepository implements InterfaceProductRepository {
             name: true,
             boardType: true,
             boardCondition: true,
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    });
   }
 
   async delete(id: string): Promise<void> {
     await prisma.product.delete({
-      where: { id }
-    })
+      where: { id },
+    });
   }
 
-  async findByUsedBoardId(usedBoardId: string): Promise<ProductWithRelations | null> {
+  async findByUsedBoardId(
+    usedBoardId: string
+  ): Promise<ProductWithRelations | null> {
     return await prisma.product.findFirst({
       where: { usedBoardId },
       include: {
@@ -136,14 +145,14 @@ export class ProductRepository implements InterfaceProductRepository {
             name: true,
             boardType: true,
             boardCondition: true,
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    });
   }
 
   async findByStatus(status: ProductStatus): Promise<ProductWithRelations[]> {
-    return this.findAll({ status })
+    return this.findAll({ status });
   }
 
   async findByType(type: BoardType): Promise<ProductWithRelations[]> {
@@ -156,26 +165,29 @@ export class ProductRepository implements InterfaceProductRepository {
             name: true,
             boardType: true,
             boardCondition: true,
-          }
-        }
+          },
+        },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
+        createdAt: 'desc',
+      },
+    });
   }
 
-  async findByPriceRange(min: number, max: number): Promise<ProductWithRelations[]> {
-    return this.findAll({ priceRange: [min, max] })
+  async findByPriceRange(
+    min: number,
+    max: number
+  ): Promise<ProductWithRelations[]> {
+    return this.findAll({ priceRange: [min, max] });
   }
 
   async countAll(): Promise<number> {
-    return await prisma.product.count()
+    return await prisma.product.count();
   }
 
   async countByStatus(status: ProductStatus): Promise<number> {
     return await prisma.product.count({
-      where: { status }
-    })
+      where: { status },
+    });
   }
 }
