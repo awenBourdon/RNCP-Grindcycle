@@ -1,7 +1,4 @@
 'use client';
-
-import type React from 'react';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload, Info } from 'lucide-react';
@@ -14,6 +11,7 @@ import {
   productSchema,
 } from '@/lib/validations/boardsValidation';
 import { ProductFormFields } from './ProductFormFields';
+import { createProductAction } from '@/actions/product.actions';
 
 interface UsedBoard {
   id: string;
@@ -50,7 +48,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   });
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const availableUsedBoards = usedBoards.filter(
@@ -67,6 +65,28 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       return `Format non supporté. Utilisez ${IMAGE_CONFIG.acceptedFormatsDisplay}`;
     }
     return null;
+  };
+
+  const validateFormData = () => {
+    setErrors({});
+    try {
+      const completeFormData = {
+        ...formData,
+        images: selectedFiles,
+      };
+      productSchema.parse(completeFormData);
+      return true;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const fieldErrors: FormErrors = {};
+        error.errors.forEach((err) => {
+          const field = err.path.join('.');
+          fieldErrors[field] = err.message;
+        });
+        setErrors(fieldErrors);
+      }
+      return false;
+    }
   };
 
   const handleImageUpload = (
@@ -137,123 +157,57 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     }
   };
 
-  const validateFormData = () => {
-    setErrors({});
-    try {
-      const completeFormData = {
-        ...formData,
-        images: selectedFiles,
-      };
-      productSchema.parse(completeFormData);
-      return true;
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const fieldErrors: FormErrors = {};
-        error.errors.forEach((err) => {
-          const field = err.path.join('.');
-          fieldErrors[field] = err.message;
-        });
-        setErrors(fieldErrors);
-      }
-      return false;
-    }
-  };
-
-  const updateUsedBoardStatus = async (
-    usedBoardId: string,
-    signal?: AbortSignal
-  ) => {
-    try {
-      const response = await fetch('/api/used-boards', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          boardId: usedBoardId,
-          status: 'RECYCLED_TO_PRODUCT',
-        }),
-        signal: signal,
-      });
-      if (!response.ok) {
-        throw new Error(
-          'Erreur lors de la mise à jour du statut de la planche'
-        );
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
-        throw error;
-      }
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setIsSubmitting(true);
+    setIsPending(true);
 
     if (!validateFormData()) {
-      setIsSubmitting(false);
-      toast.error('Veuillez corriger les erreurs dans le formulaire');
+      setIsPending(false);
+      toast.error('Erreurs dans le formulaire');
       return;
     }
 
-    const controller = new AbortController();
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('type', formData.type);
-      formDataToSend.append('priceEuro', formData.priceEuro.toString());
-      formDataToSend.append('pricePoints', formData.pricePoints.toString());
-      formDataToSend.append('usedBoardId', formData.usedBoardId);
+
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value.toString());
+      });
 
       selectedFiles.forEach((file) => {
-        if (file) {
-          formDataToSend.append('images', file);
-        }
+        formDataToSend.append('images', file);
       });
 
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        body: formDataToSend,
-        signal: controller.signal,
-      });
+      const result = await createProductAction(formDataToSend);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la soumission');
+      if (result.success) {
+        toast.success(result.message);
+
+        setFormData({
+          name: '',
+          description: '',
+          type: '',
+          priceEuro: 0,
+          pricePoints: 0,
+          usedBoardId: '',
+        });
+        setSelectedFiles([]);
+        setPreviewImages([]);
+        setErrors({});
+
+        setTimeout(() => {
+          router.refresh();
+        }, 1000);
+      } else {
+        toast.error(result.error);
       }
-
-      if (formData.usedBoardId) {
-        await updateUsedBoardStatus(formData.usedBoardId, controller.signal);
-      }
-
-      toast.success(
-        'Produit ajouté avec succès ! La planche a été marquée comme recyclée.'
-      );
-      setFormData({
-        name: '',
-        description: '',
-        type: '',
-        priceEuro: 0,
-        pricePoints: 0,
-        usedBoardId: '',
-      });
-      setSelectedFiles([]);
-      setPreviewImages([]);
-      setErrors({});
-
-      setTimeout(() => {
-        router.refresh();
-      }, 2000);
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
-        toast.error(error.message || 'Une erreur est survenue');
-      }
+      console.error('Erreur création produit:', error);
+      toast.error('Une erreur est survenue');
     } finally {
-      setIsSubmitting(false);
+      setIsPending(false);
     }
-  };
+  }
 
   return (
     <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -324,23 +278,23 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
               !formData.name ||
               !formData.usedBoardId ||
               selectedFiles.length === 0 ||
-              isSubmitting ||
+              isPending ||
               availableUsedBoards.length === 0
             }
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? (
+            {isPending ? (
               <>
                 <Spinner />
-                Création en cours...
+                <span className="ml-2">Création en cours...</span>
               </>
             ) : (
-              <>
+              <div className="flex items-center cursor-pointer">
                 <Upload className="mr-2 h-5 w-5" />
                 {availableUsedBoards.length === 0
                   ? 'Aucune planche disponible'
-                  : 'Recycler en produit'}
-              </>
+                  : 'Ajouter au catalogue'}
+              </div>
             )}
           </button>
         </div>

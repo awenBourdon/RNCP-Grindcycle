@@ -1,16 +1,18 @@
 'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Recycle } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  recycleSchema,
-  IMAGE_CONFIG,
-} from '@/lib/validations/boardsValidation';
 import { FormFields } from './FormFields';
 import { ImageUpload } from '../../../../components/form/ImageUpload';
 import { Spinner } from '@/components/ui/Spinner';
 import { BoardCondition, BoardType } from '@/lib/types';
+import { createUsedBoardAction } from '@/actions/usedBoard.actions';
+import {
+  recycleSchema,
+  IMAGE_CONFIG,
+} from '@/lib/validations/boardsValidation';
 
 interface RecycleFormProps {
   userId: string;
@@ -27,19 +29,18 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
   const [selectedType, setSelectedType] = useState<BoardType | ''>('');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<FormErrors>({});
   const [descriptionLength, setDescriptionLength] = useState(0);
+  const [isPending, setIsPending] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const validateFile = (file: File): string | null => {
     if (file.size > IMAGE_CONFIG.maxSize) {
-      return `La taille de l'image ne doit pas dépasser ${IMAGE_CONFIG.maxSize / (1024 * 1024)}MB`;
+      return `Image trop volumineuse (${(file.size / (1024 * 1024)).toFixed(1)}MB) - Max: ${IMAGE_CONFIG.maxSize / (1024 * 1024)}MB`;
     }
-
     const acceptedTypes = IMAGE_CONFIG.acceptedFormats as readonly string[];
     if (!acceptedTypes.includes(file.type)) {
-      return `Format non supporté. Utilisez ${IMAGE_CONFIG.acceptedFormatsDisplay}`;
+      return `Format non supporté. Formats acceptés : ${IMAGE_CONFIG.acceptedFormatsDisplay}`;
     }
     return null;
   };
@@ -75,7 +76,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
       reader.onloadend = () => {
         if (typeof reader.result === 'string') {
           const newImages = [...previewImages];
-          newImages[index] = reader.result;
+          newImages[index] = reader.result as string;
           setPreviewImages(newImages);
         }
       };
@@ -97,77 +98,46 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
     setPreviewImages(newImages);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setIsSubmitting(true);
+    setIsPending(true);
     setErrors({});
     setIsRateLimited(false);
 
-    try {
-      const formData = new FormData(e.currentTarget);
+    const formData = new FormData(e.currentTarget);
+    formData.append('userId', userId);
+    formData.append('boardType', selectedType);
+    formData.append('boardCondition', selectedCondition);
 
-      const validationData = {
-        userId,
-        name: formData.get('name') as string,
-        boardType: selectedType,
-        boardCondition: selectedCondition,
-        description: (formData.get('description') as string) || undefined,
-        images: selectedFiles,
-      };
+    selectedFiles.forEach((file) => {
+      formData.append('image', file);
+    });
 
-      const result = recycleSchema.safeParse(validationData);
+    const validation = recycleSchema.safeParse({
+      userId,
+      name: formData.get('name') as string,
+      boardType: selectedType,
+      boardCondition: selectedCondition,
+      description: (formData.get('description') as string) || undefined,
+      images: selectedFiles,
+    });
 
-      if (!result.success) {
-        const fieldErrors: FormErrors = {};
-        result.error.errors.forEach(
-          (error: { path: unknown[]; message: string }) => {
-            const field = error.path.join('.');
-            fieldErrors[field] = error.message;
-          }
-        );
-        setErrors(fieldErrors);
-        toast.error('Veuillez corriger les erreurs dans le formulaire');
-        return;
-      }
-
-      const apiFormData = new FormData();
-      apiFormData.append('userId', userId);
-      apiFormData.append('name', result.data.name);
-      apiFormData.append('boardCondition', result.data.boardCondition);
-      apiFormData.append('boardType', result.data.boardType);
-
-      if (result.data.description) {
-        apiFormData.append('description', result.data.description);
-      }
-
-      result.data.images.forEach((file: string | Blob) => {
-        apiFormData.append('image', file);
+    if (!validation.success) {
+      const fieldErrors: FormErrors = {};
+      validation.error.errors.forEach((err) => {
+        const field = err.path.join('.');
+        fieldErrors[field] = err.message;
       });
+      setErrors(fieldErrors);
+      toast.error('Veuillez corriger les erreurs dans le formulaire');
+      setIsPending(false);
+      return;
+    }
 
-      const response = await fetch('/api/used-boards', {
-        method: 'POST',
-        body: apiFormData,
-      });
+    const result = await createUsedBoardAction(formData);
 
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 429) {
-          setIsRateLimited(true);
-          toast.error(
-            responseData.message ||
-              "Tu as atteint la limite d'envoi de planche. Attends 10 minutes avant de pouvoir en renvoyer.."
-          );
-          return;
-        }
-
-        throw new Error(responseData.message || 'Erreur lors de la soumission');
-      }
-
-      toast.success(
-        "Planche soumise avec succès ! Notre équipe va l'évaluer et te contacter bientôt."
-      );
-
+    if (result.success) {
+      toast.success(result.message || 'Planche soumise avec succès !');
       setSelectedCondition('');
       setSelectedType('');
       setSelectedFiles([]);
@@ -176,15 +146,15 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
       setDescriptionLength(0);
       setIsRateLimited(false);
       (e.target as HTMLFormElement).reset();
-    } catch (error) {
-      console.error('Erreur soumission:', error);
-      toast.error(
-        error instanceof Error ? error.message : 'Une erreur est survenue'
-      );
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      if (result.error?.toLowerCase().includes('limite')) {
+        setIsRateLimited(true);
+      }
+      toast.error('Erreur lors de la soumission');
     }
-  };
+
+    setIsPending(false);
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-6 pb-8">
@@ -218,27 +188,10 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
 
       {isRateLimited && (
         <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-orange-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-orange-700">
-                Tu as atteint la limite d&apos;envoi de planche. Attends 10
-                minutes avant de pouvoir en renvoyer.
-              </p>
-            </div>
-          </div>
+          <p className="text-sm text-orange-700">
+            Tu as atteint la limite d&apos;envoi de planche. Attends 10 minutes
+            avant de pouvoir en renvoyer.
+          </p>
         </div>
       )}
 
@@ -247,14 +200,11 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         className="space-y-16"
         encType="multipart/form-data"
       >
-        <input type="hidden" name="userId" value={userId} />
-
-        <div>
-          <h3 className="text-2xl font-normal mb-8">
+        <div className="bg-white rounded-lg p-6">
+          <h3 className="text-lg font-medium text-[#010101] mb-6">
             Informations sur ta planche
           </h3>
-
-          <div className="space-y-8">
+          <div className="space-y-6">
             <FormFields
               selectedType={selectedType}
               selectedCondition={selectedCondition}
@@ -282,15 +232,15 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
               !selectedCondition ||
               !selectedType ||
               selectedFiles.length === 0 ||
-              isSubmitting ||
+              isPending ||
               isRateLimited
             }
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? (
+            {isPending ? (
               <>
                 <Spinner />
-                <p className="ml-2">Envoi en cours...</p>
+                <span className="ml-2">Envoi en cours...</span>
               </>
             ) : isRateLimited ? (
               <>
@@ -310,10 +260,10 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
                 Limite atteinte
               </>
             ) : (
-              <>
+              <div className=" cursor-pointer flex items-center">
                 <Recycle className="mr-2 h-5 w-5" />
                 Soumettre ma planche
-              </>
+              </div>
             )}
           </button>
         </div>

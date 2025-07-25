@@ -69,7 +69,7 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
     };
 
     fetchFavorites();
-  }, [createSignal]); // ✅ Dépendances correctes
+  }, [createSignal]);
 
   const isFavorite = favorites.includes(product.id);
   const isAvailable = product.status === 'CATALOG';
