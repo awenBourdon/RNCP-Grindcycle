@@ -1,7 +1,9 @@
 'use client';
-import { useState } from 'react';
+import { useTransition } from 'react';
 import { Bell, Check, User, Calendar } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { markNotificationAsReadAction } from '@/actions/notification.actions';
 import type { AdminNotification } from '@/lib/types';
 
 interface AdminNotificationsProps {
@@ -10,29 +12,25 @@ interface AdminNotificationsProps {
 
 export function AdminNotifications({ notifications }: AdminNotificationsProps) {
   const router = useRouter();
-  const [markingAsRead, setMarkingAsRead] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const unreadNotifications = notifications.filter((notif) => !notif.isRead);
 
   const handleMarkAsRead = async (notificationId: string) => {
-    setMarkingAsRead(notificationId);
-    try {
-      const response = await fetch('/api/notifications', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ notificationId, isRead: true }),
-      });
-      if (!response.ok) {
-        throw new Error('Erreur lors de la mise à jour de la notification');
+    startTransition(async () => {
+      try {
+        const result = await markNotificationAsReadAction(notificationId);
+        if (result.success) {
+          toast.success(result.message);
+          router.refresh();
+        } else {
+          toast.error(result.error);
+        }
+      } catch (error) {
+        console.error('Erreur lors du marquage:', error);
+        toast.error('Une erreur est survenue');
       }
-      router.refresh();
-    } catch (error) {
-      console.error('Erreur lors du marquage:', error);
-    } finally {
-      setMarkingAsRead(null);
-    }
+    });
   };
 
   if (unreadNotifications.length === 0) {
@@ -102,16 +100,17 @@ export function AdminNotifications({ notifications }: AdminNotificationsProps) {
                     </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleMarkAsRead(notification.id)}
-                  disabled={markingAsRead === notification.id}
-                  className="cursor-pointer inline-flex items-center px-2 py-1 text-xs font-medium text-[#0a3d3f] bg-white border border-[#0a3d3f] rounded-md hover:bg-[#0a3d3f] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-3"
-                >
-                  <Check size={12} className="mr-1" />
-                  {markingAsRead === notification.id
-                    ? '...'
-                    : 'Marqué comme "lu"'}
-                </button>
+                <div className="ml-3">
+                  <button
+                    onClick={() => handleMarkAsRead(notification.id)}
+                    disabled={isPending}
+                    className="inline-flex items-center px-3 py-2 text-xs font-medium text-white bg-[#0a3d3f] rounded-full hover:bg-[#0a4d4f] transition-colors cursor-pointer"
+                    title="Marquer comme lu"
+                  >
+                    <Check size={12} className="mr-1" />
+                    <p>Marquer comme lu</p>
+                  </button>
+                </div>
               </div>
             </div>
           ))}

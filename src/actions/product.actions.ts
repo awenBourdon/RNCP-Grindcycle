@@ -7,8 +7,18 @@ import { ZodHelper } from '@/lib/server/utils/zodHelper';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
 
 const productService = new ProductService();
+
+const purchaseSchema = z.object({
+  productId: z.string(),
+  userId: z.string(),
+});
+
+const deleteSchema = z.object({
+  productId: z.string(),
+});
 
 export async function createProductAction(formData: FormData) {
   const headersList = await headers();
@@ -61,6 +71,15 @@ export async function deleteProductAction(productId: string) {
   }
 
   try {
+    const validation = ZodHelper.validate(deleteSchema, { productId });
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: 'Données invalides',
+        details: validation.errors,
+      };
+    }
+
     await productService.deleteProduct(productId);
 
     revalidatePath('/admin/produits');
@@ -92,10 +111,19 @@ export async function purchaseProductAction(productId: string) {
   }
 
   try {
-    const result = await productService.purchaseProduct({
+    const validation = ZodHelper.validate(purchaseSchema, {
       productId,
       userId: session.user.id,
     });
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: 'Données invalides',
+        details: validation.errors,
+      };
+    }
+
+    const result = await productService.purchaseProduct(validation.data!);
 
     revalidatePath('/catalogue');
     revalidatePath('/compte/favoris');

@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 import { deleteProductAction } from '@/actions/product.actions';
 import type { Product, ProductStatus, BoardType } from '@/generated/prisma';
+import { useTransition } from 'react';
 
 interface ProductWithUsedBoard extends Product {
   usedBoard?: {
@@ -48,24 +49,27 @@ const getStatusText = (status: ProductStatus) => {
 
 export const ProductsTable = ({ products }: ProductsTableProps) => {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const handleViewProduct = (productId: string) => {
     router.push(`/produit/${productId}`);
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    try {
-      const result = await deleteProductAction(productId);
-      if (result.success) {
-        toast.success(result.message);
-        router.refresh();
-      } else {
-        console.error('Erreur suppression produit:');
+    startTransition(async () => {
+      try {
+        const result = await deleteProductAction(productId);
+        if (result.success) {
+          toast.success(result.message);
+          router.refresh();
+        } else {
+          toast.error(result.error);
+        }
+      } catch (error) {
+        console.error('Erreur suppression produit:', error);
+        toast.error('Erreur lors de la suppression');
       }
-    } catch (error) {
-      console.error('Erreur suppression produit:', error);
-      toast.error('Erreur lors de la suppression');
-    }
+    });
   };
 
   return (
@@ -211,7 +215,8 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                       </button>
                       <button
                         onClick={() => handleDeleteProduct(product.id)}
-                        className="text-gray-600 hover:text-red-600 p-1 transition-colors"
+                        disabled={isPending}
+                        className="text-gray-600 hover:text-red-600 p-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Supprimer le produit"
                       >
                         <Trash2 size={16} />
