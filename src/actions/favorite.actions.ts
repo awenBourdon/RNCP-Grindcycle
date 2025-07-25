@@ -1,6 +1,4 @@
-// src/actions/favorites.actions.ts
 'use server';
-
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
@@ -31,7 +29,6 @@ export async function addToFavoritesAction(productId: string) {
       };
     }
 
-    // Vérifier que le produit existe
     const product = await prisma.product.findUnique({
       where: { id: productId },
     });
@@ -43,7 +40,6 @@ export async function addToFavoritesAction(productId: string) {
       };
     }
 
-    // Ajouter aux favoris (upsert pour éviter les doublons)
     await prisma.favorite.upsert({
       where: {
         userId_productId: {
