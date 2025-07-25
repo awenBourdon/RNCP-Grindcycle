@@ -1,5 +1,5 @@
-'use client'
-import type { CartItemType, ProductType } from '@/lib/types'
+'use client';
+import type { CartItemType, ProductType } from '@/lib/types';
 import {
   createContext,
   useContext,
@@ -8,18 +8,18 @@ import {
   useCallback,
   useMemo,
   type ReactNode,
-} from 'react'
+} from 'react';
 
 type CartContextType = {
-  cartItems: CartItemType[]
-  addToCart: (product: ProductType) => void
-  removeFromCart: (product: ProductType | string) => void
-  clearCart: () => void
-  getCartTotal: () => number
-  getCartCount: () => number
-  getShippingCost: () => number
-  isInCart: (product: ProductType) => boolean
-}
+  cartItems: CartItemType[];
+  addToCart: (product: ProductType) => void;
+  removeFromCart: (product: ProductType | string) => void;
+  clearCart: () => void;
+  getCartTotal: () => number;
+  getCartCount: () => number;
+  getShippingCost: () => number;
+  isInCart: (product: ProductType) => boolean;
+};
 
 const CartContext = createContext<CartContextType>({
   cartItems: [],
@@ -30,19 +30,19 @@ const CartContext = createContext<CartContextType>({
   getCartCount: () => 0,
   getShippingCost: () => 0,
   isInCart: () => false,
-})
+});
 
-export const useCart = () => useContext(CartContext)
+export const useCart = () => useContext(CartContext);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItemType[]>([])
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem('cart')
+      const savedCart = localStorage.getItem('cart');
       if (savedCart) {
-        const parsedCart: CartItemType[] = JSON.parse(savedCart)
+        const parsedCart: CartItemType[] = JSON.parse(savedCart);
 
         if (Array.isArray(parsedCart)) {
           const validCart = parsedCart.filter(
@@ -52,42 +52,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
               typeof item.priceEuro === 'number' &&
               typeof item.quantity === 'number' &&
               item.quantity > 0
-          )
-          setCartItems(validCart)
+          );
+          setCartItems(validCart);
         }
       }
     } catch (error) {
-      console.error('Erreur lors du chargement du panier:', error)
-      localStorage.removeItem('cart')
+      console.error('Erreur lors du chargement du panier:', error);
+      localStorage.removeItem('cart');
     } finally {
-      setIsLoaded(true)
+      setIsLoaded(true);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    if (!isLoaded) return
+    if (!isLoaded) return;
 
     const timeoutId = setTimeout(() => {
       try {
-        localStorage.setItem('cart', JSON.stringify(cartItems))
+        localStorage.setItem('cart', JSON.stringify(cartItems));
       } catch (error) {
-        console.error('Erreur lors de la sauvegarde du panier:', error)
+        console.error('Erreur lors de la sauvegarde du panier:', error);
       }
-    }, 300)
+    }, 300);
 
-    return () => clearTimeout(timeoutId)
-  }, [cartItems, isLoaded])
+    return () => clearTimeout(timeoutId);
+  }, [cartItems, isLoaded]);
 
   const addToCart = useCallback((product: ProductType) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id)
+      const existingItem = prevItems.find((item) => item.id === product.id);
 
       if (existingItem) {
         return prevItems.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
-        )
+        );
       }
 
       return [
@@ -100,44 +100,44 @@ export function CartProvider({ children }: { children: ReactNode }) {
           quantity: 1,
           imageUrl: product.imageUrl,
         },
-      ]
-    })
-  }, [])
+      ];
+    });
+  }, []);
 
   const removeFromCart = useCallback((productOrId: ProductType | string) => {
-    const id = typeof productOrId === 'string' ? productOrId : productOrId.id
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id))
-  }, [])
+    const id = typeof productOrId === 'string' ? productOrId : productOrId.id;
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  }, []);
 
   const clearCart = useCallback(() => {
-    setCartItems([])
-  }, [])
+    setCartItems([]);
+  }, []);
 
   const cartTotal = useMemo(() => {
     return cartItems.reduce(
       (total, item) => total + item.priceEuro * item.quantity,
       0
-    )
-  }, [cartItems])
+    );
+  }, [cartItems]);
 
   const cartCount = useMemo(() => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0)
-  }, [cartItems])
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  }, [cartItems]);
 
   const shippingCost = useMemo(() => {
-    return cartTotal >= 100 ? 0 : 9.9
-  }, [cartTotal])
+    return cartTotal >= 100 ? 0 : 9.9;
+  }, [cartTotal]);
 
-  const getCartTotal = useCallback(() => cartTotal, [cartTotal])
-  const getCartCount = useCallback(() => cartCount, [cartCount])
-  const getShippingCost = useCallback(() => shippingCost, [shippingCost])
+  const getCartTotal = useCallback(() => cartTotal, [cartTotal]);
+  const getCartCount = useCallback(() => cartCount, [cartCount]);
+  const getShippingCost = useCallback(() => shippingCost, [shippingCost]);
 
   const isInCart = useCallback(
     (product: ProductType) => {
-      return cartItems.some((item) => item.id === product.id)
+      return cartItems.some((item) => item.id === product.id);
     },
     [cartItems]
-  )
+  );
 
   const contextValue = useMemo<CartContextType>(
     () => ({
@@ -160,9 +160,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       getShippingCost,
       isInCart,
     ]
-  )
+  );
 
   return (
     <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
-  )
+  );
 }

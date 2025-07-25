@@ -1,11 +1,11 @@
-import Link from 'next/link'
-import { useCart } from '@/contexts/CartContext'
+import Link from 'next/link';
+import { useCart } from '@/contexts/CartContext';
 
 export const Summary = () => {
-  const { getCartTotal, getShippingCost, clearCart } = useCart()
-  const subtotal = getCartTotal()
-  const shipping = getShippingCost()
-  const total = subtotal + shipping
+  const { getCartTotal, getShippingCost, clearCart } = useCart();
+  const subtotal = getCartTotal();
+  const shipping = getShippingCost();
+  const total = subtotal + shipping;
 
   return (
     <div className="p-6 rounded-lg bg-[#f8f7f4] max-h-[26.5rem]">
@@ -53,5 +53,5 @@ export const Summary = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};

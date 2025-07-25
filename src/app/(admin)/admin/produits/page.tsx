@@ -1,18 +1,18 @@
-import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
-import { prisma } from '@/lib/prisma'
-import { ProductsTable } from '../components/ProductsTable'
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { prisma } from '@/lib/prisma';
+import { ProductsTable } from '../components/ProductsTable';
 
 export default async function ProductsPage() {
-  const headersList = await headers()
+  const headersList = await headers();
 
   const session = await auth.api.getSession({
     headers: headersList,
-  })
+  });
 
   if (!session || session.user.role !== 'ADMIN') {
-    redirect('/authentification/connexion')
+    redirect('/authentification/connexion');
   }
 
   const products = await prisma.product.findMany({
@@ -32,7 +32,7 @@ export default async function ProductsPage() {
     orderBy: {
       createdAt: 'desc',
     },
-  })
+  });
 
-  return <ProductsTable products={products} />
+  return <ProductsTable products={products} />;
 }

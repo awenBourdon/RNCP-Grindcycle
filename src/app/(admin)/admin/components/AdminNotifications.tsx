@@ -1,21 +1,21 @@
-'use client'
-import { useState } from 'react'
-import { Bell, Check, User, Calendar } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import type { AdminNotification } from '@/lib/types'
+'use client';
+import { useState } from 'react';
+import { Bell, Check, User, Calendar } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import type { AdminNotification } from '@/lib/types';
 
 interface AdminNotificationsProps {
-  notifications: AdminNotification[]
+  notifications: AdminNotification[];
 }
 
 export function AdminNotifications({ notifications }: AdminNotificationsProps) {
-  const router = useRouter()
-  const [markingAsRead, setMarkingAsRead] = useState<string | null>(null)
+  const router = useRouter();
+  const [markingAsRead, setMarkingAsRead] = useState<string | null>(null);
 
-  const unreadNotifications = notifications.filter((notif) => !notif.isRead)
+  const unreadNotifications = notifications.filter((notif) => !notif.isRead);
 
   const handleMarkAsRead = async (notificationId: string) => {
-    setMarkingAsRead(notificationId)
+    setMarkingAsRead(notificationId);
     try {
       const response = await fetch('/api/notifications', {
         method: 'PUT',
@@ -23,17 +23,17 @@ export function AdminNotifications({ notifications }: AdminNotificationsProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ notificationId, isRead: true }),
-      })
+      });
       if (!response.ok) {
-        throw new Error('Erreur lors de la mise à jour de la notification')
+        throw new Error('Erreur lors de la mise à jour de la notification');
       }
-      router.refresh()
+      router.refresh();
     } catch (error) {
-      console.error('Erreur lors du marquage:', error)
+      console.error('Erreur lors du marquage:', error);
     } finally {
-      setMarkingAsRead(null)
+      setMarkingAsRead(null);
     }
-  }
+  };
 
   if (unreadNotifications.length === 0) {
     return (
@@ -49,7 +49,7 @@ export function AdminNotifications({ notifications }: AdminNotificationsProps) {
           <p className="text-gray-500">Aucune nouvelle notification</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -125,5 +125,5 @@ export function AdminNotifications({ notifications }: AdminNotificationsProps) {
         )}
       </div>
     </div>
-  )
+  );
 }

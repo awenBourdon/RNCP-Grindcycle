@@ -1,31 +1,31 @@
-'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useTransition } from 'react'
-import { Spinner } from '@/components/ui/Spinner'
-import Link from 'next/link'
-import { LogIn } from 'lucide-react'
-import { signInEmailAction } from '@/actions/sign-in-email.action'
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { Spinner } from '@/components/ui/Spinner';
+import Link from 'next/link';
+import { LogIn } from 'lucide-react';
+import { signInEmailAction } from '@/actions/sign-in-email.action';
 
 export const LoginForm = () => {
-  const [isPending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.target as HTMLFormElement)
+    evt.preventDefault();
+    const formData = new FormData(evt.target as HTMLFormElement);
 
     startTransition(async () => {
-      const { error } = await signInEmailAction(formData)
+      const { error } = await signInEmailAction(formData);
 
       if (error) {
-        setError('Identifiant et/ou mot de passe incorrect.')
+        setError('Identifiant et/ou mot de passe incorrect.');
       } else {
-        setError(null)
-        router.push('/compte')
+        setError(null);
+        router.push('/compte');
       }
-    })
+    });
   }
 
   return (
@@ -90,5 +90,5 @@ export const LoginForm = () => {
         <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
       )}
     </form>
-  )
-}
+  );
+};

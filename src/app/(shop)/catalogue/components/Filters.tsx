@@ -1,20 +1,20 @@
-'use client'
-import { ChevronDown } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
-import type React from 'react'
+'use client';
+import { ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import type React from 'react';
 
 type FiltersProps = {
   filters: {
-    types: string[]
-  }
-  handleTypeChange: (type: string) => void
+    types: string[];
+  };
+  handleTypeChange: (type: string) => void;
   handlePriceChange: (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
-  ) => void
-  resetFilters: () => void
-  priceRangeValues: [number, number]
-}
+  ) => void;
+  resetFilters: () => void;
+  priceRangeValues: [number, number];
+};
 
 export const Filters: React.FC<FiltersProps> = ({
   filters,
@@ -23,48 +23,48 @@ export const Filters: React.FC<FiltersProps> = ({
   resetFilters,
   priceRangeValues,
 }) => {
-  const [openMenu, setOpenMenu] = useState<'type' | 'price' | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [openMenu, setOpenMenu] = useState<'type' | 'price' | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const [tempMinPrice, setTempMinPrice] = useState(priceRangeValues[0])
-  const [tempMaxPrice, setTempMaxPrice] = useState(priceRangeValues[1])
+  const [tempMinPrice, setTempMinPrice] = useState(priceRangeValues[0]);
+  const [tempMaxPrice, setTempMaxPrice] = useState(priceRangeValues[1]);
 
   const toggleDropdown = (key: 'type' | 'price') => {
-    setOpenMenu((prev) => (prev === key ? null : key))
-  }
+    setOpenMenu((prev) => (prev === key ? null : key));
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node
+      const target = event.target as Node;
 
       if (!containerRef.current?.contains(target)) {
-        setOpenMenu(null)
-        return
+        setOpenMenu(null);
+        return;
       }
 
       const clickedInteractive = (target as HTMLElement).closest(
         'button, .dropdown'
-      )
+      );
       if (!clickedInteractive) {
-        setOpenMenu(null)
+        setOpenMenu(null);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const formatTypeDisplay = (type: string) => {
-    return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()
-  }
+    return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+  };
 
   const handlePriceBlur = (value: number, index: number) => {
     const event = {
       target: { value: value.toString() },
-    } as React.ChangeEvent<HTMLInputElement>
+    } as React.ChangeEvent<HTMLInputElement>;
 
-    handlePriceChange(event, index)
-  }
+    handlePriceChange(event, index);
+  };
 
   return (
     <div ref={containerRef} className="py-8 border-b border-gray-200">
@@ -177,5 +177,5 @@ export const Filters: React.FC<FiltersProps> = ({
         </button>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,27 +1,27 @@
-'use client'
-import type React from 'react'
-import { useState } from 'react'
-import { updateUser } from '@/lib/auth-client'
-import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
-import { User } from 'lucide-react'
+'use client';
+import type React from 'react';
+import { useState } from 'react';
+import { updateUser } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { User } from 'lucide-react';
 
 interface UpdateUserFormProps {
-  name: string
+  name: string;
 }
 
 export const UpdateUserForm = ({ name }: UpdateUserFormProps) => {
-  const [isPending, setIsPending] = useState(false)
-  const router = useRouter()
+  const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.target as HTMLFormElement)
-    const name = String(formData.get('name'))
-    const image = String(formData.get('image'))
+    evt.preventDefault();
+    const formData = new FormData(evt.target as HTMLFormElement);
+    const name = String(formData.get('name'));
+    const image = String(formData.get('image'));
 
     if (!name && !image) {
-      return toast.error('Veuillez entrer un nom ou une image')
+      return toast.error('Veuillez entrer un nom ou une image');
     }
 
     await updateUser({
@@ -29,21 +29,21 @@ export const UpdateUserForm = ({ name }: UpdateUserFormProps) => {
       image,
       fetchOptions: {
         onRequest: () => {
-          setIsPending(true)
+          setIsPending(true);
         },
         onResponse: () => {
-          setIsPending(false)
+          setIsPending(false);
         },
         onError: (ctx) => {
-          toast.error(ctx.error.message)
+          toast.error(ctx.error.message);
         },
         onSuccess: () => {
-          toast.success('Utilisateur mis à jour avec succès')
-          ;(evt.target as HTMLFormElement).reset()
-          router.refresh()
+          toast.success('Utilisateur mis à jour avec succès');
+          (evt.target as HTMLFormElement).reset();
+          router.refresh();
         },
       },
-    })
+    });
   }
 
   return (
@@ -85,5 +85,5 @@ export const UpdateUserForm = ({ name }: UpdateUserFormProps) => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};

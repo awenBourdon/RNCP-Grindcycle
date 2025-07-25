@@ -1,9 +1,9 @@
-import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
-import { ProductDisplay } from './components/ProductDisplay'
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import { ProductDisplay } from './components/ProductDisplay';
 
 interface ProductPageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 async function getProduct(id: string) {
@@ -23,26 +23,26 @@ async function getProduct(id: string) {
           },
         },
       },
-    })
-    return product
+    });
+    return product;
   } catch (error) {
-    console.error('Erreur lors de la récupération du produit:', error)
-    return null
+    console.error('Erreur lors de la récupération du produit:', error);
+    return null;
   }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { id } = await params
+  const { id } = await params;
 
-  const product = await getProduct(id)
+  const product = await getProduct(id);
 
   if (!product) {
-    notFound()
+    notFound();
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-32">
       <ProductDisplay product={product} />
     </div>
-  )
+  );
 }

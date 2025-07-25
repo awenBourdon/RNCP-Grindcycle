@@ -1,5 +1,5 @@
-import { ReturnButton } from '@/components/ui/ReturnButton'
-import { ForgotPasswordForm } from '../components/ForgotPasswordForm'
+import { ReturnButton } from '@/components/ui/ReturnButton';
+import { ForgotPasswordForm } from '../components/ForgotPasswordForm';
 
 export default function ForgotPasswordPage() {
   return (
@@ -26,5 +26,5 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

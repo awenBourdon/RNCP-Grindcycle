@@ -1,18 +1,18 @@
-import { headers } from 'next/headers'
-import { ToTop } from '../../../components/ui/ToTop'
-import { RecycleForm } from './components/RecycleForm'
-import { FormSteps } from './components/FormSteps'
-import { redirect } from 'next/navigation'
-import { auth } from '@/lib/auth'
+import { headers } from 'next/headers';
+import { ToTop } from '../../../components/ui/ToTop';
+import { RecycleForm } from './components/RecycleForm';
+import { FormSteps } from './components/FormSteps';
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
 
 export default async function RecyclePage() {
-  const headersList = await headers()
+  const headersList = await headers();
 
   const session = await auth.api.getSession({
     headers: headersList,
-  })
+  });
 
-  if (!session) redirect('/recycler-planche/redirect')
+  if (!session) redirect('/recycler-planche/redirect');
 
   return (
     <div className="min-h-screen">
@@ -31,5 +31,5 @@ export default async function RecyclePage() {
         <ToTop />
       </div>
     </div>
-  )
+  );
 }

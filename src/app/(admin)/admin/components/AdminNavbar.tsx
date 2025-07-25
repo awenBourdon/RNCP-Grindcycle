@@ -1,6 +1,6 @@
-'use client'
-import type React from 'react'
-import Link from 'next/link'
+'use client';
+import type React from 'react';
+import Link from 'next/link';
 import {
   BarChart3,
   Users,
@@ -8,17 +8,17 @@ import {
   ShoppingBag,
   Bell,
   Plus,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface NavItem {
-  id: string
-  label: string
-  icon: React.ComponentType<{ size?: number }>
-  href: string
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number }>;
+  href: string;
 }
 
 interface AdminNavbarProps {
-  currentPath: string
+  currentPath: string;
 }
 
 const navItems: NavItem[] = [
@@ -53,7 +53,7 @@ const navItems: NavItem[] = [
     icon: Plus,
     href: '/admin/ajouter-produit',
   },
-]
+];
 
 export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
   return (
@@ -65,8 +65,8 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
       <nav className="hidden lg:block">
         <div className="grid grid-cols-3 xl:grid-cols-6 gap-3">
           {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = currentPath === item.href
+            const Icon = item.icon;
+            const isActive = currentPath === item.href;
 
             return (
               <Link
@@ -81,7 +81,7 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
                 <Icon size={24} />
                 <span className="text-sm font-medium">{item.label}</span>
               </Link>
-            )
+            );
           })}
         </div>
       </nav>
@@ -89,8 +89,8 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
       <nav className="lg:hidden">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = currentPath === item.href
+            const Icon = item.icon;
+            const isActive = currentPath === item.href;
 
             return (
               <Link
@@ -107,10 +107,10 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
                   {item.label}
                 </span>
               </Link>
-            )
+            );
           })}
         </div>
       </nav>
     </div>
-  )
-}
+  );
+};

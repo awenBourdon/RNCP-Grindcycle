@@ -1,58 +1,58 @@
-'use client'
-import { Spinner } from '@/components/ui/Spinner'
-import type { UserRole } from '@/generated/prisma'
-import { admin } from '@/lib/auth-client'
-import type { ErrorContext } from '@/lib/types'
-import { useRouter } from 'next/navigation'
-import type React from 'react'
-import { useTransition } from 'react'
-import { toast } from 'sonner'
-import { ChevronDown, Shield, User } from 'lucide-react'
+'use client';
+import { Spinner } from '@/components/ui/Spinner';
+import type { UserRole } from '@/generated/prisma';
+import { admin } from '@/lib/auth-client';
+import type { ErrorContext } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+import type React from 'react';
+import { useTransition } from 'react';
+import { toast } from 'sonner';
+import { ChevronDown, Shield, User } from 'lucide-react';
 
 interface UserRoleSelectProps {
-  userId: string
-  role: UserRole
+  userId: string;
+  role: UserRole;
 }
 
 export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
-  const [isPending, startTransition] = useTransition()
-  const router = useRouter()
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
-    const newRole = evt.target.value as UserRole
+    const newRole = evt.target.value as UserRole;
     startTransition(async () => {
       try {
         const canChangeRole = await admin.hasPermission({
           permissions: {
             user: ['set-role'],
           },
-        })
+        });
         if (!canChangeRole || canChangeRole.error) {
-          toast.error('Interdit')
-          return
+          toast.error('Interdit');
+          return;
         }
         await admin.setRole({
           userId,
           role: newRole,
           fetchOptions: {
             onError: (ctx: ErrorContext) => {
-              toast.error(ctx.error.message)
+              toast.error(ctx.error.message);
             },
             onSuccess: () => {
-              toast.success('Rôle mis à jour.')
-              router.refresh()
+              toast.success('Rôle mis à jour.');
+              router.refresh();
             },
           },
-        })
+        });
       } catch {
-        toast.error("Une erreur s'est produite.")
+        toast.error("Une erreur s'est produite.");
       }
-    })
-  }
+    });
+  };
 
   const getRoleIcon = (userRole: UserRole) => {
-    return userRole === 'ADMIN' ? <Shield size={14} /> : <User size={14} />
-  }
+    return userRole === 'ADMIN' ? <Shield size={14} /> : <User size={14} />;
+  };
 
   return (
     <div className="relative inline-flex items-center">
@@ -78,5 +78,5 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

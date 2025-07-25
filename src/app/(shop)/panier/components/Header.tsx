@@ -1,7 +1,7 @@
-import { useCart } from '@/contexts/CartContext'
+import { useCart } from '@/contexts/CartContext';
 
 export const Header = () => {
-  const { cartItems } = useCart()
+  const { cartItems } = useCart();
   return (
     <>
       <h1 className="text-4xl md:text-6xl font-normal text-black mb-6">
@@ -19,5 +19,5 @@ export const Header = () => {
         )}
       </p>
     </>
-  )
-}
+  );
+};

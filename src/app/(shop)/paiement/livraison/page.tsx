@@ -1,15 +1,15 @@
-'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useCart } from '@/contexts/CartContext'
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/contexts/CartContext';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 // TODO : supprimer ou refaire bien (envoyer infos à stripe, mettre des regex et de la validation de données)
 export default function ShippingPage() {
-  const router = useRouter()
-  const { cartItems, getCartTotal, getShippingCost } = useCart()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const { cartItems, getCartTotal, getShippingCost } = useCart();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,28 +19,28 @@ export default function ShippingPage() {
     country: 'France',
     email: '',
     phone: '',
-  })
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (cartItems.length === 0) {
-      alert('Votre panier est vide')
-      router.push('/panier')
-      return
+      alert('Votre panier est vide');
+      router.push('/panier');
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      sessionStorage.setItem('shippingAddress', JSON.stringify(formData))
+      sessionStorage.setItem('shippingAddress', JSON.stringify(formData));
 
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
@@ -52,32 +52,32 @@ export default function ShippingPage() {
           shippingCost: getShippingCost(),
           shippingAddress: formData,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
           data.error || 'Erreur lors de la création de la session de paiement'
-        )
+        );
       }
 
       if (data.url) {
-        window.location.href = data.url
+        window.location.href = data.url;
       } else {
-        throw new Error('URL de paiement non disponible')
+        throw new Error('URL de paiement non disponible');
       }
     } catch (error) {
-      console.error('Erreur lors du checkout:', error)
-      alert('Une erreur est survenue lors du paiement. Veuillez réessayer.')
+      console.error('Erreur lors du checkout:', error);
+      alert('Une erreur est survenue lors du paiement. Veuillez réessayer.');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const subtotal = getCartTotal()
-  const shipping = getShippingCost()
-  const total = subtotal + shipping
+  const subtotal = getCartTotal();
+  const shipping = getShippingCost();
+  const total = subtotal + shipping;
 
   return (
     <div className="min-h-screen bg-white">
@@ -326,5 +326,5 @@ export default function ShippingPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

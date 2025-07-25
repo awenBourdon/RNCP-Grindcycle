@@ -1,7 +1,7 @@
-import { Session } from '@/lib/types'
+import { Session } from '@/lib/types';
 
 interface AdminHeaderProps {
-  session: Session
+  session: Session;
 }
 
 export const AdminHeader = ({ session }: AdminHeaderProps) => {
@@ -27,5 +27,5 @@ export const AdminHeader = ({ session }: AdminHeaderProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

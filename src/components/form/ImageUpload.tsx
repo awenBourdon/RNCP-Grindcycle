@@ -1,17 +1,20 @@
-import Image from 'next/image'
-import { Upload, Info } from 'lucide-react'
-import { IMAGE_CONFIG } from '@/lib/validations/boardsValidation'
+import Image from 'next/image';
+import { Upload, Info } from 'lucide-react';
+import { IMAGE_CONFIG } from '@/lib/validations/boardsValidation';
 
 interface FormErrors {
-  [key: string]: string
+  [key: string]: string;
 }
 
 interface ImageUploadProps {
-  selectedFiles: File[]
-  previewImages: string[]
-  errors: FormErrors
-  onImageUpload: (e: React.ChangeEvent<HTMLInputElement>, index: number) => void
-  onRemoveImage: (index: number) => void
+  selectedFiles: File[];
+  previewImages: string[];
+  errors: FormErrors;
+  onImageUpload: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => void;
+  onRemoveImage: (index: number) => void;
 }
 
 export const ImageUpload = ({
@@ -22,9 +25,9 @@ export const ImageUpload = ({
   onRemoveImage,
 }: ImageUploadProps) => {
   const canUploadImage = (index: number): boolean => {
-    if (index === 0) return true
-    return selectedFiles.length > index - 1 && previewImages[index - 1] !== ''
-  }
+    if (index === 0) return true;
+    return selectedFiles.length > index - 1 && previewImages[index - 1] !== '';
+  };
 
   return (
     <div className="col-span-1 md:col-span-2">
@@ -48,7 +51,7 @@ export const ImageUpload = ({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[0, 1, 2].map((index) => {
-            const canUpload = canUploadImage(index)
+            const canUpload = canUploadImage(index);
             return (
               <div
                 key={index}
@@ -63,7 +66,7 @@ export const ImageUpload = ({
                 {previewImages[index] ? (
                   <>
                     <Image
-                      src={previewImages[index] || '/placeholder.svg'}
+                      src={previewImages[index] || '/placeholder.webp'}
                       alt={`Aperçu ${index + 1}`}
                       fill
                       className="object-contain p-2 rounded-lg"
@@ -112,7 +115,7 @@ export const ImageUpload = ({
                   />
                 )}
               </div>
-            )
+            );
           })}
         </div>
         {errors.images && (
@@ -129,5 +132,5 @@ export const ImageUpload = ({
         )}
       </div>
     </div>
-  )
-}
+  );
+};

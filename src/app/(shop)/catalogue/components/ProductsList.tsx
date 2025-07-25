@@ -1,10 +1,10 @@
-'use client'
-import { ProductType } from '@/lib/types'
-import { ProductCard } from './ProductCard'
+'use client';
+import { ProductType } from '@/lib/types';
+import { ProductCard } from './ProductCard';
 
 type Props = {
-  filteredProducts: ProductType[]
-}
+  filteredProducts: ProductType[];
+};
 
 export const ProductList = ({ filteredProducts }: Props) => {
   return (
@@ -13,5 +13,5 @@ export const ProductList = ({ filteredProducts }: Props) => {
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
-  )
-}
+  );
+};

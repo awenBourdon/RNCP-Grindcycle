@@ -1,22 +1,22 @@
-'use client'
-import { useState } from 'react'
-import type React from 'react'
-import { signIn } from '@/lib/auth-client'
-import { toast } from 'sonner'
-import type { ErrorContext } from '@/lib/types'
-import { Mail } from 'lucide-react'
+'use client';
+import { useState } from 'react';
+import type React from 'react';
+import { signIn } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import type { ErrorContext } from '@/lib/types';
+import { Mail } from 'lucide-react';
 
 export const MagicLinkLoginForm = () => {
-  const [isPending, setIsPending] = useState(false) // TODO : Utiliser useTransition
+  const [isPending, setIsPending] = useState(false); // TODO : Utiliser useTransition
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    const formData = new FormData(evt.currentTarget)
-    const email = String(formData.get('email'))
+    evt.preventDefault();
+    const formData = new FormData(evt.currentTarget);
+    const email = String(formData.get('email'));
 
-    if (!email) return toast.error('Veuillez entrer votre email.')
+    if (!email) return toast.error('Veuillez entrer votre email.');
 
     await signIn.magicLink({
       email,
@@ -24,20 +24,20 @@ export const MagicLinkLoginForm = () => {
       callbackURL: '/compte',
       fetchOptions: {
         onRequest: () => {
-          setIsPending(true)
+          setIsPending(true);
         },
         onResponse: () => {
-          setIsPending(false)
+          setIsPending(false);
         },
         onError: (ctx: ErrorContext) => {
-          toast.error(ctx.error.message)
+          toast.error(ctx.error.message);
         },
         onSuccess: () => {
-          toast.success('Vérifiez votre email pour le lien magique !')
-          setIsOpen(false)
+          toast.success('Vérifiez votre email pour le lien magique !');
+          setIsOpen(false);
         },
       },
-    })
+    });
   }
 
   return (
@@ -77,5 +77,5 @@ export const MagicLinkLoginForm = () => {
         </button>
       </form>
     </div>
-  )
-}
+  );
+};

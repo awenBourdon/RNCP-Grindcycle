@@ -1,17 +1,17 @@
-import { ReturnButton } from '@/components/ui/ReturnButton'
-import { redirect } from 'next/navigation'
-import { ResetPasswordForm } from '../components/ResetPasswordForm'
+import { ReturnButton } from '@/components/ui/ReturnButton';
+import { redirect } from 'next/navigation';
+import { ResetPasswordForm } from '../components/ResetPasswordForm';
 
 interface ResetPasswordPageProps {
-  searchParams: Promise<{ token: string }>
+  searchParams: Promise<{ token: string }>;
 }
 
 export default async function ResetPasswordPage({
   searchParams,
 }: ResetPasswordPageProps) {
-  const token = (await searchParams).token
+  const token = (await searchParams).token;
 
-  if (!token) redirect('/authentification/connexion')
+  if (!token) redirect('/authentification/connexion');
 
   return (
     <div className="min-h-screen bg-white">
@@ -38,5 +38,5 @@ export default async function ResetPasswordPage({
         </div>
       </div>
     </div>
-  )
+  );
 }

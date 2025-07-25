@@ -1,15 +1,15 @@
-'use client'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { UserPlus, Mail, Lock } from 'lucide-react'
-import { z } from 'zod'
-import { signUpSchema } from '@/lib/validations/authValidation'
-import { signUpEmailAction } from '@/actions/sign-up-email.action'
-import { Spinner } from '@/components/ui/Spinner'
+'use client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { UserPlus, Mail, Lock } from 'lucide-react';
+import { z } from 'zod';
+import { signUpSchema } from '@/lib/validations/authValidation';
+import { signUpEmailAction } from '@/actions/sign-up-email.action';
+import { Spinner } from '@/components/ui/Spinner';
 
-type SignUpInput = z.infer<typeof signUpSchema>
+type SignUpInput = z.infer<typeof signUpSchema>;
 
 export const RegisterForm = () => {
   const {
@@ -18,23 +18,23 @@ export const RegisterForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
-  })
+  });
 
-  const router = useRouter()
+  const router = useRouter();
 
   async function onSubmit(data: SignUpInput) {
-    const formData = new FormData()
-    formData.append('name', data.name)
-    formData.append('email', data.email)
-    formData.append('password', data.password)
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('email', data.email);
+    formData.append('password', data.password);
 
-    const { error } = await signUpEmailAction(formData)
+    const { error } = await signUpEmailAction(formData);
 
     if (error) {
-      toast.error(error)
+      toast.error(error);
     } else {
-      toast.success('Compte créé avec succès.')
-      router.push('/authentification/inscription/succes')
+      toast.success('Compte créé avec succès.');
+      router.push('/authentification/inscription/succes');
     }
   }
 
@@ -119,5 +119,5 @@ export const RegisterForm = () => {
         )}
       </button>
     </form>
-  )
-}
+  );
+};

@@ -1,36 +1,36 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Spinner } from '@/components/ui/Spinner'
-import { sendVerificationEmail } from '@/lib/auth-client'
-import { Mail, Send } from 'lucide-react'
-import { emailVerificationSchema } from '@/lib/validations/authValidation'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Spinner } from '@/components/ui/Spinner';
+import { sendVerificationEmail } from '@/lib/auth-client';
+import { Mail, Send } from 'lucide-react';
+import { emailVerificationSchema } from '@/lib/validations/authValidation';
 
 export const SendVerificationEmailForm = () => {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('');
 
   // TODO : convertir en useTransition()
-  const [isPending, setIsPending] = useState(false)
-  const router = useRouter()
+  const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault()
-    setIsPending(true)
+    evt.preventDefault();
+    setIsPending(true);
 
     try {
-      emailVerificationSchema.parse({ email })
+      emailVerificationSchema.parse({ email });
 
       await sendVerificationEmail({
         email,
         callbackURL: '/authentification/verifier-email',
-      })
+      });
 
-      router.push('/authentification/verifier-email/succes')
+      router.push('/authentification/verifier-email/succes');
     } catch (err) {
-      return err
+      return err;
     } finally {
-      setIsPending(false)
+      setIsPending(false);
     }
   }
 
@@ -72,5 +72,5 @@ export const SendVerificationEmailForm = () => {
         )}
       </button>
     </form>
-  )
-}
+  );
+};

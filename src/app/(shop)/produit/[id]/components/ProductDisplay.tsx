@@ -1,91 +1,91 @@
-'use client'
-import { useState, useTransition, useEffect } from 'react'
-import { useCart } from '@/contexts/CartContext'
-import { ReturnButton } from '@/components/ui/ReturnButton'
-import { toast } from 'sonner'
-import { ProductImageGallery } from './ProductImageGallery'
-import { ProductInfo } from './ProductInfo'
-import { ProductActions } from './ProductActions'
-import { ProductType } from '@/lib/types'
-import { useAbortController } from '@/hooks/useAbortController'
+'use client';
+import { useState, useTransition, useEffect } from 'react';
+import { useCart } from '@/contexts/CartContext';
+import { ReturnButton } from '@/components/ui/ReturnButton';
+import { toast } from 'sonner';
+import { ProductImageGallery } from './ProductImageGallery';
+import { ProductInfo } from './ProductInfo';
+import { ProductActions } from './ProductActions';
+import { ProductType } from '@/lib/types';
+import { useAbortController } from '@/hooks/useAbortController';
 interface ProductDisplayProps {
-  product: ProductType
+  product: ProductType;
 }
 
 interface FavoriteResponse {
-  success: boolean
-  data: Array<{ productId: string }>
+  success: boolean;
+  data: Array<{ productId: string }>;
 }
 
 export const ProductDisplay = ({ product }: ProductDisplayProps) => {
   const cartProduct = {
     ...product,
     description: product.description ?? undefined,
-  }
+  };
 
-  const { addToCart, removeFromCart, isInCart } = useCart()
-  const [isPending, startTransition] = useTransition()
-  const [added, setAdded] = useState(false)
-  const [favorites, setFavorites] = useState<string[]>([])
-  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const { createSignal } = useAbortController()
+  const { addToCart, removeFromCart, isInCart } = useCart();
+  const [isPending, startTransition] = useTransition();
+  const [added, setAdded] = useState(false);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [isLoadingFavorites, setIsLoadingFavorites] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { createSignal } = useAbortController();
 
   useEffect(() => {
-    setAdded(isInCart(product))
-  }, [product, isInCart])
+    setAdded(isInCart(product));
+  }, [product, isInCart]);
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const signal = createSignal()
+      const signal = createSignal();
 
       try {
         const response = await fetch('/api/favorites', {
           signal: signal,
-        })
+        });
 
         if (response.status === 401) {
-          setIsAuthenticated(false)
-          return
+          setIsAuthenticated(false);
+          return;
         }
 
-        setIsAuthenticated(true)
+        setIsAuthenticated(true);
 
         if (!response.ok) {
-          throw new Error('Erreur lors de la récupération des favoris')
+          throw new Error('Erreur lors de la récupération des favoris');
         }
 
-        const data: FavoriteResponse = await response.json()
+        const data: FavoriteResponse = await response.json();
 
         if (data && data.success) {
-          setFavorites(data.data.map((f) => f.productId))
+          setFavorites(data.data.map((f) => f.productId));
         }
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Erreur favoris:', error)
-          setIsAuthenticated(false)
+          console.error('Erreur favoris:', error);
+          setIsAuthenticated(false);
         }
       }
-    }
+    };
 
-    fetchFavorites()
-  }, [createSignal]) // ✅ Dépendances correctes
+    fetchFavorites();
+  }, [createSignal]); // ✅ Dépendances correctes
 
-  const isFavorite = favorites.includes(product.id)
-  const isAvailable = product.status === 'CATALOG'
+  const isFavorite = favorites.includes(product.id);
+  const isAvailable = product.status === 'CATALOG';
 
   const toggleFavorite = async () => {
-    if (isLoadingFavorites || !isAuthenticated) return
+    if (isLoadingFavorites || !isAuthenticated) return;
 
-    setIsLoadingFavorites(true)
+    setIsLoadingFavorites(true);
     try {
       if (isFavorite) {
         const response = await fetch(`/api/favorites?productId=${product.id}`, {
           method: 'DELETE',
-        })
+        });
         if (response.ok) {
-          setFavorites((prev) => prev.filter((id) => id !== product.id))
-          toast.success('Retiré des favoris')
+          setFavorites((prev) => prev.filter((id) => id !== product.id));
+          toast.success('Retiré des favoris');
         }
       } else {
         const response = await fetch('/api/favorites', {
@@ -94,32 +94,32 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ productId: product.id }),
-        })
+        });
         if (response.ok) {
-          setFavorites((prev) => [...prev, product.id])
-          toast.success('Ajouté aux favoris')
+          setFavorites((prev) => [...prev, product.id]);
+          toast.success('Ajouté aux favoris');
         }
       }
     } catch (error) {
-      console.error('Erreur lors de la mise à jour des favoris:', error)
-      toast.error('Une erreur est survenue')
+      console.error('Erreur lors de la mise à jour des favoris:', error);
+      toast.error('Une erreur est survenue');
     } finally {
-      setIsLoadingFavorites(false)
+      setIsLoadingFavorites(false);
     }
-  }
+  };
 
   const handleToggleCart = () => {
     startTransition(() => {
       if (added) {
-        removeFromCart(cartProduct)
-        toast.success('Retiré du panier')
+        removeFromCart(cartProduct);
+        toast.success('Retiré du panier');
       } else {
-        addToCart(cartProduct)
-        toast.success('Ajouté au panier')
+        addToCart(cartProduct);
+        toast.success('Ajouté au panier');
       }
-      setAdded(!added)
-    })
-  }
+      setAdded(!added);
+    });
+  };
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -147,5 +147,5 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

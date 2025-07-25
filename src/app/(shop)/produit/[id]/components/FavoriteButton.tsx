@@ -1,12 +1,12 @@
-'use client'
-import { Heart } from 'lucide-react'
+'use client';
+import { Heart } from 'lucide-react';
 
 interface FavoriteButtonProps {
-  productId: string
-  isAuthenticated: boolean
-  isFavorite: boolean
-  isLoadingFavorites: boolean
-  toggleFavorite: () => Promise<void>
+  productId: string;
+  isAuthenticated: boolean;
+  isFavorite: boolean;
+  isLoadingFavorites: boolean;
+  toggleFavorite: () => Promise<void>;
 }
 
 export const FavoriteButton = ({
@@ -37,6 +37,6 @@ export const FavoriteButton = ({
           }`}
         />
       </button>
-    )
+    );
   }
-}
+};

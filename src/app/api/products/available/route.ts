@@ -1,7 +1,7 @@
-import { ProductController } from '@/lib/server/controllers/productController'
+import { ProductController } from '@/lib/server/controllers/productController';
 
-const productController = new ProductController()
+const productController = new ProductController();
 
 export async function GET() {
-  return await productController.getAvailable()
+  return await productController.getAvailable();
 }

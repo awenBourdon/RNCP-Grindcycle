@@ -1,6 +1,6 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, Package } from 'lucide-react'
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, Package } from 'lucide-react';
 
 export const Concept = () => {
   return (
@@ -67,11 +67,11 @@ export const Concept = () => {
           <div className="relative">
             <div className="relative overflow-hidden aspect-[4/3] rounded-xl">
               <Image
-                src="/placeholder.svg?height=600&width=800"
+                src="/placeholder.webp"
                 alt="Achat de planches recyclées"
                 width={800}
                 height={600}
-                className="object-cover w-full h-full bg-gray-200"
+                className="object-cover w-full h-full"
               />
             </div>
 
@@ -91,9 +91,9 @@ export const Concept = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <div className="order-2 lg:order-1 relative">
-            <div className="relative overflow-hidden aspect-[4/3] rounded-xl bg-gray-200">
+            <div className="relative overflow-hidden aspect-[4/3] rounded-xl">
               <Image
-                src="/placeholder.svg?height=600&width=800"
+                src="/placeholder.webp"
                 alt="Recyclage de skate"
                 width={800}
                 height={600}
@@ -174,7 +174,10 @@ export const Concept = () => {
             </div>
 
             <div>
-              <Link href="/recycler" className="inline-flex items-center group">
+              <Link
+                href="/recycler-planche"
+                className="inline-flex items-center group"
+              >
                 <span className="border-b border-black pb-1 group-hover:border-[#0a3d3f] transition-colors">
                   Recycler ma planche
                 </span>
@@ -188,5 +191,5 @@ export const Concept = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

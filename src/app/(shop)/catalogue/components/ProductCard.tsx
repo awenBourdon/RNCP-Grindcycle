@@ -1,10 +1,10 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { ProductType } from '@/lib/types'
+import Link from 'next/link';
+import Image from 'next/image';
+import { ProductType } from '@/lib/types';
 
 type Props = {
-  product: ProductType
-}
+  product: ProductType;
+};
 
 export const ProductCard = ({ product }: Props) => {
   return (
@@ -14,7 +14,7 @@ export const ProductCard = ({ product }: Props) => {
     >
       <div className="relative w-full aspect-[3/4] bg-gray-100">
         <Image
-          src={product.imageUrl[0] || '/placeholder.svg?height=700&width=600'}
+          src={product.imageUrl[0] || '/placeholder.webp'}
           alt={product.name}
           fill
           className="object-cover"
@@ -33,5 +33,5 @@ export const ProductCard = ({ product }: Props) => {
         )}
       </div>
     </Link>
-  )
-}
+  );
+};

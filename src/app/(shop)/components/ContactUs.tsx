@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 export const ContactUs = () => {
   return (
@@ -21,5 +21,5 @@ export const ContactUs = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

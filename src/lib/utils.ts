@@ -56,13 +56,13 @@ export function getValidDomains() {
     'lycos.com',
     'rediffmail.com',
     'hey.com',
-  ]
+  ];
 
   if (process.env.NODE_ENV === 'development') {
-    domains.push('test.com')
+    domains.push('test.com');
   }
 
-  return domains
+  return domains;
 }
 
 export function normalizeName(name: string) {
@@ -70,5 +70,5 @@ export function normalizeName(name: string) {
     .trim()
     .replace(/\s+/g, ' ')
     .replace(/[^a-zA-Z\s'-]/g, '')
-    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }

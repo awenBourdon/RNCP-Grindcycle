@@ -1,36 +1,36 @@
-import { CartItemType } from '@/lib/types'
-import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { CartItemType } from '@/lib/types';
+import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
-})
+});
 
 export async function POST(request: Request) {
   try {
     if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('STRIPE_SECRET_KEY is not configured')
+      console.error('STRIPE_SECRET_KEY is not configured');
       return NextResponse.json(
         { error: 'Configuration Stripe manquante' },
         { status: 500 }
-      )
+      );
     }
     const { cartItems, shippingCost, shippingAddress, userEmail } =
-      await request.json()
+      await request.json();
 
     // TODO : Pansement pour faire fonctionner Stripe sans les images
     // Dans create-checkout-session/route.ts
-const lineItems = cartItems.map((item: CartItemType) => ({
-  price_data: {
-    currency: 'eur',
-    product_data: {
-      name: item.name,
-      description: `Type: ${item.type}`,
-    },
-    unit_amount: Math.round(item.priceEuro * 100),
-  },
-  quantity: item.quantity,
-}))
+    const lineItems = cartItems.map((item: CartItemType) => ({
+      price_data: {
+        currency: 'eur',
+        product_data: {
+          name: item.name,
+          description: `Type: ${item.type}`,
+        },
+        unit_amount: Math.round(item.priceEuro * 100),
+      },
+      quantity: item.quantity,
+    }));
 
     if (shippingCost > 0) {
       lineItems.push({
@@ -42,7 +42,7 @@ const lineItems = cartItems.map((item: CartItemType) => ({
           unit_amount: Math.round(shippingCost * 100),
         },
         quantity: 1,
-      })
+      });
     }
 
     const stripeSession = await stripe.checkout.sessions.create({
@@ -65,14 +65,14 @@ const lineItems = cartItems.map((item: CartItemType) => ({
           shippingPhone: shippingAddress.phone,
         }),
       },
-    })
+    });
 
-    return NextResponse.json({ url: stripeSession.url })
+    return NextResponse.json({ url: stripeSession.url });
   } catch (error) {
-    console.error('Erreur lors de la création de la session Stripe:', error)
+    console.error('Erreur lors de la création de la session Stripe:', error);
     return NextResponse.json(
       { error: 'Erreur lors de la création de la session de paiement' },
       { status: 500 }
-    )
+    );
   }
 }

@@ -1,96 +1,90 @@
-import { NextResponse } from 'next/server'
-import { ApiResponse } from '@/lib/server/types/api'
-import { HTTP_STATUS, API_MESSAGES } from '@/lib/server/config/constants'
+import { NextResponse } from 'next/server';
+import { ApiResponse } from '@/lib/server/types/api';
+import { HTTP_STATUS, API_MESSAGES } from '@/lib/server/config/constants';
 
 export class ResponseHelper {
   static success<T>(
-    data: T, 
-    message?: string, 
+    data: T,
+    message?: string,
     status: number = HTTP_STATUS.OK
   ): NextResponse {
     const response: ApiResponse<T> = {
       success: true,
       data,
-      ...(message && { message })
-    }
-    return NextResponse.json(response, { status })
+      ...(message && { message }),
+    };
+    return NextResponse.json(response, { status });
   }
 
   static successMessage(
-    message: string, 
+    message: string,
     status: number = HTTP_STATUS.OK
   ): NextResponse {
     const response: ApiResponse = {
       success: true,
-      message
-    }
-    return NextResponse.json(response, { status })
+      message,
+    };
+    return NextResponse.json(response, { status });
   }
 
   static error(
-    error: string, 
-    status: number = HTTP_STATUS.BAD_REQUEST, 
+    error: string,
+    status: number = HTTP_STATUS.BAD_REQUEST,
     details?: string[]
   ): NextResponse {
     const response: ApiResponse = {
       success: false,
       error,
-      ...(details && { details })
-    }
-    return NextResponse.json(response, { status })
+      ...(details && { details }),
+    };
+    return NextResponse.json(response, { status });
   }
 
   static validationError(errors: string[]): NextResponse {
     return this.error(
-      API_MESSAGES.INVALID_DATA, 
-      HTTP_STATUS.UNPROCESSABLE_ENTITY, 
+      API_MESSAGES.INVALID_DATA,
+      HTTP_STATUS.UNPROCESSABLE_ENTITY,
       errors
-    )
+    );
   }
 
   static serverError(message?: string): NextResponse {
     return this.error(
-      message || API_MESSAGES.SERVER_ERROR, 
+      message || API_MESSAGES.SERVER_ERROR,
       HTTP_STATUS.INTERNAL_SERVER_ERROR
-    )
+    );
   }
 
   static notFound(message?: string): NextResponse {
-    return this.error(
-      message || API_MESSAGES.NOT_FOUND, 
-      HTTP_STATUS.NOT_FOUND
-    )
+    return this.error(message || API_MESSAGES.NOT_FOUND, HTTP_STATUS.NOT_FOUND);
   }
 
   static unauthorized(message?: string): NextResponse {
     return this.error(
-      message || API_MESSAGES.UNAUTHORIZED, 
+      message || API_MESSAGES.UNAUTHORIZED,
       HTTP_STATUS.UNAUTHORIZED
-    )
+    );
   }
 
   static forbidden(message?: string): NextResponse {
-    return this.error(
-      message || API_MESSAGES.FORBIDDEN, 
-      HTTP_STATUS.FORBIDDEN
-    )
+    return this.error(message || API_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN);
   }
 
   static conflict(message: string): NextResponse {
-    return this.error(message, HTTP_STATUS.CONFLICT)
+    return this.error(message, HTTP_STATUS.CONFLICT);
   }
 
   static created<T>(data: T, message?: string): NextResponse {
-    return this.success(data, message, HTTP_STATUS.CREATED)
+    return this.success(data, message, HTTP_STATUS.CREATED);
   }
 
   static noContent(): NextResponse {
-    return new NextResponse(null, { status: 204 })
+    return new NextResponse(null, { status: 204 });
   }
 
   static redirect(url: string, permanent: boolean = false): NextResponse {
-    const status = permanent ? 301 : 302
-    return NextResponse.redirect(url, status)
+    const status = permanent ? 301 : 302;
+    return NextResponse.redirect(url, status);
   }
 
   static withHeaders<T>(
@@ -98,19 +92,21 @@ export class ResponseHelper {
     headers: Record<string, string>,
     status: number = HTTP_STATUS.OK
   ): NextResponse {
-    const response = NextResponse.json({
-      success: true,
-      data
-    }, { status })
+    const response = NextResponse.json(
+      {
+        success: true,
+        data,
+      },
+      { status }
+    );
 
     Object.entries(headers).forEach(([key, value]) => {
-      response.headers.set(key, value)
-    })
+      response.headers.set(key, value);
+    });
 
-    return response
+    return response;
   }
 }
-
 
 //   /**
 //    * Réponse de téléchargement de fichier
@@ -131,4 +127,3 @@ export class ResponseHelper {
 
 //     return response
 //   }
- 

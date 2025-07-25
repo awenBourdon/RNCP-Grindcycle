@@ -1,13 +1,13 @@
-import { UserRole } from '@/generated/prisma'
-import { createAccessControl } from 'better-auth/plugins/access'
-import { defaultStatements, adminAc } from 'better-auth/plugins/admin/access'
+import { UserRole } from '@/generated/prisma';
+import { createAccessControl } from 'better-auth/plugins/access';
+import { defaultStatements, adminAc } from 'better-auth/plugins/admin/access';
 
 const statements = {
   ...defaultStatements,
   posts: ['create', 'read', 'update', 'delete', 'update:own', 'delete:own'],
-} as const
+} as const;
 
-export const ac = createAccessControl(statements)
+export const ac = createAccessControl(statements);
 
 export const roles = {
   [UserRole.USER]: ac.newRole({
@@ -17,7 +17,7 @@ export const roles = {
     ...adminAc.statements,
     posts: ['create', 'read', 'update', 'delete', 'update:own', 'delete:own'],
   }),
-}
+};
 
 // Fonction utilitaire pour pallier l'appel à la méthode userHasPermission de Better-Auth qui échoue
 // export function canRoleDo(

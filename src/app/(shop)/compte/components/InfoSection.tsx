@@ -1,8 +1,8 @@
-import { Session } from '@/lib/types'
-import { Settings } from 'lucide-react'
+import { Session } from '@/lib/types';
+import { Settings } from 'lucide-react';
 
 interface InfoSectionProps {
-  session: Session
+  session: Session;
 }
 
 export const InfoSection = ({ session }: InfoSectionProps) => {
@@ -35,5 +35,5 @@ export const InfoSection = ({ session }: InfoSectionProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

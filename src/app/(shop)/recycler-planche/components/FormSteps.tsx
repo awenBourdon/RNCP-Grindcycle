@@ -35,5 +35,5 @@ export const FormSteps = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

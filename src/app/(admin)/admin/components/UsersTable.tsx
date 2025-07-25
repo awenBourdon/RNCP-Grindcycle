@@ -1,13 +1,13 @@
-import { Users, Hash, Mail, Shield } from 'lucide-react'
-import { UserRoleSelect } from './UserRoleSelect'
+import { Users, Hash, Mail, Shield } from 'lucide-react';
+import { UserRoleSelect } from './UserRoleSelect';
 import {
   PlaceholderDeleteUserButton,
   DeleteUserButton,
-} from './DeleteUserButton'
-import { User } from '@/lib/types'
+} from './DeleteUserButton';
+import { User } from '@/lib/types';
 
 interface UsersTableProps {
-  users: User[]
+  users: User[];
 }
 
 export const UsersTable = ({ users }: UsersTableProps) => {
@@ -103,5 +103,5 @@ export const UsersTable = ({ users }: UsersTableProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

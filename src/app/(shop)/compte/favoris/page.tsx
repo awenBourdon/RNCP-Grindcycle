@@ -1,30 +1,30 @@
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { headers } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { Heart } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { BoardType } from '@/generated/prisma'
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Heart } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { BoardType } from '@/generated/prisma';
 
 const getBoardTypeText = (type: BoardType) => {
   switch (type) {
     case 'SKATE':
-      return 'Skateboard'
+      return 'Skateboard';
     case 'CRUISER':
-      return 'Cruiser'
+      return 'Cruiser';
     case 'LONG':
-      return 'Longboard'
+      return 'Longboard';
     default:
-      return type
+      return type;
   }
-}
+};
 
 export default async function FavorisPage() {
-  const headersList = await headers()
-  const session = await auth.api.getSession({ headers: headersList })
+  const headersList = await headers();
+  const session = await auth.api.getSession({ headers: headersList });
 
-  if (!session) redirect('/authentification/connexion')
+  if (!session) redirect('/authentification/connexion');
 
   const favorites = await prisma.favorite.findMany({
     where: { userId: session.user.id },
@@ -36,7 +36,7 @@ export default async function FavorisPage() {
       },
     },
     orderBy: { createdAt: 'desc' },
-  })
+  });
 
   return (
     <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -68,7 +68,7 @@ export default async function FavorisPage() {
             >
               <div className="aspect-[3/4] relative">
                 <Image
-                  src={product.imageUrl[0] || '/placeholder.svg'}
+                  src={product.imageUrl[0] || '/placeholder.webp'}
                   alt={product.name}
                   fill
                   className="object-cover"
@@ -88,5 +88,5 @@ export default async function FavorisPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

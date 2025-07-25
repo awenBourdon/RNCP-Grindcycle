@@ -1,21 +1,21 @@
-import { BoardCondition, BoardType } from '@/lib/types'
+import { BoardCondition, BoardType } from '@/lib/types';
 import {
   formatBoardType,
   formatBoardCondition,
-} from '@/lib/validations/boardsValidation'
+} from '@/lib/validations/boardsValidation';
 
 interface FormErrors {
-  [key: string]: string
+  [key: string]: string;
 }
 
 interface FormFieldsProps {
-  selectedType: BoardType | ''
-  selectedCondition: BoardCondition | ''
-  errors: FormErrors
-  descriptionLength: number
-  onTypeSelect: (type: BoardType) => void
-  onConditionSelect: (condition: BoardCondition) => void
-  onDescriptionChange: (length: number) => void
+  selectedType: BoardType | '';
+  selectedCondition: BoardCondition | '';
+  errors: FormErrors;
+  descriptionLength: number;
+  onTypeSelect: (type: BoardType) => void;
+  onConditionSelect: (condition: BoardCondition) => void;
+  onDescriptionChange: (length: number) => void;
 }
 
 export const FormFields = ({
@@ -137,5 +137,5 @@ export const FormFields = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
