@@ -1,6 +1,7 @@
 'use server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { deleteUserSchema } from '@/lib/validations/authValidation';
 import { APIError } from 'better-auth/api';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
@@ -9,13 +10,21 @@ import { redirect } from 'next/navigation';
 export async function deleteUserAction({ userId }: { userId: string }) {
   const headersList = await headers();
 
+  const validation = deleteUserSchema.safeParse({ userId });
+  if (!validation.success) {
+    return {
+      success: false,
+      error: validation.error.errors[0]?.message || 'Données invalides',
+    };
+  }
+
   const session = await auth.api.getSession({
     headers: headersList,
   });
 
-  if (!session) throw new Error('Non authorisé');
+    if (!session) throw new Error('Non authorisé');
 
-  if (session.user.role !== 'ADMIN' || session.user.id === userId) {
+ if (session.user.role !== 'ADMIN' || session.user.id === userId) {
     throw new Error('Non Authorisé');
   }
 
@@ -38,6 +47,7 @@ export async function deleteUserAction({ userId }: { userId: string }) {
     if (err instanceof APIError) {
       return { success: false, error: err.message };
     }
-    return { success: false, error: 'Erreur serveur' };
+  
+      return { success: false, error: 'Erreur serveur' };
   }
 }
