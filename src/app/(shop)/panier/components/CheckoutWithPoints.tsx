@@ -75,13 +75,12 @@ export const CheckoutWithPoints = ({
     startTransition(async () => {
       try {
         const formData = new FormData();
-        // Convertir les articles du panier au format attendu
         const cartItemsForPurchase = cartItems.map((item) => ({
           productId: item.id,
           name: item.name,
           type: item.type,
           priceEuro: item.priceEuro,
-          pricePoints: Math.round(item.priceEuro * 10), // 1€ = 10 points
+          pricePoints: Math.round(item.priceEuro * 10),
           quantity: item.quantity,
         }));
 
@@ -114,13 +113,11 @@ export const CheckoutWithPoints = ({
     <div className="space-y-6">
       <h3 className="text-xl font-medium text-[#010101] mb-6">Récapitulatif</h3>
 
-      {/* Méthodes de paiement */}
       <div className="space-y-4">
         <h4 className="text-lg font-medium text-[#010101]">
           Méthode de paiement
         </h4>
         <div className="space-y-3">
-          {/* Paiement en euros */}
           <label className="flex items-center p-4 bg-white border-2 rounded-xl cursor-pointer hover:border-gray-300 transition-colors">
             <input
               type="radio"
@@ -148,7 +145,6 @@ export const CheckoutWithPoints = ({
             </div>
           </label>
 
-          {/* Paiement en points */}
           <label
             className={`flex items-center p-4 bg-white border-2 rounded-xl cursor-pointer transition-colors ${
               canPayWithPoints
@@ -202,7 +198,6 @@ export const CheckoutWithPoints = ({
         )}
       </div>
 
-      {/* Formulaire d'adresse (affiché uniquement pour paiement en points) */}
       {showShippingForm && paymentMethod === 'POINTS' && (
         <div className="bg-white border-2 rounded-xl p-6">
           <div className="flex items-center mb-6">
