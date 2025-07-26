@@ -1,31 +1,29 @@
-'use client';
-import { useCart } from '@/contexts/CartContext';
-import { EmptyCart } from './components/EmptyCart';
-import { Header } from './components/Header';
-import { Summary } from './components/Summary';
-import { ItemsList } from './components/ItemsList';
+// src/app/(shop)/panier/page.tsx
 
-export default function CartPage() {
-  const { cartItems } = useCart();
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { headers } from 'next/headers';
+import { CartPageClient } from './components/CartPageClient';
+
+export default async function CartPage() {
+  const headersList = await headers();
+  const session = await auth.api.getSession({ headers: headersList });
+
+  let userPoints = 0;
+  let isAuthenticated = false;
+
+  if (session) {
+    isAuthenticated = true;
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { points: true },
+    });
+
+    userPoints = user?.points || 0;
+  }
 
   return (
-    <div className="min-h-screen">
-      <div className="pt-40 pb-16 px-6 text-center bg-white">
-        <div className="max-w-7xl mx-auto">
-          <Header />
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6">
-        {cartItems.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
-            <ItemsList />
-            <Summary />
-          </div>
-        ) : (
-          <EmptyCart />
-        )}
-      </div>
-    </div>
+    <CartPageClient userPoints={userPoints} isAuthenticated={isAuthenticated} />
   );
 }
