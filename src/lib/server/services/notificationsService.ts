@@ -7,8 +7,6 @@ interface CreateNotificationData {
   description: string;
 }
 
-
-
 export async function getUserNotifications(userId: string) {
   return await prisma.notification.findMany({
     where: {
