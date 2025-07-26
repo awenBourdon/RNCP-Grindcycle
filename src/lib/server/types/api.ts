@@ -31,9 +31,6 @@ export interface PaginatedResponse<T> {
     hasPrev: boolean;
   };
 }
-
-export type ApiMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-
 export interface ApiError extends Error {
   statusCode: number;
   details?: string[];
