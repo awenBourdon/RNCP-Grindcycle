@@ -13,6 +13,10 @@ export const passwordSchema = z
 
 const emailSchema = z.string().email('Adresse email invalide');
 
+export const deleteUserSchema = z.object({
+  userId: z.string().uuid('ID utilisateur invalide'),
+});
+
 export const signUpSchema = z.object({
   name: z.string().min(1, "Merci de définir un nom d'utilisateur"),
   email: emailSchema,
