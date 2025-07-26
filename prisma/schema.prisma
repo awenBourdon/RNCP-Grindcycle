@@ -55,6 +55,19 @@ enum NotificationTarget {
   ADMIN
 }
 
+enum PaymentType {
+  EURO
+  POINTS
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
 // ================================
 // AUTH AND USER
 // ================================
@@ -80,6 +93,7 @@ model User {
   pointsHistory PointsHistory[]
   notifications Notification[]
   favorites     Favorite[]
+  orders        Order[]
 
   @@map("user")
 }
@@ -167,6 +181,7 @@ model PointsHistory {
 // PRODUCTS AND ORDERS
 // ================================
 
+
 model Product {
   id          String        @id @default(uuid())
   name        String
@@ -178,6 +193,7 @@ model Product {
   status      ProductStatus @default(CATALOG)
   usedBoard   UsedBoard?    @relation(fields: [usedBoardId], references: [id])
   favorites   Favorite[]
+  orderItems  OrderItem[]
   usedBoardId String?       @unique
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -186,19 +202,44 @@ model Product {
 }
 
 model Order {
-  id                 String   @id @default(uuid())
+  id                 String      @id @default(uuid())
+  userId             String?
+  user               User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   totalAmount        Float
   shippingCost       Float
+  paymentType        PaymentType @default(EURO)
+  pointsUsed         Int?        @default(0)
+  status             OrderStatus @default(PENDING)
   shippingAddress    String?
   shippingCity       String?
   shippingPostalCode String?
   shippingCountry    String?
   shippingPhone      String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  // Relations
+  orderItems         OrderItem[]
 
   @@map("order")
 }
+
+model OrderItem {
+  id           String  @id @default(uuid())
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productName  String
+  productType  String
+  priceEuro    Float
+  pricePoints  Int?
+  quantity     Int     @default(1)
+  createdAt    DateTime @default(now())
+
+  @@map("order_items")
+}
+
 
 // ================================
 // NOTIFICATIONS

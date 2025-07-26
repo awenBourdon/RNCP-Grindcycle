@@ -1,8 +1,11 @@
 import {
   UsedBoardStatus,
-  BoardType,
   BoardCondition,
-  UserRole,
+  UserRole, Order,
+  OrderItem, 
+  OrderStatus, 
+  PaymentType, 
+  BoardType
 } from '@/generated/prisma';
 
 export interface ProductType {
@@ -89,3 +92,78 @@ export interface Session {
   };
 }
 export { BoardType, BoardCondition, UsedBoardStatus, UserRole };
+export interface CreateOrderData {
+  userId: string;
+  totalAmount: number;
+  shippingCost: number;
+  paymentType: PaymentType;
+  pointsUsed?: number;
+  shippingAddress?: string;
+  shippingCity?: string;
+  shippingPostalCode?: string;
+  shippingCountry?: string;
+  shippingPhone?: string;
+  items: CreateOrderItemData[];
+}
+
+export interface CreateOrderItemData {
+  productId: string;
+  productName: string;
+  productType: BoardType;
+  priceEuro: number;
+  pricePoints?: number;
+  quantity: number;
+}
+
+export interface OrderWithRelations extends Order {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  } | null | undefined;
+  orderItems: OrderItemWithProduct[];
+}
+
+
+export interface OrderItemWithProduct extends OrderItem {
+  product: {
+    id: string;
+    name: string;
+    type: BoardType;
+    imageUrl: string[];
+    status: string;
+  };
+}
+
+export interface PurchaseWithPointsData {
+  userId: string;
+  cartItems: CartItemForPurchase[];
+  shippingAddress?: ShippingAddress;
+}
+
+export interface CartItemForPurchase {
+  productId: string;
+  name: string;
+  type: BoardType;
+  priceEuro: number;
+  pricePoints: number;
+  quantity: number;
+}
+
+export interface ShippingAddress {
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  phone?: string;
+}
+
+export interface OrderStats {
+  totalOrders: number;
+  totalRevenue: number;
+  totalPointsUsed: number;
+  ordersByStatus: Record<OrderStatus, number>;
+  ordersByPaymentType: Record<PaymentType, number>;
+}
+
+export { PaymentType, OrderStatus };

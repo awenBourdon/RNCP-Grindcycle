@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   Bell,
   Plus,
+  ShoppingCart,
 } from 'lucide-react';
 
 interface NavItem {
@@ -40,6 +41,12 @@ const navItems: NavItem[] = [
     label: 'Produits',
     icon: ShoppingBag,
     href: '/admin/produits',
+  },
+  {
+    id: 'orders',
+    label: 'Commandes',
+    icon: ShoppingCart,
+    href: '/admin/commandes',
   },
   {
     id: 'notifications',
