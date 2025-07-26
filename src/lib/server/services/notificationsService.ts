@@ -7,20 +7,7 @@ interface CreateNotificationData {
   description: string;
 }
 
-export async function createNotification(data: CreateNotificationData) {
-  try {
-    return await prisma.notification.create({
-      data: {
-        userId: data.userId,
-        target: data.target,
-        description: data.description,
-        isRead: false,
-      },
-    });
-  } catch (error) {
-    console.error('Erreur création notification:', error);
-  }
-}
+
 
 export async function getUserNotifications(userId: string) {
   return await prisma.notification.findMany({
@@ -67,6 +54,21 @@ export async function markAllAsRead(userId: string) {
     },
     data: { isRead: true },
   });
+}
+
+export async function createNotification(data: CreateNotificationData) {
+  try {
+    return await prisma.notification.create({
+      data: {
+        userId: data.userId,
+        target: data.target,
+        description: data.description,
+        isRead: false,
+      },
+    });
+  } catch (error) {
+    console.error('Erreur création notification:', error);
+  }
 }
 
 export async function getUnreadCount(userId: string) {

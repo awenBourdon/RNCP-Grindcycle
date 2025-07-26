@@ -40,14 +40,6 @@ export class ResponseHelper {
     return NextResponse.json(response, { status });
   }
 
-  static validationError(errors: string[]): NextResponse {
-    return this.error(
-      API_MESSAGES.INVALID_DATA,
-      HTTP_STATUS.UNPROCESSABLE_ENTITY,
-      errors
-    );
-  }
-
   static serverError(message?: string): NextResponse {
     return this.error(
       message || API_MESSAGES.SERVER_ERROR,
@@ -68,14 +60,6 @@ export class ResponseHelper {
 
   static forbidden(message?: string): NextResponse {
     return this.error(message || API_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN);
-  }
-
-  static conflict(message: string): NextResponse {
-    return this.error(message, HTTP_STATUS.CONFLICT);
-  }
-
-  static created<T>(data: T, message?: string): NextResponse {
-    return this.success(data, message, HTTP_STATUS.CREATED);
   }
 
   static noContent(): NextResponse {
@@ -107,23 +91,3 @@ export class ResponseHelper {
     return response;
   }
 }
-
-//   /**
-//    * Réponse de téléchargement de fichier
-//    */
-//   static download(
-//     data: Buffer | Uint8Array,
-//     filename: string,
-//     mimeType: string = 'application/octet-stream'
-//   ): NextResponse {
-//     const response = new NextResponse(data, {
-//       status: HTTP_STATUS.OK,
-//       headers: {
-//         'Content-Type': mimeType,
-//         'Content-Disposition': `attachment; filename="${filename}"`,
-//         'Cache-Control': 'no-cache'
-//       }
-//     })
-
-//     return response
-//   }

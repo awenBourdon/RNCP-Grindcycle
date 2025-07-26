@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { ResponseHelper } from '@/lib/server/utils/responseHelper';
 
 export abstract class BaseController {
@@ -10,18 +9,5 @@ export abstract class BaseController {
     }
 
     return ResponseHelper.serverError();
-  }
-
-  protected extractFormData(req: NextRequest): Promise<FormData> {
-    return req.formData();
-  }
-
-  protected extractJsonData(req: NextRequest): Promise<unknown> {
-    return req.json();
-  }
-
-  protected isFormDataRequest(req: NextRequest): boolean {
-    const contentType = req.headers.get('content-type') || '';
-    return contentType.includes('multipart/form-data');
   }
 }
