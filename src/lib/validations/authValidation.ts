@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-export const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
+export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
 
 export const passwordSchema = z
   .string()
@@ -17,7 +16,21 @@ export const deleteUserSchema = z.object({
   userId: z.string().uuid('ID utilisateur invalide'),
 });
 
-export const signUpSchema = z.object({
+export const signUpSchema = z
+  .object({
+    name: z.string().min(1, "Merci de définir un nom d'utilisateur"),
+    email: emailSchema,
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => {
+    return data.password === data.confirmPassword;
+  }, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword'],
+  });
+
+export const signUpServerSchema = z.object({
   name: z.string().min(1, "Merci de définir un nom d'utilisateur"),
   email: emailSchema,
   password: passwordSchema,
@@ -43,6 +56,7 @@ export const resetPasswordSchema = z
   });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
+export type SignUpServerInput = z.infer<typeof signUpServerSchema>;
 export type SignInInput = z.infer<typeof signInSchema>;
 export type EmailVerificationInput = z.infer<typeof emailVerificationSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

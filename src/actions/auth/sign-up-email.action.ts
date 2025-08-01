@@ -1,6 +1,6 @@
 'use server';
 import { auth, ErrorCode } from '@/lib/auth';
-import { signUpSchema } from '@/lib/validations/authValidation';
+import { signUpServerSchema } from '@/lib/validations/authValidation';
 import { APIError } from 'better-auth/api';
 
 export async function signUpEmailAction(formData: FormData) {
@@ -10,14 +10,13 @@ export async function signUpEmailAction(formData: FormData) {
     password: String(formData.get('password')),
   };
 
-  const result = signUpSchema.safeParse(raw);
-
+  const result = signUpServerSchema.safeParse(raw);
+  
   if (!result.success) {
     const errorMessages = result.error.format();
     const firstFieldError = Object.values(errorMessages)[0];
-
     let firstError = 'Erreur de validation.';
-
+    
     if (
       firstFieldError &&
       typeof firstFieldError === 'object' &&
@@ -28,25 +27,20 @@ export async function signUpEmailAction(formData: FormData) {
         firstError = errors[0];
       }
     }
-
     return { error: firstError };
   }
 
   const { name, email, password } = result.data;
-
+  
   try {
     await auth.api.signUpEmail({
       body: { name, email, password },
     });
-
     return { error: null };
   } catch (err) {
     console.error(err);
-
     if (err instanceof APIError) {
       const errCode = err.body ? (err.body.code as ErrorCode) : 'Inconnu';
-
-      // TODO : Completer pour tous les cas
       switch (errCode) {
         case 'USER_ALREADY_EXISTS':
           return { error: 'Cette adresse email est déjà utilisée.' };
@@ -54,7 +48,6 @@ export async function signUpEmailAction(formData: FormData) {
           return { error: err.message || 'Erreur inconnue côté API.' };
       }
     }
-
     return { error: 'Erreur serveur inattendue.' };
   }
 }
