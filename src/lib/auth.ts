@@ -7,13 +7,13 @@ import { createAuthMiddleware, APIError } from 'better-auth/api';
 import { getValidDomains, normalizeName } from './utils';
 import { admin, magicLink } from 'better-auth/plugins';
 import { ac, roles } from './permissions';
-import { sendEmailAction } from '@/actions/emails/send-email.action';
 import {
   getClientIP,
   checkRateLimit,
   RATE_LIMIT_MESSAGES,
   type RateLimitAction,
 } from './rateLimit';
+import { sendEmailAction } from '@/actions/auth/send-email.action';
 
 const prisma = new PrismaClient();
 
