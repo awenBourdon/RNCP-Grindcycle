@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
+import { applyGetRateLimit } from '@/lib/rateLimit';
 
 export async function GET(request: NextRequest) {
+  const rateLimitResponse = applyGetRateLimit(request, 'getFavorites');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   const session = await auth.api.getSession({ headers: await request.headers });
   if (!session) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
