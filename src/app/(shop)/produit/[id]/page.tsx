@@ -1,42 +1,55 @@
-import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+'use client';
+
+import { useEffect, useState, useCallback } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { useAbortController } from '@/hooks/useAbortController';
 import { ProductDisplay } from './components/ProductDisplay';
 
-interface ProductPageProps {
-  params: Promise<{ id: string }>;
-}
+export default function ProductPage() {
+  const params = useParams();
+  const id = params.id as string;
+  const { createSignal } = useAbortController();
 
-async function getProduct(id: string) {
-  try {
-    const product = await prisma.product.findUnique({
-      where: { id },
-      include: {
-        usedBoard: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
-        },
-      },
-    });
-    return product;
-  } catch (error) {
-    console.error('Erreur lors de la récupération du produit:', error);
-    return null;
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchProduct = useCallback(async () => {
+    const signal = createSignal();
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`/api/products/${id}`, { signal });
+      const data = await response.json();
+
+      if (response.status === 429) {
+        setError(data.error || 'Trop de requêtes');
+        return;
+      }
+
+      if (!response.ok || !data.success) {
+        setError(data.error || 'Erreur');
+        return;
+      }
+
+      setProduct(data.data);
+    } catch {
+    } finally {
+      if (!signal.aborted) {
+        setLoading(false);
+      }
+    }
+  }, [id, createSignal]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
+
+  if (loading) {
+    return <div className="p-8">Chargement...</div>;
   }
-}
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  const { id } = await params;
-
-  const product = await getProduct(id);
-
-  if (!product) {
+  if (!product || error) {
     notFound();
   }
 

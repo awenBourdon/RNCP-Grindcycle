@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { ProductStatus } from '@/generated/prisma';
+import { applyGetRateLimit } from '@/lib/rateLimit';
 
 export async function GET(request: NextRequest) {
+  const rateLimitResponse = applyGetRateLimit(request, 'getProducts');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '6'), 10);

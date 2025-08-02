@@ -1,7 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { applyGetRateLimit } from '@/lib/rateLimit';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const rateLimitResponse = applyGetRateLimit(request, 'getNotifications');
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   const target = searchParams.get('target');

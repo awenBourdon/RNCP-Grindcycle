@@ -15,6 +15,16 @@ export const RATE_LIMITS = {
   changePassword: { max: 2, windowMs: 15 * 60 * 1000 },
 
   createUsedBoard: { max: 10, windowMs: 10 * 60 * 1000 },
+
+
+  getProducts: { max: 100, windowMs: 1 * 60 * 1000 },
+  getProductById: { max: 50, windowMs: 1 * 60 * 1000 },
+  getUsedBoards: { max: 50, windowMs: 1 * 60 * 1000 },
+  getFavorites: { max: 30, windowMs: 1 * 60 * 1000 },
+  getNotifications: { max: 60, windowMs: 1 * 60 * 1000 },
+  
+
+  generalGet: { max: 200, windowMs: 1 * 60 * 1000 },
 } as const;
 
 export type RateLimitAction = keyof typeof RATE_LIMITS;
@@ -95,7 +105,57 @@ export const RATE_LIMIT_MESSAGES = {
 
   createUsedBoard:
     "Trop d'envoi de planche. Attends 10 minutes avant de pouvoir en renvoyer.",
+
+
+  getProducts: 'Trop de requêtes pour les produits. Patiente 1 minute.',
+  getProductById: 'Trop de requêtes pour ce produit. Patiente 1 minute.',
+  getUsedBoards: 'Trop de requêtes pour les planches. Patiente 1 minute.',
+  getFavorites: 'Trop de requêtes pour les favoris. Patiente 1 minute.',
+  getNotifications: 'Trop de requêtes pour les notifications. Patiente 1 minute.',
+  generalGet: 'Trop de requêtes. Patiente 1 minute.',
 } as const;
+
+export function createRateLimitResponse(action: RateLimitAction, ip: string) {
+  const info = getRateLimitInfo(ip, action);
+  const message = RATE_LIMIT_MESSAGES[action];
+  
+  return new Response(
+    JSON.stringify({
+      success: false,
+      error: message,
+      rateLimitInfo: {
+        limit: info.max,
+        remaining: info.remaining,
+        resetTime: new Date(info.resetTime).toISOString(),
+        retryAfter: info.secondsUntilReset,
+      },
+    }),
+    {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-RateLimit-Limit': info.max.toString(),
+        'X-RateLimit-Remaining': info.remaining.toString(),
+        'X-RateLimit-Reset': info.resetTime.toString(),
+        'Retry-After': info.secondsUntilReset.toString(),
+      },
+    }
+  );
+}
+
+
+export function applyGetRateLimit(
+  request: Request, 
+  action: RateLimitAction = 'generalGet'
+): Response | null {
+  const ip = getClientIP(request);
+  
+  if (!checkRateLimit(ip, action)) {
+    return createRateLimitResponse(action, ip);
+  }
+  
+  return null;
+}
 
 function cleanupExpiredEntries() {
   const now = Date.now();
