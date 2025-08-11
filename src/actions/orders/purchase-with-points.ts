@@ -95,7 +95,6 @@ export async function purchaseWithPointsAction(formData: FormData) {
       message: `Commande confirmée ! ${order.pointsUsed} points utilisés.`,
     };
   } catch (error) {
-    console.error('Erreur achat avec points:', error);
 
     return {
       success: false,

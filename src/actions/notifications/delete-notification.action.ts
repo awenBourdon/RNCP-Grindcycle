@@ -63,7 +63,6 @@ export async function deleteNotificationAction(notificationId: string) {
       message: 'Notification supprimée',
     };
   } catch (error) {
-    console.error('Erreur suppression notification:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

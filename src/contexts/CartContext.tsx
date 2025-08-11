@@ -56,8 +56,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           setCartItems(validCart);
         }
       }
-    } catch (error) {
-      console.error('Erreur lors du chargement du panier:', error);
+    } catch {
       localStorage.removeItem('cart');
     } finally {
       setIsLoaded(true);
@@ -70,9 +69,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const timeoutId = setTimeout(() => {
       try {
         localStorage.setItem('cart', JSON.stringify(cartItems));
-      } catch (error) {
-        console.error('Erreur lors de la sauvegarde du panier:', error);
-      }
+      } catch {}
     }, 300);
 
     return () => clearTimeout(timeoutId);

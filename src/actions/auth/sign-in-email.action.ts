@@ -45,7 +45,6 @@ export async function signInEmailAction(formData: FormData) {
   } catch (err) {
     if (err instanceof APIError) {
       const errCode = err.body ? (err.body.code as ErrorCode) : 'Inconnu';
-      console.log(errCode);
 
       // TODO : Implémenter un switch complet pour tous les cas possibles
       switch (errCode) {

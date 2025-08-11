@@ -9,7 +9,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: Request) {
   try {
     if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('STRIPE_SECRET_KEY is not configured');
       return NextResponse.json(
         { error: 'Configuration Stripe manquante' },
         { status: 500 }
@@ -68,8 +67,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ url: stripeSession.url });
-  } catch (error) {
-    console.error('Erreur lors de la création de la session Stripe:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Erreur lors de la création de la session de paiement' },
       { status: 500 }

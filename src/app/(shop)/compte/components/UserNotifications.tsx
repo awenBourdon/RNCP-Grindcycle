@@ -30,10 +30,8 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
           );
           setNotifications(unreadNotifications);
         }
-      } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Erreur récupération notifications:', error);
-        }
+      } catch {
+        toast.error('Erreur lors de la récupération des notifications.');
       } finally {
         if (!signal.aborted) {
           setIsLoading(false);
@@ -58,8 +56,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
         } else {
           toast.error(result.error);
         }
-      } catch (error) {
-        console.error('Erreur marquage notification:', error);
+      } catch {
         toast.error('Une erreur est survenue');
       }
     });
@@ -75,8 +72,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
         } else {
           toast.error(result.error);
         }
-      } catch (error) {
-        console.error('Erreur marquage toutes notifications:', error);
+      } catch {
         toast.error('Une erreur est survenue');
       }
     });

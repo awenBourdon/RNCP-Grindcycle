@@ -38,7 +38,6 @@ export async function signUpEmailAction(formData: FormData) {
     });
     return { error: null };
   } catch (err) {
-    console.error(err);
     if (err instanceof APIError) {
       const errCode = err.body ? (err.body.code as ErrorCode) : 'Inconnu';
       switch (errCode) {

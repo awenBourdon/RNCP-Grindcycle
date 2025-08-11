@@ -52,8 +52,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: notifications,
     });
-  } catch (error) {
-    console.error('Erreur récupération notifications:', error);
+  } catch {
     return NextResponse.json(
       {
         success: false,

@@ -37,7 +37,6 @@ export class SupabaseStorageService {
       );
 
       if (!bucketExists) {
-        console.log('🚀 Création du bucket Supabase...');
 
         const { error } = await supabase.storage.createBucket(
           'grindcycle-images',
@@ -54,9 +53,9 @@ export class SupabaseStorageService {
       }
 
       SupabaseStorageService.bucketInitialized = true;
-    } catch (error) {
-      console.error(error);
-      throw error;
+    } catch (err) {
+        console.error(err instanceof Error ? err.message : err);
+      throw err;
     }
   }
 

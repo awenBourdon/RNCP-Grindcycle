@@ -36,11 +36,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: products,
     });
-  } catch (error) {
-    console.error(
-      'Erreur lors de la récupération des derniers produits:',
-      error
-    );
+  } catch {
     return NextResponse.json(
       {
         success: false,

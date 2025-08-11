@@ -63,8 +63,7 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
             },
           },
         });
-      } catch (err) {
-        console.error('Erreur connexion Google:', err);
+      } catch {
         setError('Erreur lors de la connexion avec Google');
       }
     });

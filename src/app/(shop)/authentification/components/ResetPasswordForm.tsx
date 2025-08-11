@@ -78,8 +78,8 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
           },
         },
       });
-    } catch (err) {
-      console.error(err);
+    } catch {
+      toast.error('Erreur lors du changement du mot de passe.');
     } finally {
       setIsPending(false);
     }

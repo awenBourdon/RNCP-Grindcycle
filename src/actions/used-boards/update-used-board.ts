@@ -62,7 +62,6 @@ export async function updateUsedBoardAction(
       message: 'Planche mise à jour avec succès',
     };
   } catch (error) {
-    console.error('Erreur mise à jour planche:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

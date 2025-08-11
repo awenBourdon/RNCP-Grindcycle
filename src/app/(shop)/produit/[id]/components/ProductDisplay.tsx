@@ -64,7 +64,6 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
         }
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Erreur favoris:', error);
           setIsAuthenticated(false);
         }
       }
@@ -93,8 +92,7 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
         } else {
           toast.error(result.error);
         }
-      } catch (error) {
-        console.error('Erreur lors de la mise à jour des favoris:', error);
+      } catch {
         toast.error('Une erreur est survenue');
       }
     });

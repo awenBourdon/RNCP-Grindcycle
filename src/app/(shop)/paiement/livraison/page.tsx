@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 // TODO : supprimer ou refaire bien (envoyer infos à stripe, mettre des regex et de la validation de données)
 export default function ShippingPage() {
@@ -67,9 +68,10 @@ export default function ShippingPage() {
       } else {
         throw new Error('URL de paiement non disponible');
       }
-    } catch (error) {
-      console.error('Erreur lors du checkout:', error);
-      alert('Une erreur est survenue lors du paiement. Veuillez réessayer.');
+    } catch {
+      toast.error(
+        'Une erreur est survenue lors du paiement. Veuillez réessayer.'
+      );
     } finally {
       setIsLoading(false);
     }

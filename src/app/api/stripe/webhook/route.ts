@@ -22,8 +22,7 @@ export async function POST(request: Request) {
       sig!,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-  } catch (err) {
-    console.error(`Webhook Error: ${err}`);
+  } catch {
     return NextResponse.json({ error: `Webhook Error` }, { status: 400 });
   }
 
@@ -46,8 +45,7 @@ export async function POST(request: Request) {
           },
         });
         return NextResponse.json({ order });
-      } catch (error) {
-        console.error(error);
+      } catch {
         return NextResponse.json(
           { error: 'Error creating order' },
           { status: 500 }

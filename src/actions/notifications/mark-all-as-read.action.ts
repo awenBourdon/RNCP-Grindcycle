@@ -53,7 +53,6 @@ export async function markAllNotificationsAsReadAction(userId: string) {
       message: `${result.count} notifications marquées comme lues`,
     };
   } catch (error) {
-    console.error('Erreur marquer toutes notifications comme lues:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

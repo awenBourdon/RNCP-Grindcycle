@@ -176,8 +176,8 @@ export class OrderService {
           item.productName
         );
       }
-    } catch (error) {
-      console.error('Erreur notifications achat:', error);
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : err);
     }
   }
 
@@ -218,8 +218,8 @@ export class OrderService {
           where: { productId },
         });
       });
-    } catch (error) {
-      console.error('Erreur notification favoris:', error);
+    } catch (err) {
+        console.error(err instanceof Error ? err.message : err);
     }
   }
 }

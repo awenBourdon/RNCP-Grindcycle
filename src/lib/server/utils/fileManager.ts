@@ -21,8 +21,8 @@ export class FileManager {
       }
 
       return false;
-    } catch (error) {
-      console.error(`Erreur suppression fichier ${filePath}:`, error);
+    } catch (err) {
+        console.error(err instanceof Error ? err.message : err);
       return false;
     }
   }
@@ -133,11 +133,8 @@ export class FileManager {
 
       await fs.copyFile(sourceFullPath, destFullPath);
       return true;
-    } catch (error) {
-      console.error(
-        `Erreur copie fichier ${sourcePath} -> ${destPath}:`,
-        error
-      );
+    } catch (err) {
+        console.error(err instanceof Error ? err.message : err);
       return false;
     }
   }
@@ -153,11 +150,8 @@ export class FileManager {
         return true;
       }
       return false;
-    } catch (error) {
-      console.error(
-        `Erreur déplacement fichier ${sourcePath} -> ${destPath}:`,
-        error
-      );
+    } catch (err) {
+        console.error(err instanceof Error ? err.message : err);
       return false;
     }
   }

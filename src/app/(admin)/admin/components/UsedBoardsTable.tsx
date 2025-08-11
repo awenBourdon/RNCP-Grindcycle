@@ -74,8 +74,7 @@ const StatusSelect = ({
         } else {
           toast.error(result.error || 'Erreur lors de la mise à jour');
         }
-      } catch (error) {
-        console.error('Erreur mise à jour statut:', error);
+      } catch {
         toast.error('Erreur lors de la mise à jour du statut');
       }
     });
@@ -158,8 +157,7 @@ const PointsSelect = ({
         } else {
           toast.error(result.error || 'Erreur lors de la mise à jour');
         }
-      } catch (error) {
-        console.error('Erreur mise à jour points:', error);
+      } catch {
         toast.error('Erreur lors de la mise à jour des points');
       }
     });
@@ -254,8 +252,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
       } else {
         toast.error(result.error || 'Erreur lors de la suppression');
       }
-    } catch (error) {
-      console.error('Erreur suppression planche:', error);
+    } catch {
       toast.error('Erreur lors de la suppression');
     }
   };

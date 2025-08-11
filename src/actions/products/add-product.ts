@@ -43,7 +43,6 @@ export async function createProductAction(formData: FormData) {
       message: 'Produit créé avec succès',
     };
   } catch (error) {
-    console.error('Erreur création produit:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

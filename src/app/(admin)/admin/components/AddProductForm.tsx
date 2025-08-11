@@ -218,8 +218,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       setTimeout(() => {
         router.refresh();
       }, 1000);
-    } catch (error) {
-      console.error('Erreur création produit:', error);
+    } catch {
       toast.error('Une erreur est survenue');
     } finally {
       setIsPending(false);

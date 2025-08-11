@@ -64,8 +64,8 @@ export async function createNotification(data: CreateNotificationData) {
         isRead: false,
       },
     });
-  } catch (error) {
-    console.error('Erreur création notification:', error);
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
   }
 }
 

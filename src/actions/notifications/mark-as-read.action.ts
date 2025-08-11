@@ -64,7 +64,6 @@ export async function markNotificationAsReadAction(notificationId: string) {
       message: 'Notification marquée comme lue',
     };
   } catch (error) {
-    console.error('Erreur marquer notification comme lue:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

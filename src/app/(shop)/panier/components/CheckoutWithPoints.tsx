@@ -98,8 +98,7 @@ export const CheckoutWithPoints = ({
         } else {
           toast.error(result.error);
         }
-      } catch (error) {
-        console.error('Erreur achat:', error);
+      } catch {
         toast.error('Une erreur est survenue lors de la commande');
       }
     });
