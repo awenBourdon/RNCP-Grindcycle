@@ -36,8 +36,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: favorites,
     });
-  } catch (error) {
-    console.error('Erreur récupération favoris:', error);
+  } catch {
     return NextResponse.json(
       {
         success: false,

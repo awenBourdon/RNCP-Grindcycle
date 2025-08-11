@@ -44,7 +44,6 @@ export async function deleteProductAction(productId: string) {
       message: 'Produit supprimé avec succès',
     };
   } catch (error) {
-    console.error('Erreur suppression produit:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

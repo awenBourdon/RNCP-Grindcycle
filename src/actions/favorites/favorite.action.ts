@@ -87,7 +87,6 @@ export async function favoritesAction(productId: string) {
       message,
     };
   } catch (error) {
-    console.error('Erreur ajout favoris:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

@@ -64,7 +64,6 @@ export async function createUsedBoardAction(formData: FormData) {
       message: 'Planche soumise avec succès',
     };
   } catch (error) {
-    console.error('Erreur création planche:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

@@ -49,7 +49,6 @@ export const NewProducts = () => {
       }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
-        console.error('Erreur fetch derniers produits:', err);
         setError(err.message);
       }
     } finally {

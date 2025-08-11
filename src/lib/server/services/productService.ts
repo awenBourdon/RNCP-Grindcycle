@@ -139,8 +139,8 @@ export class ProductService {
       await Promise.all([
         this.notifyFavoriteUsersAndCleanup(productId, buyerId, productName),
       ]);
-    } catch (error) {
-      console.error('Erreur actions post-achat:', error);
+    } catch (err) {
+        console.error(err instanceof Error ? err.message : err);
     }
   }
 

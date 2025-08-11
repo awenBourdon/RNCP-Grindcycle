@@ -95,11 +95,7 @@ export class ImageService {
             warnings.push(`Image ${index + 1}: ${warning}`);
           });
         });
-      } catch (error) {
-        console.warn(
-          'Validation avancée échouée, utilisation de la validation basique:',
-          error
-        );
+      } catch {
         files.forEach((file, index) => {
           const fileErrors = this.validateSingleFile(file, index + 1, {
             validateSize,
@@ -154,20 +150,6 @@ export class ImageService {
       const storageService = await this.getStorageService();
       const storageResult = await storageService.uploadMultiple(renamedFiles);
 
-      if (!storageResult.success) {
-        console.error('[IMAGE_UPLOAD] Échec upload:', {
-          directory: this.directory,
-          fileCount: files.length,
-          errors: storageResult.errors,
-        });
-      } else {
-        console.info('[IMAGE_UPLOAD] Upload réussi:', {
-          directory: this.directory,
-          fileCount: files.length,
-          uploadedCount: storageResult.successfulUploads.length,
-        });
-      }
-
       return {
         success: storageResult.success,
         urls: storageResult.successfulUploads,
@@ -177,12 +159,6 @@ export class ImageService {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erreur inconnue';
-
-      console.error("[IMAGE_UPLOAD] Erreur lors de l'upload:", {
-        directory: this.directory,
-        fileCount: files.length,
-        error: errorMessage,
-      });
 
       return {
         success: false,

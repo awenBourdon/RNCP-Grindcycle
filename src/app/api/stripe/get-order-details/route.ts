@@ -18,8 +18,7 @@ export async function POST(req: Request) {
       amount_total: session.amount_total,
       currency: session.currency,
     });
-  } catch (error) {
-    console.error('Erreur lors de la récupération de la session:', error);
+  } catch {
     return NextResponse.json({ error: 'Session invalide' }, { status: 400 });
   }
 }

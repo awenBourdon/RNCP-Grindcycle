@@ -65,8 +65,7 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
         } else {
           toast.error(result.error);
         }
-      } catch (error) {
-        console.error('Erreur suppression produit:', error);
+      } catch {
         toast.error('Erreur lors de la suppression');
       }
     });

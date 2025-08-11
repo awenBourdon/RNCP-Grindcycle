@@ -26,8 +26,7 @@ export function AdminNotifications({ notifications }: AdminNotificationsProps) {
         } else {
           toast.error(result.error);
         }
-      } catch (error) {
-        console.error('Erreur lors du marquage:', error);
+      } catch {
         toast.error('Une erreur est survenue');
       }
     });

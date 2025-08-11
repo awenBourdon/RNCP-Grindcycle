@@ -28,7 +28,6 @@ export async function deleteUsedBoardAction(boardId: string) {
       message: 'Planche supprimée avec succès',
     };
   } catch (error) {
-    console.error('Erreur suppression planche:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erreur serveur',

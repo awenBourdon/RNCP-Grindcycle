@@ -39,7 +39,7 @@ export async function sendEmailAction({
     await transporter.sendMail(mailOptions);
     return { success: true };
   } catch (err) {
-    console.error('[SendEmail]:', err);
+    console.error(err instanceof Error ? err.message : err);
     return { success: false };
   }
 }

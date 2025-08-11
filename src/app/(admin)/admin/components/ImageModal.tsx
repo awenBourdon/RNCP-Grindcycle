@@ -52,8 +52,7 @@ export const ImageModal = ({
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Erreur téléchargement:', error);
+    } catch {
       window.open(images[currentImageIndex], '_blank');
     }
   };

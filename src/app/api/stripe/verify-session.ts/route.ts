@@ -14,8 +14,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       valid: session.payment_status === 'paid',
     });
-  } catch (err) {
-    console.error('Erreur Stripe:', err);
+  } catch {
     return NextResponse.json({ valid: false }); // Mettre true en prod
   }
 }
