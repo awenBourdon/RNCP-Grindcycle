@@ -22,7 +22,7 @@ export class UsedBoardController extends BaseController {
         return ResponseHelper.notFound(error.message);
       }
 
-      return this.handleError(error, 'UsedBoardController.getById');
+      return this.handleError(error);
     }
   }
 
@@ -31,7 +31,7 @@ export class UsedBoardController extends BaseController {
       const boards = await this.usedBoardService.getAllUsedBoards();
       return ResponseHelper.success(boards);
     } catch (error) {
-      return this.handleError(error, 'UsedBoardController.getAll');
+      return this.handleError(error);
     }
   }
 
@@ -40,7 +40,7 @@ export class UsedBoardController extends BaseController {
       const boards = await this.usedBoardService.getUserUsedBoards(userId);
       return ResponseHelper.success(boards);
     } catch (error) {
-      return this.handleError(error, 'UsedBoardController.getUserBoards');
+      return this.handleError(error);
     }
   }
 }
