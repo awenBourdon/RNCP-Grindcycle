@@ -44,7 +44,7 @@ export const UserOrdersList = ({ orders }: UserOrdersListProps) => {
         </div>
       ) : (
         <div className="space-y-6">
-          {orders.map((order) => (
+          {orders.map(order => (
             <div
               key={order.id}
               className="bg-white rounded-lg border border-gray-200 overflow-hidden"
@@ -91,7 +91,7 @@ export const UserOrdersList = ({ orders }: UserOrdersListProps) => {
 
               <div className="p-6">
                 <div className="space-y-4">
-                  {order.orderItems.map((item) => (
+                  {order.orderItems.map(item => (
                     <div key={item.id} className="flex items-start gap-4">
                       <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
                         {item.product.imageUrl &&

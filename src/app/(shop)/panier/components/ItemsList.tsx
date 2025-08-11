@@ -6,7 +6,7 @@ export const ItemsList = () => {
 
   return (
     <div className="lg:col-span-2 space-y-10">
-      {cartItems.map((item) => (
+      {cartItems.map(item => (
         <Item key={item.id} item={item} />
       ))}
     </div>

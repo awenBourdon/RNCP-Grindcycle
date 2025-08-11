@@ -11,7 +11,7 @@ export class ZodHelper {
       };
     } catch (error) {
       if (error instanceof ZodError) {
-        const errors = error.errors.map((err) => err.message);
+        const errors = error.errors.map(err => err.message);
         return {
           isValid: false,
           errors,
@@ -33,7 +33,7 @@ export class ZodHelper {
     const allImages = [
       ...formData.getAll('images'),
       ...formData.getAll('image'),
-    ].filter((item) => item instanceof File);
+    ].filter(item => item instanceof File);
 
     if (allImages.length > 0) {
       data.images = allImages;

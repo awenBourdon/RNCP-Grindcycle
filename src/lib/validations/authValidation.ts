@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-export const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
+export const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{12,}$/;
 
 export const passwordSchema = z
   .string()
@@ -23,12 +24,15 @@ export const signUpSchema = z
     password: passwordSchema,
     confirmPassword: z.string(),
   })
-  .refine((data) => {
-    return data.password === data.confirmPassword;
-  }, {
-    message: 'Les mots de passe ne correspondent pas',
-    path: ['confirmPassword'],
-  });
+  .refine(
+    data => {
+      return data.password === data.confirmPassword;
+    },
+    {
+      message: 'Les mots de passe ne correspondent pas',
+      path: ['confirmPassword'],
+    }
+  );
 
 export const signUpServerSchema = z.object({
   name: z.string().min(1, "Merci de définir un nom d'utilisateur"),
@@ -50,7 +54,7 @@ export const resetPasswordSchema = z
     password: passwordSchema,
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine(data => data.password === data.confirmPassword, {
     message: 'Les mots de passe ne correspondent pas',
     path: ['confirmPassword'],
   });

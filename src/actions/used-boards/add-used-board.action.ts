@@ -24,7 +24,7 @@ export async function createUsedBoardAction(formData: FormData) {
 
   const request = new Request('http://localhost', { headers: headersList });
   const ip = getClientIP(request);
-  
+
   if (!checkRateLimit(ip, 'createUsedBoard')) {
     return {
       success: false,
@@ -41,7 +41,7 @@ export async function createUsedBoardAction(formData: FormData) {
         details: validation.errors,
       };
     }
-    
+
     if (validation.data!.userId !== session.user.id) {
       return {
         success: false,

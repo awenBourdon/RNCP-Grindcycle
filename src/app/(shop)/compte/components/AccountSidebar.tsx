@@ -62,7 +62,7 @@ export const AccountSidebar = ({ currentPath }: AccountSidebarProps) => {
     <div className="bg-[#f8f7f4] rounded-xl p-6 h-fit">
       <h3 className="text-lg font-medium text-[#010101] mb-6">Mon compte</h3>
       <nav className="space-y-2">
-        {sidebarItems.map((item) => {
+        {sidebarItems.map(item => {
           const Icon = item.icon;
           const isActive = currentPath === item.href;
 

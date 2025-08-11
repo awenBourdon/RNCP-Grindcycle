@@ -71,7 +71,7 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
 
       <nav className="hidden lg:block">
         <div className="grid grid-cols-3 xl:grid-cols-6 gap-3">
-          {navItems.map((item) => {
+          {navItems.map(item => {
             const Icon = item.icon;
             const isActive = currentPath === item.href;
 
@@ -95,7 +95,7 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
 
       <nav className="lg:hidden">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {navItems.map((item) => {
+          {navItems.map(item => {
             const Icon = item.icon;
             const isActive = currentPath === item.href;
 

@@ -11,12 +11,12 @@ export async function signUpEmailAction(formData: FormData) {
   };
 
   const result = signUpServerSchema.safeParse(raw);
-  
+
   if (!result.success) {
     const errorMessages = result.error.format();
     const firstFieldError = Object.values(errorMessages)[0];
     let firstError = 'Erreur de validation.';
-    
+
     if (
       firstFieldError &&
       typeof firstFieldError === 'object' &&
@@ -31,7 +31,7 @@ export async function signUpEmailAction(formData: FormData) {
   }
 
   const { name, email, password } = result.data;
-  
+
   try {
     await auth.api.signUpEmail({
       body: { name, email, password },

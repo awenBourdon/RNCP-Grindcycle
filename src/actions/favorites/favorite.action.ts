@@ -12,7 +12,7 @@ const favoriteSchema = z.object({
 export async function favoritesAction(productId: string) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
-  
+
   if (!session) {
     return {
       success: false,
@@ -80,7 +80,7 @@ export async function favoritesAction(productId: string) {
 
     revalidatePath('/compte/favoris');
     revalidatePath(`/produit/${productId}`);
-    
+
     return {
       success: true,
       action,

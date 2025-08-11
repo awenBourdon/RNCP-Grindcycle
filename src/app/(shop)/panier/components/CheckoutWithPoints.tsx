@@ -41,7 +41,7 @@ export const CheckoutWithPoints = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setShippingData((prev) => ({
+    setShippingData(prev => ({
       ...prev,
       [name]: value,
     }));
@@ -75,7 +75,7 @@ export const CheckoutWithPoints = ({
     startTransition(async () => {
       try {
         const formData = new FormData();
-        const cartItemsForPurchase = cartItems.map((item) => ({
+        const cartItemsForPurchase = cartItems.map(item => ({
           productId: item.id,
           name: item.name,
           type: item.type,
@@ -124,7 +124,7 @@ export const CheckoutWithPoints = ({
               name="paymentMethod"
               value="EURO"
               checked={paymentMethod === 'EURO'}
-              onChange={(e) =>
+              onChange={e =>
                 setPaymentMethod(e.target.value as 'EURO' | 'POINTS')
               }
               className="mr-3"
@@ -157,7 +157,7 @@ export const CheckoutWithPoints = ({
               name="paymentMethod"
               value="POINTS"
               checked={paymentMethod === 'POINTS'}
-              onChange={(e) =>
+              onChange={e =>
                 setPaymentMethod(e.target.value as 'EURO' | 'POINTS')
               }
               disabled={!canPayWithPoints}

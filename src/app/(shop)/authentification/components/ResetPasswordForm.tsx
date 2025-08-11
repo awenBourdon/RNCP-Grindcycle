@@ -33,7 +33,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
     } catch (err) {
       if (err instanceof z.ZodError) {
         const newErrors = { password: '', confirmPassword: '' };
-        err.errors.forEach((error) => {
+        err.errors.forEach(error => {
           if (error.path && typeof error.path[0] === 'string') {
             const field = error.path[0] as keyof typeof newErrors;
             newErrors[field] = error.message;
@@ -47,7 +47,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
@@ -69,7 +69,7 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
         fetchOptions: {
           onRequest: () => {},
           onResponse: () => {},
-          onError: (ctx) => {
+          onError: ctx => {
             toast.error(ctx.error.message);
           },
           onSuccess: () => {

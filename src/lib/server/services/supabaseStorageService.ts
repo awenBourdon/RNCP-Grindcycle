@@ -33,7 +33,7 @@ export class SupabaseStorageService {
     try {
       const { data: buckets } = await supabase.storage.listBuckets();
       const bucketExists = buckets?.some(
-        (bucket) => bucket.name === 'grindcycle-images'
+        bucket => bucket.name === 'grindcycle-images'
       );
 
       if (!bucketExists) {

@@ -125,7 +125,7 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {products.map((product) => (
+              {products.map(product => (
                 <tr
                   key={product.id}
                   className="hover:bg-gray-50 transition-colors"

@@ -14,7 +14,7 @@ export function AdminNotifications({ notifications }: AdminNotificationsProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const unreadNotifications = notifications.filter((notif) => !notif.isRead);
+  const unreadNotifications = notifications.filter(notif => !notif.isRead);
 
   const handleMarkAsRead = async (notificationId: string) => {
     startTransition(async () => {
@@ -61,7 +61,7 @@ export function AdminNotifications({ notifications }: AdminNotificationsProps) {
 
       <div className="bg-white rounded-lg overflow-hidden">
         <div className="max-h-96 overflow-y-auto">
-          {unreadNotifications.slice(0, 20).map((notification) => (
+          {unreadNotifications.slice(0, 20).map(notification => (
             <div
               key={notification.id}
               className="p-6 border-b border-gray-100 hover:bg-gray-50 transition-colors"

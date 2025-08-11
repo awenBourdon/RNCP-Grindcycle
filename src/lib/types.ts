@@ -1,11 +1,12 @@
 import {
   UsedBoardStatus,
   BoardCondition,
-  UserRole, Order,
-  OrderItem, 
-  OrderStatus, 
-  PaymentType, 
-  BoardType
+  UserRole,
+  Order,
+  OrderItem,
+  OrderStatus,
+  PaymentType,
+  BoardType,
 } from '@/generated/prisma';
 
 export interface ProductType {
@@ -116,14 +117,16 @@ export interface CreateOrderItemData {
 }
 
 export interface OrderWithRelations extends Order {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  } | null | undefined;
+  user:
+    | {
+        id: string;
+        name: string;
+        email: string;
+      }
+    | null
+    | undefined;
   orderItems: OrderItemWithProduct[];
 }
-
 
 export interface OrderItemWithProduct extends OrderItem {
   product: {

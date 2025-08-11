@@ -33,11 +33,11 @@ export const ImageModal = ({
   if (!isOpen || images.length === 0) return null;
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    setCurrentImageIndex(prev => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentImageIndex(prev => (prev - 1 + images.length) % images.length);
   };
 
   const downloadImage = async () => {
@@ -59,7 +59,7 @@ export const ImageModal = ({
   };
 
   const handleImageError = (index: number) => {
-    setImageErrors((prev) => new Set([...prev, index]));
+    setImageErrors(prev => new Set([...prev, index]));
   };
 
   return (
@@ -109,7 +109,7 @@ export const ImageModal = ({
               quality={90}
               onError={() => handleImageError(currentImageIndex)}
               onLoad={() => {
-                setImageErrors((prev) => {
+                setImageErrors(prev => {
                   const newSet = new Set(prev);
                   newSet.delete(currentImageIndex);
                   return newSet;

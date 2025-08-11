@@ -22,9 +22,9 @@ export async function deleteUserAction({ userId }: { userId: string }) {
     headers: headersList,
   });
 
-    if (!session) throw new Error('Non authorisé');
+  if (!session) throw new Error('Non authorisé');
 
- if (session.user.role !== 'ADMIN' || session.user.id === userId) {
+  if (session.user.role !== 'ADMIN' || session.user.id === userId) {
     throw new Error('Non Authorisé');
   }
 
@@ -47,7 +47,7 @@ export async function deleteUserAction({ userId }: { userId: string }) {
     if (err instanceof APIError) {
       return { success: false, error: err.message };
     }
-  
-      return { success: false, error: 'Erreur serveur' };
+
+    return { success: false, error: 'Erreur serveur' };
   }
 }

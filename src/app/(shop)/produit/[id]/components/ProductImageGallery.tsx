@@ -18,12 +18,12 @@ export const ProductImageGallery = ({
     images.length > 0 ? images : ['/placeholder.svg?height=400&width=400'];
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % displayImages.length);
+    setCurrentImageIndex(prev => (prev + 1) % displayImages.length);
   };
 
   const prevImage = () => {
     setCurrentImageIndex(
-      (prev) => (prev - 1 + displayImages.length) % displayImages.length
+      prev => (prev - 1 + displayImages.length) % displayImages.length
     );
   };
 

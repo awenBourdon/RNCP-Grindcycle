@@ -34,7 +34,7 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
           callbackURL: '/compte',
           errorCallbackURL: '/authentification/erreur',
           fetchOptions: {
-            onError: async (context) => {
+            onError: async context => {
               const { response } = context;
 
               if (response.status === 429) {

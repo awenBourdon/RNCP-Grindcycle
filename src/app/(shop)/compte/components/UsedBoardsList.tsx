@@ -83,7 +83,7 @@ export const UsedBoardsList = ({ userBoards }: UsedBoardsListProps) => {
         </div>
       ) : (
         <div className="space-y-6">
-          {userBoards.map((board) => (
+          {userBoards.map(board => (
             <div
               key={board.id}
               className="flex items-start gap-6 p-6 bg-white rounded-lg border border-gray-200"

@@ -2,21 +2,31 @@
 
 import { prisma } from '@/lib/prisma';
 import { PaymentType, ProductStatus, PointsType } from '@/generated/prisma';
-import { OrderRepository, InterfaceOrderRepository } from '@/lib/server/repositories/orderRepository';
+import {
+  OrderRepository,
+  InterfaceOrderRepository,
+} from '@/lib/server/repositories/orderRepository';
 import { API_MESSAGES } from '@/lib/server/config/constants';
 import {
   createNotification,
   NotificationTemplates,
 } from './notificationsService';
-import { PurchaseWithPointsData, OrderWithRelations, CreateOrderItemData, CreateOrderData } from '@/lib/types';
+import {
+  PurchaseWithPointsData,
+  OrderWithRelations,
+  CreateOrderItemData,
+  CreateOrderData,
+} from '@/lib/types';
 
 export class OrderService {
   constructor(
     private orderRepository: InterfaceOrderRepository = new OrderRepository()
   ) {}
 
-  async purchaseWithPoints(data: PurchaseWithPointsData): Promise<OrderWithRelations> {
-    return await prisma.$transaction(async (tx) => {
+  async purchaseWithPoints(
+    data: PurchaseWithPointsData
+  ): Promise<OrderWithRelations> {
+    return await prisma.$transaction(async tx => {
       const user = await tx.user.findUnique({
         where: { id: data.userId },
         select: { id: true, name: true, email: true, points: true },
@@ -126,7 +136,7 @@ export class OrderService {
 
   async getOrderById(orderId: string): Promise<OrderWithRelations> {
     const order = await this.orderRepository.findById(orderId);
-    
+
     if (!order) {
       throw new Error('Commande non trouvée');
     }
@@ -143,8 +153,10 @@ export class OrderService {
     userName: string | null
   ): Promise<void> {
     try {
-      const productNames = order.orderItems.map((item: { productName: string; }) => item.productName).join(', ');
-      
+      const productNames = order.orderItems
+        .map((item: { productName: string }) => item.productName)
+        .join(', ');
+
       await createNotification({
         userId: order.userId,
         target: 'USER',
@@ -189,11 +201,12 @@ export class OrderService {
         return;
       }
 
-      await prisma.$transaction(async (tx) => {
-        const notifications = favoritesWithUsers.map((favorite) => ({
+      await prisma.$transaction(async tx => {
+        const notifications = favoritesWithUsers.map(favorite => ({
           userId: favorite.userId,
           target: 'USER' as const,
-          description: NotificationTemplates.favoriteProductPurchased(productName),
+          description:
+            NotificationTemplates.favoriteProductPurchased(productName),
           isRead: false,
         }));
 

@@ -61,7 +61,7 @@ export const AdminSidebar = ({ currentPath }: AdminSidebarProps) => {
         Administration
       </h3>
       <nav className="space-y-2">
-        {sidebarItems.map((item) => {
+        {sidebarItems.map(item => {
           const Icon = item.icon;
           const isActive = currentPath === item.href;
 

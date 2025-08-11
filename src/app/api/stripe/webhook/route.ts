@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   const sig = request.headers.get('stripe-signature');
-  const buf = await request.arrayBuffer().then((ab) => Buffer.from(ab));
+  const buf = await request.arrayBuffer().then(ab => Buffer.from(ab));
 
   let event: Stripe.Event;
 

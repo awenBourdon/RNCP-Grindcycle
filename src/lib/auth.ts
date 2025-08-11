@@ -70,7 +70,7 @@ export const auth = betterAuth({
   },
 
   hooks: {
-    before: createAuthMiddleware(async (ctx) => {
+    before: createAuthMiddleware(async ctx => {
       if (!ctx.request) {
         return {
           context: {
@@ -134,7 +134,7 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        before: async (user) => {
+        before: async user => {
           const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.split(',') ?? [];
 
           // TODO : Pourquoi Better Auth attend maintenant un tableau pour l'image ??
