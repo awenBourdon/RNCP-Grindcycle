@@ -30,7 +30,7 @@ export const ForgotPasswordForm = () => {
         fetchOptions: {
           onRequest: () => {},
           onResponse: () => {},
-          onError: (ctx) => {
+          onError: ctx => {
             toast.error(ctx.error.message);
           },
           onSuccess: () => {

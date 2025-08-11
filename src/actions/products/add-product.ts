@@ -28,7 +28,10 @@ export async function createProductAction(formData: FormData) {
     }
 
     const images = formData.getAll('images') as File[];
-    const product = await productService.createProduct(validation.data!, images);
+    const product = await productService.createProduct(
+      validation.data!,
+      images
+    );
 
     revalidatePath('/admin/produits');
     revalidatePath('/catalogue');

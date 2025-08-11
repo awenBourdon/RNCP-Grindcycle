@@ -50,7 +50,7 @@ export const ImageUpload = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[0, 1, 2].map((index) => {
+          {[0, 1, 2].map(index => {
             const canUpload = canUploadImage(index);
             return (
               <div
@@ -111,7 +111,7 @@ export const ImageUpload = ({
                     name={`image-${index}`}
                     accept={IMAGE_CONFIG.acceptedFormats.join(',')}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    onChange={(e) => onImageUpload(e, index)}
+                    onChange={e => onImageUpload(e, index)}
                   />
                 )}
               </div>
@@ -123,7 +123,7 @@ export const ImageUpload = ({
         )}
 
         {[0, 1, 2].map(
-          (index) =>
+          index =>
             errors[`image-${index}`] && (
               <p key={index} className="text-red-500 text-sm mt-1">
                 Photo {index + 1}: {errors[`image-${index}`]}

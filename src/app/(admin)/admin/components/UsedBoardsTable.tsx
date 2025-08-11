@@ -314,7 +314,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {usedBoards.map((board) => (
+                {usedBoards.map(board => (
                   <tr
                     key={board.id}
                     className="hover:bg-gray-50 transition-colors"
@@ -375,7 +375,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                               className="w-full h-full object-cover"
                               width={40}
                               height={40}
-                              onError={(e) => {
+                              onError={e => {
                                 const target = e.target as HTMLImageElement;
                                 target.style.display = 'none';
                                 target.nextElementSibling?.classList.remove(

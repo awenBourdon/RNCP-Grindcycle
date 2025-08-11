@@ -158,7 +158,7 @@ export class EnhancedImageValidator {
       return { isValid: false, errors };
     }
 
-    const isValidSignature = expectedSignatures.some((signature) =>
+    const isValidSignature = expectedSignatures.some(signature =>
       signature.every((byte, index) => bytes[index] === byte)
     );
 
@@ -350,7 +350,7 @@ export class EnhancedImageValidator {
     }
 
     const allValid =
-      globalErrors.length === 0 && results.every((r) => r.validation.isValid);
+      globalErrors.length === 0 && results.every(r => r.validation.isValid);
 
     return {
       isValid: allValid,

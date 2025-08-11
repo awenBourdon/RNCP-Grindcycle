@@ -20,11 +20,11 @@ export const IMAGE_CONFIG = {
 const imageFileSchema = z
   .instanceof(File)
   .refine(
-    (file) => file.size <= IMAGE_CONFIG.maxSize,
+    file => file.size <= IMAGE_CONFIG.maxSize,
     `Taille max: ${IMAGE_CONFIG.maxSizeMB}MB`
   )
   .refine(
-    (file) =>
+    file =>
       (IMAGE_CONFIG.acceptedFormats as readonly string[]).includes(file.type),
     `Formats acceptés: ${IMAGE_CONFIG.acceptedFormatsDisplay}`
   );

@@ -70,5 +70,5 @@ export function normalizeName(name: string) {
     .trim()
     .replace(/\s+/g, ' ')
     .replace(/[^a-zA-Z\s'-]/g, '')
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+    .replace(/\b\w/g, char => char.toUpperCase());
 }

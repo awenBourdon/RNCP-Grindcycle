@@ -16,7 +16,7 @@ export const useAbortController = () => {
   }, []);
 
   const abortAll = useCallback(() => {
-    controllersRef.current.forEach((controller) => controller.abort());
+    controllersRef.current.forEach(controller => controller.abort());
     controllersRef.current.clear();
   }, []);
 

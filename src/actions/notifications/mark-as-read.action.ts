@@ -41,7 +41,10 @@ export async function markNotificationAsReadAction(notificationId: string) {
       };
     }
 
-    if (notification.userId !== session.user.id && session.user.role !== 'ADMIN') {
+    if (
+      notification.userId !== session.user.id &&
+      session.user.role !== 'ADMIN'
+    ) {
       return {
         success: false,
         error: 'Non autorisé',

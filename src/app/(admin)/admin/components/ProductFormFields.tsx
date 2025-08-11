@@ -89,7 +89,7 @@ export const ProductFormFields = ({
           Type de planche <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {Object.values(BoardType).map((type) => (
+          {Object.values(BoardType).map(type => (
             <button
               key={type}
               type="button"
@@ -242,7 +242,7 @@ export const ProductFormFields = ({
               ? 'Aucune planche recyclée disponible'
               : 'Sélectionnez la planche réhabilitée'}
           </option>
-          {availableUsedBoards.map((board) => (
+          {availableUsedBoards.map(board => (
             <option key={board.id} value={board.id}>
               {board.name}
             </option>

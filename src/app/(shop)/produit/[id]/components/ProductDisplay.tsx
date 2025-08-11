@@ -60,7 +60,7 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
         const data: FavoriteResponse = await response.json();
 
         if (data && data.success) {
-          setFavorites(data.data.map((f) => f.productId));
+          setFavorites(data.data.map(f => f.productId));
         }
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
@@ -85,9 +85,9 @@ export const ProductDisplay = ({ product }: ProductDisplayProps) => {
 
         if (result.success) {
           if (result.action === 'added') {
-            setFavorites((prev) => [...prev, product.id]);
+            setFavorites(prev => [...prev, product.id]);
           } else {
-            setFavorites((prev) => prev.filter((id) => id !== product.id));
+            setFavorites(prev => prev.filter(id => id !== product.id));
           }
           toast.success(result.message);
         } else {

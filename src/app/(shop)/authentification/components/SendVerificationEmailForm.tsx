@@ -48,7 +48,7 @@ export const SendVerificationEmailForm = () => {
             type="email"
             id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             placeholder="ton@email.com"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
           />

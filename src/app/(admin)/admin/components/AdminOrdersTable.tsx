@@ -102,7 +102,7 @@ export const AdminOrdersTable = ({ orders }: AdminOrdersTableProps) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {orders.map((order) => (
+              {orders.map(order => (
                 <>
                   <tr
                     key={order.id}
@@ -192,7 +192,7 @@ export const AdminOrdersTable = ({ orders }: AdminOrdersTableProps) => {
                               Articles commandés
                             </h4>
                             <div className="grid gap-4">
-                              {order.orderItems.map((item) => (
+                              {order.orderItems.map(item => (
                                 <div
                                   key={item.id}
                                   className="flex items-center gap-4 bg-white p-4 rounded-lg"

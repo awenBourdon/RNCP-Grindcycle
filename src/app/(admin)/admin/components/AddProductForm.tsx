@@ -54,7 +54,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   const [errors, setErrors] = useState<FormErrors>({});
 
   const availableUsedBoards = usedBoards.filter(
-    (board) => board.status === 'RECEIVED'
+    board => board.status === 'RECEIVED'
   );
 
   const validateFile = (file: File): string | null => {
@@ -81,7 +81,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     } catch (error) {
       if (error instanceof ZodError) {
         const fieldErrors: FormErrors = {};
-        error.errors.forEach((err) => {
+        error.errors.forEach(err => {
           const field = err.path.join('.');
           fieldErrors[field] = err.message;
         });
@@ -146,7 +146,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]:
         name === 'priceEuro' || name === 'pricePoints' ? Number(value) : value,
@@ -176,7 +176,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         formDataToSend.append(key, value.toString());
       });
 
-      selectedFiles.forEach((file) => {
+      selectedFiles.forEach(file => {
         formDataToSend.append('images', file);
       });
 

@@ -110,7 +110,7 @@ export const Catalog = () => {
     setPriceRangeValues([newFilters.priceRange[0], newFilters.priceRange[1]]);
   }, [initializeFiltersFromUrl]);
 
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = products.filter(product => {
     if (filters.types.length > 0 && !filters.types.includes(product.type)) {
       return false;
     }
@@ -127,9 +127,9 @@ export const Catalog = () => {
 
   const handleTypeChange = useCallback(
     (type: string) => {
-      setFilters((prev) => {
+      setFilters(prev => {
         const newTypes = prev.types.includes(type)
-          ? prev.types.filter((t) => t !== type)
+          ? prev.types.filter(t => t !== type)
           : [...prev.types, type];
 
         const newFilters = { ...prev, types: newTypes };
@@ -154,7 +154,7 @@ export const Catalog = () => {
 
       setPriceRangeValues(newValues);
 
-      setFilters((prev) => {
+      setFilters(prev => {
         const newFilters = { ...prev, priceRange: newValues };
         updateUrl(newFilters, newValues);
         return newFilters;

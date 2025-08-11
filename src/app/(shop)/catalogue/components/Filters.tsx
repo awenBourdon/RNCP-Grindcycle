@@ -30,7 +30,7 @@ export const Filters: React.FC<FiltersProps> = ({
   const [tempMaxPrice, setTempMaxPrice] = useState(priceRangeValues[1]);
 
   const toggleDropdown = (key: 'type' | 'price') => {
-    setOpenMenu((prev) => (prev === key ? null : key));
+    setOpenMenu(prev => (prev === key ? null : key));
   };
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export const Filters: React.FC<FiltersProps> = ({
             </button>
             {openMenu === 'type' && (
               <div className="dropdown absolute left-0 top-full mt-2 w-full md:w-48 bg-white border border-gray-200 rounded-md z-50 shadow-sm">
-                {['SKATE', 'CRUISER', 'LONG'].map((type) => (
+                {['SKATE', 'CRUISER', 'LONG'].map(type => (
                   <label
                     key={type}
                     className="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
@@ -123,9 +123,7 @@ export const Filters: React.FC<FiltersProps> = ({
                         min="0"
                         max="200"
                         value={tempMinPrice}
-                        onChange={(e) =>
-                          setTempMinPrice(Number(e.target.value))
-                        }
+                        onChange={e => setTempMinPrice(Number(e.target.value))}
                         onMouseUp={() => handlePriceBlur(tempMinPrice, 0)}
                         onTouchEnd={() => handlePriceBlur(tempMinPrice, 0)}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer
@@ -145,9 +143,7 @@ export const Filters: React.FC<FiltersProps> = ({
                         min="0"
                         max="200"
                         value={tempMaxPrice}
-                        onChange={(e) =>
-                          setTempMaxPrice(Number(e.target.value))
-                        }
+                        onChange={e => setTempMaxPrice(Number(e.target.value))}
                         onMouseUp={() => handlePriceBlur(tempMaxPrice, 1)}
                         onTouchEnd={() => handlePriceBlur(tempMaxPrice, 1)}
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer

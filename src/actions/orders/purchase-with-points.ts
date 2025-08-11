@@ -7,21 +7,27 @@ import { z } from 'zod';
 import { OrderService } from '@/lib/server/services/orders.service';
 
 const purchaseSchema = z.object({
-  cartItems: z.array(z.object({
-    productId: z.string().min(1),
-    name: z.string().min(1),
-    type: z.nativeEnum(BoardType),
-    priceEuro: z.number().min(0),
-    pricePoints: z.number().min(1),
-    quantity: z.number().min(1),
-  })).min(1, 'Le panier ne peut pas être vide'),
-  shippingAddress: z.object({
-    address: z.string().min(1, 'Adresse requise'),
-    city: z.string().min(1, 'Ville requise'),
-    postalCode: z.string().min(1, 'Code postal requis'),
-    country: z.string().min(1, 'Pays requis'),
-    phone: z.string().optional(),
-  }).optional(),
+  cartItems: z
+    .array(
+      z.object({
+        productId: z.string().min(1),
+        name: z.string().min(1),
+        type: z.nativeEnum(BoardType),
+        priceEuro: z.number().min(0),
+        pricePoints: z.number().min(1),
+        quantity: z.number().min(1),
+      })
+    )
+    .min(1, 'Le panier ne peut pas être vide'),
+  shippingAddress: z
+    .object({
+      address: z.string().min(1, 'Adresse requise'),
+      city: z.string().min(1, 'Ville requise'),
+      postalCode: z.string().min(1, 'Code postal requis'),
+      country: z.string().min(1, 'Pays requis'),
+      phone: z.string().optional(),
+    })
+    .optional(),
 });
 
 const orderService = new OrderService();
@@ -45,7 +51,9 @@ export async function purchaseWithPointsAction(formData: FormData) {
 
     try {
       cartItems = JSON.parse(cartItemsJson);
-      shippingAddress = shippingAddressJson ? JSON.parse(shippingAddressJson) : undefined;
+      shippingAddress = shippingAddressJson
+        ? JSON.parse(shippingAddressJson)
+        : undefined;
     } catch {
       return {
         success: false,
@@ -86,13 +94,13 @@ export async function purchaseWithPointsAction(formData: FormData) {
       },
       message: `Commande confirmée ! ${order.pointsUsed} points utilisés.`,
     };
-
   } catch (error) {
     console.error('Erreur achat avec points:', error);
-    
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Erreur lors de la commande',
+      error:
+        error instanceof Error ? error.message : 'Erreur lors de la commande',
     };
   }
 }

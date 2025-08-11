@@ -90,7 +90,7 @@ export class ProductService {
       throw new Error(API_MESSAGES.PRODUCT_ALREADY_PURCHASED);
     }
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async tx => {
       const updatedProduct = (await tx.product.update({
         where: { id: data.productId },
         data: {
@@ -164,8 +164,8 @@ export class ProductService {
         return;
       }
 
-      await prisma.$transaction(async (tx) => {
-        const notifications = favoritesWithUsers.map((favorite) => ({
+      await prisma.$transaction(async tx => {
+        const notifications = favoritesWithUsers.map(favorite => ({
           userId: favorite.userId,
           target: 'USER' as const,
           description:

@@ -148,7 +148,10 @@ export class OrderRepository implements InterfaceOrderRepository {
     });
   }
 
-  async updateStatus(id: string, status: OrderStatus): Promise<OrderWithRelations> {
+  async updateStatus(
+    id: string,
+    status: OrderStatus
+  ): Promise<OrderWithRelations> {
     return await prisma.order.update({
       where: { id },
       data: { status },
@@ -203,15 +206,21 @@ export class OrderRepository implements InterfaceOrderRepository {
       }),
     ]);
 
-    const ordersByStatus = orders.reduce((acc, order) => {
-      acc[order.status] = (acc[order.status] || 0) + 1;
-      return acc;
-    }, {} as Record<OrderStatus, number>);
+    const ordersByStatus = orders.reduce(
+      (acc, order) => {
+        acc[order.status] = (acc[order.status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<OrderStatus, number>
+    );
 
-    const ordersByPaymentType = orders.reduce((acc, order) => {
-      acc[order.paymentType] = (acc[order.paymentType] || 0) + 1;
-      return acc;
-    }, {} as Record<PaymentType, number>);
+    const ordersByPaymentType = orders.reduce(
+      (acc, order) => {
+        acc[order.paymentType] = (acc[order.paymentType] || 0) + 1;
+        return acc;
+      },
+      {} as Record<PaymentType, number>
+    );
 
     return {
       totalOrders: orders.length,

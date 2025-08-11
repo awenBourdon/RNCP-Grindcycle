@@ -39,7 +39,7 @@ export class PointsService {
     type: PointsType,
     usedBoardId?: string
   ): Promise<void> {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       await tx.pointsHistory.create({
         data: {
           userId,
@@ -98,12 +98,12 @@ export class PointsService {
     });
 
     const totalEarned = history
-      .filter((entry) => entry.pointsAmount > 0)
+      .filter(entry => entry.pointsAmount > 0)
       .reduce((sum, entry) => sum + entry.pointsAmount, 0);
 
     const totalSpent = Math.abs(
       history
-        .filter((entry) => entry.pointsAmount < 0)
+        .filter(entry => entry.pointsAmount < 0)
         .reduce((sum, entry) => sum + entry.pointsAmount, 0)
     );
 
@@ -123,8 +123,8 @@ export class PointsService {
     const history = await this.getPointsHistory(userId);
 
     return {
-      recycling: history.filter((entry) => entry.type === PointsType.RECYCLING),
-      purchases: history.filter((entry) => entry.type === PointsType.PURCHASE),
+      recycling: history.filter(entry => entry.type === PointsType.RECYCLING),
+      purchases: history.filter(entry => entry.type === PointsType.PURCHASE),
     };
   }
 
@@ -204,7 +204,7 @@ export class PointsService {
     });
 
     const totalUsers = users.length;
-    const userIndex = users.findIndex((user) => user.id === userId);
+    const userIndex = users.findIndex(user => user.id === userId);
     const rank = userIndex !== -1 ? userIndex + 1 : totalUsers;
     const userPoints = users[userIndex]?.points ?? 0;
 

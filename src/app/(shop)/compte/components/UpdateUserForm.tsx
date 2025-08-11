@@ -38,7 +38,7 @@ export const UpdateUserForm = ({ name }: UpdateUserFormProps) => {
         onResponse: () => {
           setIsPending(false);
         },
-        onError: (ctx) => {
+        onError: ctx => {
           toast.error(ctx.error.message);
         },
         onSuccess: () => {

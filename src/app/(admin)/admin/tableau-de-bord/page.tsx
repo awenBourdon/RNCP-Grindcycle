@@ -27,17 +27,17 @@ export default async function DashboardPage() {
     totalUsers: users.length,
     totalBoards: usedBoards.length,
     pendingBoards: usedBoards.filter(
-      (board) => board.status === 'PENDING_VALIDATION'
+      board => board.status === 'PENDING_VALIDATION'
     ).length,
-    receivedBoards: usedBoards.filter((board) => board.status === 'RECEIVED')
+    receivedBoards: usedBoards.filter(board => board.status === 'RECEIVED')
       .length,
     totalProducts: products.length,
-    catalogProducts: products.filter((product) => product.status === 'CATALOG')
+    catalogProducts: products.filter(product => product.status === 'CATALOG')
       .length,
     purchasedProducts: products.filter(
-      (product) => product.status === 'PURCHASED'
+      product => product.status === 'PURCHASED'
     ).length,
-    unreadNotifications: adminNotifications.filter((notif) => !notif.isRead)
+    unreadNotifications: adminNotifications.filter(notif => !notif.isRead)
       .length,
   };
 

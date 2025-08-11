@@ -49,9 +49,9 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
       try {
         const result = await markNotificationAsReadAction(notificationId);
         if (result.success) {
-          setNotifications((prevNotifications) =>
+          setNotifications(prevNotifications =>
             prevNotifications.filter(
-              (notification) => notification.id !== notificationId
+              notification => notification.id !== notificationId
             )
           );
           toast.success(result.message);
@@ -129,7 +129,7 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
         </div>
       ) : (
         <div className="space-y-4">
-          {notifications.map((notification) => (
+          {notifications.map(notification => (
             <div
               key={notification.id}
               className="p-6 bg-white rounded-lg border border-gray-200"

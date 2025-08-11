@@ -86,12 +86,12 @@ export class ImageService {
 
         enhancedResults.results.forEach((result, index) => {
           if (!result.validation.isValid) {
-            result.validation.errors.forEach((error) => {
+            result.validation.errors.forEach(error => {
               errors.push(`Image ${index + 1}: ${error}`);
             });
           }
 
-          result.validation.warnings.forEach((warning) => {
+          result.validation.warnings.forEach(warning => {
             warnings.push(`Image ${index + 1}: ${warning}`);
           });
         });
@@ -144,7 +144,7 @@ export class ImageService {
         };
       }
 
-      const renamedFiles = files.map((file) => {
+      const renamedFiles = files.map(file => {
         const secureFilename = EnhancedImageValidator.generateSecureFilename(
           file.name
         );

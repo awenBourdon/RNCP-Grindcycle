@@ -197,7 +197,7 @@ export const NewProducts = () => {
       <div className="w-full relative">
         {isMobile ? (
           <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-8">
-            {products.slice(0, 3).map((product) => (
+            {products.slice(0, 3).map(product => (
               <Link key={product.id} href={`/produit/${product.id}`}>
                 <NewProductCard product={product} />
               </Link>

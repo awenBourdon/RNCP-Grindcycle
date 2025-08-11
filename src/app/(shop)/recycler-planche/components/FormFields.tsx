@@ -52,7 +52,7 @@ export const FormFields = ({
           Type de planche <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {Object.values(BoardType).map((type) => (
+          {Object.values(BoardType).map(type => (
             <button
               key={type}
               type="button"
@@ -77,7 +77,7 @@ export const FormFields = ({
           État de la planche <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {Object.values(BoardCondition).map((condition) => (
+          {Object.values(BoardCondition).map(condition => (
             <button
               key={condition}
               type="button"
@@ -110,7 +110,7 @@ export const FormFields = ({
           placeholder="Décris l'état de ta planche, son histoire, les défauts éventuels..."
           rows={4}
           maxLength={500}
-          onChange={(e) => onDescriptionChange(e.target.value.length)}
+          onChange={e => onDescriptionChange(e.target.value.length)}
           className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
             errors.description || descriptionLength > 500
               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'

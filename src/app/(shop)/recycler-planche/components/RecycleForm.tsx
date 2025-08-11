@@ -109,7 +109,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
     formData.append('boardType', selectedType);
     formData.append('boardCondition', selectedCondition);
 
-    selectedFiles.forEach((file) => {
+    selectedFiles.forEach(file => {
       formData.append('image', file);
     });
 
@@ -124,7 +124,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
 
     if (!validation.success) {
       const fieldErrors: FormErrors = {};
-      validation.error.errors.forEach((err) => {
+      validation.error.errors.forEach(err => {
         const field = err.path.join('.');
         fieldErrors[field] = err.message;
       });

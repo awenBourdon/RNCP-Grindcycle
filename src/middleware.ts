@@ -20,7 +20,7 @@ export async function middleware(req: NextRequest) {
   const googleAuthCookie = req.cookies.get('google-auth');
   const isLoggedIn = !!sessionCookie || !!googleAuthCookie;
 
-  const isOnProtectedRoute = protectedRoutes.some((route) =>
+  const isOnProtectedRoute = protectedRoutes.some(route =>
     pathname.startsWith(route)
   );
   const isOnAuthRoute = authRoutes.includes(pathname);

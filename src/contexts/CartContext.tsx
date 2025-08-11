@@ -46,7 +46,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         if (Array.isArray(parsedCart)) {
           const validCart = parsedCart.filter(
-            (item) =>
+            item =>
               item.id &&
               item.name &&
               typeof item.priceEuro === 'number' &&
@@ -79,11 +79,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cartItems, isLoaded]);
 
   const addToCart = useCallback((product: ProductType) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+    setCartItems(prevItems => {
+      const existingItem = prevItems.find(item => item.id === product.id);
 
       if (existingItem) {
-        return prevItems.map((item) =>
+        return prevItems.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
@@ -106,7 +106,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeFromCart = useCallback((productOrId: ProductType | string) => {
     const id = typeof productOrId === 'string' ? productOrId : productOrId.id;
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
   }, []);
 
   const clearCart = useCallback(() => {
@@ -134,7 +134,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const isInCart = useCallback(
     (product: ProductType) => {
-      return cartItems.some((item) => item.id === product.id);
+      return cartItems.some(item => item.id === product.id);
     },
     [cartItems]
   );
