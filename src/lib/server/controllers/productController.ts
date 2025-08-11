@@ -18,7 +18,7 @@ export class ProductController extends BaseController {
       const products = await this.productService.getAllProducts();
       return ResponseHelper.success(products);
     } catch (error) {
-      return this.handleError(error, 'ProductController.getAll');
+      return this.handleError(error);
     }
   }
 
@@ -27,7 +27,7 @@ export class ProductController extends BaseController {
       const products = await this.productService.getAvailableProducts();
       return ResponseHelper.success(products);
     } catch (error) {
-      return this.handleError(error, 'ProductController.getAvailable');
+      return this.handleError(error);
     }
   }
 
@@ -42,7 +42,7 @@ export class ProductController extends BaseController {
       ) {
         return ResponseHelper.notFound(error.message);
       }
-      return this.handleError(error, 'ProductController.getById');
+      return this.handleError(error);
     }
   }
 }
