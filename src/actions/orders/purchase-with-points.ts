@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { OrderService } from '@/lib/server/services/orders.service';
 import { pointsShippingSchema } from '@/lib/validations/shippingValidation';
 
-// Schema adapté pour l'action serveur avec BoardType
 const serverCartItemSchema = z.object({
   productId: z.string().uuid('ID produit invalide'),
   name: z.string().min(1, 'Nom requis'),
