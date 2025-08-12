@@ -24,11 +24,11 @@ export async function changePasswordAction(formData: FormData) {
 
   const currentPassword = String(formData.get('currentPassword'));
   if (!currentPassword)
-    return { error: 'Veuillez entrer votre mot de passe actuel' };
+    return { error: 'Rentre ton mot de passe actuel' };
 
   const newPassword = String(formData.get('newPassword'));
   if (!newPassword)
-    return { error: 'Veuillez entrer votre nouveau mot de passe' };
+    return { error: 'Rentre ton nouveau mot de passe' };
 
   try {
     passwordSchemaZod.parse(newPassword);

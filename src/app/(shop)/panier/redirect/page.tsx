@@ -103,7 +103,7 @@ export default async function RedirectPage() {
           </div>
 
           <div className="text-center mt-8">
-            <p className="text-sm text-gray-500">🔒 Paiement sécurisé</p>
+            <p className="text-sm text-gray-500">Paiement sécurisé</p>
           </div>
         </div>
       </div>

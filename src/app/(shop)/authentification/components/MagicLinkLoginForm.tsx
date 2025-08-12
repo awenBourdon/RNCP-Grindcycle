@@ -16,7 +16,7 @@ export const MagicLinkLoginForm = () => {
     const formData = new FormData(evt.currentTarget);
     const email = String(formData.get('email'));
 
-    if (!email) return toast.error('Veuillez entrer votre email.');
+    if (!email) return toast.error('Entre ton email.');
 
     await signIn.magicLink({
       email,
@@ -33,7 +33,7 @@ export const MagicLinkLoginForm = () => {
           toast.error(ctx.error.message);
         },
         onSuccess: () => {
-          toast.success('Vérifiez votre email pour le lien magique !');
+          toast.success('Vérifie ton email pour le lien magique !');
           setIsOpen(false);
         },
       },

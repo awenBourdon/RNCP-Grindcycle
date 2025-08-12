@@ -39,7 +39,7 @@ export const UserOrdersList = ({ orders }: UserOrdersListProps) => {
             Aucune commande
           </h3>
           <p className="text-gray-600">
-            Vous n&apos;avez pas encore passé de commande
+            Tu n&apos;as pas encore passé de commande
           </p>
         </div>
       ) : (

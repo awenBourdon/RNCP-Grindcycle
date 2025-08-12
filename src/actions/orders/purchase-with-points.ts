@@ -5,29 +5,23 @@ import { headers } from 'next/headers';
 import { BoardType } from '@/generated/prisma';
 import { z } from 'zod';
 import { OrderService } from '@/lib/server/services/orders.service';
+import { pointsShippingSchema } from '@/lib/validations/shippingValidation';
+
+// Schema adapté pour l'action serveur avec BoardType
+const serverCartItemSchema = z.object({
+  productId: z.string().uuid('ID produit invalide'),
+  name: z.string().min(1, 'Nom requis'),
+  type: z.nativeEnum(BoardType, { message: 'Type de planche invalide' }),
+  priceEuro: z.number().min(0, 'Prix invalide'),
+  pricePoints: z.number().min(0, 'Points invalides'),
+  quantity: z.number().int().min(1, 'Quantité minimum 1'),
+});
 
 const purchaseSchema = z.object({
   cartItems: z
-    .array(
-      z.object({
-        productId: z.string().min(1),
-        name: z.string().min(1),
-        type: z.nativeEnum(BoardType),
-        priceEuro: z.number().min(0),
-        pricePoints: z.number().min(1),
-        quantity: z.number().min(1),
-      })
-    )
+    .array(serverCartItemSchema)
     .min(1, 'Le panier ne peut pas être vide'),
-  shippingAddress: z
-    .object({
-      address: z.string().min(1, 'Adresse requise'),
-      city: z.string().min(1, 'Ville requise'),
-      postalCode: z.string().min(1, 'Code postal requis'),
-      country: z.string().min(1, 'Pays requis'),
-      phone: z.string().optional(),
-    })
-    .optional(),
+  shippingAddress: pointsShippingSchema,
 });
 
 const orderService = new OrderService();
@@ -35,11 +29,11 @@ const orderService = new OrderService();
 export async function purchaseWithPointsAction(formData: FormData) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
-
+  
   if (!session) {
     return {
       success: false,
-      error: 'Vous devez être connecté pour passer une commande',
+      error: 'Tu dois être connecté pour passer une commande',
     };
   }
 
@@ -48,12 +42,10 @@ export async function purchaseWithPointsAction(formData: FormData) {
     const shippingAddressJson = formData.get('shippingAddress') as string;
 
     let cartItems, shippingAddress;
-
+    
     try {
       cartItems = JSON.parse(cartItemsJson);
-      shippingAddress = shippingAddressJson
-        ? JSON.parse(shippingAddressJson)
-        : undefined;
+      shippingAddress = shippingAddressJson ? JSON.parse(shippingAddressJson) : undefined;
     } catch {
       return {
         success: false,
@@ -95,11 +87,9 @@ export async function purchaseWithPointsAction(formData: FormData) {
       message: `Commande confirmée ! ${order.pointsUsed} points utilisés.`,
     };
   } catch (error) {
-
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : 'Erreur lors de la commande',
+      error: error instanceof Error ? error.message : 'Erreur lors de la commande',
     };
   }
 }

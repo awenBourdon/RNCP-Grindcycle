@@ -31,6 +31,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  if (pathname.startsWith('/paiement/echange') && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/panier', req.url));
+  }
+
   if (isOnAuthRoute && isLoggedIn) {
     return NextResponse.redirect(new URL('/compte', req.url));
   }
