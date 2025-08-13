@@ -80,7 +80,7 @@ export class OrderService {
 
       if (user.points < totalPointsNeeded) {
         throw new Error(
-          `Points insuffisants. Vous avez ${user.points} points, ${totalPointsNeeded} requis.`
+          `Points insuffisants. Tu as ${user.points} points, ${totalPointsNeeded} requis.`
         );
       }
 

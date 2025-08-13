@@ -33,7 +33,7 @@ export default function ShippingPage() {
     e.preventDefault();
 
     if (cartItems.length === 0) {
-      alert('Votre panier est vide');
+      alert('Le panier est vide');
       router.push('/panier');
       return;
     }

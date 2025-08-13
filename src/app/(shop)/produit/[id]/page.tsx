@@ -46,7 +46,11 @@ export default function ProductPage() {
   }, [fetchProduct]);
 
   if (loading) {
-    return <div className="p-8">Chargement...</div>;
+    return (
+      <div className="p-8 min-h-screen flex items-center justify-center">
+        Chargement...
+      </div>
+    );
   }
 
   if (!product || error) {
