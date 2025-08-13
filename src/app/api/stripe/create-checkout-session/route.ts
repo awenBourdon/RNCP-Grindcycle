@@ -1,6 +1,7 @@
 import { CartItemType } from '@/lib/types';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { prisma } from '@/lib/prisma';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
@@ -14,11 +15,54 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-    const { cartItems, shippingCost, shippingAddress, userEmail } =
-      await request.json();
 
-    // TODO : Pansement pour faire fonctionner Stripe sans les images
-    // Dans create-checkout-session/route.ts
+    const { cartItems, shippingCost, shippingAddress, userId } = await request.json();
+
+    if (!cartItems || cartItems.length === 0) {
+      return NextResponse.json(
+        { error: 'Panier vide' },
+        { status: 400 }
+      );
+    }
+
+    if (!shippingAddress) {
+      return NextResponse.json(
+        { error: 'Adresse de livraison manquante' },
+        { status: 400 }
+      );
+    }
+
+    const totalAmount = cartItems.reduce((total: number, item: CartItemType) => 
+      total + (item.priceEuro * item.quantity), 0
+    );
+
+    const order = await prisma.order.create({
+      data: {
+        userId: userId || null,
+        totalAmount,
+        shippingCost,
+        paymentType: 'EURO',
+        status: 'PENDING',
+        shippingAddress: shippingAddress.address,
+        shippingCity: shippingAddress.city,
+        shippingPostalCode: shippingAddress.postalCode,
+        shippingCountry: shippingAddress.country,
+        shippingPhone: shippingAddress.phone,
+        orderItems: {
+          create: cartItems.map((item: CartItemType) => ({
+            productId: item.id,
+            productName: item.name,
+            productType: item.type,
+            priceEuro: item.priceEuro,
+            quantity: item.quantity,
+          }))
+        }
+      },
+      include: {
+        orderItems: true
+      }
+    });
+
     const lineItems = cartItems.map((item: CartItemType) => ({
       price_data: {
         currency: 'eur',
@@ -44,30 +88,56 @@ export async function POST(request: Request) {
       });
     }
 
-    const stripeSession = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/paiement/succes?session_id={CHECKOUT_SESSION_ID}`, // TODO : faire la page
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/panier`,
-      customer_email: shippingAddress?.email || userEmail,
-      shipping_address_collection: {
-        allowed_countries: ['FR'],
-      },
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/paiement/achat/succes?session_id={CHECKOUT_SESSION_ID}&order_id=${order.id}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/paiement/achat/echec?order_id=${order.id}`,
+      customer_email: shippingAddress.email,
       metadata: {
-        ...(shippingAddress && {
-          shippingName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
-          shippingAddress: shippingAddress.address,
-          shippingCity: shippingAddress.city,
-          shippingPostalCode: shippingAddress.postalCode,
-          shippingCountry: shippingAddress.country,
-          shippingPhone: shippingAddress.phone,
-        }),
+        orderId: order.id,
+        shippingName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+        shippingAddress: shippingAddress.address,
+        shippingCity: shippingAddress.city,
+        shippingPostalCode: shippingAddress.postalCode,
+        shippingCountry: shippingAddress.country,
+        shippingPhone: shippingAddress.phone || '',
       },
+    };
+
+    if (shippingCost > 0) {
+      sessionParams.shipping_options = [{
+        shipping_rate_data: {
+          type: 'fixed_amount',
+          fixed_amount: {
+            amount: Math.round(shippingCost * 100),
+            currency: 'eur',
+          },
+          display_name: 'Livraison standard',
+          delivery_estimate: {
+            minimum: {
+              unit: 'business_day',
+              value: 3,
+            },
+            maximum: {
+              unit: 'business_day',
+              value: 7,
+            },
+          },
+        },
+      }];
+    }
+
+    const stripeSession = await stripe.checkout.sessions.create(sessionParams);
+
+    return NextResponse.json({ 
+      url: stripeSession.url,
+      orderId: order.id 
     });
 
-    return NextResponse.json({ url: stripeSession.url });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: 'Erreur lors de la création de la session de paiement' },
       { status: 500 }

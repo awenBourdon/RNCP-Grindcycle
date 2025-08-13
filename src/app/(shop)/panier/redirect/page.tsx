@@ -10,7 +10,7 @@ export default async function RedirectPage() {
   const session = await auth.api.getSession({ headers: headersList });
 
   if (session) {
-    redirect('/paiement/livraison');
+    redirect('/paiement/achat/livraison');
   }
 
   return (
