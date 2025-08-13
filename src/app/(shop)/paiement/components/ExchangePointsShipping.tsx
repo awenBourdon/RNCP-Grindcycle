@@ -1,5 +1,5 @@
 'use client';
-import { useTransition } from 'react';
+import { useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
 import Link from 'next/link';
@@ -27,6 +27,23 @@ export function ExchangePointsShipping({
   }, 0);
 
   const canPayWithPoints = isAuthenticated && userPoints >= totalPoints;
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/authentification/connexion');
+      return;
+    }
+
+    if (cartItems.length === 0 || totalPoints === 0) {
+      router.push('/panier');
+      return;
+    }
+
+    if (!canPayWithPoints) {
+      router.push('/panier');
+      return;
+    }
+  }, []);
 
   const handleShippingSubmit = (formData: PointsShippingInput) => {
     if (!canPayWithPoints) {
@@ -89,22 +106,6 @@ export function ExchangePointsShipping({
       }
     });
   };
-
-  // Redirections immédiates
-  if (!isAuthenticated) {
-    router.push('/authentification/connexion');
-    return null;
-  }
-
-  if (cartItems.length === 0 || totalPoints === 0) {
-    router.push('/panier');
-    return null;
-  }
-
-  if (!canPayWithPoints) {
-    router.push('/panier');
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-white">
