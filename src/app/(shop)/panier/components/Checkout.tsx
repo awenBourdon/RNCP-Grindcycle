@@ -9,15 +9,12 @@ import { toast } from 'sonner';
 import { Coins, CreditCard, Truck } from 'lucide-react';
 import Link from 'next/link';
 
-interface CheckoutWithPointsProps {
+interface CheckoutProps {
   userPoints: number;
   isAuthenticated: boolean;
 }
 
-export const CheckoutWithPoints = ({
-  userPoints,
-  isAuthenticated,
-}: CheckoutWithPointsProps) => {
+export const Checkout = ({ userPoints, isAuthenticated }: CheckoutProps) => {
   const { cartItems } = useCart();
   const [paymentMethod, setPaymentMethod] = useState<'EURO' | 'POINTS'>('EURO');
   const router = useRouter();
@@ -31,7 +28,7 @@ export const CheckoutWithPoints = ({
   const handlePurchaseWithPoints = () => {
     if (!isAuthenticated) {
       toast.error('Tu dois être connecté pour utiliser tes points');
-      router.push('/authentification/connexion?redirect=/panier');
+      router.push('/authentification/connexion');
       return;
     }
     if (!canPayWithPoints) {

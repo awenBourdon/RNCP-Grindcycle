@@ -3,7 +3,7 @@ import { useCart } from '@/contexts/CartContext';
 import { EmptyCart } from './EmptyCart';
 import { Header } from './Header';
 import { ItemsList } from './ItemsList';
-import { CheckoutWithPoints } from './CheckoutWithPoints';
+import { Checkout } from './Checkout';
 
 interface CartPageClientProps {
   userPoints: number;
@@ -29,7 +29,7 @@ export const CartPageClient = ({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
             <ItemsList />
             <div>
-              <CheckoutWithPoints
+              <Checkout
                 userPoints={userPoints}
                 isAuthenticated={isAuthenticated}
               />

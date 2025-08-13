@@ -1,8 +1,8 @@
 'use client';
 import { Suspense } from 'react';
-import { PurchaseSuccess } from '../../components/PurchaseSuccess';
+import { PurchaseError } from '../../components/PurchaseError';
 
-export default function SuccessPage() {
+export default function ErrorPage() {
   return (
     <Suspense
       fallback={
@@ -14,7 +14,7 @@ export default function SuccessPage() {
         </div>
       }
     >
-      <PurchaseSuccess />
+      <PurchaseError />
     </Suspense>
   );
 }

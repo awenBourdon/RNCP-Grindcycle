@@ -40,7 +40,7 @@ export async function middleware(req: NextRequest) {
   }
 
   if (pathname === '/panier/redirect' && isLoggedIn) {
-    return NextResponse.redirect(new URL('/paiement/livraison', req.url));
+    return NextResponse.redirect(new URL('/paiement/achat/livraison', req.url));
   }
 
   if (pathname === '/recycler-planche/redirect' && isLoggedIn) {
