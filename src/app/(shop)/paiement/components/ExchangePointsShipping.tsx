@@ -43,6 +43,7 @@ export function ExchangePointsShipping({
       router.push('/panier');
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleShippingSubmit = (formData: PointsShippingInput) => {
