@@ -50,19 +50,24 @@ export const MagicLinkLoginForm = () => {
           >
             Email
           </label>
-          <input
-            type="email"
-            id="magic-email"
-            name="email"
-            placeholder="ton@email.com"
-            className="w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
-          />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Mail size={16} className="text-gray-400" />
+            </div>
+            <input
+              type="email"
+              id="magic-email"
+              name="email"
+              placeholder="ton@email.com"
+              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            />
+          </div>
         </div>
 
         <button
           type="submit"
           disabled={isPending}
-          className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
+          className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white cursor-pointer hover:bg-[#0a4d4f] transition-colors ${
             isPending ? 'opacity-70 cursor-not-allowed' : ''
           }`}
         >
