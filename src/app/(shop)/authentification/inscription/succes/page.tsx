@@ -1,6 +1,14 @@
 import { ReturnButton } from '@/components/ui/ReturnButton';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
-export default function InscriptionSuccesPage() {
+export default async function SuccesPage() {
+  const cookieStore = await cookies();
+  const registrationToken = cookieStore.get('registration_success');
+
+  if (!registrationToken) {
+    redirect('/authentification/connexion');
+  }
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">

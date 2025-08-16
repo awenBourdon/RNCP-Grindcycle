@@ -2,10 +2,6 @@ import { getSessionCookie } from 'better-auth/cookies';
 import { NextRequest, NextResponse } from 'next/server';
 
 const protectedRoutes = ['/compte', '/admin/dashboard'];
-const authRoutes = [
-  '/authentification/connexion',
-  '/authentification/inscription',
-];
 
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
@@ -23,7 +19,7 @@ export async function middleware(req: NextRequest) {
   const isOnProtectedRoute = protectedRoutes.some(route =>
     pathname.startsWith(route)
   );
-  const isOnAuthRoute = authRoutes.includes(pathname);
+  const isOnAuthRoute = pathname.startsWith('/authentification');
 
   if (isOnProtectedRoute && !isLoggedIn) {
     const redirectUrl = new URL('/authentification/connexion', req.url);

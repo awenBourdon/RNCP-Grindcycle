@@ -22,22 +22,15 @@ export default function SuccesPage() {
             </div>
 
             <h1 className="text-3xl font-normal mb-4">
-              Compte créé avec succès
+              Email envoyé avec succès
             </h1>
 
             <p className="text-gray-600 mb-8">
               Tu vas recevoir un email de vérification. Clique sur le lien dans
-              ce message pour activer ton compte.
+              ce message pour changer ton mot de passe.
             </p>
 
             <div className="space-y-4">
-              <Link
-                href="/authentification/connexion"
-                className="inline-flex items-center justify-center rounded-full text-sm font-medium px-6 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors"
-              >
-                Connexion
-              </Link>
-
               <p className="text-sm text-gray-500 mt-4">
                 Si tu n&apos;as pas reçu d&apos;email, vérifie ton dossier de
                 spam ou

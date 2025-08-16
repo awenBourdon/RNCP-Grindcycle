@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { LogIn, UserPlus } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { ReturnButton } from '@/components/ui/ReturnButton';
 
 const RedirectPage = async () => {
@@ -63,14 +63,6 @@ const RedirectPage = async () => {
             >
               <LogIn size={20} className="mr-2" />
               Se connecter
-            </Link>
-
-            <Link
-              href="/authentification/inscription"
-              className="inline-flex items-center justify-center rounded-full text-lg font-medium px-8 py-4 border border-[#0a3d3f] text-[#0a3d3f] hover:bg-[#0a3d3f] hover:text-white transition-colors"
-            >
-              <UserPlus size={20} className="mr-2" />
-              Créer un compte
             </Link>
           </div>
 

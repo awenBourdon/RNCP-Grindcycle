@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LogIn, ShoppingCart, ArrowRight, User, Zap } from 'lucide-react';
+import { LogIn, ShoppingCart, User, Zap } from 'lucide-react';
 import { ReturnButton } from '@/components/ui/ReturnButton';
 
 export default async function RedirectPage() {
@@ -44,7 +44,7 @@ export default async function RedirectPage() {
                 Se connecter
               </h3>
               <p className="text-gray-600 mb-8">
-                Accède à ton compte GRINDCYCLE pour continuer
+                Accède à ton compte Grindcycle pour continuer
               </p>
 
               <Link
@@ -53,21 +53,7 @@ export default async function RedirectPage() {
               >
                 <LogIn size={20} className="mr-2" />
                 Se connecter
-                <ArrowRight
-                  size={16}
-                  className="ml-2 group-hover:translate-x-1 transition-transform"
-                />
               </Link>
-
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                Pas de compte ?{' '}
-                <Link
-                  href="/authentification/inscription"
-                  className="text-[#0a3d3f] hover:underline"
-                >
-                  Créer un compte
-                </Link>
-              </p>
             </div>
 
             <div className="bg-[#f8f7f4] rounded-2xl p-8">
@@ -90,10 +76,6 @@ export default async function RedirectPage() {
               >
                 <ShoppingCart size={20} className="mr-2" />
                 Continuer en invité
-                <ArrowRight
-                  size={16}
-                  className="ml-2 group-hover:translate-x-1 transition-transform"
-                />
               </Link>
 
               <p className="text-xs text-gray-500 mt-4 text-center">

@@ -2,8 +2,17 @@
 import { auth, ErrorCode } from '@/lib/auth';
 import { signUpServerSchema } from '@/lib/validations/authValidation';
 import { APIError } from 'better-auth/api';
+import { cookies } from 'next/headers';
 
 export async function signUpEmailAction(formData: FormData) {
+
+  const cookieStore = await cookies();
+    cookieStore.set('registration_success', 'true', {
+    maxAge: 60 * 5,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production'
+  });
+  
   const raw = {
     name: String(formData.get('name')),
     email: String(formData.get('email')),

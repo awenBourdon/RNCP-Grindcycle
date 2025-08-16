@@ -2,13 +2,13 @@
 import { Spinner } from '@/components/ui/Spinner';
 import { forgetPassword } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useTransition } from 'react';
 import { toast } from 'sonner';
 import { Mail, ArrowRight } from 'lucide-react';
 import type React from 'react';
 
 export const ForgotPasswordForm = () => {
-  const [isPending, setIsPending] = useState(false); // TODO : Mettre UseTransition
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
@@ -21,29 +21,27 @@ export const ForgotPasswordForm = () => {
       return;
     }
 
-    setIsPending(true);
-
-    try {
-      await forgetPassword({
-        email,
-        redirectTo: '/authentification/reinitialiser-mot-de-passe',
-        fetchOptions: {
-          onRequest: () => {},
-          onResponse: () => {},
-          onError: ctx => {
-            toast.error(ctx.error.message);
+    startTransition(async () => {
+      try {
+        await forgetPassword({
+          email,
+          redirectTo: '/authentification/reinitialiser-mot-de-passe',
+          fetchOptions: {
+            onRequest: () => {},
+            onResponse: () => {},
+            onError: ctx => {
+              toast.error(ctx.error.message);
+            },
+            onSuccess: () => {
+              toast.success('Le lien de réinitialisation a été envoyé.');
+              router.push('/authentification/mot-de-passe-oublie/succes');
+            },
           },
-          onSuccess: () => {
-            toast.success('Le lien de réinitialisation a été envoyé.');
-            router.push('/authentification/mot-de-passe-oublie/succes');
-          },
-        },
-      });
-    } finally {
-      setTimeout(() => {
-        setIsPending(false);
-      }, 800);
-    }
+        });
+      } catch {
+        toast.error("Erreur lors de l'envoi de l'email.");
+      }
+    });
   }
 
   return (
@@ -69,16 +67,19 @@ export const ForgotPasswordForm = () => {
       <button
         type="submit"
         disabled={isPending}
-        className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
+        className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white cursor-pointer hover:bg-[#0a4d4f] transition-colors ${
           isPending ? 'opacity-70 cursor-not-allowed' : ''
         }`}
       >
         {isPending ? (
-          <Spinner />
+          <>
+            <Spinner />
+            <span className="ml-2">Envoi en cours...</span>
+          </>
         ) : (
           <>
+            <ArrowRight size={16} className="mr-2" />
             Envoyer le lien de réinitialisation
-            <ArrowRight size={16} className="ml-2" />
           </>
         )}
       </button>
