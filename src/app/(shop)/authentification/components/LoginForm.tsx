@@ -17,10 +17,9 @@ export const LoginForm = () => {
     const formData = new FormData(evt.target as HTMLFormElement);
 
     startTransition(async () => {
-      const { error } = await signInEmailAction(formData);
-
-      if (error) {
-        setError('Identifiant et/ou mot de passe incorrect.');
+      const result = await signInEmailAction(formData);
+      if (result.error) {
+        setError(result.error);
       } else {
         setError(null);
         router.push('/compte');

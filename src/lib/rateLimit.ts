@@ -3,12 +3,20 @@ interface RateLimitData {
   resetTime: number;
 }
 
+interface FailedAttemptData {
+  count: number;
+  resetTime: number;
+  lastAttempt: number;
+}
+
+
 const rateLimitStore = new Map<string, RateLimitData>();
+const failedAttemptsStore = new Map<string, FailedAttemptData>();
 
 export const RATE_LIMITS = {
   social: { max: 5, windowMs: 5 * 60 * 1000 },
   magicLink: { max: 5, windowMs: 5 * 60 * 1000 },
-  signIn: { max: 5, windowMs: 5 * 60 * 1000 },
+  signIn: { max: 10, windowMs: 15 * 60 * 1000 },
   signUp: { max: 5, windowMs: 60 * 60 * 1000 },
   resetPassword: { max: 5, windowMs: 60 * 60 * 1000 },
   verifyEmail: { max: 5, windowMs: 60 * 60 * 1000 },
@@ -26,6 +34,25 @@ export const RATE_LIMITS = {
 } as const;
 
 export type RateLimitAction = keyof typeof RATE_LIMITS;
+
+export const RATE_LIMIT_MESSAGES = {
+  social: 'Trop de demandes de connexion avec Google. Patiente 5 minutes.',
+  magicLink: 'Trop de demandes de magic link. Patiente 5 minutes.',
+  signIn: 'Trop de tentatives de connexion. Patiente 15 minutes.',
+  signUp: "Trop d'inscriptions. Patiente 1 heure.",
+  resetPassword: 'Trop de demandes de réinitialisation. Patiente 1 heure.',
+  verifyEmail: 'Trop de tentatives de vérification. Patiente 1 heure.',
+  changePassword: 'Trop de tentatives de changement de mot de passe. Patiente 15 minutes.',
+
+  createUsedBoard: "Trop d'envoi de planche. Attends 10 minutes avant de pouvoir en renvoyer.",
+
+  getProducts: 'Trop de requêtes pour les produits. Patiente 1 minute.',
+  getProductById: 'Trop de requêtes pour ce produit. Patiente 1 minute.',
+  getUsedBoards: 'Trop de requêtes pour les planches. Patiente 1 minute.',
+  getFavorites: 'Trop de requêtes pour les favoris. Patiente 1 minute.',
+  getNotifications: 'Trop de requêtes pour les notifications. Patiente 1 minute.',
+  generalGet: 'Trop de requêtes. Patiente 1 minute.',
+} as const;
 
 export function getClientIP(request: Request): string {
   if (
@@ -91,28 +118,6 @@ export function getRateLimitInfo(ip: string, action: RateLimitAction) {
   };
 }
 
-export const RATE_LIMIT_MESSAGES = {
-  social: 'Trop de demandes de connexion avec Google. Patiente 5 minutes.',
-  magicLink: 'Trop de demandes de magic link. Patiente 5 minutes.',
-  signIn: 'Trop de tentatives de connexion. Patiente 5 minutes.',
-  signUp: "Trop d'inscriptions. Patiente 1 heure.",
-  resetPassword: 'Trop de demandes de réinitialisation. Patiente 1 heure.',
-  verifyEmail: 'Trop de tentatives de vérification. Patiente 1 heure.',
-  changePassword:
-    'Trop de tentatives de changement de mot de passe. Patiente 15 minutes.',
-
-  createUsedBoard:
-    "Trop d'envoi de planche. Attends 10 minutes avant de pouvoir en renvoyer.",
-
-  getProducts: 'Trop de requêtes pour les produits. Patiente 1 minute.',
-  getProductById: 'Trop de requêtes pour ce produit. Patiente 1 minute.',
-  getUsedBoards: 'Trop de requêtes pour les planches. Patiente 1 minute.',
-  getFavorites: 'Trop de requêtes pour les favoris. Patiente 1 minute.',
-  getNotifications:
-    'Trop de requêtes pour les notifications. Patiente 1 minute.',
-  generalGet: 'Trop de requêtes. Patiente 1 minute.',
-} as const;
-
 export function createRateLimitResponse(action: RateLimitAction, ip: string) {
   const info = getRateLimitInfo(ip, action);
   const message = RATE_LIMIT_MESSAGES[action];
@@ -154,9 +159,116 @@ export function applyGetRateLimit(
   return null;
 }
 
+
+export function recordFailedSignIn(ip: string, email?: string): void {
+  const now = Date.now();
+  const ipKey = `failed:${ip}`;
+  const ipData = failedAttemptsStore.get(ipKey) || { 
+    count: 0, 
+    resetTime: now + (60 * 60 * 1000),
+    lastAttempt: now
+  };
+  
+  if (now > ipData.resetTime) {
+    ipData.count = 1;
+    ipData.resetTime = now + (60 * 60 * 1000);
+  } else {
+    ipData.count += 1;
+  }
+  
+  ipData.lastAttempt = now;
+  failedAttemptsStore.set(ipKey, ipData);
+  
+  if (email) {
+    const emailKey = `failed:email:${email}`;
+    const emailData = failedAttemptsStore.get(emailKey) || { 
+      count: 0, 
+      resetTime: now + (60 * 60 * 1000),
+      lastAttempt: now
+    };
+    
+    if (now > emailData.resetTime) {
+      emailData.count = 1;
+      emailData.resetTime = now + (60 * 60 * 1000);
+    } else {
+      emailData.count += 1;
+    }
+    
+    emailData.lastAttempt = now;
+    failedAttemptsStore.set(emailKey, emailData);
+  }
+}
+
+export function getFailedAttempts(ip: string, email?: string): {
+  ipFailures: number;
+  emailFailures: number;
+  totalFailures: number;
+} {
+  const now = Date.now();
+  
+  const ipKey = `failed:${ip}`;
+  const ipData = failedAttemptsStore.get(ipKey);
+  const ipFailures = (ipData && now <= ipData.resetTime) ? ipData.count : 0;
+  
+  let emailFailures = 0;
+  if (email) {
+    const emailKey = `failed:email:${email}`;
+    const emailData = failedAttemptsStore.get(emailKey);
+    emailFailures = (emailData && now <= emailData.resetTime) ? emailData.count : 0;
+  }
+  
+  return {
+    ipFailures,
+    emailFailures,
+    totalFailures: ipFailures + emailFailures
+  };
+}
+
+export function hasExcessiveFailures(ip: string, email?: string): {
+  blocked: boolean;
+  reason?: string;
+} {
+  const failures = getFailedAttempts(ip, email);
+  
+  const IP_BLOCK_THRESHOLD = 10;
+  const EMAIL_BLOCK_THRESHOLD = 5;
+  
+  if (failures.ipFailures >= IP_BLOCK_THRESHOLD) {
+    return {
+      blocked: true,
+      reason: 'Trop de tentatives de connexion.'
+    };
+  }
+  
+  if (email && failures.emailFailures >= EMAIL_BLOCK_THRESHOLD) {
+    return {
+      blocked: true,
+      reason: 'Trop de tentatives pour ce compte.'
+    };
+  }
+  
+  return { blocked: false };
+}
+
+export function resetSignInAttempts(ip: string, email?: string): void {
+  const keys = [`failed:${ip}`];
+  
+  if (email) {
+    keys.push(`failed:email:${email}`);
+  }
+  
+  keys.forEach(key => failedAttemptsStore.delete(key));
+}
+
 function cleanupExpiredEntries() {
   const now = Date.now();
-
+  
+  for (const [key, data] of failedAttemptsStore.entries()) {
+    if (now > data.resetTime) {
+      failedAttemptsStore.delete(key);
+    }
+  }
+  
   for (const [key, data] of rateLimitStore.entries()) {
     if (now > data.resetTime) {
       rateLimitStore.delete(key);
