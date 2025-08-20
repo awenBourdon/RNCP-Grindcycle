@@ -295,32 +295,18 @@ export const Navbar = ({ user }: NavbarProps) => {
 
           <div className="flex flex-col px-8 text-lg space-y-4">
             <Link
-              href="/faq"
+              href="/mentions-legales"
               onClick={closeMenu}
               className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
             >
-              FAQ
+              Mentions légales
             </Link>
             <Link
-              href="/contact"
-              onClick={closeMenu}
-              className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/privacy"
+              href="/politique-confidentialite"
               onClick={closeMenu}
               className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
             >
               Politique de confidentialité
-            </Link>
-            <Link
-              href="/terms"
-              onClick={closeMenu}
-              className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
-            >
-              Conditions d&apos;utilisation
             </Link>
             <Link
               href="/recycler-planche/redirect"
