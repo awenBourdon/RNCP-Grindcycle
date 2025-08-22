@@ -283,14 +283,6 @@ export default function PrivacyPolicyPage() {
                         <strong>Panier d&apos;achat</strong> : Stocké localement
                         dans votre navigateur (localStorage)
                       </li>
-                      <li>
-                        <strong>État de l&apos;interface</strong> : Préférences
-                        temporaires de navigation
-                      </li>
-                      <li>
-                        <strong>Données de formulaire</strong> : Évite la perte
-                        de données lors de la saisie
-                      </li>
                     </ul>
                   </div>
                 </div>

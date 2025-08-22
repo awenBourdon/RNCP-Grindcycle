@@ -259,23 +259,3 @@ export function resetSignInAttempts(ip: string, email?: string): void {
   
   keys.forEach(key => failedAttemptsStore.delete(key));
 }
-
-function cleanupExpiredEntries() {
-  const now = Date.now();
-  
-  for (const [key, data] of failedAttemptsStore.entries()) {
-    if (now > data.resetTime) {
-      failedAttemptsStore.delete(key);
-    }
-  }
-  
-  for (const [key, data] of rateLimitStore.entries()) {
-    if (now > data.resetTime) {
-      rateLimitStore.delete(key);
-    }
-  }
-}
-
-if (typeof setInterval !== 'undefined') {
-  setInterval(cleanupExpiredEntries, 10 * 60 * 1000);
-}
