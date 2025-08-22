@@ -1,40 +1,55 @@
 'use client';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
+import { Key, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { z } from 'zod';
 import { changePasswordAction } from '@/actions/auth/change-password.action';
 import { passwordSchema } from '@/lib/validations/authValidation';
-import { z } from 'zod';
-import { Key, Lock } from 'lucide-react';
+import { Spinner } from '@/components/ui/Spinner';
+import { PasswordValidation } from '../../authentification/components/PasswordValidation';
 
-const passwordSchemaZod = passwordSchema;
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Le mot de passe actuel est requis'),
+    newPassword: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine(
+    data => {
+      return data.newPassword === data.confirmPassword;
+    },
+    {
+      message: 'Les mots de passe ne correspondent pas',
+      path: ['confirmPassword'],
+    }
+  );
+
+type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 
 export const ChangePasswordForm = () => {
-  const [isPending, setIsPending] = useState(false);
-  const [errors, setErrors] = useState({
-    newPassword: '',
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ChangePasswordInput>({
+    resolver: zodResolver(changePasswordSchema),
   });
 
-  const validatePassword = (password: string) => {
-    try {
-      passwordSchemaZod.parse(password);
-      setErrors({ newPassword: '' });
-      return true;
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        setErrors({ newPassword: err.errors[0].message });
-      }
-      return false;
-    }
-  };
+  const newPassword = watch('newPassword', '');
+  const confirmPassword = watch('confirmPassword', '');
 
-  async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
-    evt.preventDefault();
-    const formData = new FormData(evt.target as HTMLFormElement);
-    const newPassword = formData.get('newPassword') as string;
-    if (!validatePassword(newPassword)) {
-      return;
-    }
-    setIsPending(true);
+  async function onSubmit(data: ChangePasswordInput) {
+    const formData = new FormData();
+    formData.append('currentPassword', data.currentPassword);
+    formData.append('newPassword', data.newPassword);
 
     try {
       const { error } = await changePasswordAction(formData);
@@ -43,12 +58,10 @@ export const ChangePasswordForm = () => {
         toast.error(error);
       } else {
         toast.success('Mot de passe modifié avec succès.');
-        (evt.target as HTMLFormElement).reset();
+        reset();
       }
     } catch {
       toast.error("Une erreur inattendue s'est produite");
-    } finally {
-      setIsPending(false);
     }
   }
 
@@ -60,7 +73,7 @@ export const ChangePasswordForm = () => {
       </div>
 
       <div className="max-w-md">
-        <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
           <div className="flex flex-col gap-2">
             <label
               htmlFor="currentPassword"
@@ -73,13 +86,35 @@ export const ChangePasswordForm = () => {
                 <Lock size={16} className="text-gray-400" />
               </div>
               <input
-                type="password"
+                type={showCurrentPassword ? 'text' : 'password'}
                 id="currentPassword"
-                name="currentPassword"
-                autoComplete="off"
-                className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+                {...register('currentPassword')}
+                autoComplete="current-password"
+                className="w-full pl-10 pr-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
               />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                {showCurrentPassword ? (
+                  <EyeOff
+                    size={16}
+                    className="text-gray-400 hover:text-gray-600"
+                  />
+                ) : (
+                  <Eye
+                    size={16}
+                    className="text-gray-400 hover:text-gray-600"
+                  />
+                )}
+              </button>
             </div>
+            {errors.currentPassword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.currentPassword.message}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -94,27 +129,122 @@ export const ChangePasswordForm = () => {
                 <Lock size={16} className="text-gray-400" />
               </div>
               <input
-                type="password"
+                type={showNewPassword ? 'text' : 'password'}
                 id="newPassword"
-                name="newPassword"
-                className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+                {...register('newPassword')}
+                placeholder="••••••••"
+                autoComplete="new-password"
+                className="w-full pl-10 pr-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
               />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                {showNewPassword ? (
+                  <EyeOff
+                    size={16}
+                    className="text-gray-400 hover:text-gray-600"
+                  />
+                ) : (
+                  <Eye
+                    size={16}
+                    className="text-gray-400 hover:text-gray-600"
+                  />
+                )}
+              </button>
             </div>
             {errors.newPassword && (
-              <p className="text-red-500 text-xs mt-1">{errors.newPassword}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.newPassword.message}
+              </p>
             )}
           </div>
 
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="confirmPassword"
+              className="text-sm font-medium text-gray-700"
+            >
+              Confirmer le nouveau mot de passe
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <Lock size={16} className="text-gray-400" />
+              </div>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                {...register('confirmPassword')}
+                placeholder="••••••••"
+                autoComplete="new-password"
+                className="w-full pl-10 pr-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff
+                    size={16}
+                    className="text-gray-400 hover:text-gray-600"
+                  />
+                ) : (
+                  <Eye
+                    size={16}
+                    className="text-gray-400 hover:text-gray-600"
+                  />
+                )}
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+
+          <PasswordValidation
+            password={newPassword}
+            confirmPassword={confirmPassword}
+          />
+
           <button
             type="submit"
-            disabled={isPending}
-            className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-2 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
-              isPending ? 'opacity-70 cursor-not-allowed' : ''
+            disabled={isSubmitting}
+            className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white cursor-pointer hover:bg-[#0a4d4f] transition-colors ${
+              isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
-            {isPending ? 'Modification en cours...' : 'Valider'}
+            {isSubmitting ? (
+              <Spinner />
+            ) : (
+              <>
+                <Key size={16} className="mr-2" />
+                Modifier le mot de passe
+              </>
+            )}
           </button>
         </form>
+      </div>
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+        <div className="flex items-start gap-3">
+          <AlertCircle
+            size={20}
+            className="text-blue-600 mt-0.5 flex-shrink-0"
+          />
+          <div className="text-blue-800 text-sm">
+            <p className="font-medium mb-1">Information importante</p>
+            <p>
+              Si tu t&apos;es connecté avec le service Google, cette
+              fonctionnalité de changement de mot de passe ne s&apos;applique
+              pas. Les comptes Google utilisent l&apos;authentification de
+              Google et n&apos;ont pas de mot de passe local.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

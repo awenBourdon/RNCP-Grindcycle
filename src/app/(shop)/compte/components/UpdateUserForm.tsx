@@ -101,8 +101,10 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
               <div className="text-blue-800 text-sm">
                 <p className="font-medium mb-1">Attention</p>
                 <p>
-                  Si tu changes ton email et que tu te connectes via Google ou
-                  Magic Link, cela pourrait poser des problèmes de connexion.
+                  Le changement d&apos;email de connexion ne sera pas appliqué
+                  si tu te connecte via le service Google. Les comptes Google
+                  utilisent l&apos;authentification de Google et donc
+                  n&apos;utilisent pas d&apos;adresse email local.
                 </p>
               </div>
             </div>
