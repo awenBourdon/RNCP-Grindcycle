@@ -45,7 +45,11 @@ export const ForgotPasswordForm = () => {
   }
 
   return (
-    <form className="w-full space-y-6" onSubmit={handleSubmit}>
+    <form
+      className="w-full space-y-6"
+      autoComplete="off"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col gap-2">
         <label htmlFor="email" className="text-sm font-medium text-gray-700">
           Email

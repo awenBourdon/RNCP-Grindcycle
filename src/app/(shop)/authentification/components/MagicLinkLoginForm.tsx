@@ -42,7 +42,7 @@ export const MagicLinkLoginForm = () => {
 
   return (
     <div className="w-full">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} autoComplete="off" className="space-y-4">
         <div className="flex flex-col gap-2">
           <label
             htmlFor="magic-email"

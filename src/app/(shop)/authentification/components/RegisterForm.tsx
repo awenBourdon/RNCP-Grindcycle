@@ -47,7 +47,11 @@ export const RegisterForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      autoComplete="off"
+      className="w-full space-y-4"
+    >
       <div className="flex flex-col gap-2">
         <label htmlFor="name" className="text-sm font-medium text-gray-700">
           Nom d&apos;utilisateur

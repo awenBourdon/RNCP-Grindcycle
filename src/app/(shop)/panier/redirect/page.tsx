@@ -71,7 +71,7 @@ export default async function RedirectPage() {
               </p>
 
               <Link
-                href="/paiement/livraison"
+                href="/paiement/achat/livraison"
                 className="group w-full inline-flex items-center justify-center rounded-full text-lg font-medium px-8 py-4 border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-colors"
               >
                 <ShoppingCart size={20} className="mr-2" />

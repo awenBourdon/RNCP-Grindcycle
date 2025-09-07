@@ -89,7 +89,11 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
   }
 
   return (
-    <form className="w-full space-y-6" onSubmit={handleSubmit}>
+    <form
+      className="w-full space-y-6"
+      autoComplete="off"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col gap-2">
         <label htmlFor="password" className="text-sm font-medium text-gray-700">
           Nouveau mot de passe

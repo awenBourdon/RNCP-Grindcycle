@@ -73,7 +73,11 @@ export const ChangePasswordForm = () => {
       </div>
 
       <div className="max-w-md">
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          autoComplete="off"
+          className="w-full space-y-4"
+        >
           <div className="flex flex-col gap-2">
             <label
               htmlFor="currentPassword"

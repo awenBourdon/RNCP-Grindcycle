@@ -309,6 +309,13 @@ export const Navbar = ({ user }: NavbarProps) => {
               Politique de confidentialité
             </Link>
             <Link
+              href="/conditions-generales-vente"
+              onClick={closeMenu}
+              className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
+            >
+              Conditions générales de vente
+            </Link>
+            <Link
               href="/recycler-planche/redirect"
               onClick={closeMenu}
               className="inline-flex h-14 items-center justify-center rounded-full px-10 py-4 text-lg font-medium uppercase tracking-wide text-white bg-[#0a3d3f] hover:bg-[#0a4d4f] transition-colors mt-4"

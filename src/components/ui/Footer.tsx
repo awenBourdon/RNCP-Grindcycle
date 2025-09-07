@@ -74,6 +74,14 @@ export const Footer = () => {
                   Politique de confidentialité
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/conditions-générales-vente"
+                  className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
+                >
+                  Conditions générales de vente
+                </Link>
+              </li>
             </ul>
           </div>
 

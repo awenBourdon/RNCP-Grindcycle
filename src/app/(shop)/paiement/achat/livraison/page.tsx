@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import type { PointsShippingInput } from '@/lib/validations/shippingValidation';
 import { ShippingForm } from '@/components/form/ShippingForm';
 
+// TODO : splitter en composants et faire page ssr
+
 export default function ShippingPage() {
   const router = useRouter();
   const { cartItems, getCartTotal, getShippingCost } = useCart();
@@ -101,9 +103,7 @@ export default function ShippingPage() {
               <div className="space-y-4 mb-6">
                 {cartItems.map(item => (
                   <div key={item.id} className="flex justify-between text-sm">
-                    <span className="text-gray-600">
-                      {item.name} × {item.quantity}
-                    </span>
+                    <span className="text-gray-600">{item.name}</span>
                     <span>{(item.priceEuro * item.quantity).toFixed(2)} €</span>
                   </div>
                 ))}

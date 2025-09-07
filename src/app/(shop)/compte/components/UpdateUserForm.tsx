@@ -45,7 +45,11 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
           </h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
+        <form
+          onSubmit={handleSubmit}
+          autoComplete="off"
+          className="space-y-6 max-w-md"
+        >
           <div>
             <label
               htmlFor="name"
@@ -102,7 +106,7 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
                 <p className="font-medium mb-1">Attention</p>
                 <p>
                   Le changement d&apos;email de connexion ne sera pas appliqué
-                  si tu te connecte via le service Google. Les comptes Google
+                  si tu te connectes via le service Google. Les comptes Google
                   utilisent l&apos;authentification de Google et donc
                   n&apos;utilisent pas d&apos;adresse email local.
                 </p>

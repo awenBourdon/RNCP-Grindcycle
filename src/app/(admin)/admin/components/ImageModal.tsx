@@ -91,48 +91,52 @@ export const ImageModal = ({
             </button>
           </div>
         </div>
-        <div className="relative bg-gray-100 flex items-center justify-center min-h-[400px] max-h-[70vh]">
+        <div className="relative bg-gray-100 flex items-center justify-center min-h-[400px] max-h-[70vh] overflow-hidden">
           {imageErrors.has(currentImageIndex) ? (
-            <div className="flex flex-col items-center justify-center text-gray-400">
+            <div className="flex flex-col items-center justify-center text-gray-400 z-10">
               <ImageIcon size={64} />
               <p className="mt-2 text-sm">Erreur de chargement</p>
             </div>
           ) : (
-            <Image
-              src={images[currentImageIndex] || '/placeholder.webp'}
-              alt={`Image ${currentImageIndex + 1} de la planche`}
-              className="max-w-full max-h-full object-contain"
-              width={800}
-              height={600}
-              priority={currentImageIndex === 0}
-              quality={90}
-              onError={() => handleImageError(currentImageIndex)}
-              onLoad={() => {
-                setImageErrors(prev => {
-                  const newSet = new Set(prev);
-                  newSet.delete(currentImageIndex);
-                  return newSet;
-                });
-              }}
-            />
+            <div className="w-full h-full flex items-center justify-center">
+              <Image
+                src={images[currentImageIndex] || '/placeholder.webp'}
+                alt={`Image ${currentImageIndex + 1} de la planche`}
+                className="max-w-full max-h-full object-contain"
+                fill={false}
+                width={800}
+                height={600}
+                priority={currentImageIndex === 0}
+                quality={90}
+                onError={() => handleImageError(currentImageIndex)}
+                onLoad={() => {
+                  setImageErrors(prev => {
+                    const newSet = new Set(prev);
+                    newSet.delete(currentImageIndex);
+                    return newSet;
+                  });
+                }}
+              />
+            </div>
           )}
           {images.length > 1 && (
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all hover:scale-110"
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all hover:scale-110 z-20"
               >
                 <ChevronLeft size={24} />
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all hover:scale-110"
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-all hover:scale-110 z-20"
               >
                 <ChevronRight size={24} />
               </button>
             </>
           )}
         </div>
+
         {images.length > 1 && (
           <div className="p-4 border-t border-gray-200 bg-[#f8f7f4]">
             <div className="flex gap-2 overflow-x-auto pb-2">
