@@ -1,5 +1,3 @@
-// src/lib/server/services/orderService.ts
-
 import { prisma } from '@/lib/prisma';
 import { PaymentType, ProductStatus, PointsType } from '@/generated/prisma';
 import {
@@ -23,12 +21,15 @@ export class OrderService {
     private orderRepository: InterfaceOrderRepository = new OrderRepository()
   ) {}
 
-  async purchaseWithPoints(
+async purchaseWithPoints(
     data: PurchaseWithPointsData
   ): Promise<OrderWithRelations> {
     return await prisma.$transaction(async tx => {
-      const user = await tx.user.findUnique({
-        where: { id: data.userId },
+     const user = await tx.user.findUnique({
+        where: { 
+          id: data.userId,
+          deletedAt: null 
+        },
         select: { id: true, name: true, email: true, points: true },
       });
 
@@ -148,7 +149,7 @@ export class OrderService {
     return await this.orderRepository.findAll();
   }
 
-  private async createPurchaseNotifications(
+private async createPurchaseNotifications(
     order: OrderWithRelations,
     userName: string | null
   ): Promise<void> {
@@ -157,11 +158,14 @@ export class OrderService {
         .map((item: { productName: string }) => item.productName)
         .join(', ');
 
-      await createNotification({
-        userId: order.userId,
-        target: 'USER',
-        description: `Commande confirmée ! Produits achetés : ${productNames}. Total : ${order.pointsUsed} points.`,
-      });
+     if (order.userId) {
+        await createNotification({
+          userId: order.userId,
+          target: 'USER',
+          description: `Commande confirmée ! Produits achetés : ${productNames}. Total : ${order.pointsUsed} points.`,
+        });
+      } else {
+      }
 
       await createNotification({
         userId: null,
@@ -181,7 +185,7 @@ export class OrderService {
     }
   }
 
-  private async notifyFavoriteUsersAndCleanup(
+private async notifyFavoriteUsersAndCleanup(
     productId: string,
     buyerId: string,
     productName: string
@@ -193,7 +197,9 @@ export class OrderService {
           userId: { not: buyerId },
         },
         include: {
-          user: { select: { id: true, name: true } },
+          user: { 
+            select: { id: true, name: true, deletedAt: true }
+          },
         },
       });
 
@@ -202,24 +208,29 @@ export class OrderService {
       }
 
       await prisma.$transaction(async tx => {
-        const notifications = favoritesWithUsers.map(favorite => ({
-          userId: favorite.userId,
-          target: 'USER' as const,
-          description:
-            NotificationTemplates.favoriteProductPurchased(productName),
-          isRead: false,
-        }));
+        const activeUserFavorites = favoritesWithUsers.filter(
+          favorite => favorite.user && !favorite.user.deletedAt
+        );
 
-        await tx.notification.createMany({
-          data: notifications,
-        });
+        if (activeUserFavorites.length > 0) {
+          const notifications = activeUserFavorites.map(favorite => ({
+            userId: favorite.userId,
+            target: 'USER' as const,
+            description: NotificationTemplates.favoriteProductPurchased(productName),
+            isRead: false,
+          }));
 
-        await tx.favorite.deleteMany({
+          await tx.notification.createMany({
+            data: notifications,
+          });
+        }
+
+         await tx.favorite.deleteMany({
           where: { productId },
         });
       });
     } catch (err) {
-        console.error(err instanceof Error ? err.message : err);
+       console.error(err instanceof Error ? err.message : err);
     }
   }
 }

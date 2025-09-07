@@ -41,7 +41,7 @@ export interface UsedBoardWithRelations extends UsedBoard {
     id: string;
     name: string;
     email: string;
-  };
+  } | null;
   product?: {
     id: string;
     name: string;

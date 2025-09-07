@@ -2,6 +2,7 @@ import { User } from '@/generated/prisma';
 import { UserRepository } from '@/lib/server/repositories/userRepositoty';
 import { API_MESSAGES } from '@/lib/server/config/constants';
 import { InterfaceUserRepository } from '../repositories/interfaces/interfaceUserRepository';
+import { prisma } from '@/lib/prisma';
 
 export class UserService {
   constructor(
@@ -38,5 +39,46 @@ export class UserService {
     }
 
     return await this.userRepository.decrementPoints(id, points);
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      const now = new Date();
+
+      await tx.user.update({
+        where: { id: userId },
+        data: { deletedAt: now }
+      });
+
+      await tx.usedBoard.updateMany({
+        where: { userId },
+        data: { userId: null }
+      });
+
+      await tx.pointsHistory.deleteMany({
+        where: { userId }
+      });
+
+      await tx.order.updateMany({
+        where: { userId },
+        data: { userId: null }
+      });
+
+      await tx.notification.deleteMany({
+        where: { userId }
+      });
+
+      await tx.favorite.deleteMany({
+        where: { userId }
+      });
+
+      await tx.session.deleteMany({
+        where: { userId }
+      });
+
+      await tx.account.deleteMany({
+        where: { userId }
+      });
+    });
   }
 }
