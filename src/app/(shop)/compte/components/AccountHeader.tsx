@@ -5,9 +5,10 @@ import { Session } from '@/lib/types';
 
 interface AccountHeaderProps {
   session: Session;
+  userPoints: number;
 }
 
-export const AccountHeader = ({ session }: AccountHeaderProps) => {
+export const AccountHeader = ({ session, userPoints }: AccountHeaderProps) => {
   return (
     <div className="bg-[#f8f7f4] rounded-xl mt-12 p-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -19,9 +20,16 @@ export const AccountHeader = ({ session }: AccountHeaderProps) => {
             <h1 className="text-2xl font-normal text-[#010101] mb-1">
               Bonjour, {session.user.name || 'Utilisateur'}
             </h1>
-            <p className="text-gray-600 text-sm">{session.user.email}</p>
+            <p className="text-gray-600 text-sm mb-2">{session.user.email}</p>
+
+            <p className="text-[#0a3d3f] font-medium text-sm mb-2">
+              Tu as actuellement {userPoints}{' '}
+              {userPoints === 1 ? 'point' : 'points'} disponible
+              {userPoints === 1 ? '' : 's'}
+            </p>
+
             {session.user.role === 'ADMIN' && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#0a3d3f] text-white mt-1">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#0a3d3f] text-white">
                 <Shield size={12} className="mr-1" />
                 Administrateur
               </span>

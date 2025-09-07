@@ -22,7 +22,7 @@ export const Item = ({ item }: { item: CartItemType }) => {
           <h3 className="text-xl font-medium">{item.name}</h3>
           <button
             onClick={() => removeFromCart(item.id)}
-            className="text-gray-400 hover:text-black transition-colors"
+            className="text-gray-400 hover:text-black transition-colors cursor-pointer"
             aria-label="Supprimer l'article"
           >
             <X size={20} />

@@ -762,12 +762,7 @@ export default function PrivacyPolicyPage() {
 
             <div className="text-center mt-12 pt-8 border-t border-gray-200">
               <p className="text-sm text-gray-500 mb-2">
-                <strong>Dernière mise à jour :</strong>{' '}
-                {new Date().toLocaleDateString('fr-FR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                <strong>Dernière mise à jour :</strong> 07/09/2025
               </p>
               <p className="text-sm text-gray-500 mb-4">
                 Version 1.0 - Cette politique peut être mise à jour

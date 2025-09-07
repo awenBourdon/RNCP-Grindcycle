@@ -600,26 +600,12 @@ export default function CGVPage() {
 
             <div className="text-center mt-12 pt-8 border-t border-gray-200">
               <p className="text-sm text-gray-500">
-                <strong>Dernière mise à jour :</strong>{' '}
-                {new Date().toLocaleDateString('fr-FR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                <strong>Dernière mise à jour :</strong> 07/09/2025
               </p>
               <p className="text-sm text-gray-500 mt-2">
                 Ces conditions générales de vente peuvent être modifiées à tout
                 moment. Il est conseillé de les consulter régulièrement.
               </p>
-            </div>
-
-            <div className="text-center mt-8">
-              <div className="inline-flex items-center px-6 py-3 bg-[#0a3d3f] text-white rounded-full">
-                <Recycle size={16} className="mr-2" />
-                <span className="font-medium">
-                  Grindcycle - Roule avec des planches recyclées & durables
-                </span>
-              </div>
             </div>
           </div>
         </div>

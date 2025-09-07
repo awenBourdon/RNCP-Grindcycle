@@ -323,16 +323,7 @@ export default function LegalNoticesPage() {
 
             <div className="text-center mt-12 pt-8 border-t border-gray-200">
               <p className="text-sm text-gray-500">
-                <strong>Dernière mise à jour :</strong>{' '}
-                {new Date().toLocaleDateString('fr-FR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                Ces mentions légales peuvent être modifiées à tout moment. Il
-                est conseillé de les consulter régulièrement.
+                <strong>Dernière mise à jour :</strong> 07/09/2025
               </p>
             </div>
           </div>
