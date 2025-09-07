@@ -7,7 +7,7 @@ export const Mission = () => (
         <div>
           <h2 className="text-3xl font-normal mb-16">Notre Mission</h2>
           <p className="text-lg text-gray-600 mb-6">
-            Chez GRINDCYCLE, nous sommes passionnés par le skateboard et
+            Chez Grindcycle, nous sommes passionnés par le skateboard et
             déterminés à réduire son impact environnemental.
           </p>
           <p className="text-lg text-gray-600 mb-6">
@@ -23,7 +23,7 @@ export const Mission = () => (
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
           <Image
             src="/placeholder.webp"
-            alt="Atelier GRINDCYCLE"
+            alt="Atelier grindcycle"
             className="object-cover"
             width={600}
             height={400}

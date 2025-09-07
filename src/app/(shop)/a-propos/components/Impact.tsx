@@ -22,7 +22,7 @@ export const Impact = () => (
       <div>
         <p className="text-lg text-gray-600 max-w-3xl mb-8">
           Chaque planche recyclée représente environ 4kg de déchets évités. En
-          choisissant GRINDCYCLE, tu contribues directement à réduire
+          choisissant Grindcycle, tu contribues directement à réduire
           l&apos;empreinte écologique du skateboard.
         </p>
         <Link href="/catalogue" className="inline-flex items-center group">

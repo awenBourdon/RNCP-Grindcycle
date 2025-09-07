@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { Session } from '@/lib/types';
 import { UpdateUserForm } from '../components/UpdateUserForm';
 
-export default async function UpdatePage() {
+export default async function ProfilPage() {
   const headersList = await headers();
   const session = (await auth.api.getSession({
     headers: headersList,
@@ -12,5 +12,12 @@ export default async function UpdatePage() {
 
   if (!session) redirect('/authentification/connexion');
 
-  return <UpdateUserForm name={session.user.name || ''} />;
+  return (
+    <div className="space-y-8">
+      <UpdateUserForm
+        name={session.user.name || ''}
+        email={session.user.email}
+      />
+    </div>
+  );
 }

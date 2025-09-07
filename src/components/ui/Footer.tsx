@@ -68,18 +68,18 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/donnees-personnelles"
+                  href="/politique-confidentialite"
                   className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
                 >
-                  Données personnelles
+                  Politique de confidentialité
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/cookies"
+                  href="/conditions-générales-vente"
                   className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
                 >
-                  Gestion des cookies
+                  Conditions générales de vente
                 </Link>
               </li>
             </ul>

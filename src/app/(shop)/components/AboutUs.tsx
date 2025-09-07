@@ -7,7 +7,7 @@ export const AboutUs = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           <div>
             <p className="text-2xl font-light leading-relaxed">
-              Chez GRINDCYCLE, nous croyons que chaque planche mérite une
+              Chez Grindcycle, nous croyons que chaque planche mérite une
               seconde chance. Notre mission est de réduire les déchets et de
               promouvoir un mode de vie durable dans la communauté du
               skateboard.

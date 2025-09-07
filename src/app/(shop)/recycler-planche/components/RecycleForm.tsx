@@ -199,6 +199,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         onSubmit={handleSubmit}
         className="space-y-16"
         encType="multipart/form-data"
+        autoComplete="off"
       >
         <div className="bg-white rounded-lg p-6">
           <h3 className="text-lg font-medium text-[#010101] mb-6">
