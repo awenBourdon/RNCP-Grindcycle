@@ -12,7 +12,7 @@ export interface CreateProductData {
   priceEuro: number;
   pricePoints: number;
   imageUrl: string[];
-  usedBoardId: string | null;
+  usedBoardId?: string | null;
 }
 
 export interface UpdateProductData {
