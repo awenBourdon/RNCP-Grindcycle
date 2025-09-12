@@ -6,7 +6,7 @@ export interface PointsHistoryWithUser extends PointsHistory {
     id: string;
     name: string;
     email: string;
-  };
+  } | null;
 }
 
 export interface PointsStats {
@@ -39,6 +39,17 @@ export class PointsService {
     type: PointsType,
     usedBoardId?: string
   ): Promise<void> {
+   const user = await prisma.user.findUnique({
+      where: { 
+        id: userId, 
+        deletedAt: null 
+      }
+    });
+
+    if (!user) {
+      return;
+    }
+
     await prisma.$transaction(async tx => {
       await tx.pointsHistory.create({
         data: {
@@ -194,6 +205,7 @@ export class PointsService {
     userPoints: number;
   }> {
     const users = await prisma.user.findMany({
+      where: { deletedAt: null },
       select: {
         id: true,
         points: true,

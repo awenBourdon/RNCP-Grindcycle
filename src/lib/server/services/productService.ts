@@ -16,7 +16,7 @@ import {
 } from './notificationsService';
 
 export interface PurchaseResult {
-  product: ProductWithRelations;
+  product: ProductWithRelations | null;
 }
 
 export class ProductService {
@@ -42,12 +42,13 @@ export class ProductService {
     const productData: CreateProductData = {
       ...data,
       imageUrl: imageResult.urls,
+      usedBoardId: data.usedBoardId || null,
     };
 
     try {
       const product = await this.productRepository.create(productData);
 
-      if (product.usedBoard && product.usedBoard.user) {
+      if (product.usedBoard?.user) {
         await createNotification({
           userId: product.usedBoard.user.id,
           target: 'USER',
@@ -91,22 +92,12 @@ export class ProductService {
     }
 
     const result = await prisma.$transaction(async tx => {
-      const updatedProduct = (await tx.product.update({
+      await tx.product.update({
         where: { id: data.productId },
         data: {
           status: ProductStatus.PURCHASED,
         },
-        include: {
-          usedBoard: {
-            select: {
-              id: true,
-              name: true,
-              boardType: true,
-              boardCondition: true,
-            },
-          },
-        },
-      })) as ProductWithRelations;
+      });
 
       await tx.pointsHistory.create({
         data: {
@@ -115,6 +106,8 @@ export class ProductService {
           pointsAmount: -product.pricePoints,
         },
       });
+
+      const updatedProduct = await this.productRepository.findById(data.productId);
 
       return {
         product: updatedProduct,
@@ -140,7 +133,7 @@ export class ProductService {
         this.notifyFavoriteUsersAndCleanup(productId, buyerId, productName),
       ]);
     } catch (err) {
-        console.error(err instanceof Error ? err.message : err);
+      console.error(err instanceof Error ? err.message : err);
     }
   }
 

@@ -24,7 +24,7 @@ type UpdatedBoardWithRelations = UsedBoard & {
     id: string;
     name: string | null;
     email: string;
-  };
+  } | null;
   product: {
     id: string;
     name: string;
@@ -133,16 +133,20 @@ export class UsedBoardService {
       ];
 
       if (statusChanged) {
-        if (
+       if (
           pointsEligibleStatuses.includes(updatedBoard.status) &&
-          !pointsEligibleStatuses.includes(oldBoard.status)
+          !pointsEligibleStatuses.includes(oldBoard.status) &&
+          updatedBoard.userId !== null // 🔑 LA CLÉ
         ) {
           await this.awardPoints(tx, updatedBoard, oldBoard, boardId);
         } else if (noPointsStatuses.includes(updatedBoard.status)) {
           await this.removePoints(tx, updatedBoard, boardId);
         }
 
-        await this.recalculateUserPoints(tx, updatedBoard.userId);
+       if (updatedBoard.userId) {
+          await this.recalculateUserPoints(tx, updatedBoard.userId);
+        }
+        
         await this.createStatusChangeNotification(updatedBoard);
       } else if (
         updateData.pointsAwarded !== undefined &&
@@ -155,38 +159,16 @@ export class UsedBoardService {
     });
   }
 
-  async deleteUsedBoard(boardId: string): Promise<void> {
-    const board = await this.getUsedBoardById(boardId);
-
-    await prisma.$transaction(async (tx: PrismaTransaction) => {
-      if (board.pointsAwarded && board.pointsAwarded > 0) {
-        await tx.pointsHistory.deleteMany({
-          where: {
-            userId: board.user.id,
-            usedBoardId: boardId,
-            type: 'RECYCLING',
-          },
-        });
-      }
-
-      await tx.usedBoard.delete({
-        where: { id: boardId },
-      });
-
-      await this.recalculateUserPoints(tx, board.user.id);
-    });
-
-    if (board.image && board.image.length > 0) {
-      await this.imageService.deleteMultiple(board.image);
-    }
-  }
-
   private async awardPoints(
     tx: PrismaTransaction,
     updatedBoard: UpdatedBoardWithRelations,
     oldBoard: UsedBoardWithRelations,
     boardId: string
   ): Promise<void> {
+   if (!updatedBoard.userId) {
+     return;
+    }
+
     const existingTransaction = await tx.pointsHistory.findFirst({
       where: {
         userId: updatedBoard.userId,
@@ -222,6 +204,8 @@ export class UsedBoardService {
     updatedBoard: UpdatedBoardWithRelations,
     boardId: string
   ): Promise<void> {
+    if (!updatedBoard.userId) return;
+
     await tx.pointsHistory.deleteMany({
       where: {
         userId: updatedBoard.userId,
@@ -241,6 +225,8 @@ export class UsedBoardService {
     updatedBoard: UpdatedBoardWithRelations,
     boardId: string
   ): Promise<void> {
+    if (!updatedBoard.userId) return;
+
     await tx.pointsHistory.deleteMany({
       where: {
         userId: updatedBoard.userId,
@@ -284,6 +270,10 @@ export class UsedBoardService {
     board: UsedBoard
   ): Promise<void> {
     try {
+      if (!board.userId) {
+        return;
+      }
+
       await createNotification({
         userId: board.userId,
         target: 'USER',
@@ -305,8 +295,7 @@ export class UsedBoardService {
           ),
         });
       }
-    } catch (error) {
-      console.error('Erreur notifications création:', error);
+    } catch {
     }
   }
 
@@ -314,6 +303,10 @@ export class UsedBoardService {
     board: UpdatedBoardWithRelations
   ): Promise<void> {
     try {
+      if (!board.userId) {
+        return;
+      }
+
       let notificationDescription = '';
 
       switch (board.status) {
@@ -374,6 +367,31 @@ export class UsedBoardService {
       }
     } catch (error) {
       console.error('Erreur notification changement statut:', error);
+    }
+  }
+
+  async deleteUsedBoard(boardId: string): Promise<void> {
+    const board = await this.getUsedBoardById(boardId);
+
+    await prisma.$transaction(async (tx: PrismaTransaction) => {
+      if (board.pointsAwarded && board.pointsAwarded > 0 && board.user) {
+        await tx.pointsHistory.deleteMany({
+          where: {
+            userId: board.user.id,
+            usedBoardId: boardId,
+            type: 'RECYCLING',
+          },
+        });
+        await this.recalculateUserPoints(tx, board.user.id);
+      }
+
+      await tx.usedBoard.delete({
+        where: { id: boardId },
+      });
+    });
+
+    if (board.image && board.image.length > 0) {
+      await this.imageService.deleteMultiple(board.image);
     }
   }
 }

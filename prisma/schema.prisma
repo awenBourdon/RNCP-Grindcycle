@@ -1,13 +1,11 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
 }
 
 // ================================
@@ -74,18 +72,19 @@ enum OrderStatus {
 // ================================
 
 model User {
-  id            String          @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String
-  email         String          @unique
+  email         String    @unique
   emailVerified Boolean
-  role          UserRole        @default(USER)
+  role          UserRole  @default(USER)
   image         String[]
-  points        Int             @default(0)
+  points        Int       @default(0)
   banned        Boolean?
   banReason     String?
   banExpires    DateTime?
-  createdAt     DateTime
-  updatedAt     DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
 
   // Relations
   sessions      Session[]
@@ -100,16 +99,16 @@ model User {
 }
 
 model Session {
-  id             String   @id @default(uuid())
+  id             String    @id @default(uuid())
   expiresAt      DateTime
-  token          String   @unique
+  token          String    @unique
   createdAt      DateTime
   updatedAt      DateTime
   ipAddress      String?
   userAgent      String?
   impersonatedBy String?
   userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("session")
 }
@@ -127,8 +126,9 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
 
   @@map("account")
 }
@@ -149,31 +149,37 @@ model Verification {
 // ================================
 
 model UsedBoard {
-  id             String          @id @default(uuid())
+  id             String           @id @default(uuid())
   name           String
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
-  status         UsedBoardStatus @default(PENDING_VALIDATION)
+  status         UsedBoardStatus  @default(PENDING_VALIDATION)
   boardType      BoardType
   boardCondition BoardCondition?
   description    String?
   image          String[]
   pointsAwarded  Int?
   product        Product?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
 
   @@map("used_board")
 }
 
+// ================================
+// POINTS
+// ================================
+
 model PointsHistory {
   id           String     @id @default(uuid())
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
+  user         User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String?
   usedBoardId  String?
   type         PointsType
   pointsAmount Int
   createdAt    DateTime   @default(now())
+  deletedAt    DateTime?
 
   @@map("points_history")
 }
@@ -181,7 +187,6 @@ model PointsHistory {
 // ================================
 // PRODUCTS AND ORDERS
 // ================================
-
 
 model Product {
   id          String        @id @default(uuid())
@@ -192,12 +197,13 @@ model Product {
   pricePoints Int
   imageUrl    String[]
   status      ProductStatus @default(CATALOG)
-  usedBoard   UsedBoard?    @relation(fields: [usedBoardId], references: [id])
+  usedBoard   UsedBoard?    @relation(fields: [usedBoardId], references: [id], onDelete: SetNull)
   favorites   Favorite[]
   orderItems  OrderItem[]
   usedBoardId String?       @unique
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
 
   @@map("product")
 }
@@ -205,7 +211,7 @@ model Product {
 model Order {
   id                 String      @id @default(uuid())
   userId             String?
-  user               User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   totalAmount        Float
   shippingCost       Float
   paymentType        PaymentType @default(EURO)
@@ -218,29 +224,31 @@ model Order {
   shippingPhone      String?
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
+  deletedAt          DateTime?
 
   // Relations
-  orderItems         OrderItem[]
+  orderItems OrderItem[]
 
   @@map("order")
 }
 
 model OrderItem {
-  id           String  @id @default(uuid())
-  orderId      String
-  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId    String
-  product      Product @relation(fields: [productId], references: [id], onDelete: Restrict)
-  productName  String
-  productType  String
-  priceEuro    Float
-  pricePoints  Int?
-  quantity     Int     @default(1)
-  createdAt    DateTime @default(now())
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productName String
+  productType String
+  priceEuro   Float
+  pricePoints Int?
+  quantity    Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
 
   @@map("order_items")
 }
-
 
 // ================================
 // NOTIFICATIONS
@@ -254,6 +262,8 @@ model Notification {
   description String
   isRead      Boolean            @default(false)
   createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  deletedAt   DateTime?
 
   @@map("notification")
   @@index([userId, isRead])
@@ -269,10 +279,12 @@ model Favorite {
   userId    String
   productId String
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
   @@id([userId, productId])
   @@map("favorite")
 }

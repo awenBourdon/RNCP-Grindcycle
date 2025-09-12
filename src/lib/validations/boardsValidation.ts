@@ -56,7 +56,14 @@ export const productSchema = z.object({
     .number()
     .min(1, 'Min 1 point')
     .max(999999, 'Max 999,999 points'),
-  usedBoardId: z.string().min(1, 'Planche requise'),
+  usedBoardId: z
+    .string()
+    .optional()
+    .nullable()
+    .transform(val => {
+      if (val === '' || val === undefined) return null;
+      return val;
+    }),
   images: z
     .array(imageFileSchema)
     .min(1, 'Au moins 1 photo')

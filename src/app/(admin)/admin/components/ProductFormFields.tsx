@@ -52,8 +52,6 @@ export const ProductFormFields = ({
       ? 'La description ne peut pas dépasser 1000 caractères'
       : null;
 
-  const isSelectDisabled = availableUsedBoards.length === 0;
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div>
@@ -217,44 +215,42 @@ export const ProductFormFields = ({
       <div className="col-span-1 md:col-span-2">
         <label
           htmlFor="usedBoardId"
-          className={`block text-sm mb-3 ${isSelectDisabled ? 'text-gray-400' : 'text-gray-600'}`}
+          className="block text-sm text-gray-600 mb-3"
         >
-          Planche d&apos;occasion à recycler{' '}
-          <span className="text-red-500">*</span>
+          Planche d&apos;occasion à recycler
         </label>
         <select
           id="usedBoardId"
           name="usedBoardId"
           value={formData.usedBoardId}
           onChange={onChange}
-          className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-1 ${
-            isSelectDisabled
-              ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
-              : errors.usedBoardId
-                ? 'bg-white border-red-500 focus:border-red-500 focus:ring-red-500'
-                : 'bg-white border-gray-200 focus:border-[#0a3d3f] focus:ring-[#0a3d3f]'
+          className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
+            errors.usedBoardId
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+              : 'border-gray-200 focus:border-[#0a3d3f] focus:ring-[#0a3d3f]'
           }`}
-          required
-          disabled={isSelectDisabled}
         >
-          <option value="">
-            {isSelectDisabled
-              ? 'Aucune planche recyclée disponible'
-              : 'Sélectionnez la planche réhabilitée'}
-          </option>
-          {availableUsedBoards.map(board => (
-            <option key={board.id} value={board.id}>
-              {board.name}
-            </option>
-          ))}
+          <option value="">Produit pas lié à une planche réhabilitée</option>
+          <optgroup label="Planches disponibles pour recyclage">
+            {availableUsedBoards.map(board => (
+              <option key={board.id} value={board.id}>
+                {board.name}
+              </option>
+            ))}
+          </optgroup>
         </select>
         {errors.usedBoardId && (
           <p className="text-red-500 text-sm mt-1">{errors.usedBoardId}</p>
         )}
-        {availableUsedBoards.length > 0 && (
+        {formData.usedBoardId ? (
           <p className="text-xs text-gray-500 mt-2">
             Cette planche sera automatiquement marquée comme &quot;Recyclée en
             produit&quot; après création.
+          </p>
+        ) : (
+          <p className="text-xs text-gray-500 mt-2">
+            Ce produit sera créé indépendamment, sans lien avec une planche
+            réhabilitée.
           </p>
         )}
       </div>

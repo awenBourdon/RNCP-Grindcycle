@@ -120,7 +120,7 @@ export const AdminOrdersTable = ({ orders }: AdminOrdersTableProps) => {
                         </div>
                         <div>
                           <div className="text-sm font-medium text-[#010101]">
-                            {order.user?.name || 'Anonyme'}
+                            {order.user?.name || 'Invité'}
                           </div>
                           <div className="text-xs text-gray-500">
                             {order.user?.email || 'Non connecté'}

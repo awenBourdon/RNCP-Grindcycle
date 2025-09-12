@@ -18,7 +18,7 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
         boardType: data.boardType,
         description: data.description || null,
         image: data.image,
-        status: data.status || 'SENT',
+        status: data.status || 'PENDING_VALIDATION',
         pointsAwarded: data.pointsAwarded || null,
       },
     });

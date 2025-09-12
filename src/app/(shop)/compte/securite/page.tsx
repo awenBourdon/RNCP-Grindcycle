@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ChangePasswordForm } from '../components/ChangePasswordForm';
 import { Session } from '@/lib/types';
+import { DeleteAccountModal } from '../components/DeleteAccountModal';
 
 export default async function ChangePasswordPage() {
   const headersList = await headers();
@@ -11,5 +12,10 @@ export default async function ChangePasswordPage() {
   })) as Session | null;
 
   if (!session) redirect('/authentification/connexion');
-  return <ChangePasswordForm />;
+  return (
+    <div className="space-y-8">
+      <ChangePasswordForm />
+      <DeleteAccountModal userId={session.user.id} />
+    </div>
+  );
 }
