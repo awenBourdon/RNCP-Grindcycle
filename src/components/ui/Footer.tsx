@@ -76,7 +76,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/conditions-générales-vente"
+                  href="/conditions-generales-vente"
                   className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
                 >
                   Conditions générales de vente

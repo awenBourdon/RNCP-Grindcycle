@@ -41,44 +41,46 @@ export class UserService {
     return await this.userRepository.decrementPoints(id, points);
   }
 
-  async deleteUser(userId: string): Promise<void> {
-    await prisma.$transaction(async (tx) => {
-      const now = new Date();
-
-      await tx.user.update({
-        where: { id: userId },
-        data: { deletedAt: now }
-      });
-
-      await tx.usedBoard.updateMany({
-        where: { userId },
-        data: { userId: null }
-      });
-
-      await tx.pointsHistory.deleteMany({
-        where: { userId }
-      });
-
-      await tx.order.updateMany({
-        where: { userId },
-        data: { userId: null }
-      });
-
-      await tx.notification.deleteMany({
-        where: { userId }
-      });
-
-      await tx.favorite.deleteMany({
-        where: { userId }
-      });
-
-      await tx.session.deleteMany({
-        where: { userId }
-      });
-
-      await tx.account.deleteMany({
-        where: { userId }
-      });
+async deleteUser(userId: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    // 1. SUPPRIMER les données personnelles et liens OAuth
+    await tx.session.deleteMany({
+      where: { userId }
     });
-  }
+
+    await tx.account.deleteMany({
+      where: { userId }
+    });
+
+    await tx.favorite.deleteMany({
+      where: { userId }
+    });
+
+    await tx.notification.deleteMany({
+      where: { userId }
+    });
+
+    await tx.pointsHistory.deleteMany({
+      where: { userId }
+    });
+
+    // 2. DÉCONNECTER (mais garder) les données business
+    // Les commandes restent pour l'historique business
+    await tx.order.updateMany({
+      where: { userId },
+      data: { userId: null }
+    });
+
+    // Les planches restent pour les statistiques de recyclage
+    await tx.usedBoard.updateMany({
+      where: { userId },
+      data: { userId: null }
+    });
+
+    // 3. SUPPRIMER l'utilisateur définitivement
+    await tx.user.delete({
+      where: { id: userId }
+    });
+  });
+}
 }
