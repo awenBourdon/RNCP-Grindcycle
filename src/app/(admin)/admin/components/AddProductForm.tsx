@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Upload, Info } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { ZodError } from 'zod';
 import { Spinner } from '@/components/ui/Spinner';
@@ -46,7 +46,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     type: '',
     priceEuro: 0,
     pricePoints: 0,
-    usedBoardId: '',
+    usedBoardId: '', // Peut rester vide pour un produit sans usedBoard
   });
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
@@ -75,6 +75,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       const completeFormData = {
         ...formData,
         images: selectedFiles,
+        // Si usedBoardId est vide, le convertir en null pour le schéma
+        usedBoardId: formData.usedBoardId || null,
       };
       productSchema.parse(completeFormData);
       return true;
@@ -172,7 +174,12 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     try {
       const formDataToSend = new FormData();
 
+      // Ajouter tous les champs du formulaire
       Object.entries(formData).forEach(([key, value]) => {
+        // Si usedBoardId est vide, ne pas l'envoyer (null côté serveur)
+        if (key === 'usedBoardId' && !value) {
+          return;
+        }
         formDataToSend.append(key, value.toString());
       });
 
@@ -187,22 +194,28 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         return;
       }
 
-      const updateResult = await updateUsedBoardAction(
-        formData.usedBoardId,
-        UsedBoardStatus.RECYCLED_TO_PRODUCT
-      );
-
-      if (!updateResult.success) {
-        toast.error(
-          `Produit créé mais erreur mise à jour planche: ${updateResult.error}`
+      // Mise à jour du usedBoard SEULEMENT s'il y en a un
+      if (formData.usedBoardId) {
+        const updateResult = await updateUsedBoardAction(
+          formData.usedBoardId,
+          UsedBoardStatus.RECYCLED_TO_PRODUCT
         );
-        return;
+
+        if (!updateResult.success) {
+          toast.error(
+            `Produit créé mais erreur mise à jour planche: ${updateResult.error}`
+          );
+          return;
+        }
+
+        toast.success(
+          'Produit créé avec succès ! La planche a été marquée comme recyclée.'
+        );
+      } else {
+        toast.success('Produit créé avec succès !');
       }
 
-      toast.success(
-        'Produit créé avec succès ! La planche a été marquée comme recyclée.'
-      );
-
+      // Reset du formulaire
       setFormData({
         name: '',
         description: '',
@@ -237,28 +250,11 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           </h2>
           <p className="text-gray-600 max-w-3xl">
             Remplissez ce formulaire pour ajouter un nouveau produit au
-            catalogue. La planche sélectionnée sera automatiquement marquée
-            comme recyclée.
+            catalogue. Vous pouvez créer un produit indépendant ou recycler une
+            planche reçue.
           </p>
         </div>
       </div>
-
-      {availableUsedBoards.length === 0 && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
-          <div className="flex items-center gap-3">
-            <Info size={20} className="text-gray-600" />
-            <div>
-              <h3 className="font-medium text-[#010101]">
-                Aucune planche disponible
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Il n&apos;y a actuellement aucune planche avec le statut
-                &quot;Reçue&quot; disponible pour être recyclée en produit.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       <form
         onSubmit={handleSubmit}
@@ -293,10 +289,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
             disabled={
               !formData.type ||
               !formData.name ||
-              !formData.usedBoardId ||
               selectedFiles.length === 0 ||
-              isPending ||
-              availableUsedBoards.length === 0
+              isPending
             }
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
@@ -308,9 +302,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
             ) : (
               <div className="flex items-center cursor-pointer">
                 <Upload className="mr-2 h-5 w-5" />
-                {availableUsedBoards.length === 0
-                  ? 'Aucune planche disponible'
-                  : 'Ajouter au catalogue'}
+                Ajouter au catalogue
               </div>
             )}
           </button>

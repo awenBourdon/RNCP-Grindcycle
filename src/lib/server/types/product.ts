@@ -12,7 +12,7 @@ export interface CreateProductData {
   priceEuro: number;
   pricePoints: number;
   imageUrl: string[];
-  usedBoardId: string;
+  usedBoardId: string | null;
 }
 
 export interface UpdateProductData {
@@ -48,7 +48,7 @@ export interface ProductWithRelations extends Product {
       id: string;
       name: string;
       email: string;
-    };
+    } | null;
   } | null;
 }
 

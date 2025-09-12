@@ -37,4 +37,24 @@ export class UserRepository implements InterfaceUserRepository {
       },
     });
   }
+
+  async delete(id: string): Promise<void> {
+    await prisma.user.delete({
+      where: { id },
+    });
+  }
+
+  async findAll(): Promise<User[]> {
+    return await prisma.user.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return await prisma.user.findUnique({
+      where: { email },
+    });
+  }
 }

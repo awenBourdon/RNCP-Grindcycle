@@ -151,8 +151,8 @@ model Verification {
 model UsedBoard {
   id             String           @id @default(uuid())
   name           String
-  user           User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userId         String?
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
   status         UsedBoardStatus  @default(PENDING_VALIDATION)
   boardType      BoardType
   boardCondition BoardCondition?
@@ -197,7 +197,7 @@ model Product {
   pricePoints Int
   imageUrl    String[]
   status      ProductStatus @default(CATALOG)
-  usedBoard   UsedBoard?    @relation(fields: [usedBoardId], references: [id])
+  usedBoard   UsedBoard?    @relation(fields: [usedBoardId], references: [id], onDelete: SetNull)
   favorites   Favorite[]
   orderItems  OrderItem[]
   usedBoardId String?       @unique
