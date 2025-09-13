@@ -31,6 +31,7 @@ export interface ProductFilters {
   status?: ProductStatus;
   search?: string;
   usedBoardId?: string;
+  deletedAt?: null; 
 }
 
 export interface PurchaseProductData {

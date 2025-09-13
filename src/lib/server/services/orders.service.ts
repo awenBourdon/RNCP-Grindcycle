@@ -121,7 +121,7 @@ async purchaseWithPoints(
       for (const productUpdate of productUpdates) {
         await tx.product.update({
           where: { id: productUpdate.id },
-          data: { status: ProductStatus.PURCHASED },
+          data: { status: ProductStatus.SOLD },
         });
       }
 

@@ -46,7 +46,9 @@ enum PointsType {
 
 enum ProductStatus {
   CATALOG
-  PURCHASED
+  SOLD
+  SHIPPED
+  DELIVERED
 }
 
 enum NotificationTarget {

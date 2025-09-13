@@ -31,7 +31,9 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
           setNotifications(unreadNotifications);
         }
       } catch {
-        toast.error('Erreur lors de la récupération des notifications.');
+        if (!signal.aborted) {
+          toast.error('Erreur lors de la récupération des notifications.');
+        }
       } finally {
         if (!signal.aborted) {
           setIsLoading(false);

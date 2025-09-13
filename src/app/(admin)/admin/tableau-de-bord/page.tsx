@@ -34,9 +34,8 @@ export default async function DashboardPage() {
     totalProducts: products.length,
     catalogProducts: products.filter(product => product.status === 'CATALOG')
       .length,
-    purchasedProducts: products.filter(
-      product => product.status === 'PURCHASED'
-    ).length,
+    purchasedProducts: products.filter(product => product.status === 'SOLD')
+      .length,
     unreadNotifications: adminNotifications.filter(notif => !notif.isRead)
       .length,
   };
