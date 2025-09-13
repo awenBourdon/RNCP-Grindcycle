@@ -1,42 +1,63 @@
 import { type NextRequest } from 'next/server';
-import { UsedBoardService } from '@/lib/server/services/usedBoardService';
-import { ResponseHelper } from '@/lib/server/utils/responseHelper';
-import { API_MESSAGES } from '@/lib/server/config/constants';
+import { ProductService } from '@/lib/server/services/productService';
 import { applyGetRateLimit } from '@/lib/rateLimit';
 
-const usedBoardService = new UsedBoardService();
+const productService = new ProductService();
 
 export async function GET(req: NextRequest) {
-  const rateLimitResponse = applyGetRateLimit(req, 'getUsedBoards');
-  if (rateLimitResponse) {
-    return rateLimitResponse;
-  }
+  const rateLimitResponse = applyGetRateLimit(req, 'getProducts');
+  if (rateLimitResponse) return rateLimitResponse;
 
   const { searchParams } = new URL(req.url);
-  const boardId = searchParams.get('id');
-  const userId = searchParams.get('userId');
+  const productId = searchParams.get('id');
+  const latest = searchParams.get('latest');
+  const available = searchParams.get('available');
 
   try {
-    if (boardId) {
-      const board = await usedBoardService.getUsedBoardById(boardId);
-      return ResponseHelper.success(board);
+    if (productId) {
+      const product = await productService.getProductById(productId);
+      return Response.json(
+        { success: true, data: product },
+        { status: 200 }
+      );
     }
 
-    if (userId) {
-      const boards = await usedBoardService.getUserUsedBoards(userId);
-      return ResponseHelper.success(boards);
+    if (latest) {
+      const limit = parseInt(latest) || 6;
+      const products = await productService.getLatestProducts(limit);
+      return Response.json(
+        { success: true, data: products },
+        { status: 200 }
+      );
     }
 
-    const boards = await usedBoardService.getAllUsedBoards();
-    return ResponseHelper.success(boards);
 
+    if (available === 'true') {
+      const products = await productService.getAvailableProducts();
+      return Response.json(
+        { success: true, data: products },
+        { status: 200 }
+      );
+    }
+
+    const products = await productService.getAllProducts();
+    return Response.json(
+      { success: true, data: products },
+      { status: 200 }
+    );
   } catch (error) {
-    if (error instanceof Error && error.message === API_MESSAGES.USED_BOARD_NOT_FOUND) {
-      return ResponseHelper.notFound(error.message);
+    console.error('Erreur getProducts:', error);
+
+    if (error instanceof Error && error.message.includes('non trouvé')) {
+      return Response.json(
+        { success: false, error: 'Produit non trouvé' },
+        { status: 404 }
+      );
     }
-    
-    return ResponseHelper.error(
-      error instanceof Error ? error.message : 'Erreur serveur'
+
+    return Response.json(
+      { success: false, error: 'Erreur serveur' },
+      { status: 500 }
     );
   }
 }

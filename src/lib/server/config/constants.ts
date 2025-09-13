@@ -33,34 +33,3 @@ export const API_MESSAGES = {
   USED_BOARD_UPDATED: 'Planche mise à jour avec succès',
   USED_BOARD_DELETED: 'Planche supprimée avec succès',
 } as const;
-
-export const HTTP_STATUS = {
-  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  CONFLICT: 409,
-  UNPROCESSABLE_ENTITY: 422,
-  INTERNAL_SERVER_ERROR: 500,
-} as const;
-
-// TODO : mettre en place pagination côté back -> catalogue et dashboard
-export const PAGINATION_DEFAULTS = {
-  page: 1,
-  limit: 10,
-  maxLimit: 100,
-} as const;
-
-export const POINTS_CONFIG = {
-  recycling: {
-    good: 100,
-    average: 75,
-    bad: 50,
-  },
-
-  // TODO : réfléchir au systeme de points à mettre en place
-  euroToPoints: 10,
-  pointsToEuro: 0.1,
-} as const;

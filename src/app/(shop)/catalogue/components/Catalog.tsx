@@ -76,7 +76,7 @@ export const Catalog = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/products/available', { signal });
+      const response = await fetch('/api/products?available=true', { signal });
 
       if (!response.ok) {
         throw new Error(`Erreur ${response.status}: ${response.statusText}`);

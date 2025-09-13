@@ -4,7 +4,7 @@ import { Bell, Check, User, Calendar } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { AdminNotification } from '@/lib/types';
-import { markNotificationAsReadAction } from '@/actions/notifications/mark-as-read.action';
+import { markNotificationAsReadAction } from '@/actions/notifications/notification.action';
 
 interface AdminNotificationsProps {
   notifications: AdminNotification[];
