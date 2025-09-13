@@ -1,13 +1,9 @@
 'use server';
+
 import { revalidatePath } from 'next/cache';
-import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { z } from 'zod';
-
-const markAllAsReadSchema = z.object({
-  userId: z.string().min(1, 'ID utilisateur requis'),
-});
+import { notificationService } from '@/lib/server/services/notificationsService';
 
 export async function markAllNotificationsAsReadAction(userId: string) {
   const headersList = await headers();
@@ -21,37 +17,20 @@ export async function markAllNotificationsAsReadAction(userId: string) {
   }
 
   try {
-    const validation = markAllAsReadSchema.safeParse({ userId });
-    if (!validation.success) {
-      return {
-        success: false,
-        error: 'ID utilisateur invalide',
-        details: validation.error.errors.map(e => e.message),
-      };
-    }
-
-    if (userId !== session.user.id && session.user.role !== 'ADMIN') {
-      return {
-        success: false,
-        error: 'Non autorisé',
-      };
-    }
-
-    const result = await prisma.notification.updateMany({
-      where: {
-        userId: userId,
-        isRead: false,
-        target: 'USER',
-      },
-      data: { isRead: true },
-    });
+    const result = await notificationService.markAllNotificationsAsRead(
+      userId, 
+      session.user.id, 
+      session.user.role
+    );
 
     revalidatePath('/compte/notifications');
 
     return {
       success: true,
-      message: `${result.count} notifications marquées comme lues`,
+      message: result.message,
+      count: result.count,
     };
+
   } catch (error) {
     return {
       success: false,

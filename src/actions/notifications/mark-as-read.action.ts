@@ -1,13 +1,9 @@
 'use server';
+
 import { revalidatePath } from 'next/cache';
-import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { z } from 'zod';
-
-const markAsReadSchema = z.object({
-  notificationId: z.string().min(1, 'ID notification requis'),
-});
+import { notificationService } from '@/lib/server/services/notificationsService';
 
 export async function markNotificationAsReadAction(notificationId: string) {
   const headersList = await headers();
@@ -21,40 +17,11 @@ export async function markNotificationAsReadAction(notificationId: string) {
   }
 
   try {
-    const validation = markAsReadSchema.safeParse({ notificationId });
-    if (!validation.success) {
-      return {
-        success: false,
-        error: 'ID notification invalide',
-        details: validation.error.errors.map(e => e.message),
-      };
-    }
-
-    const notification = await prisma.notification.findUnique({
-      where: { id: notificationId },
-    });
-
-    if (!notification) {
-      return {
-        success: false,
-        error: 'Notification non trouvée',
-      };
-    }
-
-    if (
-      notification.userId !== session.user.id &&
-      session.user.role !== 'ADMIN'
-    ) {
-      return {
-        success: false,
-        error: 'Non autorisé',
-      };
-    }
-
-    await prisma.notification.update({
-      where: { id: notificationId },
-      data: { isRead: true },
-    });
+    await notificationService.markNotificationAsRead(
+      notificationId, 
+      session.user.id, 
+      session.user.role
+    );
 
     revalidatePath('/compte/notifications');
     revalidatePath('/admin/notifications');
@@ -63,6 +30,7 @@ export async function markNotificationAsReadAction(notificationId: string) {
       success: true,
       message: 'Notification marquée comme lue',
     };
+
   } catch (error) {
     return {
       success: false,
