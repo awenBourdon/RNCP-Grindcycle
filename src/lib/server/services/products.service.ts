@@ -5,15 +5,14 @@ import {
   PurchaseProductData,
   ProductWithRelations,
 } from '@/lib/server/types/product';
-import { ImageService } from '@/lib/server/utils/imageService';
-import { API_MESSAGES } from '@/lib/server/config/constants';
+import { ImageService } from '@/lib/server/services/images.service';
 import { prisma } from '@/lib/prisma';
 import { PointsType } from '@/generated/prisma';
 import { InterfaceProductRepository } from '../repositories/interfaces/interfaceProductRepository';
 import {
   createNotification,
   NotificationTemplates,
-} from './notificationsService';
+} from './notifications.service';
 
 export interface PurchaseResult {
   product: ProductWithRelations | null;
@@ -36,7 +35,7 @@ export class ProductService {
     }
 
     if (imageResult.urls.length === 0) {
-      throw new Error(API_MESSAGES.AT_LEAST_ONE_IMAGE_REQUIRED);
+      throw new Error('Au moins une image est requise');
     }
 
     const productData: CreateProductData = {
@@ -78,29 +77,29 @@ export class ProductService {
     const product = await this.productRepository.findById(id);
 
     if (!product) {
-      throw new Error(API_MESSAGES.PRODUCT_NOT_FOUND);
+      throw new Error('Produit non trouvé');
     }
 
     return product;
   }
 
   async getLatestProducts(limit: number = 6): Promise<ProductWithRelations[]> {
-  const safeLimit = Math.min(Math.max(limit, 1), 10);
+    const safeLimit = Math.min(Math.max(limit, 1), 10);
 
-  return await this.productRepository.findAll({
-    status: ProductStatus.CATALOG,
-  }).then(products => 
-    products
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, safeLimit)
-  );
-}
+    return await this.productRepository.findAll({
+      status: ProductStatus.CATALOG,
+    }).then(products => 
+      products
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, safeLimit)
+    );
+  }
 
   async purchaseProduct(data: PurchaseProductData): Promise<PurchaseResult> {
     const product = await this.getProductById(data.productId);
 
     if (product.status !== ProductStatus.CATALOG) {
-      throw new Error(API_MESSAGES.PRODUCT_ALREADY_PURCHASED);
+      throw new Error('Produit déjà acheté');
     }
 
     const result = await prisma.$transaction(async tx => {
@@ -191,19 +190,19 @@ export class ProductService {
     }
   }
 
-async deleteProduct(id: string): Promise<void> {
-  const product = await this.getProductById(id);
+  async deleteProduct(id: string): Promise<void> {
+    const product = await this.getProductById(id);
 
-  if (product.status !== ProductStatus.CATALOG) {
-    throw new Error('Impossible de supprimer un produit acheté');
+    if (product.status !== ProductStatus.CATALOG) {
+      throw new Error('Impossible de supprimer un produit acheté');
+    }
+
+    if (product.imageUrl && product.imageUrl.length > 0) {
+      await this.imageService.deleteMultiple(product.imageUrl);
+    }
+
+    await this.productRepository.delete(id);
   }
-
-  if (product.imageUrl && product.imageUrl.length > 0) {
-    await this.imageService.deleteMultiple(product.imageUrl);
-  }
-
-  await this.productRepository.delete(id);
-}
 
   async updateProductStatus(
     id: string,

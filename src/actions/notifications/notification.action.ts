@@ -2,7 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { notificationService } from '@/lib/server/services/notificationsService';
+import { notificationService } from '@/lib/server/services/notifications.service';
 
 export async function markNotificationAsReadAction(notificationId: string) {
   const headersList = await headers();

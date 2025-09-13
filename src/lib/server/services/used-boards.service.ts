@@ -5,14 +5,13 @@ import {
   UpdateUsedBoardData,
   UsedBoardWithRelations,
 } from '@/lib/server/types/usedBoard';
-import { ImageService } from '@/lib/server/utils/imageService';
-import { API_MESSAGES } from '@/lib/server/config/constants';
+import { ImageService } from '@/lib/server/services/images.service';
 import { prisma } from '@/lib/prisma';
 import { InterfaceUsedBoardRepository } from '../repositories/interfaces/interfaceUsedBoardRepository';
 import {
   createNotification,
   NotificationTemplates,
-} from './notificationsService';
+} from './notifications.service';
 
 type PrismaTransaction = Omit<
   typeof prisma,
@@ -77,7 +76,7 @@ export class UsedBoardService {
     const usedBoard = await this.usedBoardRepository.findById(id);
 
     if (!usedBoard) {
-      throw new Error(API_MESSAGES.USED_BOARD_NOT_FOUND);
+      throw new Error("Planche d'occasion non trouvée");
     }
 
     return usedBoard;

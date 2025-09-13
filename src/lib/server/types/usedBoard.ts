@@ -48,20 +48,3 @@ export interface UsedBoardWithRelations extends UsedBoard {
     status: ProductStatus;
   } | null;
 }
-
-export interface UsedBoardCreateRequest {
-  name: string;
-  userId: string;
-  boardType: string;
-  boardCondition: string;
-  description?: string;
-  images: File[];
-}
-
-export interface UsedBoardUpdateRequest {
-  boardId: string;
-  status?: UsedBoardStatus;
-  pointsAwarded?: number;
-  boardCondition?: BoardCondition;
-  description?: string;
-}

@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { DashboardStats } from '../components/DashboardStats';
-import { getAdminNotifications } from '@/lib/server/services/notificationsService';
+import { getAdminNotifications } from '@/lib/server/services/notifications.service';
 
 export default async function DashboardPage() {
   const headersList = await headers();

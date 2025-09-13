@@ -4,11 +4,10 @@ import {
   OrderRepository,
   InterfaceOrderRepository,
 } from '@/lib/server/repositories/orderRepository';
-import { API_MESSAGES } from '@/lib/server/config/constants';
 import {
   createNotification,
   NotificationTemplates,
-} from './notificationsService';
+} from './notifications.service';
 import {
   OrderWithRelations,
   CreateOrderItemData,
@@ -17,8 +16,8 @@ import {
   CartItemForPurchase,
 } from '@/lib/types';
 import { 
-  pointsPurchaseSchema} from '@/lib/validations/shippingValidation';
-
+  pointsPurchaseSchema
+} from '@/lib/validations/shippingValidation';
 
 export class OrderService {
   constructor(
@@ -37,11 +36,11 @@ export class OrderService {
     });
 
     if (!user) {
-      throw new Error(API_MESSAGES.USER_NOT_FOUND);
+      throw new Error('Utilisateur non trouvé');
     }
 
     const cartItemsArray = Array.isArray(data.cartItems) ? data.cartItems : [];
-    const totalPoints = cartItemsArray.reduce((total: number, item:CartItemForPurchase ) => {
+    const totalPoints = cartItemsArray.reduce((total: number, item: CartItemForPurchase) => {
       return total + ((item.pricePoints || 0) * (item.quantity || 0));
     }, 0);
 
