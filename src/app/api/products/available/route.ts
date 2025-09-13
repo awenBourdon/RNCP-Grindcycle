@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
-import { ProductController } from '@/lib/server/controllers/productController';
+import { ProductService } from '@/lib/server/services/productService';
+import { ResponseHelper } from '@/lib/server/utils/responseHelper';
 import { applyGetRateLimit } from '@/lib/rateLimit';
 
-const productController = new ProductController();
+const productService = new ProductService();
 
 export async function GET(request: NextRequest) {
   const rateLimitResponse = applyGetRateLimit(request, 'getProducts');
@@ -10,5 +11,12 @@ export async function GET(request: NextRequest) {
     return rateLimitResponse;
   }
 
-  return await productController.getAvailable();
+  try {
+    const products = await productService.getAvailableProducts();
+    return ResponseHelper.success(products);
+  } catch (error) {
+    return ResponseHelper.error(
+      error instanceof Error ? error.message : 'Erreur serveur'
+    );
+  }
 }

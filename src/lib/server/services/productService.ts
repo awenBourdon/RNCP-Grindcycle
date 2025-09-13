@@ -84,6 +84,18 @@ export class ProductService {
     return product;
   }
 
+  async getLatestProducts(limit: number = 6): Promise<ProductWithRelations[]> {
+  const safeLimit = Math.min(Math.max(limit, 1), 10);
+
+  return await this.productRepository.findAll({
+    status: ProductStatus.CATALOG,
+  }).then(products => 
+    products
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, safeLimit)
+  );
+}
+
   async purchaseProduct(data: PurchaseProductData): Promise<PurchaseResult> {
     const product = await this.getProductById(data.productId);
 
@@ -174,10 +186,6 @@ export class ProductService {
           where: { productId },
         });
       });
-
-      console.log(
-        `${favoritesWithUsers.length} utilisateurs notifiés pour le produit "${productName}"`
-      );
     } catch (error) {
       console.error('Erreur notification favoris:', error);
     }

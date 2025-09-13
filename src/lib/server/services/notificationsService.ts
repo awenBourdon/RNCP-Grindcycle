@@ -7,17 +7,6 @@ interface CreateNotificationData {
   description: string;
 }
 
-export async function getUserNotifications(userId: string) {
-  return await prisma.notification.findMany({
-    where: {
-      userId: userId,
-      target: 'USER',
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-  });
-}
-
 export async function getAdminNotifications() {
   return await prisma.notification.findMany({
     where: {
@@ -37,23 +26,6 @@ export async function getAdminNotifications() {
   });
 }
 
-export async function markAsRead(notificationId: string) {
-  return await prisma.notification.update({
-    where: { id: notificationId },
-    data: { isRead: true },
-  });
-}
-
-export async function markAllAsRead(userId: string) {
-  return await prisma.notification.updateMany({
-    where: {
-      userId: userId,
-      isRead: false,
-    },
-    data: { isRead: true },
-  });
-}
-
 export async function createNotification(data: CreateNotificationData) {
   try {
     return await prisma.notification.create({
@@ -67,16 +39,6 @@ export async function createNotification(data: CreateNotificationData) {
   } catch (err) {
     console.error(err instanceof Error ? err.message : err);
   }
-}
-
-export async function getUnreadCount(userId: string) {
-  return await prisma.notification.count({
-    where: {
-      userId: userId,
-      target: 'USER',
-      isRead: false,
-    },
-  });
 }
 
 export const NotificationTemplates = {
