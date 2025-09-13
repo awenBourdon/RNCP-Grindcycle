@@ -10,38 +10,65 @@ import {
   NotificationTemplates,
 } from './notificationsService';
 import {
-  PurchaseWithPointsData,
   OrderWithRelations,
   CreateOrderItemData,
   CreateOrderData,
+  PurchaseWithPointsData,
+  CartItemForPurchase,
 } from '@/lib/types';
+import { 
+  pointsPurchaseSchema} from '@/lib/validations/shippingValidation';
+
 
 export class OrderService {
   constructor(
     private orderRepository: InterfaceOrderRepository = new OrderRepository()
   ) {}
 
-async purchaseWithPoints(
+  async purchaseWithPoints(
     data: PurchaseWithPointsData
   ): Promise<OrderWithRelations> {
+    const user = await prisma.user.findUnique({
+      where: { 
+        id: data.userId,
+        deletedAt: null 
+      },
+      select: { id: true, name: true, email: true, points: true },
+    });
+
+    if (!user) {
+      throw new Error(API_MESSAGES.USER_NOT_FOUND);
+    }
+
+    const cartItemsArray = Array.isArray(data.cartItems) ? data.cartItems : [];
+    const totalPoints = cartItemsArray.reduce((total: number, item:CartItemForPurchase ) => {
+      return total + ((item.pricePoints || 0) * (item.quantity || 0));
+    }, 0);
+
+    const validationData = {
+      cartItems: data.cartItems,
+      shippingAddress: data.shippingAddress,
+      totalPoints,
+      userPoints: user.points,
+    };
+
+    const validation = pointsPurchaseSchema.safeParse(validationData);
+
+    if (!validation.success) {
+      const errorMessage = validation.error.errors
+        .map(error => error.message)
+        .join(', ');
+      throw new Error(`Données invalides: ${errorMessage}`);
+    }
+
+    const validatedData = validation.data;
+
     return await prisma.$transaction(async tx => {
-     const user = await tx.user.findUnique({
-        where: { 
-          id: data.userId,
-          deletedAt: null 
-        },
-        select: { id: true, name: true, email: true, points: true },
-      });
-
-      if (!user) {
-        throw new Error(API_MESSAGES.USER_NOT_FOUND);
-      }
-
       let totalPointsNeeded = 0;
       const orderItems: CreateOrderItemData[] = [];
       const productUpdates: { id: string; name: string }[] = [];
 
-      for (const item of data.cartItems) {
+      for (const item of validatedData.cartItems) {
         const product = await tx.product.findUnique({
           where: { id: item.productId },
           select: {
@@ -91,11 +118,11 @@ async purchaseWithPoints(
         shippingCost: 0,
         paymentType: PaymentType.POINTS,
         pointsUsed: totalPointsNeeded,
-        shippingAddress: data.shippingAddress?.address,
-        shippingCity: data.shippingAddress?.city,
-        shippingPostalCode: data.shippingAddress?.postalCode,
-        shippingCountry: data.shippingAddress?.country,
-        shippingPhone: data.shippingAddress?.phone,
+        shippingAddress: validatedData.shippingAddress.address,
+        shippingCity: validatedData.shippingAddress.city,
+        shippingPostalCode: validatedData.shippingAddress.postalCode,
+        shippingCountry: validatedData.shippingAddress.country,
+        shippingPhone: validatedData.shippingAddress.phone,
         items: orderItems,
       };
 
@@ -121,7 +148,7 @@ async purchaseWithPoints(
       for (const productUpdate of productUpdates) {
         await tx.product.update({
           where: { id: productUpdate.id },
-          data: { status: ProductStatus.PURCHASED },
+          data: { status: ProductStatus.SOLD },
         });
       }
 
@@ -149,7 +176,7 @@ async purchaseWithPoints(
     return await this.orderRepository.findAll();
   }
 
-private async createPurchaseNotifications(
+  private async createPurchaseNotifications(
     order: OrderWithRelations,
     userName: string | null
   ): Promise<void> {
@@ -158,13 +185,12 @@ private async createPurchaseNotifications(
         .map((item: { productName: string }) => item.productName)
         .join(', ');
 
-     if (order.userId) {
+      if (order.userId) {
         await createNotification({
           userId: order.userId,
           target: 'USER',
           description: `Commande confirmée ! Produits achetés : ${productNames}. Total : ${order.pointsUsed} points.`,
         });
-      } else {
       }
 
       await createNotification({
@@ -185,7 +211,7 @@ private async createPurchaseNotifications(
     }
   }
 
-private async notifyFavoriteUsersAndCleanup(
+  private async notifyFavoriteUsersAndCleanup(
     productId: string,
     buyerId: string,
     productName: string
@@ -225,7 +251,7 @@ private async notifyFavoriteUsersAndCleanup(
           });
         }
 
-         await tx.favorite.deleteMany({
+        await tx.favorite.deleteMany({
           where: { productId },
         });
       });

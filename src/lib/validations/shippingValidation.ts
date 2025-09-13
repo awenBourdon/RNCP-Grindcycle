@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BoardType } from '@/generated/prisma';
 
 export const SHIPPING_CONFIG = {
   countries: ['France', 'Belgique', 'Suisse', 'Luxembourg'] as const,
@@ -72,7 +73,7 @@ export const pointsShippingSchema = z.object({
 export const cartItemSchema = z.object({
   productId: z.string().uuid('ID produit invalide'),
   name: z.string().min(1, 'Nom requis'),
-  type: z.string().min(1, 'Type requis'),
+  type: z.nativeEnum(BoardType, { message: 'Type de planche invalide' }),
   priceEuro: z.number().min(0, 'Prix invalide'),
   pricePoints: z.number().min(0, 'Points invalides'),
   quantity: z.number().int().min(1, 'Quantité minimum 1'),

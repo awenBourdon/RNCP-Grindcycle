@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { getAdminNotifications } from '@/lib/server/services/notificationsService';
 import { AdminNotifications } from '../components/AdminNotifications';
+import { getAdminNotifications } from '@/lib/server/services/notificationsService';
 
 export default async function AdminNotificationsPage() {
   const headersList = await headers();

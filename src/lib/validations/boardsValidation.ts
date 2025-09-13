@@ -11,7 +11,7 @@ export const IMAGE_CONFIG = {
     'image/webp',
     'image/gif',
   ] as const,
-  acceptedFormatsDisplay: 'JPG, PNG, WebP, GIF',
+  acceptedFormatsDisplay: 'JPG, PNG, WebP',
   get maxSizeMB() {
     return this.maxSize / (1024 * 1024);
   },

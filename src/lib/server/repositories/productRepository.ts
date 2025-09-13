@@ -56,52 +56,52 @@ export class ProductRepository implements InterfaceProductRepository {
     });
   }
 
-  async findAll(filters?: ProductFilters): Promise<ProductWithRelations[]> {
+   async findAll(filters?: ProductFilters): Promise<ProductWithRelations[]> {
     const where: Record<string, unknown> = {};
 
     if (filters?.status) {
-      where.status = filters.status;
-    }
+    where.status = filters.status;
+  }
 
-    if (filters?.types && filters.types.length > 0) {
-      where.type = { in: filters.types };
-    }
+  if (filters?.types && filters.types.length > 0) {
+    where.type = { in: filters.types };
+  }
 
-    if (filters?.priceRange) {
-      where.priceEuro = {
-        gte: filters.priceRange[0],
-        lte: filters.priceRange[1],
-      };
-    }
+  if (filters?.priceRange) {
+    where.priceEuro = {
+      gte: filters.priceRange[0],
+      lte: filters.priceRange[1],
+    };
+  }
 
-    if (filters?.search) {
-      where.OR = [
-        { name: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
-      ];
-    }
+  if (filters?.search) {
+    where.OR = [
+      { name: { contains: filters.search, mode: 'insensitive' } },
+      { description: { contains: filters.search, mode: 'insensitive' } },
+    ];
+  }
 
-    if (filters?.usedBoardId) {
-      where.usedBoardId = filters.usedBoardId;
-    }
+  if (filters?.usedBoardId) {
+    where.usedBoardId = filters.usedBoardId;
+  }
 
-    return await prisma.product.findMany({
-      where,
-      include: {
-        usedBoard: {
-          select: {
-            id: true,
-            name: true,
-            boardType: true,
-            boardCondition: true,
-          },
+  return await prisma.product.findMany({
+    where,
+    include: {
+      usedBoard: {
+        select: {
+          id: true,
+          name: true,
+          boardType: true,
+          boardCondition: true,
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  }
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+}
 
   async findAvailable(): Promise<ProductWithRelations[]> {
     return this.findAll({ status: ProductStatus.CATALOG });

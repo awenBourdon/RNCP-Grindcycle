@@ -41,7 +41,6 @@ export async function favoritesAction(productId: string) {
       };
     }
 
-    // Vérifier si le favori existe déjà
     const existingFavorite = await prisma.favorite.findUnique({
       where: {
         userId_productId: {
@@ -55,7 +54,6 @@ export async function favoritesAction(productId: string) {
     let message: string;
 
     if (existingFavorite) {
-      // Supprimer des favoris
       await prisma.favorite.delete({
         where: {
           userId_productId: {
@@ -67,7 +65,6 @@ export async function favoritesAction(productId: string) {
       action = 'removed';
       message = 'Retiré des favoris';
     } else {
-      // Ajouter aux favoris
       await prisma.favorite.create({
         data: {
           userId: session.user.id,

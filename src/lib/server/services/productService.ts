@@ -84,10 +84,22 @@ export class ProductService {
     return product;
   }
 
+  async getLatestProducts(limit: number = 6): Promise<ProductWithRelations[]> {
+  const safeLimit = Math.min(Math.max(limit, 1), 10);
+
+  return await this.productRepository.findAll({
+    status: ProductStatus.CATALOG,
+  }).then(products => 
+    products
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, safeLimit)
+  );
+}
+
   async purchaseProduct(data: PurchaseProductData): Promise<PurchaseResult> {
     const product = await this.getProductById(data.productId);
 
-    if (product.status === ProductStatus.PURCHASED) {
+    if (product.status !== ProductStatus.CATALOG) {
       throw new Error(API_MESSAGES.PRODUCT_ALREADY_PURCHASED);
     }
 
@@ -95,7 +107,7 @@ export class ProductService {
       await tx.product.update({
         where: { id: data.productId },
         data: {
-          status: ProductStatus.PURCHASED,
+          status: ProductStatus.SOLD,
         },
       });
 
@@ -174,58 +186,29 @@ export class ProductService {
           where: { productId },
         });
       });
-
-      console.log(
-        `${favoritesWithUsers.length} utilisateurs notifiés pour le produit "${productName}"`
-      );
     } catch (error) {
       console.error('Erreur notification favoris:', error);
     }
   }
 
-  async deleteProduct(id: string): Promise<void> {
-    const product = await this.getProductById(id);
+async deleteProduct(id: string): Promise<void> {
+  const product = await this.getProductById(id);
 
-    if (product.status === ProductStatus.PURCHASED) {
-      throw new Error('Impossible de supprimer un produit acheté');
-    }
-
-    if (product.imageUrl && product.imageUrl.length > 0) {
-      await this.imageService.deleteMultiple(product.imageUrl);
-    }
-
-    await this.productRepository.delete(id);
+  if (product.status !== ProductStatus.CATALOG) {
+    throw new Error('Impossible de supprimer un produit acheté');
   }
+
+  if (product.imageUrl && product.imageUrl.length > 0) {
+    await this.imageService.deleteMultiple(product.imageUrl);
+  }
+
+  await this.productRepository.delete(id);
+}
 
   async updateProductStatus(
     id: string,
     status: ProductStatus
   ): Promise<ProductWithRelations> {
     return await this.productRepository.update(id, { status });
-  }
-
-  async getProductsByStatus(
-    status: ProductStatus
-  ): Promise<ProductWithRelations[]> {
-    return await this.productRepository.findAll({ status });
-  }
-
-  async searchProducts(searchTerm: string): Promise<ProductWithRelations[]> {
-    return await this.productRepository.findAll({ search: searchTerm });
-  }
-
-  async getProductStats() {
-    const [total, available, purchased] = await Promise.all([
-      prisma.product.count(),
-      prisma.product.count({ where: { status: ProductStatus.CATALOG } }),
-      prisma.product.count({ where: { status: ProductStatus.PURCHASED } }),
-    ]);
-
-    return {
-      total,
-      available,
-      purchased,
-      soldPercentage: total > 0 ? Math.round((purchased / total) * 100) : 0,
-    };
   }
 }

@@ -136,7 +136,7 @@ export class UsedBoardService {
        if (
           pointsEligibleStatuses.includes(updatedBoard.status) &&
           !pointsEligibleStatuses.includes(oldBoard.status) &&
-          updatedBoard.userId !== null // 🔑 LA CLÉ
+          updatedBoard.userId !== null
         ) {
           await this.awardPoints(tx, updatedBoard, oldBoard, boardId);
         } else if (noPointsStatuses.includes(updatedBoard.status)) {

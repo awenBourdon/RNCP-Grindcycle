@@ -5,6 +5,10 @@ import { redirect } from 'next/navigation';
 import { AdminLayout } from './components/AdminLayout';
 import { Session } from '@/lib/types';
 
+export const metadata = {
+  title: 'Dashboard Grindcycle',
+};
+
 export default async function AdminLayoutWrapper({
   children,
 }: {

@@ -3,9 +3,10 @@ import { Hash, Eye, Trash2, Package } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import type { Product, ProductStatus, BoardType } from '@/generated/prisma';
+import type { Product, BoardType } from '@/generated/prisma';
 import { useTransition } from 'react';
 import { deleteProductAction } from '@/actions/products/delete-product';
+import { ProductStatusSelect } from './ProductStatusSelect';
 
 interface ProductWithUsedBoard extends Product {
   usedBoard?: {
@@ -33,17 +34,6 @@ const getBoardTypeText = (type: BoardType) => {
       return 'Longboard';
     default:
       return type;
-  }
-};
-
-const getStatusText = (status: ProductStatus) => {
-  switch (status) {
-    case 'CATALOG':
-      return 'Disponible';
-    case 'PURCHASED':
-      return 'Acheté';
-    default:
-      return status;
   }
 };
 
@@ -178,9 +168,10 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border bg-white text-[#010101] border-gray-200">
-                      {getStatusText(product.status)}
-                    </span>
+                    <ProductStatusSelect
+                      productId={product.id}
+                      status={product.status}
+                    />
                   </td>
                   <td className="px-6 py-4">
                     {product.usedBoard ? (
