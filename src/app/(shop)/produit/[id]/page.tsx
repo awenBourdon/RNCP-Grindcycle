@@ -19,8 +19,15 @@ export default function ProductPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`/api/products/${id}`, { signal });
+      const response = await fetch(`/api/products?id=${id}`, { signal });
+      console.log('📡 URL appelée:', `/api/products?id=${id}`);
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+
       const data = await response.json();
+      console.log('📦 Data complète reçue:', data);
+      console.log('📦 Product data:', data.data);
+      console.log('📦 PriceEuro:', data.data?.priceEuro);
 
       if (response.status === 429) {
         setError(data.error || 'Trop de requêtes');

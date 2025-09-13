@@ -15,16 +15,6 @@ export interface CreateProductData {
   usedBoardId?: string | null;
 }
 
-export interface UpdateProductData {
-  name?: string;
-  description?: string;
-  type?: BoardType;
-  priceEuro?: number;
-  pricePoints?: number;
-  imageUrl?: string[];
-  status?: ProductStatus;
-}
-
 export interface ProductFilters {
   types?: BoardType[];
   priceRange?: [number, number];
@@ -51,14 +41,4 @@ export interface ProductWithRelations extends Product {
       email: string;
     } | null;
   } | null;
-}
-
-export interface ProductCreateRequest {
-  name: string;
-  description?: string;
-  type: string;
-  priceEuro: string;
-  pricePoints: string;
-  usedBoardId: string;
-  images: File[];
 }

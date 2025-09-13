@@ -1,4 +1,3 @@
-import { API_MESSAGES } from '@/lib/server/config/constants';
 import {
   UPLOAD_CONFIG,
   isAllowedMimeType,
@@ -42,7 +41,7 @@ export class ImageService {
   private async getStorageService() {
     if (!this.storageService) {
       const { SupabaseStorageService } = await import(
-        '@/lib/server/services/supabaseStorageService'
+        '@/lib/server/services/supabase-storage.service'
       );
       this.storageService = new SupabaseStorageService(this.directory);
     }
@@ -204,7 +203,7 @@ export class ImageService {
     const errors: string[] = [];
 
     if (files.length === 0) {
-      errors.push(API_MESSAGES.AT_LEAST_ONE_IMAGE_REQUIRED);
+      errors.push('Au moins une image est requise');
     }
 
     if (files.length < this.minFiles) {

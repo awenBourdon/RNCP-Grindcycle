@@ -1,6 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { UsedBoardService } from '@/lib/server/services/usedBoardService';
+import { UsedBoardService } from '@/lib/server/services/used-boards.service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 

@@ -1,7 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { UsedBoardService } from '@/lib/server/services/usedBoardService';
-import { ZodHelper } from '@/lib/server/utils/zodHelper';
+import { UsedBoardService } from '@/lib/server/services/used-boards.service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
@@ -22,7 +21,7 @@ export async function updateUsedBoardAction(
 ) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
-
+  
   if (!session || session.user.role !== 'ADMIN') {
     return {
       success: false,
@@ -31,21 +30,21 @@ export async function updateUsedBoardAction(
   }
 
   try {
-    const validation = ZodHelper.validate(updateSchema, {
+    const validation = updateSchema.safeParse({
       boardId,
       status,
       pointsAwarded,
     });
 
-    if (!validation.isValid) {
+    if (!validation.success) {
       return {
         success: false,
         error: 'Données invalides',
-        details: validation.errors,
+        details: validation.error.errors.map(err => err.message),
       };
     }
 
-    const { boardId: validatedBoardId, ...updateData } = validation.data!;
+    const { boardId: validatedBoardId, ...updateData } = validation.data;
 
     const result = await usedBoardService.updateUsedBoard(
       validatedBoardId,

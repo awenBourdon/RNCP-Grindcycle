@@ -1,5 +1,4 @@
 import { User } from '@/generated/prisma';
-import { API_MESSAGES } from '@/lib/server/config/constants';
 import { InterfaceUserRepository } from '../repositories/interfaces/interfaceUserRepository';
 import { prisma } from '@/lib/prisma';
 import { UserRepository } from '../repositories/userRepositoty';
@@ -11,9 +10,11 @@ export class UserService {
 
   async getUserById(id: string): Promise<User> {
     const user = await this.userRepository.findById(id);
+    
     if (!user) {
-      throw new Error(API_MESSAGES.USER_NOT_FOUND);
+      throw new Error('Utilisateur non trouvé');
     }
+    
     return user;
   }
 
@@ -29,9 +30,11 @@ export class UserService {
 
   async decrementUserPoints(id: string, points: number): Promise<User> {
     const user = await this.getUserById(id);
+    
     if (user.points < points) {
-      throw new Error(API_MESSAGES.INSUFFICIENT_POINTS);
+      throw new Error('Points insuffisants');
     }
+    
     return await this.userRepository.decrementPoints(id, points);
   }
 
@@ -41,7 +44,7 @@ export class UserService {
         where: { userId },
         data: { userId: null }
       });
-
+      
       await tx.user.delete({
         where: { id: userId }
       });

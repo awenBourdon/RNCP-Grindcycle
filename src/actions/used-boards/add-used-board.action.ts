@@ -1,8 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { UsedBoardService } from '@/lib/server/services/usedBoardService';
+import { UsedBoardService } from '@/lib/server/services/used-boards.service';
 import { recycleSchema } from '@/lib/validations/boardsValidation';
-import { ZodHelper } from '@/lib/server/utils/zodHelper';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -17,14 +16,14 @@ const usedBoardService = new UsedBoardService();
 export async function createUsedBoardAction(formData: FormData) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
-
+  
   if (!session) {
     redirect('/authentification/connexion');
   }
 
   const request = new Request('http://localhost', { headers: headersList });
   const ip = getClientIP(request);
-
+  
   if (!checkRateLimit(ip, 'createUsedBoard')) {
     return {
       success: false,
@@ -33,25 +32,37 @@ export async function createUsedBoardAction(formData: FormData) {
   }
 
   try {
-    const validation = ZodHelper.validateFormData(recycleSchema, formData);
-    if (!validation.isValid) {
+    const data: Record<string, unknown> = {};
+    const images = formData.getAll('image') as File[];
+
+    // Conversion FormData en objet
+    for (const [key, value] of formData.entries()) {
+      if (key === 'image') {
+        continue; // On traite les images séparément
+      } else {
+        data[key] = value;
+      }
+    }
+
+    const validation = recycleSchema.safeParse(data);
+    
+    if (!validation.success) {
       return {
         success: false,
         error: 'Données invalides',
-        details: validation.errors,
+        details: validation.error.errors.map(err => err.message),
       };
     }
 
-    if (validation.data!.userId !== session.user.id) {
+    if (validation.data.userId !== session.user.id) {
       return {
         success: false,
         error: 'Non autorisé',
       };
     }
 
-    const images = formData.getAll('image') as File[];
     const board = await usedBoardService.createUsedBoard(
-      validation.data!,
+      validation.data,
       images
     );
 

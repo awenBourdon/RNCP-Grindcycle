@@ -1,8 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { ProductService } from '@/lib/server/services/productService';
+import { ProductService } from '@/lib/server/services/products.service';
 import { productSchema } from '@/lib/validations/boardsValidation';
-import { ZodHelper } from '@/lib/server/utils/zodHelper';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -12,24 +11,38 @@ const productService = new ProductService();
 export async function createProductAction(formData: FormData) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
-
+  
   if (!session || session.user.role !== 'ADMIN') {
     redirect('/authentification/connexion');
   }
 
   try {
-    const validation = ZodHelper.validateFormData(productSchema, formData);
-    if (!validation.isValid) {
+    const data: Record<string, unknown> = {};
+    const images = formData.getAll('images') as File[];
+
+    for (const [key, value] of formData.entries()) {
+      if (key === 'images') {
+        continue;
+      } else if (key === 'priceEuro' || key === 'pricePoints') {
+        const numValue = parseFloat(value as string);
+        data[key] = isNaN(numValue) ? value : numValue;
+      } else {
+        data[key] = value;
+      }
+    }
+
+    const validation = productSchema.safeParse(data);
+    
+    if (!validation.success) {
       return {
         success: false,
         error: 'Données invalides',
-        details: validation.errors,
+        details: validation.error.errors.map(err => err.message),
       };
     }
 
-    const images = formData.getAll('images') as File[];
     const product = await productService.createProduct(
-      validation.data!,
+      validation.data,
       images
     );
 

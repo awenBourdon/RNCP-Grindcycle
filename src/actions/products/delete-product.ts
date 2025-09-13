@@ -1,7 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { ProductService } from '@/lib/server/services/productService';
-import { ZodHelper } from '@/lib/server/utils/zodHelper';
+import { ProductService } from '@/lib/server/services/products.service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
@@ -15,7 +14,7 @@ const deleteSchema = z.object({
 export async function deleteProductAction(productId: string) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
-
+  
   if (!session || session.user.role !== 'ADMIN') {
     return {
       success: false,
@@ -24,16 +23,17 @@ export async function deleteProductAction(productId: string) {
   }
 
   try {
-    const validation = ZodHelper.validate(deleteSchema, { productId });
-    if (!validation.isValid) {
+    const validation = deleteSchema.safeParse({ productId });
+    
+    if (!validation.success) {
       return {
         success: false,
         error: 'Données invalides',
-        details: validation.errors,
+        details: validation.error.errors.map(err => err.message),
       };
     }
 
-    await productService.deleteProduct(productId);
+    await productService.deleteProduct(validation.data.productId);
 
     revalidatePath('/admin/produits');
     revalidatePath('/catalogue');

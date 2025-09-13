@@ -1,7 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { ProductService } from '@/lib/server/services/productService';
-import { ZodHelper } from '@/lib/server/utils/zodHelper';
+import { ProductService } from '@/lib/server/services/products.service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
@@ -14,10 +13,13 @@ const updateStatusSchema = z.object({
   status: z.nativeEnum(ProductStatus),
 });
 
-export async function updateProductStatusAction(productId: string, status: ProductStatus) {
+export async function updateProductStatusAction(
+  productId: string, 
+  status: ProductStatus
+) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
-
+  
   if (!session || session.user.role !== 'ADMIN') {
     return {
       success: false,
@@ -26,16 +28,20 @@ export async function updateProductStatusAction(productId: string, status: Produ
   }
 
   try {
-    const validation = ZodHelper.validate(updateStatusSchema, { productId, status });
-    if (!validation.isValid) {
+    const validation = updateStatusSchema.safeParse({ productId, status });
+    
+    if (!validation.success) {
       return {
         success: false,
         error: 'Données invalides',
-        details: validation.errors,
+        details: validation.error.errors.map(err => err.message),
       };
     }
 
-    const product = await productService.updateProductStatus(productId, status);
+    const product = await productService.updateProductStatus(
+      validation.data.productId, 
+      validation.data.status
+    );
 
     revalidatePath('/admin/produits');
     revalidatePath('/catalogue');

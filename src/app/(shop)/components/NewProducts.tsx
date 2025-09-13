@@ -31,7 +31,7 @@ export const NewProducts = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/products/latest?limit=6', {
+      const response = await fetch(`/api/products?latest=6`, {
         signal: signal,
       });
 
