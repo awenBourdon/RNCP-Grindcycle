@@ -35,7 +35,7 @@ interface UsedBoardWithUser extends UsedBoard {
     id: string;
     name: string;
     email: string;
-  };
+  } | null;
 }
 
 interface UsedBoardsTableProps {
@@ -237,7 +237,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
       openModal(
         board.image,
         board.id,
-        board.user.name,
+        board.user?.name || '',
         board?.description ?? undefined
       );
     }
@@ -322,19 +322,23 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-[#0a3d3f] rounded-full flex items-center justify-center text-white text-sm font-medium">
-                          {board.user.name?.slice(0, 1).toUpperCase() || 'U'}
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-[#010101]">
-                            {board.user.name}
+                      {board.user ? (
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-[#0a3d3f] rounded-full flex items-center justify-center text-white text-sm font-medium">
+                            {board.user.name?.slice(0, 1).toUpperCase() || 'U'}
                           </div>
-                          <div className="text-xs text-gray-500">
-                            {board.user.email}
+                          <div>
+                            <div className="text-sm font-medium text-[#010101]">
+                              {board.user.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {board.user.email}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="text-sm text-gray-400">-</div>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className="text-sm text-gray-600">
@@ -402,12 +406,16 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <PointsSelect
-                        boardId={board.id}
-                        currentPoints={board.pointsAwarded}
-                        currentStatus={board.status}
-                        onUpdate={handleUpdate}
-                      />
+                      {board.user ? (
+                        <PointsSelect
+                          boardId={board.id}
+                          currentPoints={board.pointsAwarded}
+                          currentStatus={board.status}
+                          onUpdate={handleUpdate}
+                        />
+                      ) : (
+                        <div className="text-sm text-gray-400">-</div>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className="text-sm text-gray-600">

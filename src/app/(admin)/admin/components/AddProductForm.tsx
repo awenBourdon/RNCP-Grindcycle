@@ -46,7 +46,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     type: '',
     priceEuro: 0,
     pricePoints: 0,
-    usedBoardId: '', // Peut rester vide pour un produit sans usedBoard
+    usedBoardId: '',
   });
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
@@ -75,7 +75,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
       const completeFormData = {
         ...formData,
         images: selectedFiles,
-        // Si usedBoardId est vide, le convertir en null pour le schéma
         usedBoardId: formData.usedBoardId || null,
       };
       productSchema.parse(completeFormData);
@@ -174,9 +173,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     try {
       const formDataToSend = new FormData();
 
-      // Ajouter tous les champs du formulaire
       Object.entries(formData).forEach(([key, value]) => {
-        // Si usedBoardId est vide, ne pas l'envoyer (null côté serveur)
         if (key === 'usedBoardId' && !value) {
           return;
         }
@@ -194,7 +191,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         return;
       }
 
-      // Mise à jour du usedBoard SEULEMENT s'il y en a un
       if (formData.usedBoardId) {
         const updateResult = await updateUsedBoardAction(
           formData.usedBoardId,
@@ -215,7 +211,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         toast.success('Produit créé avec succès !');
       }
 
-      // Reset du formulaire
       setFormData({
         name: '',
         description: '',
