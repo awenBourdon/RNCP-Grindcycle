@@ -10,12 +10,16 @@ export class UserService {
 
   async getUserById(id: string): Promise<User> {
     const user = await this.userRepository.findById(id);
-    
+   
     if (!user) {
       throw new Error('Utilisateur non trouvé');
     }
-    
+   
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await this.userRepository.findAll();
   }
 
   async updateUserPoints(id: string, points: number): Promise<User> {
@@ -30,11 +34,11 @@ export class UserService {
 
   async decrementUserPoints(id: string, points: number): Promise<User> {
     const user = await this.getUserById(id);
-    
+   
     if (user.points < points) {
       throw new Error('Points insuffisants');
     }
-    
+   
     return await this.userRepository.decrementPoints(id, points);
   }
 
@@ -44,7 +48,7 @@ export class UserService {
         where: { userId },
         data: { userId: null }
       });
-      
+     
       await tx.user.delete({
         where: { id: userId }
       });

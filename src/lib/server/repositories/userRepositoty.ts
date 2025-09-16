@@ -3,6 +3,7 @@ import { User } from '@/generated/prisma';
 import { InterfaceUserRepository } from './interfaces/interfaceUserRepository';
 
 export class UserRepository implements InterfaceUserRepository {
+
   async findById(id: string): Promise<User | null> {
     return await prisma.user.findUnique({
       where: { id },
