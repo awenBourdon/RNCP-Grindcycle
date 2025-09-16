@@ -1,4 +1,4 @@
-import { UsedBoard, PointsType } from '@/generated/prisma';
+import { UsedBoard, PointsType, UsedBoardStatus } from '@/generated/prisma';
 import { UsedBoardRepository } from '@/lib/server/repositories/usedBoardRepository';
 import {
   CreateUsedBoardData,
@@ -89,6 +89,16 @@ export class UsedBoardService {
   async getUserUsedBoards(userId: string): Promise<UsedBoardWithRelations[]> {
     return await this.usedBoardRepository.findByUserId(userId);
   }
+
+async getAvailableUsedBoards(): Promise<UsedBoardWithRelations[]> {
+  const availableStatuses: UsedBoardStatus[] = [
+    UsedBoardStatus.RECEIVED,
+  ];
+
+  return await this.usedBoardRepository.findAll({
+    status: availableStatuses,
+  });
+}
 
   async updateUsedBoard(
     boardId: string,

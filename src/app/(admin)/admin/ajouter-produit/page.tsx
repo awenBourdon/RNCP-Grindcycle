@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { prisma } from '@/lib/prisma';
 import { AddProductForm } from '../components/AddProductForm';
 
 export default async function AjouterProduitPage() {
@@ -15,11 +14,24 @@ export default async function AjouterProduitPage() {
     redirect('/authentification/connexion');
   }
 
-  const usedBoards = await prisma.usedBoard.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
-  return <AddProductForm usedBoards={usedBoards} />;
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/usedboards?available=true&admin=true`,
+      {
+        headers: {
+          ...Object.fromEntries(headersList.entries()),
+        },
+        cache: 'no-store',
+      }
+    );
+
+    const data = await response.json();
+    const usedBoards = data.success ? data.data : [];
+
+    return <AddProductForm usedBoards={usedBoards} />;
+  } catch {
+    return <AddProductForm usedBoards={[]} />;
+  }
 }
