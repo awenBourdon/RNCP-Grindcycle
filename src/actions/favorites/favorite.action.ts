@@ -1,6 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { prisma } from '@/lib/prisma';
+import { FavoriteService } from '@/lib/server/services/favorites.service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
@@ -9,10 +9,12 @@ const favoriteSchema = z.object({
   productId: z.string().min(1, 'ID produit requis'),
 });
 
+const favoriteService = new FavoriteService();
+
 export async function favoritesAction(productId: string) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
-
+  
   if (!session) {
     return {
       success: false,
@@ -30,58 +32,15 @@ export async function favoritesAction(productId: string) {
       };
     }
 
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-    });
-
-    if (!product) {
-      return {
-        success: false,
-        error: 'Produit non trouvé',
-      };
-    }
-
-    const existingFavorite = await prisma.favorite.findUnique({
-      where: {
-        userId_productId: {
-          userId: session.user.id,
-          productId,
-        },
-      },
-    });
-
-    let action: 'added' | 'removed';
-    let message: string;
-
-    if (existingFavorite) {
-      await prisma.favorite.delete({
-        where: {
-          userId_productId: {
-            userId: session.user.id,
-            productId,
-          },
-        },
-      });
-      action = 'removed';
-      message = 'Retiré des favoris';
-    } else {
-      await prisma.favorite.create({
-        data: {
-          userId: session.user.id,
-          productId,
-        },
-      });
-      action = 'added';
-      message = 'Ajouté aux favoris';
-    }
+    const result = await favoriteService.toggleFavorite(session.user.id, productId);
 
     revalidatePath('/compte/favoris');
     revalidatePath(`/produit/${productId}`);
-
+    
     return {
       success: true,
-      action,
-      message,
+      action: result.action,
+      message: result.message,
     };
   } catch (error) {
     return {

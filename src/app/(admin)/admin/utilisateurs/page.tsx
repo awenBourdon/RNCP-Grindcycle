@@ -41,7 +41,7 @@ export default async function UsersPage() {
           Erreur lors du chargement des utilisateurs
         </p>
         <p className="text-sm text-gray-500 mt-2">
-          Actualiser la page ou contacte l&apos;administrateur
+          Actualise la page ou contacte l&apos;administrateur
         </p>
       </div>
     );

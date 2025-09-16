@@ -36,9 +36,7 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      console.log('🔍 Récupération de toutes les commandes pour admin...');
       const orders = await orderService.getAllOrders();
-      console.log('📦 Nombre de commandes récupérées:', orders.length);
 
       return NextResponse.json({
         success: true,
@@ -48,7 +46,6 @@ export async function GET(req: NextRequest) {
 
     if (orderId) {
       const order = await orderService.getOrderById(orderId);
-      
       if (order.userId !== session.user.id && session.user.role !== 'ADMIN') {
         return NextResponse.json(
           { success: false, error: 'Non autorisé' },
@@ -62,22 +59,16 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    if (userId) {
-      if (userId !== session.user.id && session.user.role !== 'ADMIN') {
-        return NextResponse.json(
-          { success: false, error: 'Non autorisé' },
-          { status: 403 }
-        );
-      }
-
-      const orders = await orderService.getUserOrders(userId);
-      return NextResponse.json({
-        success: true,
-        data: orders,
-      });
+    const targetUserId = userId || session.user.id;
+    
+    if (targetUserId !== session.user.id && session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Non autorisé' },
+        { status: 403 }
+      );
     }
 
-    const orders = await orderService.getUserOrders(session.user.id);
+    const orders = await orderService.getUserOrders(targetUserId);
     return NextResponse.json({
       success: true,
       data: orders,
