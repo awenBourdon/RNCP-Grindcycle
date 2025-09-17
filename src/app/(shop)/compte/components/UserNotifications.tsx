@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useTransition } from 'react';
 import { Bell, Check } from 'lucide-react';
 import { toast } from 'sonner';
