@@ -12,5 +12,46 @@ export default async function NotificationsPage() {
 
   if (!session) redirect('/authentification/connexion');
 
-  return <UserNotifications userId={session.user.id} />;
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/notifications?userId=${session.user.id}`,
+      {
+        headers: {
+          ...Object.fromEntries(headersList.entries()),
+        },
+        cache: 'no-cache',
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des notifications');
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || 'Erreur inconnue');
+    }
+
+    const notifications = data.data;
+
+    return (
+      <UserNotifications
+        notifications={notifications}
+        userId={session.user.id}
+      />
+    );
+  } catch (error) {
+    console.error('Erreur SSR notifications utilisateur:', error);
+    return (
+      <div className="p-8 text-center">
+        <p className="text-red-500">
+          Erreur lors du chargement des notifications
+        </p>
+        <p className="text-sm text-gray-500 mt-2">Actualise la page</p>
+      </div>
+    );
+  }
 }
