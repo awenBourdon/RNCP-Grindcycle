@@ -33,7 +33,7 @@ export default async function FavorisPage() {
       headers: {
         ...Object.fromEntries(headersList.entries()),
       },
-      cache: 'no-cache',
+      cache: 'default',
     });
 
     if (!response.ok) {

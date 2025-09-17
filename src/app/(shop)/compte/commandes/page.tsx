@@ -16,7 +16,7 @@ export default async function UserOrdersPage() {
       headers: {
         ...Object.fromEntries(headersList.entries()),
       },
-      cache: 'no-cache',
+      cache: 'default',
     });
 
     if (!response.ok) {

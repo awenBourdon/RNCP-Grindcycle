@@ -6,12 +6,28 @@ import { JoinMovement } from '@/app/(shop)/components/JoinMouvement';
 import { NewProducts } from '@/app/(shop)/components/NewProducts';
 import { ToTop } from '@/components/ui/ToTop';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  let products = [];
+
+  try {
+    const response = await fetch(`${baseUrl}/api/products?latest=6`, {
+      cache: 'default',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      products = data.success ? data.data : [];
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
   return (
     <div>
       <Hero />
       <Concept />
-      <NewProducts />
+      <NewProducts products={products} />
       <AboutUs />
       <ContactUs />
       <JoinMovement />
