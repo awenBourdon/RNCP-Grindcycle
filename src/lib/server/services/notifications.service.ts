@@ -1,26 +1,10 @@
-import { prisma } from '@/lib/prisma';
-import { NotificationTarget } from '@/generated/prisma';
 import { z } from 'zod';
-
-interface CreateNotificationData {
-  userId?: string | null;
-  target: NotificationTarget;
-  description: string;
-}
-
-interface NotificationWithUser {
-  id: string;
-  userId: string | null;
-  target: NotificationTarget;
-  description: string;
-  isRead: boolean;
-  createdAt: Date;
-  user?: {
-    id: string;
-    name: string | null;
-    email: string;
-  } | null;
-}
+import { 
+  InterfaceNotificationRepository,
+  CreateNotificationData,
+  NotificationWithUser 
+} from '../repositories/interfaces/interfaceNotificationRepository';
+import { NotificationRepository } from '../repositories/notificationRepository';
 
 const notificationIdSchema = z.object({
   notificationId: z.string().min(1, 'ID notification requis'),
@@ -31,35 +15,21 @@ const userIdSchema = z.object({
 });
 
 export class NotificationService {
+  constructor(
+    private notificationRepository: InterfaceNotificationRepository = new NotificationRepository()
+  ) {}
+
   async getAdminNotifications(): Promise<NotificationWithUser[]> {
-    return await prisma.notification.findMany({
-      where: {
-        target: 'ADMIN',
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 100,
-    });
+    return await this.notificationRepository.findAdminNotifications();
+  }
+
+  async getUserNotifications(userId: string): Promise<NotificationWithUser[]> {
+    return await this.notificationRepository.findByUserId(userId);
   }
 
   async createNotification(data: CreateNotificationData) {
     try {
-      return await prisma.notification.create({
-        data: {
-          userId: data.userId,
-          target: data.target,
-          description: data.description,
-          isRead: false,
-        },
-      });
+      return await this.notificationRepository.create(data);
     } catch (err) {
       console.error(err instanceof Error ? err.message : err);
       throw new Error('Erreur lors de la création de la notification');
@@ -72,9 +42,7 @@ export class NotificationService {
       throw new Error('ID notification invalide');
     }
 
-    const notification = await prisma.notification.findUnique({
-      where: { id: notificationId },
-    });
+    const notification = await this.notificationRepository.findById(notificationId);
 
     if (!notification) {
       throw new Error('Notification non trouvée');
@@ -84,9 +52,7 @@ export class NotificationService {
       throw new Error('Non autorisé à supprimer cette notification');
     }
 
-    await prisma.notification.delete({
-      where: { id: notificationId },
-    });
+    await this.notificationRepository.delete(notificationId);
 
     return {
       message: 'Notification supprimée avec succès',
@@ -99,9 +65,7 @@ export class NotificationService {
       throw new Error('ID notification invalide');
     }
 
-    const notification = await prisma.notification.findUnique({
-      where: { id: notificationId },
-    });
+    const notification = await this.notificationRepository.findById(notificationId);
 
     if (!notification) {
       throw new Error('Notification non trouvée');
@@ -111,10 +75,7 @@ export class NotificationService {
       throw new Error('Non autorisé à modifier cette notification');
     }
 
-    await prisma.notification.update({
-      where: { id: notificationId },
-      data: { isRead: true },
-    });
+    await this.notificationRepository.markAsRead(notificationId);
 
     return {
       message: 'Notification marquée comme lue',
@@ -130,14 +91,8 @@ export class NotificationService {
     if (targetUserId !== currentUserId && userRole !== 'ADMIN') {
       throw new Error('Non autorisé à modifier les notifications de cet utilisateur');
     }
-    const result = await prisma.notification.updateMany({
-      where: {
-        userId: targetUserId,
-        isRead: false,
-        target: 'USER',
-      },
-      data: { isRead: true },
-    });
+
+    const result = await this.notificationRepository.markAllAsReadForUser(targetUserId);
 
     return {
       message: `${result.count} notifications marquées comme lues`,
@@ -183,8 +138,4 @@ export const notificationService = new NotificationService();
 
 export async function createNotification(data: CreateNotificationData) {
   return await notificationService.createNotification(data);
-}
-
-export async function getAdminNotifications() {
-  return await notificationService.getAdminNotifications();
 }
