@@ -1,4 +1,4 @@
-import { UsedBoard, PointsType, UsedBoardStatus } from '@/generated/prisma';
+import { UsedBoard, UsedBoardStatus } from '@/generated/prisma';
 import { UsedBoardRepository } from '@/lib/server/repositories/usedBoardRepository';
 import {
   CreateUsedBoardData,
@@ -6,30 +6,11 @@ import {
   UsedBoardWithRelations,
 } from '@/lib/server/types/usedBoard';
 import { ImageService } from '@/lib/server/services/images.service';
-import { prisma } from '@/lib/prisma';
 import { InterfaceUsedBoardRepository } from '../repositories/interfaces/interfaceUsedBoardRepository';
 import {
   createNotification,
   NotificationTemplates,
 } from './notifications.service';
-
-type PrismaTransaction = Omit<
-  typeof prisma,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
->;
-
-type UpdatedBoardWithRelations = UsedBoard & {
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
-  } | null;
-  product: {
-    id: string;
-    name: string;
-    status: string;
-  } | null;
-};
 
 export class UsedBoardService {
   constructor(
@@ -90,189 +71,43 @@ export class UsedBoardService {
     return await this.usedBoardRepository.findByUserId(userId);
   }
 
-async getAvailableUsedBoards(): Promise<UsedBoardWithRelations[]> {
-  const availableStatuses: UsedBoardStatus[] = [
-    UsedBoardStatus.RECEIVED,
-  ];
-
-  return await this.usedBoardRepository.findAll({
-    status: availableStatuses,
-  });
-}
+  async getAvailableUsedBoards(): Promise<UsedBoardWithRelations[]> {
+    const availableStatuses: UsedBoardStatus[] = [
+      UsedBoardStatus.RECEIVED,
+    ];
+    return await this.usedBoardRepository.findAll({
+      status: availableStatuses,
+    });
+  }
 
   async updateUsedBoard(
     boardId: string,
     updateData: Partial<UpdateUsedBoardData>
   ): Promise<UsedBoardWithRelations> {
     const oldBoard = await this.getUsedBoardById(boardId);
+    
+    const updatedBoard = await this.usedBoardRepository.updateWithPointsTransaction(
+      boardId,
+      updateData,
+      oldBoard
+    );
 
-    return await prisma.$transaction(async (tx: PrismaTransaction) => {
-      const updatedBoard = await tx.usedBoard.update({
-        where: { id: boardId },
-        data: updateData,
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-          product: {
-            select: {
-              id: true,
-              name: true,
-              status: true,
-            },
-          },
-        },
-      });
-
-      const statusChanged = oldBoard.status !== updatedBoard.status;
-      const pointsEligibleStatuses = [
-        'RECEIVED',
-        'RECYCLED_TO_PRODUCT',
-        'SOLD',
-      ];
-      const noPointsStatuses = [
-        'PENDING_VALIDATION',
-        'VALIDATED',
-        'REJECTED',
-        'SENT',
-      ];
-
-      if (statusChanged) {
-       if (
-          pointsEligibleStatuses.includes(updatedBoard.status) &&
-          !pointsEligibleStatuses.includes(oldBoard.status) &&
-          updatedBoard.userId !== null
-        ) {
-          await this.awardPoints(tx, updatedBoard, oldBoard, boardId);
-        } else if (noPointsStatuses.includes(updatedBoard.status)) {
-          await this.removePoints(tx, updatedBoard, boardId);
-        }
-
-       if (updatedBoard.userId) {
-          await this.recalculateUserPoints(tx, updatedBoard.userId);
-        }
-        
-        await this.createStatusChangeNotification(updatedBoard);
-      } else if (
-        updateData.pointsAwarded !== undefined &&
-        pointsEligibleStatuses.includes(updatedBoard.status)
-      ) {
-        await this.updatePointsOnly(tx, updatedBoard, boardId);
-      }
-
-      return updatedBoard;
-    });
-  }
-
-  private async awardPoints(
-    tx: PrismaTransaction,
-    updatedBoard: UpdatedBoardWithRelations,
-    oldBoard: UsedBoardWithRelations,
-    boardId: string
-  ): Promise<void> {
-   if (!updatedBoard.userId) {
-     return;
+    const statusChanged = oldBoard.status !== updatedBoard.status;
+    if (statusChanged) {
+      await this.createStatusChangeNotification(updatedBoard);
     }
 
-    const existingTransaction = await tx.pointsHistory.findFirst({
-      where: {
-        userId: updatedBoard.userId,
-        usedBoardId: boardId,
-        type: 'RECYCLING',
-      },
-    });
+    return updatedBoard;
+  }
 
-    const pointsToAward =
-      updatedBoard.pointsAwarded || oldBoard.pointsAwarded || 50;
+  async deleteUsedBoard(boardId: string): Promise<void> {
+    const board = await this.getUsedBoardById(boardId);
 
-    if (!existingTransaction && pointsToAward > 0) {
-      if (!updatedBoard.pointsAwarded && pointsToAward > 0) {
-        await tx.usedBoard.update({
-          where: { id: boardId },
-          data: { pointsAwarded: pointsToAward },
-        });
-      }
+    await this.usedBoardRepository.deleteWithPointsTransaction(boardId, board);
 
-      await tx.pointsHistory.create({
-        data: {
-          userId: updatedBoard.userId,
-          usedBoardId: boardId,
-          type: PointsType.RECYCLING,
-          pointsAmount: pointsToAward,
-        },
-      });
+    if (board.image && board.image.length > 0) {
+      await this.imageService.deleteMultiple(board.image);
     }
-  }
-
-  private async removePoints(
-    tx: PrismaTransaction,
-    updatedBoard: UpdatedBoardWithRelations,
-    boardId: string
-  ): Promise<void> {
-    if (!updatedBoard.userId) return;
-
-    await tx.pointsHistory.deleteMany({
-      where: {
-        userId: updatedBoard.userId,
-        usedBoardId: boardId,
-        type: 'RECYCLING',
-      },
-    });
-
-    await tx.usedBoard.update({
-      where: { id: boardId },
-      data: { pointsAwarded: 0 },
-    });
-  }
-
-  private async updatePointsOnly(
-    tx: PrismaTransaction,
-    updatedBoard: UpdatedBoardWithRelations,
-    boardId: string
-  ): Promise<void> {
-    if (!updatedBoard.userId) return;
-
-    await tx.pointsHistory.deleteMany({
-      where: {
-        userId: updatedBoard.userId,
-        usedBoardId: boardId,
-        type: 'RECYCLING',
-      },
-    });
-
-    if (updatedBoard.pointsAwarded && updatedBoard.pointsAwarded > 0) {
-      await tx.pointsHistory.create({
-        data: {
-          userId: updatedBoard.userId,
-          usedBoardId: boardId,
-          type: PointsType.RECYCLING,
-          pointsAmount: updatedBoard.pointsAwarded,
-        },
-      });
-    }
-
-    await this.recalculateUserPoints(tx, updatedBoard.userId);
-  }
-
-  private async recalculateUserPoints(
-    tx: PrismaTransaction,
-    userId: string
-  ): Promise<void> {
-    const totalPoints = await tx.pointsHistory.aggregate({
-      where: { userId },
-      _sum: { pointsAmount: true },
-    });
-
-    await tx.user.update({
-      where: { id: userId },
-      data: {
-        points: totalPoints._sum.pointsAmount ?? 0,
-      },
-    });
   }
 
   private async createBoardSubmissionNotifications(
@@ -289,10 +124,7 @@ async getAvailableUsedBoards(): Promise<UsedBoardWithRelations[]> {
         description: NotificationTemplates.boardSubmitted(board.name),
       });
 
-      const user = await prisma.user.findUnique({
-        where: { id: board.userId },
-        select: { name: true },
-      });
+      const user = await this.usedBoardRepository.findUserById(board.userId);
 
       if (user) {
         await createNotification({
@@ -304,12 +136,13 @@ async getAvailableUsedBoards(): Promise<UsedBoardWithRelations[]> {
           ),
         });
       }
-    } catch {
+    } catch (error) {
+      console.error('Erreur lors de la création des notifications:', error);
     }
   }
 
   private async createStatusChangeNotification(
-    board: UpdatedBoardWithRelations
+    board: UsedBoardWithRelations
   ): Promise<void> {
     try {
       if (!board.userId) {
@@ -376,31 +209,6 @@ async getAvailableUsedBoards(): Promise<UsedBoardWithRelations[]> {
       }
     } catch (error) {
       console.error('Erreur notification changement statut:', error);
-    }
-  }
-
-  async deleteUsedBoard(boardId: string): Promise<void> {
-    const board = await this.getUsedBoardById(boardId);
-
-    await prisma.$transaction(async (tx: PrismaTransaction) => {
-      if (board.pointsAwarded && board.pointsAwarded > 0 && board.user) {
-        await tx.pointsHistory.deleteMany({
-          where: {
-            userId: board.user.id,
-            usedBoardId: boardId,
-            type: 'RECYCLING',
-          },
-        });
-        await this.recalculateUserPoints(tx, board.user.id);
-      }
-
-      await tx.usedBoard.delete({
-        where: { id: boardId },
-      });
-    });
-
-    if (board.image && board.image.length > 0) {
-      await this.imageService.deleteMultiple(board.image);
     }
   }
 }
