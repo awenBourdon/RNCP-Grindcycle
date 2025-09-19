@@ -1,3 +1,4 @@
+// src/lib/server/src/products/products.service.ts
 import { ProductStatus } from '@/generated/prisma';
 import { ProductRepository } from '@/lib/server/src/products/repository/products.repository';
 import {
@@ -7,12 +8,13 @@ import {
 } from '@/lib/server/types/product';
 import { ImageService } from '@/lib/server/src/upload-images/images.service';
 import { prisma } from '@/lib/prisma';
-import { PointsType } from '@/generated/prisma';
 import {
   createNotification,
   NotificationTemplates,
 } from '../notifications/notifications.service';
 import { InterfaceProductRepository } from './repository/interface-products.repository';
+import { pointsService } from '../points/points.service';
+import { PointsType } from '@/generated/prisma';
 
 export interface PurchaseResult {
   product: ProductWithRelations | null;
@@ -102,7 +104,14 @@ export class ProductService {
       throw new Error('Produit déjà acheté');
     }
 
+    // Vérifier les points avec le nouveau PointsService
+    const userPointsTotal = await pointsService.getUserPointsTotal(data.userId);
+    if (userPointsTotal < (product.pricePoints || 0)) {
+      throw new Error(`Points insuffisants. Tu as ${userPointsTotal} points, ${product.pricePoints} requis.`);
+    }
+
     const result = await prisma.$transaction(async tx => {
+      // Marquer le produit comme vendu
       await tx.product.update({
         where: { id: data.productId },
         data: {
@@ -110,13 +119,19 @@ export class ProductService {
         },
       });
 
-      await tx.pointsHistory.create({
-        data: {
-          user: { connect: { id: data.userId } },
-          type: PointsType.PURCHASE,
-          pointsAmount: -product.pricePoints,
-        },
+      // Utiliser le nouveau PointsService pour gérer les points
+      const pointsRepository = pointsService.getRepository();
+      
+      // Créer l'entrée dans l'historique
+      await pointsRepository.createInTransaction(tx, {
+        userId: data.userId,
+        type: PointsType.PURCHASE,
+        pointsAmount: -(product.pricePoints || 0),
+        usedBoardId: null,
       });
+
+      // Déduire les points directement de l'utilisateur
+      await pointsRepository.addPointsToUserInTransaction(tx, data.userId, -(product.pricePoints || 0));
 
       const updatedProduct = await this.productRepository.findById(data.productId);
 

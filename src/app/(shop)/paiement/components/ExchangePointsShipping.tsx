@@ -72,7 +72,7 @@ export function ExchangePointsShipping({
           name: item.name,
           type: item.type,
           priceEuro: item.priceEuro,
-          pricePoints: Math.round(item.priceEuro * 10),
+          pricePoints: item.pricePoints,
           quantity: item.quantity,
         }));
 

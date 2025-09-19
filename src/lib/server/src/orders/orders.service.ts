@@ -7,9 +7,11 @@ import {
   createNotification,
 } from '../notifications/notifications.service';
 import {
+  CartItemForPurchase,
   OrderWithRelations,
   PurchaseWithPointsData,
 } from '@/lib/types';
+import { pointsService } from '../points/points.service';
 
 export class OrderService {
   constructor(
@@ -19,6 +21,15 @@ export class OrderService {
   async purchaseWithPoints(
     data: PurchaseWithPointsData
   ): Promise<OrderWithRelations> {
+    const totalPointsNeeded = this.calculateTotalPoints(data.cartItems);
+    const userPointsTotal = await pointsService.getUserPointsTotal(data.userId);
+
+    if (userPointsTotal < totalPointsNeeded) {
+      throw new Error(
+        `Points insuffisants. Tu as ${userPointsTotal} points, ${totalPointsNeeded} requis.`
+      );
+    }
+
     const order = await this.orderRepository.purchaseWithPointsTransaction(data);
    
     const user = await this.orderRepository.findUserWithPoints(data.userId);
@@ -47,6 +58,12 @@ export class OrderService {
 
   async updateOrderStatus(orderId: string, status: OrderStatus): Promise<OrderWithRelations> {
     return await this.orderRepository.updateStatus(orderId, status);
+  }
+
+  private calculateTotalPoints(cartItems: CartItemForPurchase[]): number {
+    return Array.isArray(cartItems) 
+      ? cartItems.reduce((total, item) => total + ((item.pricePoints || 0) * (item.quantity || 0)), 0)
+      : 0;
   }
 
   private async createPurchaseNotifications(

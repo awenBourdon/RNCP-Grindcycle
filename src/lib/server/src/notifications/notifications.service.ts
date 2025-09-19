@@ -103,8 +103,8 @@ export const NotificationTemplates = {
   boardValidated: (boardName: string) =>
     `Ta planche "${boardName}" a été validée par notre équipe.`,
   boardSent: (boardName: string) => `Tu as expédiée ta planche "${boardName}".`,
-  boardReceived: (boardName: string, points: number) =>
-    `Ta planche "${boardName}" a été reçue ! ${points} points attribués.`,
+  boardReceived: (boardName: string) =>
+    `Ta planche "${boardName}" a été reçue !`,
   boardRejected: (boardName: string) =>
     `Ta planche "${boardName}" a été rejetée`,
   boardRecycled: (boardName: string, productName: string) =>

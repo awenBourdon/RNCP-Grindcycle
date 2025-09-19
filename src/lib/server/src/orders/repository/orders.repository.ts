@@ -1,3 +1,4 @@
+// src/lib/server/src/orders/repository/orders.repository.ts
 import { prisma } from '@/lib/prisma';
 import { OrderStatus, PaymentType, ProductStatus, PointsType } from '@/generated/prisma';
 import { CreateOrderData, OrderWithRelations, PurchaseWithPointsData, CreateOrderItemData, CartItemForPurchase } from '@/lib/types';
@@ -6,6 +7,7 @@ export type { InterfaceOrderRepository };
 import { pointsPurchaseSchema } from '@/lib/validations/shippingValidation';
 import { NotificationTemplates } from '../../notifications/notifications.service';
 import { InterfaceOrderRepository } from './interface-orders.repository';
+import { pointsService } from '../../points/points.service';
 
 export class OrderRepository implements InterfaceOrderRepository {
   async create(data: CreateOrderData): Promise<OrderWithRelations> {
@@ -181,9 +183,6 @@ export class OrderRepository implements InterfaceOrderRepository {
     });
   }
 
-  
-
-  // Nouvelles méthodes pour éviter les appels directs à Prisma dans le service
   async findUserWithPoints(userId: string): Promise<{
     id: string;
     name: string | null;
@@ -294,22 +293,16 @@ export class OrderRepository implements InterfaceOrderRepository {
 
       const order = await this.createOrderInTransaction(tx, orderData);
 
-      await tx.pointsHistory.create({
-        data: {
-          userId: data.userId,
-          type: PointsType.PURCHASE,
-          pointsAmount: -totalPointsNeeded,
-        },
+      const pointsRepository = pointsService.getRepository();
+      
+      await pointsRepository.createInTransaction(tx, {
+        userId: data.userId,
+        type: PointsType.PURCHASE,
+        pointsAmount: -totalPointsNeeded,
+        usedBoardId: null,
       });
 
-      await tx.user.update({
-        where: { id: data.userId },
-        data: {
-          points: {
-            decrement: totalPointsNeeded,
-          },
-        },
-      });
+      await pointsRepository.addPointsToUserInTransaction(tx, data.userId, -totalPointsNeeded);
 
       for (const productUpdate of productUpdates) {
         await tx.product.update({

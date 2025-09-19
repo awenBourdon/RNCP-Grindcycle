@@ -15,7 +15,7 @@ export interface ProductType {
   description?: string | null;
   type: BoardType;
   priceEuro: number;
-  pricePoints: number | null;
+  pricePoints: number;
   imageUrl: string[];
   status: string;
   usedBoard?: {
@@ -36,6 +36,7 @@ export type CartItemType = {
   type: string;
   size?: number;
   priceEuro: number;
+  pricePoints: number;
   quantity: number;
   imageUrl: string[];
 };

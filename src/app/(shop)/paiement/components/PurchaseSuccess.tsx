@@ -145,7 +145,12 @@ export function PurchaseSuccess() {
             </div>
             <p className="text-gray-600">
               Ta commande a été traitée avec succès pour un montant de{' '}
-              <strong>{orderDetails.totalAmount.toFixed(2)} €</strong>
+              <strong>
+                {(orderDetails.totalAmount + orderDetails.shippingCost).toFixed(
+                  2
+                )}{' '}
+                €
+              </strong>
               <span className="block mt-2 font-medium">
                 Numéro de commande: #{orderDetails.id.slice(-8)}
               </span>

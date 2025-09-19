@@ -19,7 +19,7 @@ export default async function CatalogPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen max-w-7xl mx-auto">
       <div className="pt-40 pb-16 px-6 text-center bg-white">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-normal text-[#010101]">

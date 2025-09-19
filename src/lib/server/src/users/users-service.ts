@@ -1,6 +1,7 @@
 import { User } from '@/generated/prisma';
 import { InterfaceUserRepository } from './repository/interface-users.repository';
 import { UserRepository } from './repository/users.repository';
+import { pointsService } from '../points/points.service';
 
 export class UserService {
   constructor(
@@ -21,24 +22,14 @@ export class UserService {
     return await this.userRepository.findAll();
   }
 
-  async updateUserPoints(id: string, points: number): Promise<User> {
-    await this.getUserById(id);
-    return await this.userRepository.updatePoints(id, points);
+  async getUserPointsHistory(userId: string) {
+    await this.getUserById(userId);
+    return await pointsService.getUserPointsHistory(userId);
   }
 
-  async incrementUserPoints(id: string, points: number): Promise<User> {
-    await this.getUserById(id);
-    return await this.userRepository.incrementPoints(id, points);
-  }
-
-  async decrementUserPoints(id: string, points: number): Promise<User> {
-    const user = await this.getUserById(id);
-    
-    if (user.points < points) {
-      throw new Error('Points insuffisants');
-    }
-    
-    return await this.userRepository.decrementPoints(id, points);
+  async getUserPointsTotal(userId: string): Promise<number> {
+    await this.getUserById(userId);
+    return await pointsService.getUserPointsTotal(userId);
   }
 
   async deleteUser(userId: string): Promise<void> {

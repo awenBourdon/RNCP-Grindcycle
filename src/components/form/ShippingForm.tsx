@@ -201,7 +201,7 @@ export function ShippingForm({
       <button
         type="submit"
         disabled={isLoading || !isValid || !isDirty}
-        className="w-full py-4 px-6 bg-[#0a3d3f] text-white rounded-xl font-medium cursor-pointer hover:bg-[#0a4d4f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        className="w-full py-4 px-6 bg-[#0a3d3f] text-white rounded-full font-medium cursor-pointer hover:bg-[#0a4d4f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
       >
         {isLoading ? (
           <>
