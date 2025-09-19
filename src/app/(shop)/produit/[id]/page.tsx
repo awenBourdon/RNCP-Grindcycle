@@ -2,13 +2,13 @@ import { notFound } from 'next/navigation';
 import { ProductDisplay } from './components/ProductDisplay';
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { id } = params;
+  const { id } = await params;
 
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
