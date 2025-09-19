@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
+export const metadata = {
+  title: 'Page introuvable',
+};
+
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">

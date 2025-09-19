@@ -1,5 +1,5 @@
 import { OrderStatus } from '@/generated/prisma';
-import { CreateOrderData, OrderWithRelations, OrderStats, PurchaseWithPointsData } from '@/lib/types';
+import { CreateOrderData, OrderWithRelations, PurchaseWithPointsData } from '@/lib/types';
 
 export interface InterfaceOrderRepository {
   create(data: CreateOrderData): Promise<OrderWithRelations>;

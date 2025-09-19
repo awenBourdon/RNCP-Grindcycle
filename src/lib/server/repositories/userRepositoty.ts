@@ -3,7 +3,6 @@ import { User } from '@/generated/prisma';
 import { InterfaceUserRepository } from './interfaces/interfaceUserRepository';
 
 export class UserRepository implements InterfaceUserRepository {
-
   async findById(id: string): Promise<User | null> {
     return await prisma.user.findUnique({
       where: { id },
@@ -56,6 +55,26 @@ export class UserRepository implements InterfaceUserRepository {
   async findByEmail(email: string): Promise<User | null> {
     return await prisma.user.findUnique({
       where: { email },
+    });
+  }
+
+  async deleteWithOrdersAnonymization(id: string): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      await tx.order.updateMany({
+        where: { userId: id },
+        data: { userId: null }
+      });
+      
+      await tx.user.delete({
+        where: { id }
+      });
+    });
+  }
+
+  async update(id: string, data: Partial<Pick<User, 'name' | 'email'>>): Promise<User> {
+    return await prisma.user.update({
+      where: { id },
+      data,
     });
   }
 }
