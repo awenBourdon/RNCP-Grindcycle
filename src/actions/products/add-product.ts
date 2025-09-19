@@ -19,6 +19,7 @@ export async function createProductAction(formData: FormData) {
   try {
     const data: Record<string, unknown> = {};
     const images = formData.getAll('images') as File[];
+    data.images = images;
 
     for (const [key, value] of formData.entries()) {
       if (key === 'images') {

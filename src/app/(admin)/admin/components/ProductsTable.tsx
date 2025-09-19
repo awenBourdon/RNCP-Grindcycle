@@ -179,9 +179,6 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                         <p className="font-medium text-[#010101]">
                           {product.usedBoard.name}
                         </p>
-                        <p className="text-xs text-gray-500">
-                          de {product.usedBoard.user.name}
-                        </p>
                       </div>
                     ) : (
                       <span className="text-sm text-gray-500 italic">

@@ -8,6 +8,7 @@ import { ImageService } from '@/lib/server/src/upload-images/images.service';
 import { InterfaceUsedBoardRepository } from './repository/interface-used-boards.repository';
 import { UsedBoardRepository } from './repository/used-boards.repository';
 import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
+import { pointsService } from '../points/points.service';
 
 export class UsedBoardService {
   constructor(
@@ -19,7 +20,7 @@ export class UsedBoardService {
     data: Omit<CreateUsedBoardData, 'image'>,
     imageFiles?: File[]
   ): Promise<UsedBoard> {
-    let imageurls: string[] = [];
+    let imageUrls: string[] = [];
 
     if (imageFiles && imageFiles.length > 0) {
       const imageResult = await this.imageService.uploadMultiple(imageFiles);
@@ -30,12 +31,12 @@ export class UsedBoardService {
         );
       }
 
-      imageurls = imageResult.urls;
+      imageUrls = imageResult.urls;
     }
 
     const usedBoardData: CreateUsedBoardData = {
       ...data,
-      image: imageurls,
+      image: imageUrls,
     };
 
     try {
@@ -43,8 +44,8 @@ export class UsedBoardService {
       await this.createBoardSubmissionNotifications(board);
       return board;
     } catch (error) {
-      if (imageurls.length > 0) {
-        await this.imageService.deleteMultiple(imageurls);
+      if (imageUrls.length > 0) {
+        await this.imageService.deleteMultiple(imageUrls);
       }
       throw error;
     }
@@ -107,6 +108,18 @@ export class UsedBoardService {
     }
   }
 
+  async awardPointsToBoard(userId: string, boardId: string, amount: number): Promise<void> {
+    if (amount <= 0) {
+      throw new Error('Le montant des points doit être positif');
+    }
+
+    await pointsService.awardRecyclingPoints(userId, boardId, amount);
+  }
+
+  async removePointsFromBoard(userId: string, boardId: string): Promise<void> {
+    await pointsService.removePointsForUsedBoard(userId, boardId);
+  }
+
   private async createBoardSubmissionNotifications(
     board: UsedBoard
   ): Promise<void> {
@@ -122,7 +135,6 @@ export class UsedBoardService {
       });
 
       const user = await this.usedBoardRepository.findUserById(board.userId);
-
       if (user) {
         await createNotification({
           userId: null,
@@ -134,7 +146,7 @@ export class UsedBoardService {
         });
       }
     } catch (error) {
-      console.error('Erreur lors de la création des notifications:', error);
+      console.error('Erreur lors de la création des notifications de soumission:', error);
     }
   }
 
@@ -149,44 +161,33 @@ export class UsedBoardService {
       let notificationDescription = '';
 
       switch (board.status) {
-        case 'VALIDATED':
-          notificationDescription = NotificationTemplates.boardValidated(
-            board.name
-          );
+        case UsedBoardStatus.VALIDATED:
+          notificationDescription = NotificationTemplates.boardValidated(board.name);
           break;
 
-        case 'SENT':
+        case UsedBoardStatus.SENT:
           notificationDescription = NotificationTemplates.boardSent(board.name);
           break;
 
-        case 'RECEIVED':
+        case UsedBoardStatus.RECEIVED:
           notificationDescription = NotificationTemplates.boardReceived(
-            board.name,
-            board.pointsAwarded || 0
-          );
-          break;
-
-        case 'REJECTED':
-          notificationDescription = NotificationTemplates.boardRejected(
             board.name
           );
           break;
 
-        case 'RECYCLED_TO_PRODUCT':
-          if (board.product) {
-            notificationDescription = NotificationTemplates.boardRecycled(
-              board.name,
-              board.product.name
-            );
-          } else {
-            notificationDescription = NotificationTemplates.boardRecycled(
-              board.name,
-              'nouveau produit'
-            );
-          }
+        case UsedBoardStatus.REJECTED:
+          notificationDescription = NotificationTemplates.boardRejected(board.name);
           break;
 
-        case 'SOLD':
+        case UsedBoardStatus.RECYCLED_TO_PRODUCT:
+          const productName = board.product?.name || 'nouveau produit';
+          notificationDescription = NotificationTemplates.boardRecycled(
+            board.name,
+            productName
+          );
+          break;
+
+        case UsedBoardStatus.SOLD:
           notificationDescription = NotificationTemplates.boardSold(
             board.name,
             board.pointsAwarded || 0
@@ -205,7 +206,7 @@ export class UsedBoardService {
         });
       }
     } catch (error) {
-      console.error('Erreur notification changement statut:', error);
+      console.error('Erreur lors de la création des notifications de changement de statut:', error);
     }
   }
 }
