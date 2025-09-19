@@ -384,7 +384,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                                 );
                               }}
                             />
-                            <div className="hidden absolute inset-0 items-center justify-center">
+                            <div className="hidden absolute inset-0 items-center justify-center cursor-pointer">
                               <ImageIcon size={16} className="text-gray-400" />
                             </div>
                           </div>
@@ -396,7 +396,7 @@ export const UsedBoardsTable = ({ usedBoards }: UsedBoardsTableProps) => {
                           {board.image && board.image.length > 0 && (
                             <button
                               onClick={() => handleViewImages(board)}
-                              className="text-[#0a3d3f] hover:text-[#0a3d3f]/80 p-1 transition-colors"
+                              className="text-[#0a3d3f] hover:text-[#0a3d3f]/80 p-1 transition-colors cursor-pointer"
                               title="Voir les images"
                             >
                               <Eye size={16} />

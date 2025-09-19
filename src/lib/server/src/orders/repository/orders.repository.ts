@@ -1,4 +1,3 @@
-// src/lib/server/src/orders/repository/orders.repository.ts
 import { prisma } from '@/lib/prisma';
 import { OrderStatus, PaymentType, ProductStatus, PointsType } from '@/generated/prisma';
 import { CreateOrderData, OrderWithRelations, PurchaseWithPointsData, CreateOrderItemData, CartItemForPurchase } from '@/lib/types';
@@ -195,6 +194,17 @@ export class OrderRepository implements InterfaceOrderRepository {
         deletedAt: null 
       },
       select: { id: true, name: true, email: true, points: true },
+    });
+  }
+
+  async markProductsAsSold(productIds: string[]): Promise<void> {
+    await prisma.product.updateMany({
+      where: {
+        id: { in: productIds }
+      },
+      data: {
+        status: ProductStatus.SOLD
+      }
     });
   }
 

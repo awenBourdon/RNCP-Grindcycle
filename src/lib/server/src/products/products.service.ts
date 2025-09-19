@@ -1,4 +1,3 @@
-// src/lib/server/src/products/products.service.ts
 import { ProductStatus } from '@/generated/prisma';
 import { ProductRepository } from '@/lib/server/src/products/repository/products.repository';
 import {
@@ -104,14 +103,12 @@ export class ProductService {
       throw new Error('Produit déjà acheté');
     }
 
-    // Vérifier les points avec le nouveau PointsService
     const userPointsTotal = await pointsService.getUserPointsTotal(data.userId);
     if (userPointsTotal < (product.pricePoints || 0)) {
       throw new Error(`Points insuffisants. Tu as ${userPointsTotal} points, ${product.pricePoints} requis.`);
     }
 
     const result = await prisma.$transaction(async tx => {
-      // Marquer le produit comme vendu
       await tx.product.update({
         where: { id: data.productId },
         data: {
@@ -119,10 +116,8 @@ export class ProductService {
         },
       });
 
-      // Utiliser le nouveau PointsService pour gérer les points
       const pointsRepository = pointsService.getRepository();
       
-      // Créer l'entrée dans l'historique
       await pointsRepository.createInTransaction(tx, {
         userId: data.userId,
         type: PointsType.PURCHASE,
@@ -130,7 +125,6 @@ export class ProductService {
         usedBoardId: null,
       });
 
-      // Déduire les points directement de l'utilisateur
       await pointsRepository.addPointsToUserInTransaction(tx, data.userId, -(product.pricePoints || 0));
 
       const updatedProduct = await this.productRepository.findById(data.productId);

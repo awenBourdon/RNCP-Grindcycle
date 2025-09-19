@@ -1,6 +1,5 @@
-// src/lib/server/src/used-boards/repository/used-boards.repository.ts
 import { prisma } from '@/lib/prisma';
-import { UsedBoard, PointsType } from '@/generated/prisma';
+import { UsedBoard, PointsType, BoardType, BoardCondition } from '@/generated/prisma';
 import {
   CreateUsedBoardData,
   UpdateUsedBoardData,
@@ -11,6 +10,16 @@ import { InterfaceUsedBoardRepository } from './interface-used-boards.repository
 import { pointsService } from '../../points/points.service';
 
 type PrismaTransaction = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+const POINTS_BAREME = {
+  SKATE: { GOOD: 80, AVERAGE: 60, BAD: 40 },
+  CRUISER: { GOOD: 90, AVERAGE: 70, BAD: 50 },
+  LONG: { GOOD: 100, AVERAGE: 80, BAD: 60 }
+} as const;
+
+function calculatePoints(boardType: BoardType, condition: BoardCondition): number {
+  return POINTS_BAREME[boardType][condition];
+}
 
 export class UsedBoardRepository implements InterfaceUsedBoardRepository {
   async create(data: CreateUsedBoardData): Promise<UsedBoard> {
@@ -146,6 +155,15 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
     oldBoard: UsedBoardWithRelations
   ): Promise<UsedBoardWithRelations> {
     return await prisma.$transaction(async (tx: PrismaTransaction) => {
+      
+      if (updateData.status === 'RECEIVED' && oldBoard.status !== 'RECEIVED') {
+        const autoPoints = calculatePoints(
+          oldBoard.boardType, 
+          oldBoard.boardCondition || 'AVERAGE'
+        );
+        updateData.pointsAwarded = autoPoints;
+      }
+
       const updatedBoard = await tx.usedBoard.update({
         where: { id: boardId },
         data: updateData,
@@ -168,102 +186,41 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
       });
 
       const statusChanged = oldBoard.status !== updatedBoard.status;
-      const pointsEligibleStatuses = [
-        'RECEIVED',
-        'RECYCLED_TO_PRODUCT',
-        'SOLD',
-      ];
-      const noPointsStatuses = [
-        'PENDING_VALIDATION',
-        'VALIDATED',
-        'REJECTED',
-        'SENT',
-      ];
 
       if (statusChanged && updatedBoard.userId) {
         const pointsRepository = pointsService.getRepository();
 
-        if (
-          pointsEligibleStatuses.includes(updatedBoard.status) &&
-          !pointsEligibleStatuses.includes(oldBoard.status)
-        ) {
-          // Supprimer les anciens points de l'historique
+        if (updatedBoard.status === 'RECEIVED' && oldBoard.status !== 'RECEIVED') {
           await pointsRepository.deleteInTransaction(tx, updatedBoard.userId, boardId);
-
-          const pointsToAward = updatedBoard.pointsAwarded || oldBoard.pointsAwarded || 50;
+          const pointsToAward = updatedBoard.pointsAwarded || 50;
 
           if (pointsToAward > 0) {
-            // Créer nouvelle entrée dans l'historique
             await pointsRepository.createInTransaction(tx, {
               userId: updatedBoard.userId,
               type: PointsType.RECYCLING,
               pointsAmount: pointsToAward,
               usedBoardId: boardId,
             });
-
-            // Ajouter les points à l'utilisateur
             await pointsRepository.addPointsToUserInTransaction(tx, updatedBoard.userId, pointsToAward);
-
-            if (!updatedBoard.pointsAwarded) {
-              await tx.usedBoard.update({
-                where: { id: boardId },
-                data: { pointsAwarded: pointsToAward },
-              });
-            }
           }
-
-        } else if (noPointsStatuses.includes(updatedBoard.status)) {
-          // Récupérer les points à supprimer avant de les supprimer
-          const pointsToRemove = await tx.pointsHistory.findMany({
-            where: {
-              userId: updatedBoard.userId,
-              usedBoardId: boardId,
-              type: PointsType.RECYCLING,
-            },
-            select: { pointsAmount: true },
-          });
-
-          const totalPointsToRemove = pointsToRemove.reduce((sum, p) => sum + p.pointsAmount, 0);
-
-          // Supprimer l'historique
-          await pointsRepository.deleteInTransaction(tx, updatedBoard.userId, boardId);
-
-          // Déduire les points de l'utilisateur
-          if (totalPointsToRemove > 0) {
-            await pointsRepository.addPointsToUserInTransaction(tx, updatedBoard.userId, -totalPointsToRemove);
-          }
-
-          await tx.usedBoard.update({
-            where: { id: boardId },
-            data: { pointsAwarded: 0 },
-          });
-        }
-        
-      } else if (
+        } 
+      }
+      else if (
         updateData.pointsAwarded !== undefined &&
-        pointsEligibleStatuses.includes(updatedBoard.status) &&
+        updatedBoard.status === 'RECEIVED' &&
         updatedBoard.userId
       ) {
-        // Mise à jour des points seulement
         const pointsRepository = pointsService.getRepository();
         
-        // Récupérer les anciens points
         const oldPointsEntries = await tx.pointsHistory.findMany({
-          where: {
-            userId: updatedBoard.userId,
-            usedBoardId: boardId,
-            type: PointsType.RECYCLING,
-          },
+          where: { userId: updatedBoard.userId, usedBoardId: boardId, type: PointsType.RECYCLING },
           select: { pointsAmount: true },
         });
-
         const oldTotal = oldPointsEntries.reduce((sum, p) => sum + p.pointsAmount, 0);
         
-        // Supprimer l'ancien historique
         await pointsRepository.deleteInTransaction(tx, updatedBoard.userId, boardId);
 
         if (updatedBoard.pointsAwarded && updatedBoard.pointsAwarded > 0) {
-          // Créer le nouvel historique
           await pointsRepository.createInTransaction(tx, {
             userId: updatedBoard.userId,
             type: PointsType.RECYCLING,
@@ -271,16 +228,12 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
             usedBoardId: boardId,
           });
 
-          // Ajuster les points utilisateur (différence)
           const difference = updatedBoard.pointsAwarded - oldTotal;
           if (difference !== 0) {
             await pointsRepository.addPointsToUserInTransaction(tx, updatedBoard.userId, difference);
           }
-        } else {
-          // Supprimer tous les points
-          if (oldTotal > 0) {
-            await pointsRepository.addPointsToUserInTransaction(tx, updatedBoard.userId, -oldTotal);
-          }
+        } else if (oldTotal > 0) {
+          await pointsRepository.addPointsToUserInTransaction(tx, updatedBoard.userId, -oldTotal);
         }
       }
 
@@ -296,7 +249,6 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
       if (board.pointsAwarded && board.pointsAwarded > 0 && board.user) {
         const pointsRepository = pointsService.getRepository();
         
-        // Récupérer les points à supprimer
         const pointsEntries = await tx.pointsHistory.findMany({
           where: {
             userId: board.user.id,
@@ -308,10 +260,8 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
 
         const totalPoints = pointsEntries.reduce((sum, p) => sum + p.pointsAmount, 0);
         
-        // Supprimer l'historique
         await pointsRepository.deleteInTransaction(tx, board.user.id, boardId);
         
-        // Déduire les points de l'utilisateur
         if (totalPoints > 0) {
           await pointsRepository.addPointsToUserInTransaction(tx, board.user.id, -totalPoints);
         }

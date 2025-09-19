@@ -98,7 +98,7 @@ export const ProductStatusSelect = ({
           ))}
         </select>
 
-        <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none text-blue-600">
+        <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none text-black">
           {getStatusIcon(status)}
         </div>
 
