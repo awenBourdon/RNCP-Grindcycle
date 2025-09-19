@@ -32,11 +32,6 @@ export class UserService {
     return await pointsService.getUserPointsTotal(userId);
   }
 
-  async recalculateUserPoints(userId: string): Promise<number> {
-    await this.getUserById(userId);
-    return await pointsService.recalculateUserPoints(userId);
-  }
-
   async deleteUser(userId: string): Promise<void> {
     await this.userRepository.deleteWithOrdersAnonymization(userId);
   }

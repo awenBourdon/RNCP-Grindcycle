@@ -1,4 +1,3 @@
-// src/lib/server/src/points/repository/interface-points.repository.ts
 import { PointsHistory, PointsType } from '@/generated/prisma';
 
 export interface CreatePointsData {
@@ -11,7 +10,6 @@ export interface CreatePointsData {
 type PrismaTransaction = Parameters<Parameters<typeof import('@/lib/prisma').prisma.$transaction>[0]>[0];
 
 export interface InterfacePointsRepository {
-  // Historique des points (pour traçabilité)
   create(data: CreatePointsData): Promise<PointsHistory>;
   findByUserId(userId: string): Promise<PointsHistory[]>;
   deleteByUsedBoardId(userId: string, usedBoardId: string): Promise<void>;
