@@ -1,6 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { ProductService } from '@/lib/server/services/products.service';
+import { ProductService } from '@/lib/server/src/products/products.service';
 import { productSchema } from '@/lib/validations/boardsValidation';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';

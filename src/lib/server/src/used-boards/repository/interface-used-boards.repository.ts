@@ -16,4 +16,17 @@ export interface InterfaceUsedBoardRepository {
   ): Promise<UsedBoardWithRelations>;
   delete(id: string): Promise<void>;
   findByUserId(userId: string): Promise<UsedBoardWithRelations[]>;
+  
+  updateWithPointsTransaction(
+    boardId: string,
+    updateData: Partial<UpdateUsedBoardData>,
+    oldBoard: UsedBoardWithRelations
+  ): Promise<UsedBoardWithRelations>;
+  
+  deleteWithPointsTransaction(
+    boardId: string,
+    board: UsedBoardWithRelations
+  ): Promise<void>;
+  
+  findUserById(userId: string): Promise<{ name: string | null } | null>;
 }

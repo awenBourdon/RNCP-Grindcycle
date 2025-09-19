@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { applyGetRateLimit } from '@/lib/rateLimit';
+import { auth } from '@/lib/auth';
+import { NotificationService } from '@/lib/server/src/notifications/notifications.service';
 
 export async function GET(request: NextRequest) {
   const rateLimitResponse = applyGetRateLimit(request, 'getNotifications');
@@ -8,25 +9,55 @@ export async function GET(request: NextRequest) {
     return rateLimitResponse;
   }
 
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get('userId');
-
-  if (!userId) {
-    return NextResponse.json(
-      { error: 'Paramètre userId manquant' },
-      { status: 400 }
-    );
-  }
-
   try {
-    const notifications = await prisma.notification.findMany({
-      where: { userId, target: 'USER' },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
+    const session = await auth.api.getSession({
+      headers: request.headers,
     });
 
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Non authentifié' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+    const type = searchParams.get('type');
+    
+    const notificationService = new NotificationService();
+
+    if (type === 'admin') {
+      if (session.user.role !== 'ADMIN') {
+        return NextResponse.json(
+          { error: 'Accès non autorisé' },
+          { status: 403 }
+        );
+      }
+
+      const notifications = await notificationService.getAdminNotifications();
+      return NextResponse.json({ success: true, data: notifications });
+    }
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Paramètre userId manquant' },
+        { status: 400 }
+      );
+    }
+
+    if (userId !== session.user.id && session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Accès non autorisé' },
+        { status: 403 }
+      );
+    }
+
+    const notifications = await notificationService.getUserNotifications(userId);
+    
     return NextResponse.json({ success: true, data: notifications });
-  } catch {
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { success: false, error: 'Erreur lors de la récupération des notifications' },
       { status: 500 }

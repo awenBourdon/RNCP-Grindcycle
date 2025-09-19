@@ -29,7 +29,7 @@ export const RATE_LIMITS = {
   getUsedBoards: { max: 50, windowMs: 1 * 60 * 1000 },
   getFavorites: { max: 30, windowMs: 1 * 60 * 1000 },
   getNotifications: { max: 60, windowMs: 1 * 60 * 1000 },
-
+  getOrders: { max: 50, windowMs: 1 * 60 * 1000 },
   generalGet: { max: 200, windowMs: 1 * 60 * 1000 },
 } as const;
 
@@ -51,6 +51,7 @@ export const RATE_LIMIT_MESSAGES = {
   getUsedBoards: 'Trop de requêtes pour les planches. Patiente 1 minute.',
   getFavorites: 'Trop de requêtes pour les favoris. Patiente 1 minute.',
   getNotifications: 'Trop de requêtes pour les notifications. Patiente 1 minute.',
+  getOrders: 'Trop de requêtes pour les commandes. Patiente 1 minute.',
   generalGet: 'Trop de requêtes. Patiente 1 minute.',
 } as const;
 

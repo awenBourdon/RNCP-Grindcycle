@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { prisma } from '@/lib/prisma';
+import { OrderService } from '@/lib/server/src/orders/orders.service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
@@ -18,12 +18,6 @@ export async function POST(req: Request) {
     }
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    
-    console.log('Session Stripe:', {
-      id: session.id,
-      payment_status: session.payment_status,
-      customer_email: session.customer_email
-    });
 
     if (session.payment_status !== 'paid') {
       return NextResponse.json(
@@ -32,17 +26,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: 'CONFIRMED',
-        updatedAt: new Date(),
-      },
-      include: {
-        orderItems: true,
-        user: true,
-      },
-    });
+    const orderService = new OrderService();
+    
+    const updatedOrder = await orderService.updateOrderStatus(orderId, 'CONFIRMED');
 
     const orderDetails = {
       id: updatedOrder.id,

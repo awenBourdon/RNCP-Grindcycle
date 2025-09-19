@@ -1,50 +1,25 @@
 'use client';
-
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { Bell, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Notification } from '@/lib/types';
-import { useAbortController } from '@/hooks/useAbortController';
 import {
   markAllNotificationsAsReadAction,
   markNotificationAsReadAction,
 } from '@/actions/notifications/notification.action';
 
-export const UserNotifications = ({ userId }: { userId: string }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface UserNotificationsProps {
+  notifications: Notification[];
+  userId: string;
+}
+
+export const UserNotifications = ({
+  notifications: initialNotifications,
+  userId,
+}: UserNotificationsProps) => {
+  const [notifications, setNotifications] =
+    useState<Notification[]>(initialNotifications);
   const [isPending, startTransition] = useTransition();
-  const { createSignal } = useAbortController();
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      if (!userId) return;
-      const signal = createSignal();
-
-      try {
-        const response = await fetch(`/api/notifications?userId=${userId}`, {
-          signal: signal,
-        });
-        const result = await response.json();
-        if (result.success) {
-          const unreadNotifications = result.data.filter(
-            (notification: Notification) => !notification.isRead
-          );
-          setNotifications(unreadNotifications);
-        }
-      } catch {
-        if (!signal.aborted) {
-          toast.error('Erreur lors de la récupération des notifications.');
-        }
-      } finally {
-        if (!signal.aborted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchNotifications();
-  }, [userId, createSignal]);
 
   const handleMarkAsRead = async (notificationId: string) => {
     startTransition(async () => {
@@ -81,20 +56,6 @@ export const UserNotifications = ({ userId }: { userId: string }) => {
       }
     });
   };
-
-  if (isLoading) {
-    return (
-      <div className="bg-[#f8f7f4] rounded-xl p-8">
-        <div className="flex items-center mb-8">
-          <Bell size={24} className="text-[#0a3d3f] mr-3" />
-          <h2 className="text-2xl font-normal text-[#010101]">Notifications</h2>
-        </div>
-        <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0a3d3f]"></div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-[#f8f7f4] rounded-xl p-8">

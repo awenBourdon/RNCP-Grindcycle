@@ -13,7 +13,7 @@ import {
 import { UsedBoard } from '@/lib/types';
 
 interface UsedBoardsListProps {
-  userBoards: UsedBoard[];
+  usedBoards: UsedBoard[];
 }
 
 const getStatusText = (status: UsedBoardStatus) => {
@@ -58,7 +58,7 @@ const getStatusIcon = (status: UsedBoardStatus) => {
   }
 };
 
-export const UsedBoardsList = ({ userBoards }: UsedBoardsListProps) => {
+export const UsedBoardsList = ({ usedBoards }: UsedBoardsListProps) => {
   return (
     <div className="bg-[#f8f7f4] rounded-xl p-8">
       <div className="flex items-center mb-8">
@@ -68,7 +68,7 @@ export const UsedBoardsList = ({ userBoards }: UsedBoardsListProps) => {
         </h2>
       </div>
 
-      {userBoards.length === 0 ? (
+      {usedBoards.length === 0 ? (
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center">
             <Recycle size={24} className="text-[#0a3d3f]" />
@@ -83,7 +83,7 @@ export const UsedBoardsList = ({ userBoards }: UsedBoardsListProps) => {
         </div>
       ) : (
         <div className="space-y-6">
-          {userBoards.map(board => (
+          {usedBoards.map(board => (
             <div
               key={board.id}
               className="flex items-start gap-6 p-6 bg-white rounded-lg border border-gray-200"

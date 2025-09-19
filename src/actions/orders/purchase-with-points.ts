@@ -2,7 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { OrderService } from '@/lib/server/services/orders.service';
+import { OrderService } from '@/lib/server/src/orders/orders.service';
 
 const orderService = new OrderService();
 

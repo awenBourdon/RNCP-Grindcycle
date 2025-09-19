@@ -2,7 +2,7 @@ import {
   UPLOAD_CONFIG,
   isAllowedMimeType,
   isAllowedExtension,
-} from '../config/upload';
+} from './upload';
 import { EnhancedImageValidator } from '@/lib/validations/imagesValidations';
 
 export interface ImageValidationResult {
@@ -41,7 +41,7 @@ export class ImageService {
   private async getStorageService() {
     if (!this.storageService) {
       const { SupabaseStorageService } = await import(
-        '@/lib/server/services/supabase-storage.service'
+        '@/lib/server/src/upload-images/supabase-storage.service'
       );
       this.storageService = new SupabaseStorageService(this.directory);
     }

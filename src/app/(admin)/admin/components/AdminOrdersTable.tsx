@@ -1,5 +1,5 @@
 'use client';
-
+import React from 'react';
 import {
   type OrderStatus,
   type OrderWithRelations,
@@ -103,11 +103,8 @@ export const AdminOrdersTable = ({ orders }: AdminOrdersTableProps) => {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {orders.map(order => (
-                <>
-                  <tr
-                    key={order.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
+                <React.Fragment key={order.id}>
+                  <tr className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <span className="text-sm font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">
                         #{order.id.slice(0, 8)}
@@ -327,7 +324,7 @@ export const AdminOrdersTable = ({ orders }: AdminOrdersTableProps) => {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>

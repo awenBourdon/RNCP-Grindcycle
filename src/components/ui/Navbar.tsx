@@ -65,7 +65,7 @@ export const Navbar = ({ user }: NavbarProps) => {
     try {
       const response = await fetch(`/api/notifications?userId=${user.id}`, {
         signal: signal,
-        cache: 'no-cache',
+        cache: 'default',
       });
 
       if (!response.ok) {

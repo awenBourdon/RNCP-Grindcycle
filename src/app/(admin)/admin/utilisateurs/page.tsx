@@ -1,13 +1,10 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { prisma } from '@/lib/prisma';
 import { UsersTable } from '../components/UsersTable';
-import { User } from '@/lib/types';
 
 export default async function UsersPage() {
   const headersList = await headers();
-
   const session = await auth.api.getSession({
     headers: headersList,
   });
@@ -16,17 +13,37 @@ export default async function UsersPage() {
     redirect('/authentification/connexion');
   }
 
-  const users = await prisma.user.findMany({
-    orderBy: {
-      name: 'asc',
-    },
-  });
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
-  const sortedUsers = users.sort((a: User, b: User) => {
-    if (a.role === 'ADMIN' && b.role !== 'ADMIN') return -1;
-    if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1;
-    return 0;
-  });
+  try {
+    const response = await fetch(`${baseUrl}/api/users?admin=true`, {
+      headers: {
+        ...Object.fromEntries(headersList.entries()),
+      },
+      cache: 'no-store',
+    });
 
-  return <UsersTable users={sortedUsers} />;
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des utilisateurs');
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.error || 'Erreur inconnue');
+    }
+
+    return <UsersTable users={data.data} />;
+  } catch {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-red-500">
+          Erreur lors du chargement des utilisateurs
+        </p>
+        <p className="text-sm text-gray-500 mt-2">
+          Actualise la page ou contacte l&apos;administrateur
+        </p>
+      </div>
+    );
+  }
 }

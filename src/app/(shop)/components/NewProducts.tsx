@@ -1,66 +1,21 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, useAnimation, useMotionValue } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { NewProductCard } from './ProductCard';
 import { ProductType } from '@/lib/types';
-import { useAbortController } from '@/hooks/useAbortController';
 
-interface ApiResponse {
-  success: boolean;
-  data: ProductType[];
-  error?: string;
+interface NewProductsProps {
+  products: ProductType[];
 }
 
-export const NewProducts = () => {
+export const NewProducts = ({ products }: NewProductsProps) => {
   const controls = useAnimation();
   const [isMobile, setIsMobile] = useState(false);
-  const [products, setProducts] = useState<ProductType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const x = useMotionValue(0);
   const [, setIsPaused] = useState(false);
   const animationDuration = 45;
-  const { createSignal } = useAbortController();
-
-  const fetchLatestProducts = useCallback(async () => {
-    const signal = createSignal();
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch(`/api/products?latest=6`, {
-        signal: signal,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-      }
-
-      const data: ApiResponse = await response.json();
-
-      if (data.success) {
-        setProducts(data.data);
-        setError(null);
-      } else {
-        setError(data.error || 'Erreur lors du chargement des produits');
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError') {
-        setError(err.message);
-      }
-    } finally {
-      if (!signal.aborted) {
-        setLoading(false);
-      }
-    }
-  }, [createSignal]);
-
-  useEffect(() => {
-    fetchLatestProducts();
-  }, [fetchLatestProducts]);
 
   const startAnimation = () => {
     const startX = x.get();
@@ -80,10 +35,6 @@ export const NewProducts = () => {
       },
     });
   };
-
-  useEffect(() => {
-    fetchLatestProducts();
-  }, [fetchLatestProducts]);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -130,45 +81,6 @@ export const NewProducts = () => {
     setIsPaused(false);
     startAnimation();
   };
-
-  if (loading) {
-    return (
-      <section className="py-24 bg-white text-[#010101]">
-        <div className="max-w-7xl mx-auto px-6 mb-16">
-          <h2 className="text-3xl font-normal mb-6">Nouveautés</h2>
-          <p className="text-lg text-gray-600 max-w-3xl">
-            Découvre nos dernières planches recyclées, chacune avec son histoire
-            et son caractère unique.
-          </p>
-        </div>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-600"></div>
-          <span className="ml-3 text-gray-600">
-            Chargement des nouveautés...
-          </span>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="py-24 bg-white text-[#010101]">
-        <div className="max-w-7xl mx-auto px-6 mb-16">
-          <h2 className="text-3xl font-normal mb-6">Nouveautés</h2>
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => fetchLatestProducts()}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Réessayer
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   if (products.length === 0) {
     return (

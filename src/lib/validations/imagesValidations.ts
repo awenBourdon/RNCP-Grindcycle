@@ -2,7 +2,7 @@ import {
   isAllowedExtension,
   isAllowedMimeType,
   UPLOAD_CONFIG,
-} from '../server/config/upload';
+} from '../server/src/upload-images/upload';
 
 export interface EnhancedImageValidationResult {
   isValid: boolean;

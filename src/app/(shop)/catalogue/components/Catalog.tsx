@@ -3,21 +3,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductList } from './ProductsList';
 import { Filters } from './Filters';
-import { Spinner } from '@/components/ui/Spinner';
 import { ProductType } from '@/lib/types';
-import { useAbortController } from '@/hooks/useAbortController';
 
-interface ApiResponse {
-  success: boolean;
-  data: ProductType[];
-  error?: string;
+interface CatalogProps {
+  products: ProductType[];
 }
 
-export const Catalog = () => {
-  const [products, setProducts] = useState<ProductType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { createSignal } = useAbortController();
+export const Catalog = ({ products }: CatalogProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -68,41 +60,6 @@ export const Catalog = () => {
       setPendingUrl(null);
     }
   }, [pendingUrl, router]);
-
-  const fetchProducts = useCallback(async () => {
-    const signal = createSignal();
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch('/api/products?available=true', { signal });
-
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-      }
-
-      const data: ApiResponse = await response.json();
-
-      if (data.success) {
-        setProducts(data.data);
-      } else {
-        setError(data.error || 'Erreur lors du chargement des produits');
-      }
-    } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError') {
-        setError(err.message);
-      }
-    } finally {
-      if (!signal.aborted) {
-        setLoading(false);
-      }
-    }
-  }, [createSignal]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
 
   useEffect(() => {
     const newFilters = initializeFiltersFromUrl();
@@ -175,33 +132,6 @@ export const Catalog = () => {
     setPriceRangeValues(resetPriceRange);
     updateUrl(resetFiltersData, resetPriceRange);
   }, [updateUrl]);
-
-  if (loading) {
-    return (
-      <div className="pb-24">
-        <div className="flex justify-center items-center h-64">
-          <Spinner />
-          <span className="ml-3 text-gray-600">Chargement des produits...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="pb-24">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={fetchProducts}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Réessayer
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="pb-24">

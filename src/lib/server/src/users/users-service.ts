@@ -1,7 +1,6 @@
 import { User } from '@/generated/prisma';
-import { InterfaceUserRepository } from '../repositories/interfaces/interfaceUserRepository';
-import { prisma } from '@/lib/prisma';
-import { UserRepository } from '../repositories/userRepositoty';
+import { InterfaceUserRepository } from './repository/interface-users.repository';
+import { UserRepository } from './repository/users.repository';
 
 export class UserService {
   constructor(
@@ -16,6 +15,10 @@ export class UserService {
     }
     
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await this.userRepository.findAll();
   }
 
   async updateUserPoints(id: string, points: number): Promise<User> {
@@ -39,15 +42,19 @@ export class UserService {
   }
 
   async deleteUser(userId: string): Promise<void> {
-    await prisma.$transaction(async (tx) => {
-      await tx.order.updateMany({
-        where: { userId },
-        data: { userId: null }
-      });
-      
-      await tx.user.delete({
-        where: { id: userId }
-      });
-    });
+    await this.userRepository.deleteWithOrdersAnonymization(userId);
+  }
+
+  async updateUserProfile(id: string, data: { name?: string; email?: string }): Promise<User> {
+    await this.getUserById(id);
+    
+    if (data.email) {
+      const existingUser = await this.userRepository.findByEmail(data.email);
+      if (existingUser && existingUser.id !== id) {
+        throw new Error('Cette adresse email est déjà utilisée');
+      }
+    }
+    
+    return await this.userRepository.update(id, data);
   }
 }

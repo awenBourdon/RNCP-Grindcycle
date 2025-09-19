@@ -5,7 +5,7 @@ import {
   ProductFilters,
   ProductWithRelations,
 } from '@/lib/server/types/product';
-import { InterfaceProductRepository } from './interfaces/interfaceProductRepository';
+import { InterfaceProductRepository } from './interface-products.repository';
 
 export class ProductRepository implements InterfaceProductRepository {
   async create(data: CreateProductData): Promise<ProductWithRelations> {

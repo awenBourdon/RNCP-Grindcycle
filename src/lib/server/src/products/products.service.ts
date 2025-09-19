@@ -1,18 +1,18 @@
 import { ProductStatus } from '@/generated/prisma';
-import { ProductRepository } from '@/lib/server/repositories/productRepository';
+import { ProductRepository } from '@/lib/server/src/products/repository/products.repository';
 import {
   CreateProductData,
   PurchaseProductData,
   ProductWithRelations,
 } from '@/lib/server/types/product';
-import { ImageService } from '@/lib/server/services/images.service';
+import { ImageService } from '@/lib/server/src/upload-images/images.service';
 import { prisma } from '@/lib/prisma';
 import { PointsType } from '@/generated/prisma';
-import { InterfaceProductRepository } from '../repositories/interfaces/interfaceProductRepository';
 import {
   createNotification,
   NotificationTemplates,
-} from './notifications.service';
+} from '../notifications/notifications.service';
+import { InterfaceProductRepository } from './repository/interface-products.repository';
 
 export interface PurchaseResult {
   product: ProductWithRelations | null;
