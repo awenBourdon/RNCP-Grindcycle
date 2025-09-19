@@ -1,65 +1,68 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { applyGetRateLimit } from '@/lib/rateLimit';
 import { auth } from '@/lib/auth';
-import { NotificationService } from '@/lib/server/src/notifications/notifications.service';
+import { FavoriteService } from '@/lib/server/src/favorites/favorites.service';
 
-export async function GET(request: NextRequest) {
-  const rateLimitResponse = applyGetRateLimit(request, 'getNotifications');
+const favoriteService = new FavoriteService();
+
+export async function GET(req: NextRequest) {
+  const rateLimitResponse = applyGetRateLimit(req, 'getFavorites');
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
 
   try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
+    const productId = searchParams.get('productId');
+
     const session = await auth.api.getSession({
-      headers: request.headers,
+      headers: req.headers,
     });
 
     if (!session) {
       return NextResponse.json(
-        { error: 'Non authentifié' },
+        { success: false, error: 'Non authentifié' },
         { status: 401 }
       );
     }
 
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-    const type = searchParams.get('type');
-    
-    const notificationService = new NotificationService();
-
-    if (type === 'admin') {
-      if (session.user.role !== 'ADMIN') {
+    if (productId) {
+      const targetUserId = userId || session.user.id;
+      
+      if (targetUserId !== session.user.id && session.user.role !== 'ADMIN') {
         return NextResponse.json(
-          { error: 'Accès non autorisé' },
+          { success: false, error: 'Non autorisé' },
           { status: 403 }
         );
       }
 
-      const notifications = await notificationService.getAdminNotifications();
-      return NextResponse.json({ success: true, data: notifications });
+      const isFavorite = await favoriteService.isFavorite(targetUserId, productId);
+      return NextResponse.json({
+        success: true,
+        data: { isFavorite },
+      });
     }
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Paramètre userId manquant' },
-        { status: 400 }
-      );
-    }
+    const targetUserId = userId || session.user.id;
 
-    if (userId !== session.user.id && session.user.role !== 'ADMIN') {
+    if (targetUserId !== session.user.id && session.user.role !== 'ADMIN') {
       return NextResponse.json(
-        { error: 'Accès non autorisé' },
+        { success: false, error: 'Non autorisé' },
         { status: 403 }
       );
     }
 
-    const notifications = await notificationService.getUserNotifications(userId);
-    
-    return NextResponse.json({ success: true, data: notifications });
+    const favorites = await favoriteService.getUserFavorites(targetUserId);
+    return NextResponse.json({
+      success: true,
+      data: favorites,
+    });
+
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { success: false, error: 'Erreur lors de la récupération des notifications' },
+      { success: false, error: error instanceof Error ? error.message : 'Erreur serveur' },
       { status: 500 }
     );
   }

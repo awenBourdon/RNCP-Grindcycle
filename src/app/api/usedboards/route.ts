@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { UsedBoardService } from '@/lib/server/services/used-boards.service';
 import { applyGetRateLimit } from '@/lib/rateLimit';
 import { auth } from '@/lib/auth';
+import { UsedBoardService } from '@/lib/server/src/used-boards/used-boards.service';
 
 const usedBoardService = new UsedBoardService();
 

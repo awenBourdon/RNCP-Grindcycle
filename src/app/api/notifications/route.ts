@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { applyGetRateLimit } from '@/lib/rateLimit';
 import { auth } from '@/lib/auth';
+import { NotificationService } from '@/lib/server/src/notifications/notifications.service';
 
 export async function GET(request: NextRequest) {
   const rateLimitResponse = applyGetRateLimit(request, 'getNotifications');
@@ -24,6 +24,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const type = searchParams.get('type');
+    
+    const notificationService = new NotificationService();
 
     if (type === 'admin') {
       if (session.user.role !== 'ADMIN') {
@@ -33,23 +35,7 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      const notifications = await prisma.notification.findMany({
-        where: { 
-          target: 'ADMIN' 
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 100,
-      });
-
+      const notifications = await notificationService.getAdminNotifications();
       return NextResponse.json({ success: true, data: notifications });
     }
 
@@ -67,16 +53,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const notifications = await prisma.notification.findMany({
-      where: { userId, target: 'USER' },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    });
-
+    const notifications = await notificationService.getUserNotifications(userId);
+    
     return NextResponse.json({ success: true, data: notifications });
-
   } catch (error) {
-    console.error( error);
+    console.error(error);
     return NextResponse.json(
       { success: false, error: 'Erreur lors de la récupération des notifications' },
       { status: 500 }

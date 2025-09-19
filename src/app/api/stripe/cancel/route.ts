@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { OrderService } from '@/lib/server/src/orders/orders.service';
 
 export async function POST(req: Request) {
   try {
@@ -14,37 +14,34 @@ export async function POST(req: Request) {
       );
     }
 
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-    });
+    const orderService = new OrderService();
 
-    if (!order) {
-      console.log('Commande non trouvée:', orderId);
-      return NextResponse.json(
-        { error: 'Commande non trouvée' },
-        { status: 404 }
-      );
+    try {
+      const order = await orderService.getOrderById(orderId);
+
+      if (order.status === 'CONFIRMED' || order.status === 'SHIPPED' || order.status === 'DELIVERED') {
+        return NextResponse.json(
+          { error: 'Cette commande ne peut plus être annulée' },
+          { status: 400 }
+        );
+      }
+
+      const cancelledOrder = await orderService.updateOrderStatus(orderId, 'CANCELLED');
+
+      return NextResponse.json({
+        success: true,
+        order: cancelledOrder,
+      });
+
+    } catch (serviceError) {
+      if (serviceError instanceof Error && serviceError.message === 'Commande non trouvée') {
+        return NextResponse.json(
+          { error: 'Commande non trouvée' },
+          { status: 404 }
+        );
+      }
+      throw serviceError;
     }
-
-    if (order.status === 'CONFIRMED' || order.status === 'SHIPPED' || order.status === 'DELIVERED') {
-      return NextResponse.json(
-        { error: 'Cette commande ne peut plus être annulée' },
-        { status: 400 }
-      );
-    }
-
-    const cancelledOrder = await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: 'CANCELLED',
-        updatedAt: new Date(),
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      order: cancelledOrder,
-    });
 
   } catch (error) {
     console.error('Erreur annulation commande:', error);

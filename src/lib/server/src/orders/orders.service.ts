@@ -1,3 +1,4 @@
+import { OrderStatus } from '@/generated/prisma';
 import {
   OrderRepository,
   InterfaceOrderRepository,
@@ -19,11 +20,10 @@ export class OrderService {
     data: PurchaseWithPointsData
   ): Promise<OrderWithRelations> {
     const order = await this.orderRepository.purchaseWithPointsTransaction(data);
-    
+   
     const user = await this.orderRepository.findUserWithPoints(data.userId);
-    
+   
     await this.createPurchaseNotifications(order, user?.name || null);
-
     return order;
   }
 
@@ -43,6 +43,10 @@ export class OrderService {
 
   async getAllOrders(): Promise<OrderWithRelations[]> {
     return await this.orderRepository.findAll();
+  }
+
+  async updateOrderStatus(orderId: string, status: OrderStatus): Promise<OrderWithRelations> {
+    return await this.orderRepository.updateStatus(orderId, status);
   }
 
   private async createPurchaseNotifications(

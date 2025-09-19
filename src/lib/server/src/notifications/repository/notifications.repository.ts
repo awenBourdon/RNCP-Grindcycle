@@ -27,7 +27,8 @@ export class NotificationRepository implements InterfaceNotificationRepository {
     return await prisma.notification.findMany({
       where: { 
         userId,
-        target: 'USER' 
+        target: 'USER' ,
+        isRead: false
       },
       include: {
         user: {
