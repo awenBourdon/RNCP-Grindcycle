@@ -35,7 +35,7 @@ export default async function UsedBoardsPage() {
       throw new Error(data.error || 'Erreur inconnue');
     }
 
-    return <UsedBoardsList userBoards={data.data} />;
+    return <UsedBoardsList usedBoards={data.data} />;
   } catch (error) {
     console.error(error);
     return (
