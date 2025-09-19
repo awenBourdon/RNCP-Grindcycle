@@ -23,4 +23,6 @@ export interface InterfaceOrderRepository {
     buyerId: string,
     productName: string
   ): Promise<void>;
+
+  markProductsAsSold(productIds: string[]): Promise<void>;
 }

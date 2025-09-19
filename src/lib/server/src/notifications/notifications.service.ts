@@ -102,32 +102,35 @@ export const NotificationTemplates = {
     `Ta planche "${boardName}" a été soumise avec succès ! Elle sera bientôt étudiée par notre équipe.`,
   boardValidated: (boardName: string) =>
     `Ta planche "${boardName}" a été validée par notre équipe.`,
-  boardSent: (boardName: string) => `Tu as expédiée ta planche "${boardName}".`,
-  boardReceived: (boardName: string) =>
-    `Ta planche "${boardName}" a été reçue !`,
+  boardSent: (boardName: string) => 
+    `Tu as expédié ta planche "${boardName}".`,
+  boardReceived: (boardName: string, points: number) =>
+    `Ta planche "${boardName}" a été reçue ! ${points} points attribués.`,
   boardRejected: (boardName: string) =>
     `Ta planche "${boardName}" a été rejetée`,
   boardRecycled: (boardName: string, productName: string) =>
     `Ta planche "${boardName}" a gagné une seconde vie en tant que "${productName}".`,
-  boardSold: (boardName: string, points: number) =>
-    `La planche issu de "${boardName}" a été vendu ! Merci pour Ta contribution. ${points} points attribués.`,
+  
   favoriteProductPurchased: (productName: string) =>
     `"${productName}" a été acheté.`,
   newBoardSubmitted: (userName: string, boardName: string) =>
     `Nouvelle planche soumise par ${userName} : "${boardName}"`,
   newUserRegistered: (userName: string) =>
     `Nouvel utilisateur inscrit : ${userName}`,
-  orderConfirmed: (orderId: string, totalAmount: number) =>
-    `Commande #${orderId} confirmée. Montant: ${totalAmount}€. Merci pour Ton achat.`,
-  orderShipped: (orderId: string) => `Commande #${orderId} expédiée.`,
+  orderConfirmed: (orderId: string, pointsUsed: number) =>
+    `Commande #${orderId} confirmée avec ${pointsUsed} points. Merci pour ton achat.`,
+  orderShipped: (orderId: string) => 
+    `Commande #${orderId} expédiée.`,
   orderDelivered: (orderId: string) =>
     `Commande #${orderId} livrée. Nous espérons que tu es satisfait`,
   orderCancelled: (orderId: string, reason?: string) =>
-    `Commande #${orderId} annulée${reason ? ` : ${reason}` : ''}. Tu seras remboursé sous 2-3 jours après nous avoir retourné la planche.`,
+    `Commande #${orderId} annulée${reason ? ` : ${reason}` : ''}. Tu seras remboursé sous 2-3 jours.`,
   welcomeUser: (userName: string) =>
     `Bienvenue ${userName} ! Ton compte a été créé avec succès.`,
-  profileUpdated: () => `Ton profil a été mis à jour avec succès.`,
-  passwordChanged: () => `Ton mot de passe a été modifié avec succès.`,
+  profileUpdated: () => 
+    `Ton profil a été mis à jour avec succès.`,
+  passwordChanged: () => 
+    `Ton mot de passe a été modifié avec succès.`,
 };
 
 export const notificationService = new NotificationService();

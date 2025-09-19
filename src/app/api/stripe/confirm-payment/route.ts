@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(req: Request) {
   try {
     const { sessionId, orderId } = await req.json();
-
+    
     if (!sessionId || !orderId) {
       return NextResponse.json(
         { error: 'Session ID et Order ID requis' },
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-
+    
     if (session.payment_status !== 'paid') {
       return NextResponse.json(
         { error: 'Paiement non confirmé', success: false },
@@ -27,8 +27,7 @@ export async function POST(req: Request) {
     }
 
     const orderService = new OrderService();
-    
-    const updatedOrder = await orderService.updateOrderStatus(orderId, 'CONFIRMED');
+    const updatedOrder = await orderService.confirmStripePayment(orderId);
 
     const orderDetails = {
       id: updatedOrder.id,
@@ -49,17 +48,16 @@ export async function POST(req: Request) {
     });
 
   } catch (error) {
-    
     if (error instanceof Error) {
       return NextResponse.json(
-        { 
-          error: `Erreur lors de la confirmation: ${error.message}`, 
-          success: false 
+        {
+          error: `Erreur lors de la confirmation: ${error.message}`,
+          success: false
         },
         { status: 500 }
       );
     }
-    
+   
     return NextResponse.json(
       { error: 'Erreur inconnue lors de la confirmation du paiement', success: false },
       { status: 500 }

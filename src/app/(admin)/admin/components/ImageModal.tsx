@@ -78,14 +78,14 @@ export const ImageModal = ({
             )}
             <button
               onClick={downloadImage}
-              className="p-2 text-gray-600 hover:text-[#0a3d3f] hover:bg-white rounded-lg transition-colors"
+              className="p-2 text-gray-600 hover:text-[#0a3d3f] hover:bg-white rounded-lg transition-colors cursor-pointer"
               title="Télécharger la photo"
             >
               <Download size={20} />
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-600 hover:text-[#0a3d3f] hover:bg-white rounded-lg transition-colors"
+              className="p-2 text-gray-600 hover:text-[#0a3d3f] hover:bg-white rounded-lg transition-color cursor-pointer"
             >
               <X size={20} />
             </button>
@@ -183,7 +183,7 @@ export const ImageModal = ({
             </div>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-[#0a3d3f] text-white rounded-lg hover:bg-[#0a4d4f] transition-colors"
+              className="px-4 py-2 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors cursor-pointer"
             >
               Fermer
             </button>

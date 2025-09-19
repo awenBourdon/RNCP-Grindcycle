@@ -195,7 +195,7 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => handleViewProduct(product.id)}
-                        className="text-[#0a3d3f] hover:text-[#0a3d3f]/80 p-1 transition-colors"
+                        className="text-[#0a3d3f] hover:text-[#0a3d3f]/80 p-1 transition-colors cursor-pointer"
                         title="Voir le produit"
                       >
                         <Eye size={16} />
@@ -203,7 +203,7 @@ export const ProductsTable = ({ products }: ProductsTableProps) => {
                       <button
                         onClick={() => handleDeleteProduct(product.id)}
                         disabled={isPending}
-                        className="text-gray-600 hover:text-red-600 p-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-gray-600 hover:text-red-600 p-1 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Supprimer le produit"
                       >
                         <Trash2 size={16} />

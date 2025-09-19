@@ -13,7 +13,6 @@ interface OrderDetails {
   status: string;
   orderItems: Array<{
     productName: string;
-    quantity: number;
     priceEuro: number;
   }>;
   shippingAddress: string;
@@ -168,11 +167,9 @@ export function PurchaseSuccess() {
                   key={index}
                   className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0"
                 >
-                  <span className="text-gray-600">
-                    {item.productName} × {item.quantity}
-                  </span>
+                  <span className="text-gray-600">{item.productName}</span>
                   <span className="font-medium">
-                    {(item.priceEuro * item.quantity).toFixed(2)} €
+                    {item.priceEuro.toFixed(2)} €
                   </span>
                 </div>
               ))}

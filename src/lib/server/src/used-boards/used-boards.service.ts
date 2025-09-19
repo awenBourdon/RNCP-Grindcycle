@@ -8,7 +8,6 @@ import { ImageService } from '@/lib/server/src/upload-images/images.service';
 import { InterfaceUsedBoardRepository } from './repository/interface-used-boards.repository';
 import { UsedBoardRepository } from './repository/used-boards.repository';
 import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
-import { pointsService } from '../points/points.service';
 
 export class UsedBoardService {
   constructor(
@@ -108,18 +107,6 @@ export class UsedBoardService {
     }
   }
 
-  async awardPointsToBoard(userId: string, boardId: string, amount: number): Promise<void> {
-    if (amount <= 0) {
-      throw new Error('Le montant des points doit être positif');
-    }
-
-    await pointsService.awardRecyclingPoints(userId, boardId, amount);
-  }
-
-  async removePointsFromBoard(userId: string, boardId: string): Promise<void> {
-    await pointsService.removePointsForUsedBoard(userId, boardId);
-  }
-
   private async createBoardSubmissionNotifications(
     board: UsedBoard
   ): Promise<void> {
@@ -171,7 +158,8 @@ export class UsedBoardService {
 
         case UsedBoardStatus.RECEIVED:
           notificationDescription = NotificationTemplates.boardReceived(
-            board.name
+            board.name,
+            board.pointsAwarded || 0
           );
           break;
 
@@ -181,17 +169,7 @@ export class UsedBoardService {
 
         case UsedBoardStatus.RECYCLED_TO_PRODUCT:
           const productName = board.product?.name || 'nouveau produit';
-          notificationDescription = NotificationTemplates.boardRecycled(
-            board.name,
-            productName
-          );
-          break;
-
-        case UsedBoardStatus.SOLD:
-          notificationDescription = NotificationTemplates.boardSold(
-            board.name,
-            board.pointsAwarded || 0
-          );
+          notificationDescription = NotificationTemplates.boardRecycled(board.name, productName);
           break;
 
         default:
@@ -206,7 +184,7 @@ export class UsedBoardService {
         });
       }
     } catch (error) {
-      console.error('Erreur lors de la création des notifications de changement de statut:', error);
+      console.error('Erreur notification changement statut:', error);
     }
   }
 }
