@@ -1,10 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { Notification } from '@/generated/prisma';
-import { 
-  InterfaceNotificationRepository, 
-  CreateNotificationData,
-  NotificationWithUser 
-} from './interfaces/interfaceNotificationRepository';
+import { CreateNotificationData, InterfaceNotificationRepository, NotificationWithUser } from './interface-notifications.repository';
 
 export class NotificationRepository implements InterfaceNotificationRepository {
   
