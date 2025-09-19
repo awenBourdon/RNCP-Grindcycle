@@ -2,7 +2,7 @@
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
-import { UserService } from '@/lib/server/services/users-service';
+import { UserService } from '@/lib/server/src/users/users-service';
 
 const updateProfileSchema = z.object({
   name: z.string().min(1, "Le nom d'utilisateur est requis").max(100, "Maximum 100 caractères"),

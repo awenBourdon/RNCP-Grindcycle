@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { OrderService } from '@/lib/server/services/orders.service';
+import { OrderService } from '@/lib/server/src/orders/orders.service';
 import { applyGetRateLimit } from '@/lib/rateLimit';
 import { auth } from '@/lib/auth';
 

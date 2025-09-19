@@ -1,16 +1,13 @@
 import { UsedBoard, UsedBoardStatus } from '@/generated/prisma';
-import { UsedBoardRepository } from '@/lib/server/repositories/usedBoardRepository';
 import {
   CreateUsedBoardData,
   UpdateUsedBoardData,
   UsedBoardWithRelations,
 } from '@/lib/server/types/usedBoard';
-import { ImageService } from '@/lib/server/services/images.service';
-import { InterfaceUsedBoardRepository } from '../repositories/interfaces/interfaceUsedBoardRepository';
-import {
-  createNotification,
-  NotificationTemplates,
-} from './notifications.service';
+import { ImageService } from '@/lib/server/src/upload-images/images.service';
+import { InterfaceUsedBoardRepository } from './repository/interface-used-boards.repository';
+import { UsedBoardRepository } from './repository/used-boards.repository';
+import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
 
 export class UsedBoardService {
   constructor(

@@ -1,9 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { Favorite } from '@/generated/prisma';
-import { 
-  InterfaceFavoriteRepository, 
-  FavoriteWithProduct 
-} from './interfaces/interfaceFavoriteRepository';
+import { FavoriteWithProduct, InterfaceFavoriteRepository } from './interface-favorites.repository';
 
 export class FavoriteRepository implements InterfaceFavoriteRepository {
   

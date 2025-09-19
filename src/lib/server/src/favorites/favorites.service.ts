@@ -1,10 +1,8 @@
-import {
-  InterfaceFavoriteRepository,
-  FavoriteWithProduct
-} from '../repositories/interfaces/interfaceFavoriteRepository';
-import { FavoriteRepository } from '../repositories/favoriteRepository';
-import { InterfaceProductRepository } from '../repositories/interfaces/interfaceProductRepository';
-import { ProductRepository } from '../repositories/productRepository';
+import { InterfaceProductRepository } from "../products/repository/interface-products.repository";
+import { ProductRepository } from "../products/repository/products.repository";
+import { FavoriteRepository } from "./repository/favorites.repository";
+import { FavoriteWithProduct, InterfaceFavoriteRepository } from "./repository/interface-favorites.repository";
+
 
 export class FavoriteService {
   constructor(

@@ -1,6 +1,6 @@
 import { User } from '@/generated/prisma';
-import { InterfaceUserRepository } from '../repositories/interfaces/interfaceUserRepository';
-import { UserRepository } from '../repositories/userRepositoty';
+import { InterfaceUserRepository } from './repository/interface-users.repository';
+import { UserRepository } from './repository/users.repository';
 
 export class UserService {
   constructor(

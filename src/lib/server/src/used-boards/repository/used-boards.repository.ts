@@ -6,7 +6,7 @@ import {
   UsedBoardFilters,
   UsedBoardWithRelations,
 } from '@/lib/server/types/usedBoard';
-import { InterfaceUsedBoardRepository } from './interfaces/interfaceUsedBoardRepository';
+import { InterfaceUsedBoardRepository } from './interface-used-boards.repository';
 
 type PrismaTransaction = Omit<
   typeof prisma,

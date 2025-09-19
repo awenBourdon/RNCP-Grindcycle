@@ -1,11 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { OrderStatus, PaymentType, ProductStatus, PointsType } from '@/generated/prisma';
 import { CreateOrderData, OrderWithRelations, PurchaseWithPointsData, CreateOrderItemData, CartItemForPurchase } from '@/lib/types';
-import { InterfaceOrderRepository } from './interfaces/interfaceOrderRepository';
 
 export type { InterfaceOrderRepository };
 import { pointsPurchaseSchema } from '@/lib/validations/shippingValidation';
-import { NotificationTemplates } from '../services/notifications.service';
+import { NotificationTemplates } from '../../notifications/notifications.service';
+import { InterfaceOrderRepository } from './interface-orders.repository';
 
 export class OrderRepository implements InterfaceOrderRepository {
   async create(data: CreateOrderData): Promise<OrderWithRelations> {

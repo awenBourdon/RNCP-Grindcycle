@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { UPLOAD_CONFIG } from '@/lib/server/config/upload';
+import { UPLOAD_CONFIG } from '@/lib/server/src/upload-images/upload';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

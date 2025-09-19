@@ -4,7 +4,7 @@ import { deleteUserSchema } from '@/lib/validations/authValidation';
 import { APIError } from 'better-auth/api';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
-import { UserService } from '@/lib/server/services/users-service';
+import { UserService } from '@/lib/server/src/users/users-service';
 
 export async function deleteUserAction({ userId }: { userId: string }) {
   const headersList = await headers();

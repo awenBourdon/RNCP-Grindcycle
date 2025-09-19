@@ -1,10 +1,10 @@
 import {
   OrderRepository,
   InterfaceOrderRepository,
-} from '@/lib/server/repositories/orderRepository';
+} from '@/lib/server/src/orders/repository/orders.repository';
 import {
   createNotification,
-} from './notifications.service';
+} from '../notifications/notifications.service';
 import {
   OrderWithRelations,
   PurchaseWithPointsData,
