@@ -1,10 +1,6 @@
 import { z } from 'zod';
-import { 
-  InterfaceNotificationRepository,
-  CreateNotificationData,
-  NotificationWithUser 
-} from '../repositories/interfaces/interfaceNotificationRepository';
-import { NotificationRepository } from '../repositories/notificationRepository';
+import { CreateNotificationData, InterfaceNotificationRepository, NotificationWithUser } from './repository/interface-notifications.repository';
+import { NotificationRepository } from './repository/notifications.repository';
 
 const notificationIdSchema = z.object({
   notificationId: z.string().min(1, 'ID notification requis'),

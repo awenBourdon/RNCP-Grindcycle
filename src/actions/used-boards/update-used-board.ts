@@ -1,10 +1,10 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { UsedBoardService } from '@/lib/server/services/used-boards.service';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import { UsedBoardStatus } from '@/generated/prisma';
+import { UsedBoardService } from '@/lib/server/src/used-boards/used-boards.service';
 
 const usedBoardService = new UsedBoardService();
 
