@@ -20,7 +20,7 @@ export default async function AdminNotificationsPage() {
       headers: {
         ...Object.fromEntries(headersList.entries()),
       },
-      cache: 'no-store',
+      cache: 'default',
     });
 
     if (!response.ok) {

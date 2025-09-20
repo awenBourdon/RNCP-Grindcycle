@@ -1,5 +1,4 @@
 import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
 import { CartPageClient } from './components/CartPageClient';
 
@@ -13,12 +12,28 @@ export default async function CartPage() {
   if (session) {
     isAuthenticated = true;
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { points: true },
-    });
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
-    userPoints = user?.points || 0;
+    try {
+      const response = await fetch(
+        `${baseUrl}/api/users?id=${session.user.id}`,
+        {
+          headers: {
+            ...Object.fromEntries(headersList.entries()),
+          },
+          cache: 'default',
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          userPoints = data.data.points || 0;
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération des points:', error);
+    }
   }
 
   return (

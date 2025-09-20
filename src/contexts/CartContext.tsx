@@ -123,7 +123,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cartItems]);
 
   const shippingCost = useMemo(() => {
-    return cartTotal >= 100 ? 0 : 9.9;
+    return cartTotal >= 100 ? 0 : 4.5;
   }, [cartTotal]);
 
   const getCartTotal = useCallback(() => cartTotal, [cartTotal]);

@@ -14,7 +14,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   try {
     const response = await fetch(`${baseUrl}/api/products?id=${id}`, {
-      cache: 'no-store',
+      cache: 'default',
     });
 
     if (response.status === 404) {

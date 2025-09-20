@@ -3,12 +3,12 @@ import type React from 'react';
 import Link from 'next/link';
 import {
   User,
-  Settings,
   Key,
   Package,
   Bell,
   Heart,
   ShoppingBag,
+  Coins,
 } from 'lucide-react';
 
 interface SidebarItem {
@@ -26,14 +26,8 @@ const sidebarItems: SidebarItem[] = [
   { id: 'profil', label: 'Profil', icon: User, href: '/compte/profil' },
   { id: 'securite', label: 'Sécurité', icon: Key, href: '/compte/securite' },
   {
-    id: 'informations',
-    label: 'Informations',
-    icon: Settings,
-    href: '/compte/informations',
-  },
-  {
     id: 'planches',
-    label: 'Mes planches',
+    label: 'Planches envoyés',
     icon: Package,
     href: '/compte/planches',
   },
@@ -42,6 +36,12 @@ const sidebarItems: SidebarItem[] = [
     label: 'Mes commandes',
     icon: ShoppingBag,
     href: '/compte/commandes',
+  },
+  {
+    id: 'points',
+    label: 'Mes points',
+    icon: Coins,
+    href: '/compte/points',
   },
   {
     id: 'notifications',

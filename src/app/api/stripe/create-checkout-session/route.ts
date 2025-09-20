@@ -1,11 +1,13 @@
-import { CartItemType } from '@/lib/types';
+import { CartItemType, CreateOrderData } from '@/lib/types';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { prisma } from '@/lib/prisma';
+import { OrderService } from '@/lib/server/src/orders/orders.service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 });
+
+const orderService = new OrderService();
 
 export async function POST(request: Request) {
   try {
@@ -36,32 +38,28 @@ export async function POST(request: Request) {
       total + (item.priceEuro * item.quantity), 0
     );
 
-    const order = await prisma.order.create({
-      data: {
-        userId: userId || null,
-        totalAmount,
-        shippingCost,
-        paymentType: 'EURO',
-        status: 'PENDING',
-        shippingAddress: shippingAddress.address,
-        shippingCity: shippingAddress.city,
-        shippingPostalCode: shippingAddress.postalCode,
-        shippingCountry: shippingAddress.country,
-        shippingPhone: shippingAddress.phone,
-        orderItems: {
-          create: cartItems.map((item: CartItemType) => ({
-            productId: item.id,
-            productName: item.name,
-            productType: item.type,
-            priceEuro: item.priceEuro,
-            quantity: item.quantity,
-          }))
-        }
-      },
-      include: {
-        orderItems: true
-      }
-    });
+    const orderData: CreateOrderData = {
+      userId: userId || null,
+      totalAmount,
+      shippingCost,
+      paymentType: 'EURO',
+      pointsUsed: 0,
+      shippingAddress: shippingAddress.address,
+      shippingCity: shippingAddress.city,
+      shippingPostalCode: shippingAddress.postalCode,
+      shippingCountry: shippingAddress.country,
+      shippingPhone: shippingAddress.phone,
+      items: cartItems.map((item: CartItemType) => ({
+        productId: item.id,
+        productName: item.name,
+        productType: item.type,
+        priceEuro: item.priceEuro,
+        pricePoints: null,
+        quantity: item.quantity,
+      }))
+    };
+
+    const order = await orderService.createPendingOrder(orderData);
 
     const lineItems = cartItems.map((item: CartItemType) => ({
       price_data: {
@@ -115,16 +113,6 @@ export async function POST(request: Request) {
             currency: 'eur',
           },
           display_name: 'Livraison standard',
-          delivery_estimate: {
-            minimum: {
-              unit: 'business_day',
-              value: 3,
-            },
-            maximum: {
-              unit: 'business_day',
-              value: 7,
-            },
-          },
         },
       }];
     }
@@ -137,7 +125,15 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error('Erreur création session Stripe:', error);
+    
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Erreur lors de la création de la session de paiement' },
       { status: 500 }
