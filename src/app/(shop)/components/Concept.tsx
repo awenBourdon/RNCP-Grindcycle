@@ -155,7 +155,7 @@ export const Concept = () => {
                 <div>
                   <p className="text-xl font-medium">Gagne des points</p>
                   <p className="text-gray-600 mt-2">
-                    Dès l&lsquo;échange et encore plus lors de la revente
+                    Dès qu&apos;on reçoit ta planche !
                   </p>
                 </div>
               </div>

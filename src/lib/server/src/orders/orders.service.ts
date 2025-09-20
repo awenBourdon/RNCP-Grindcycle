@@ -10,6 +10,7 @@ import {
   CartItemForPurchase,
   OrderWithRelations,
   PurchaseWithPointsData,
+  CreateOrderData,
 } from '@/lib/types';
 import { pointsService } from '../points/points.service';
 
@@ -17,6 +18,10 @@ export class OrderService {
   constructor(
     private orderRepository: InterfaceOrderRepository = new OrderRepository()
   ) {}
+
+  async createPendingOrder(orderData: CreateOrderData): Promise<OrderWithRelations> {
+    return await this.orderRepository.create(orderData);
+  }
 
   async purchaseWithPoints(
     data: PurchaseWithPointsData
@@ -38,7 +43,7 @@ export class OrderService {
     return order;
   }
 
-  async confirmStripePayment(orderId: string): Promise<OrderWithRelations> {
+ async confirmStripePayment(orderId: string): Promise<OrderWithRelations> {
     const updatedOrder = await this.orderRepository.updateStatus(orderId, 'CONFIRMED');
     
     await this.orderRepository.markProductsAsSold(
@@ -51,11 +56,7 @@ export class OrderService {
     return updatedOrder;
   }
 
-  async getUserOrders(userId: string): Promise<OrderWithRelations[]> {
-    return await this.orderRepository.findByUserId(userId);
-  }
-
-  async getOrderById(orderId: string): Promise<OrderWithRelations> {
+ async getOrderById(orderId: string): Promise<OrderWithRelations> {
     const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
@@ -65,12 +66,20 @@ export class OrderService {
     return order;
   }
 
+  async getUserOrders(userId: string): Promise<OrderWithRelations[]> {
+    return await this.orderRepository.findByUserId(userId);
+  }
+
   async getAllOrders(): Promise<OrderWithRelations[]> {
     return await this.orderRepository.findAll();
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus): Promise<OrderWithRelations> {
     return await this.orderRepository.updateStatus(orderId, status);
+  }
+
+ getRepository(): InterfaceOrderRepository {
+    return this.orderRepository;
   }
 
   private calculateTotalPoints(cartItems: CartItemForPurchase[]): number {

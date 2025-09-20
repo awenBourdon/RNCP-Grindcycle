@@ -21,7 +21,7 @@ export default async function NotificationsPage() {
         headers: {
           ...Object.fromEntries(headersList.entries()),
         },
-        cache: 'no-store',
+        cache: 'default',
       }
     );
 

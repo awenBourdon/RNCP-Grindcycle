@@ -29,19 +29,19 @@ export default async function DashboardPage() {
     ] = await Promise.all([
       fetch(`${baseUrl}/api/users?admin=true`, {
         headers: fetchHeaders,
-        cache: 'no-store',
+        cache: 'default',
       }),
       fetch(`${baseUrl}/api/usedboards?admin=true`, {
         headers: fetchHeaders,
-        cache: 'no-store',
+        cache: 'default',
       }),
       fetch(`${baseUrl}/api/products?admin=true`, {
         headers: fetchHeaders,
-        cache: 'no-store',
+        cache: 'default',
       }),
       fetch(`${baseUrl}/api/notifications?type=admin`, {
         headers: fetchHeaders,
-        cache: 'no-store',
+        cache: 'default',
       }),
     ]);
 

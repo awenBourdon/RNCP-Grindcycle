@@ -1,6 +1,5 @@
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 import { ExchangePointsShipping } from '../../components/ExchangePointsShipping';
 
@@ -12,12 +11,27 @@ export default async function ExchangePointsShippingPage() {
     redirect('/authentification/connexion');
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { points: true },
-  });
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
-  const userPoints = user?.points || 0;
+  let userPoints = 0;
+
+  try {
+    const response = await fetch(`${baseUrl}/api/users?id=${session.user.id}`, {
+      headers: {
+        ...Object.fromEntries(headersList.entries()),
+      },
+      cache: 'default',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success && data.data) {
+        userPoints = data.data.points || 0;
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des points:', error);
+  }
 
   return (
     <ExchangePointsShipping userPoints={userPoints} isAuthenticated={true} />

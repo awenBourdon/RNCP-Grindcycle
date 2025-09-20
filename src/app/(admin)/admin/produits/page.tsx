@@ -20,7 +20,7 @@ export default async function ProductsPage() {
       headers: {
         ...Object.fromEntries(headersList.entries()),
       },
-      cache: 'no-store',
+      cache: 'default',
     });
 
     if (!response.ok) {

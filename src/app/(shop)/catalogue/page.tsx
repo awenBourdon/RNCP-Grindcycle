@@ -7,7 +7,7 @@ export default async function CatalogPage() {
 
   try {
     const response = await fetch(`${baseUrl}/api/products?available=true`, {
-      cache: 'no-store',
+      cache: 'default',
     });
 
     if (response.ok) {

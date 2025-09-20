@@ -23,7 +23,7 @@ export default async function AjouterProduitPage() {
         headers: {
           ...Object.fromEntries(headersList.entries()),
         },
-        cache: 'no-store',
+        cache: 'default',
       }
     );
 
