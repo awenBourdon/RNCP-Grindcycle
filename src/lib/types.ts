@@ -109,6 +109,7 @@ export interface CreateOrderData {
 }
 
 export interface CreateOrderItemData {
+  orderId: any;
   productId: string;
   productName: string;
   productType: BoardType;

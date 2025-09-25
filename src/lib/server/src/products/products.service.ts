@@ -1,23 +1,13 @@
 import { ProductStatus } from '@/generated/prisma';
-import { ProductRepository } from '@/lib/server/src/products/repository/products.repository';
 import {
+  InterfaceProductRepository,
   CreateProductData,
-  PurchaseProductData,
-  ProductWithRelations,
-} from '@/lib/server/types/product';
+  UpdateProductData,
+  ProductWithRelations
+} from './repository/interface-products.repository';
+import { ProductRepository } from './repository/products.repository';
 import { ImageService } from '@/lib/server/src/upload-images/images.service';
-import { prisma } from '@/lib/prisma';
-import {
-  createNotification,
-  NotificationTemplates,
-} from '../notifications/notifications.service';
-import { InterfaceProductRepository } from './repository/interface-products.repository';
-import { pointsService } from '../points/points.service';
-import { PointsType } from '@/generated/prisma';
-
-export interface PurchaseResult {
-  product: ProductWithRelations | null;
-}
+import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
 
 export class ProductService {
   constructor(
@@ -42,21 +32,12 @@ export class ProductService {
     const productData: CreateProductData = {
       ...data,
       imageUrl: imageResult.urls,
-      usedBoardId: data.usedBoardId || null,
     };
 
     try {
       const product = await this.productRepository.create(productData);
-
       if (product.usedBoard?.user) {
-        await createNotification({
-          userId: product.usedBoard.user.id,
-          target: 'USER',
-          description: NotificationTemplates.boardRecycled(
-            product.usedBoard.name,
-            product.name
-          ),
-        });
+        await this.notifyBoardRecycled(product);
       }
 
       return product;
@@ -74,8 +55,12 @@ export class ProductService {
     return await this.productRepository.findAvailable();
   }
 
-  async getProductById(id: string): Promise<ProductWithRelations> {
-    const product = await this.productRepository.findById(id);
+  async getProductById(productId: string): Promise<ProductWithRelations> {
+    if (!productId) {
+      throw new Error('ID produit requis');
+    }
+
+    const product = await this.productRepository.findById(productId);
 
     if (!product) {
       throw new Error('Produit non trouvé');
@@ -85,138 +70,90 @@ export class ProductService {
   }
 
   async getLatestProducts(limit: number = 6): Promise<ProductWithRelations[]> {
-    const safeLimit = Math.min(Math.max(limit, 1), 10);
-
-    return await this.productRepository.findAll({
-      status: ProductStatus.CATALOG,
-    }).then(products => 
-      products
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, safeLimit)
-    );
+    return await this.productRepository.findLatest(limit);
   }
 
-  async purchaseProduct(data: PurchaseProductData): Promise<PurchaseResult> {
-    const product = await this.getProductById(data.productId);
+  async updateProduct(productId: string, data: UpdateProductData): Promise<ProductWithRelations> {
+    if (!productId) {
+      throw new Error('ID produit requis');
+    }
+
+    await this.getProductById(productId);
+
+    this.validateUpdateData(data);
+
+    return await this.productRepository.update(productId, data);
+  }
+
+  async updateProductStatus(productId: string, status: ProductStatus): Promise<ProductWithRelations> {
+    if (!productId) {
+      throw new Error('ID produit requis');
+    }
+
+    if (!Object.values(ProductStatus).includes(status)) {
+      throw new Error('Statut de produit invalide');
+    }
+
+    const product = await this.getProductById(productId);
+
+    const updatedProduct = await this.productRepository.update(productId, { status });
+
+    if (status === ProductStatus.SOLD && product.usedBoard) {
+    }
+
+    return updatedProduct;
+  }
+
+  async deleteProduct(productId: string): Promise<void> {
+    if (!productId) {
+      throw new Error('ID produit requis');
+    }
+
+    const product = await this.getProductById(productId);
 
     if (product.status !== ProductStatus.CATALOG) {
-      throw new Error('Produit déjà acheté');
-    }
-
-    const userPointsTotal = await pointsService.getUserPointsTotal(data.userId);
-    if (userPointsTotal < (product.pricePoints || 0)) {
-      throw new Error(`Points insuffisants. Tu as ${userPointsTotal} points, ${product.pricePoints} requis.`);
-    }
-
-    const result = await prisma.$transaction(async tx => {
-      await tx.product.update({
-        where: { id: data.productId },
-        data: {
-          status: ProductStatus.SOLD,
-        },
-      });
-
-      const pointsRepository = pointsService.getRepository();
-      
-      await pointsRepository.createInTransaction(tx, {
-        userId: data.userId,
-        type: PointsType.PURCHASE,
-        pointsAmount: -(product.pricePoints || 0),
-        usedBoardId: null,
-      });
-
-      await pointsRepository.addPointsToUserInTransaction(tx, data.userId, -(product.pricePoints || 0));
-
-      const updatedProduct = await this.productRepository.findById(data.productId);
-
-      return {
-        product: updatedProduct,
-      };
-    });
-
-    await this.handlePostPurchaseActions(
-      data.productId,
-      data.userId,
-      product.name
-    );
-
-    return result;
-  }
-
-  private async handlePostPurchaseActions(
-    productId: string,
-    buyerId: string,
-    productName: string
-  ): Promise<void> {
-    try {
-      await Promise.all([
-        this.notifyFavoriteUsersAndCleanup(productId, buyerId, productName),
-      ]);
-    } catch (err) {
-      console.error(err instanceof Error ? err.message : err);
-    }
-  }
-
-  private async notifyFavoriteUsersAndCleanup(
-    productId: string,
-    buyerId: string,
-    productName: string
-  ): Promise<void> {
-    try {
-      const favoritesWithUsers = await prisma.favorite.findMany({
-        where: {
-          productId,
-          userId: { not: buyerId },
-        },
-        include: {
-          user: { select: { id: true, name: true } },
-        },
-      });
-
-      if (favoritesWithUsers.length === 0) {
-        return;
-      }
-
-      await prisma.$transaction(async tx => {
-        const notifications = favoritesWithUsers.map(favorite => ({
-          userId: favorite.userId,
-          target: 'USER' as const,
-          description:
-            NotificationTemplates.favoriteProductPurchased(productName),
-          isRead: false,
-        }));
-
-        await tx.notification.createMany({
-          data: notifications,
-        });
-
-        await tx.favorite.deleteMany({
-          where: { productId },
-        });
-      });
-    } catch (error) {
-      console.error('Erreur notification favoris:', error);
-    }
-  }
-
-  async deleteProduct(id: string): Promise<void> {
-    const product = await this.getProductById(id);
-
-    if (product.status !== ProductStatus.CATALOG) {
-      throw new Error('Impossible de supprimer un produit acheté');
+      throw new Error('Impossible de supprimer un produit vendu');
     }
 
     if (product.imageUrl && product.imageUrl.length > 0) {
       await this.imageService.deleteMultiple(product.imageUrl);
     }
 
-    await this.productRepository.delete(id);
+    await this.productRepository.delete(productId);
   }
 
-  async updateProductStatus(
-    id: string,
-    status: ProductStatus
-  ): Promise<ProductWithRelations> {
-    return await this.productRepository.update(id, { status });
+  getRepository(): InterfaceProductRepository {
+    return this.productRepository;
+  }
+
+  private async notifyBoardRecycled(product: ProductWithRelations): Promise<void> {
+    if (!product.usedBoard?.user) return;
+
+    try {
+      await createNotification({
+        userId: product.usedBoard.user.id,
+        target: 'USER',
+        description: NotificationTemplates.boardRecycled(
+          product.usedBoard.name,
+          product.name
+        ),
+      });
+    } catch (error) {
+      console.error('Erreur notification recyclage:', error);
+    }
+  }
+
+  private validateUpdateData(data: UpdateProductData): void {
+    if (data.name !== undefined && (!data.name || data.name.trim().length === 0)) {
+      throw new Error('Le nom du produit ne peut pas être vide');
+    }
+
+    if (data.priceEuro !== undefined && data.priceEuro < 0) {
+      throw new Error('Le prix en euros ne peut pas être négatif');
+    }
+
+    if (data.pricePoints !== undefined && data.pricePoints < 0) {
+      throw new Error('Le prix en points ne peut pas être négatif');
+    }
   }
 }

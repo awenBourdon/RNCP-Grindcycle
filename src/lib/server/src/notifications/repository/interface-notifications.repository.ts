@@ -13,6 +13,8 @@ export interface NotificationWithUser {
   description: string;
   isRead: boolean;
   createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
   user?: {
     id: string;
     name: string | null;
@@ -20,12 +22,14 @@ export interface NotificationWithUser {
   } | null;
 }
 
+type PrismaTransaction = Parameters<Parameters<typeof import('@/lib/prisma').prisma.$transaction>[0]>[0];
 export interface InterfaceNotificationRepository {
-  findAdminNotifications(): Promise<NotificationWithUser[]>;
-  findByUserId(userId: string): Promise<NotificationWithUser[]>;
-  findById(id: string): Promise<Notification | null>;
+ 
   create(data: CreateNotificationData): Promise<Notification>;
+  createInTransaction(tx: PrismaTransaction, data: CreateNotificationData): Promise<Notification>;
+  findById(id: string): Promise<Notification | null>;
+  findByUserId(userId: string): Promise<NotificationWithUser[]>;
+  findAdminNotifications(): Promise<NotificationWithUser[]>;
   delete(id: string): Promise<void>;
-  markAsRead(id: string): Promise<void>;
-  markAllAsReadForUser(userId: string): Promise<{ count: number }>;
+  deleteAllForUser(userId: string): Promise<{ count: number }>;
 }

@@ -1,13 +1,29 @@
-import { CartItemType, CreateOrderData } from '@/lib/types';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { OrderService } from '@/lib/server/src/orders/orders.service';
+import { pointsShippingSchema, cartItemSchema } from '@/lib/validations/shippingValidation';
+import { z } from 'zod';
+import { CartItemForPurchase, PaymentService, ShippingAddress } from '@/lib/server/src/payments/payments.service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 });
 
-const orderService = new OrderService();
+const stripePaymentSchema = z.object({
+  cartItems: z
+    .array(cartItemSchema)
+    .min(1, 'Panier vide')
+    .max(10, 'Maximum 10 articles'),
+  
+  shippingCost: z.number().min(0, 'Frais de livraison invalides'),
+  
+  userId: z.string().optional().nullable(),
+  
+  shippingAddress: pointsShippingSchema,
+});
+
+type StripePaymentInput = z.infer<typeof stripePaymentSchema>;
+
+const paymentService = new PaymentService();
 
 export async function POST(request: Request) {
   try {
@@ -18,50 +34,30 @@ export async function POST(request: Request) {
       );
     }
 
-    const { cartItems, shippingCost, shippingAddress, userId } = await request.json();
-
-    if (!cartItems || cartItems.length === 0) {
+    const rawData = await request.json();
+    
+    const validation = stripePaymentSchema.safeParse(rawData);
+    
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
       return NextResponse.json(
-        { error: 'Panier vide' },
+        { error: firstError?.message || 'Données invalides' },
         { status: 400 }
       );
     }
 
-    if (!shippingAddress) {
-      return NextResponse.json(
-        { error: 'Adresse de livraison manquante' },
-        { status: 400 }
-      );
-    }
+    const { cartItems, shippingCost, shippingAddress, userId } = validation.data;
 
-    const totalAmount = cartItems.reduce((total: number, item: CartItemType) => 
-      total + (item.priceEuro * item.quantity), 0
-    );
-
-    const orderData: CreateOrderData = {
+    const paymentData = {
       userId: userId || null,
-      totalAmount,
+      cartItems: convertCartItemsToPaymentFormat(cartItems),
+      shippingAddress: convertShippingAddressToPaymentFormat(shippingAddress),
       shippingCost,
-      paymentType: 'EURO',
-      pointsUsed: 0,
-      shippingAddress: shippingAddress.address,
-      shippingCity: shippingAddress.city,
-      shippingPostalCode: shippingAddress.postalCode,
-      shippingCountry: shippingAddress.country,
-      shippingPhone: shippingAddress.phone,
-      items: cartItems.map((item: CartItemType) => ({
-        productId: item.id,
-        productName: item.name,
-        productType: item.type,
-        priceEuro: item.priceEuro,
-        pricePoints: null,
-        quantity: item.quantity,
-      }))
     };
 
-    const order = await orderService.createPendingOrder(orderData);
+    const order = await paymentService.processStripePayment(paymentData);
 
-    const lineItems = cartItems.map((item: CartItemType) => ({
+    const lineItems = cartItems.map((item) => ({
       price_data: {
         currency: 'eur',
         product_data: {
@@ -79,6 +75,7 @@ export async function POST(request: Request) {
           currency: 'eur',
           product_data: {
             name: 'Frais de livraison',
+            description: ''
           },
           unit_amount: Math.round(shippingCost * 100),
         },
@@ -139,4 +136,28 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+
+function convertCartItemsToPaymentFormat(items: StripePaymentInput['cartItems']): CartItemForPurchase[] {
+  return items.map(item => ({
+    productId: item.productId,
+    name: item.name,
+    type: item.type,
+    priceEuro: item.priceEuro,
+    pricePoints: item.pricePoints,
+    quantity: item.quantity,
+  }));
+}
+
+function convertShippingAddressToPaymentFormat(
+  address: StripePaymentInput['shippingAddress']
+): ShippingAddress {
+  return {
+    address: address.address,
+    city: address.city,
+    postalCode: address.postalCode,
+    country: address.country,
+    phone: address.phone,
+  };
 }
