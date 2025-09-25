@@ -37,7 +37,6 @@ export class NotificationRepository implements InterfaceNotificationRepository {
       where: { 
         userId,
         target: 'USER',
-        isRead: false,
         deletedAt: null,
       },
       include: {
@@ -71,7 +70,6 @@ export class NotificationRepository implements InterfaceNotificationRepository {
         userId: data.userId,
         target: data.target,
         description: data.description,
-        isRead: false,
       },
     });
   }
@@ -83,7 +81,6 @@ export class NotificationRepository implements InterfaceNotificationRepository {
         userId: data.userId,
         target: data.target,
         description: data.description,
-        isRead: false,
       },
     });
   }
