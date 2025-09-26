@@ -1,11 +1,11 @@
 'use server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import {
   checkRateLimit,
   getClientIP,
   RATE_LIMIT_MESSAGES,
-} from '@/lib/rateLimit';
-import { passwordSchema } from '@/lib/validations/authValidation';
+} from '@/lib/utils/rateLimit';
+import { passwordSchema } from '@/lib/validations/auth.validation';
 import { APIError } from 'better-auth/api';
 import { headers } from 'next/headers';
 

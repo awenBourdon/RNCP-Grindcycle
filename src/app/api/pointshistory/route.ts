@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { applyGetRateLimit } from '@/lib/rateLimit';
-import { auth } from '@/lib/auth';
-import { PointsHistoryService } from '@/lib/server/src/points-history/points-history.service';
+import { applyGetRateLimit } from '@/lib/utils/rateLimit';
+import { auth } from '@/lib/utils/auth';
+import { PointsHistoryService } from '@/server/points-history/points-history.service';
 
 const pointsHistoryService = new PointsHistoryService();
 

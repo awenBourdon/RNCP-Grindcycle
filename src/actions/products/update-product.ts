@@ -1,7 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { ProductService } from '@/lib/server/src/products/products.service';
-import { auth } from '@/lib/auth';
+import { ProductService } from '@/server/products/products.service';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import { ProductStatus } from '@/generated/prisma';

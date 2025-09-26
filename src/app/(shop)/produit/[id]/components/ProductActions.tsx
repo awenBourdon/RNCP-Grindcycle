@@ -2,7 +2,7 @@
 import { ShoppingCart, X } from 'lucide-react';
 import { Spinner } from '@/components/ui/Spinner';
 import { FavoriteButton } from './FavoriteButton';
-import { ProductType } from '@/lib/types';
+import { ProductType } from '@/lib/types/types';
 
 interface ProductActionsProps {
   product: ProductType;

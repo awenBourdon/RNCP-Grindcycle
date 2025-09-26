@@ -1,4 +1,4 @@
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/app/contexts/CartContext';
 
 export const Header = () => {
   const { cartItems } = useCart();

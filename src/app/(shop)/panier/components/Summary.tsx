@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/app/contexts/CartContext';
 
 export const Summary = () => {
   const { getCartTotal, getShippingCost, clearCart } = useCart();

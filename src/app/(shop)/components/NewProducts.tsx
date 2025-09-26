@@ -4,7 +4,7 @@ import { motion, useAnimation, useMotionValue } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { NewProductCard } from './ProductCard';
-import { ProductType } from '@/lib/types';
+import { ProductType } from '@/lib/types/types';
 
 interface NewProductsProps {
   products: ProductType[];

@@ -3,7 +3,7 @@ import { ToTop } from '../../../components/ui/ToTop';
 import { RecycleForm } from './components/RecycleForm';
 import { FormSteps } from './components/FormSteps';
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 
 export default async function RecyclePage() {
   const headersList = await headers();

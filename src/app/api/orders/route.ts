@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { OrderService } from '@/lib/server/src/orders/orders.service';
-import { applyGetRateLimit } from '@/lib/rateLimit';
-import { auth } from '@/lib/auth';
+import { OrderService } from '@/server/orders/orders.service';
+import { applyGetRateLimit } from '@/lib/utils/rateLimit';
+import { auth } from '@/lib/utils/auth';
 
 const orderService = new OrderService();
 

@@ -1,9 +1,9 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
-import { FavoriteService } from '@/lib/server/src/favorites/favorites.service';
+import { FavoriteService } from '@/server/favorites/favorites.service';
 
 const favoriteSchema = z.object({
   productId: z.string().min(1, 'ID produit requis'),

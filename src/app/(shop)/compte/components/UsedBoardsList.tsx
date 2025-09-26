@@ -10,7 +10,7 @@ import {
   Truck,
   Package,
 } from 'lucide-react';
-import { UsedBoard } from '@/lib/types';
+import { UsedBoard } from '@/lib/types/types';
 
 interface UsedBoardsListProps {
   usedBoards: UsedBoard[];
