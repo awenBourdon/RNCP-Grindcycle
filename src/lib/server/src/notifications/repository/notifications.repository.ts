@@ -1,13 +1,20 @@
 import { prisma } from '@/lib/prisma';
 import { Notification } from '@/generated/prisma';
-import { CreateNotificationData, InterfaceNotificationRepository, NotificationWithUser } from './interface-notifications.repository';
+import {
+  InterfaceNotificationRepository,
+  CreateNotificationData,
+  NotificationWithUser
+} from './interface-notifications.repository';
+
+type PrismaTransaction = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
 export class NotificationRepository implements InterfaceNotificationRepository {
   
   async findAdminNotifications(): Promise<NotificationWithUser[]> {
-    return await prisma.notification.findMany({
+    const notifications = await prisma.notification.findMany({
       where: {
         target: 'ADMIN',
+        deletedAt: null,
       },
       include: {
         user: {
@@ -21,14 +28,16 @@ export class NotificationRepository implements InterfaceNotificationRepository {
       orderBy: { createdAt: 'desc' },
       take: 100,
     });
+
+    return notifications as NotificationWithUser[];
   }
 
   async findByUserId(userId: string): Promise<NotificationWithUser[]> {
-    return await prisma.notification.findMany({
+    const notifications = await prisma.notification.findMany({
       where: { 
         userId,
-        target: 'USER' ,
-        isRead: false
+        target: 'USER',
+        deletedAt: null,
       },
       include: {
         user: {
@@ -42,11 +51,16 @@ export class NotificationRepository implements InterfaceNotificationRepository {
       orderBy: { createdAt: 'desc' },
       take: 50,
     });
+
+    return notifications as NotificationWithUser[];
   }
 
   async findById(id: string): Promise<Notification | null> {
     return await prisma.notification.findUnique({
-      where: { id },
+      where: { 
+        id,
+        deletedAt: null 
+      },
     });
   }
 
@@ -56,7 +70,17 @@ export class NotificationRepository implements InterfaceNotificationRepository {
         userId: data.userId,
         target: data.target,
         description: data.description,
-        isRead: false,
+      },
+    });
+  }
+
+
+  async createInTransaction(tx: PrismaTransaction, data: CreateNotificationData): Promise<Notification> {
+    return await tx.notification.create({
+      data: {
+        userId: data.userId,
+        target: data.target,
+        description: data.description,
       },
     });
   }
@@ -67,21 +91,31 @@ export class NotificationRepository implements InterfaceNotificationRepository {
     });
   }
 
-  async markAsRead(id: string): Promise<void> {
-    await prisma.notification.update({
-      where: { id },
-      data: { isRead: true },
-    });
-  }
 
-  async markAllAsReadForUser(userId: string): Promise<{ count: number }> {
-    const result = await prisma.notification.updateMany({
+  async deleteAllForUser(userId: string): Promise<{ count: number }> {
+    const result = await prisma.notification.deleteMany({
       where: {
         userId,
-        isRead: false,
         target: 'USER',
+        deletedAt: null,
       },
-      data: { isRead: true },
+    });
+
+    return { count: result.count };
+  }
+
+  async deleteOldAdminNotifications(daysOld: number = 30): Promise<{ count: number }> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    const result = await prisma.notification.deleteMany({
+      where: {
+        target: 'ADMIN',
+        createdAt: {
+          lt: cutoffDate,
+        },
+        deletedAt: null,
+      },
     });
 
     return { count: result.count };

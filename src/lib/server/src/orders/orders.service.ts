@@ -1,62 +1,19 @@
 import { OrderStatus } from '@/generated/prisma';
 import {
-  OrderRepository,
   InterfaceOrderRepository,
-} from '@/lib/server/src/orders/repository/orders.repository';
-import {
-  createNotification,
-} from '../notifications/notifications.service';
-import {
-  CartItemForPurchase,
-  OrderWithRelations,
-  PurchaseWithPointsData,
-  CreateOrderData,
-} from '@/lib/types';
-import { pointsService } from '../points/points.service';
-
+  OrderWithRelations
+} from './repository/interface-orders.repository';
+import { OrderRepository } from './repository/orders.repository';
 export class OrderService {
   constructor(
     private orderRepository: InterfaceOrderRepository = new OrderRepository()
   ) {}
 
-  async createPendingOrder(orderData: CreateOrderData): Promise<OrderWithRelations> {
-    return await this.orderRepository.create(orderData);
-  }
-
-  async purchaseWithPoints(
-    data: PurchaseWithPointsData
-  ): Promise<OrderWithRelations> {
-    const totalPointsNeeded = this.calculateTotalPoints(data.cartItems);
-    const userPointsTotal = await pointsService.getUserPointsTotal(data.userId);
-
-    if (userPointsTotal < totalPointsNeeded) {
-      throw new Error(
-        `Points insuffisants. Tu as ${userPointsTotal} points, ${totalPointsNeeded} requis.`
-      );
+  async getOrderById(orderId: string): Promise<OrderWithRelations> {
+    if (!orderId) {
+      throw new Error('ID de commande requis');
     }
 
-    const order = await this.orderRepository.purchaseWithPointsTransaction(data);
-   
-    const user = await this.orderRepository.findUserWithPoints(data.userId);
-   
-    await this.createPurchaseNotifications(order, user?.name || null);
-    return order;
-  }
-
- async confirmStripePayment(orderId: string): Promise<OrderWithRelations> {
-    const updatedOrder = await this.orderRepository.updateStatus(orderId, 'CONFIRMED');
-    
-    await this.orderRepository.markProductsAsSold(
-      updatedOrder.orderItems.map(item => item.productId)
-    );
-
-    const user = updatedOrder.user;
-    await this.createStripeNotifications(updatedOrder, user?.name || null);
-
-    return updatedOrder;
-  }
-
- async getOrderById(orderId: string): Promise<OrderWithRelations> {
     const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
@@ -67,6 +24,10 @@ export class OrderService {
   }
 
   async getUserOrders(userId: string): Promise<OrderWithRelations[]> {
+    if (!userId) {
+      throw new Error('ID utilisateur requis');
+    }
+
     return await this.orderRepository.findByUserId(userId);
   }
 
@@ -75,86 +36,20 @@ export class OrderService {
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus): Promise<OrderWithRelations> {
+    if (!orderId) {
+      throw new Error('ID de commande requis');
+    }
+
+    if (!Object.values(OrderStatus).includes(status)) {
+      throw new Error('Statut de commande invalide');
+    }
+
+    await this.getOrderById(orderId);
+
     return await this.orderRepository.updateStatus(orderId, status);
   }
 
- getRepository(): InterfaceOrderRepository {
+  getRepository(): InterfaceOrderRepository {
     return this.orderRepository;
-  }
-
-  private calculateTotalPoints(cartItems: CartItemForPurchase[]): number {
-    return Array.isArray(cartItems) 
-      ? cartItems.reduce((total, item) => total + ((item.pricePoints || 0) * (item.quantity || 0)), 0)
-      : 0;
-  }
-
-  private async createPurchaseNotifications(
-    order: OrderWithRelations,
-    userName: string | null
-  ): Promise<void> {
-    try {
-      const productNames = order.orderItems
-        .map((item: { productName: string }) => item.productName)
-        .join(', ');
-
-      if (order.userId) {
-        await createNotification({
-          userId: order.userId,
-          target: 'USER',
-          description: `Commande confirmée ! Produits achetés : ${productNames}. Total : ${order.pointsUsed} points.`,
-        });
-      }
-
-      await createNotification({
-        userId: null,
-        target: 'ADMIN',
-        description: `Nouvelle commande de ${userName || 'Utilisateur'} avec ${order.pointsUsed} points. Produits : ${productNames}`,
-      });
-
-      for (const item of order.orderItems) {
-        await this.orderRepository.notifyFavoriteUsersAndCleanup(
-          item.productId,
-          order.userId!,
-          item.productName
-        );
-      }
-    } catch (err) {
-      console.error(err instanceof Error ? err.message : err);
-    }
-  }
-
-  private async createStripeNotifications(
-    order: OrderWithRelations,
-    userName: string | null
-  ): Promise<void> {
-    try {
-      const productNames = order.orderItems
-        .map((item: { productName: string }) => item.productName)
-        .join(', ');
-
-      if (order.userId) {
-        await createNotification({
-          userId: order.userId,
-          target: 'USER',
-          description: `Commande confirmée ! Produits achetés : ${productNames}. Total : ${order.totalAmount}€.`,
-        });
-      }
-
-      await createNotification({
-        userId: null,
-        target: 'ADMIN',
-        description: `Nouvelle commande de ${userName || 'Utilisateur'} pour ${order.totalAmount}€. Produits : ${productNames}`,
-      });
-
-      for (const item of order.orderItems) {
-        await this.orderRepository.notifyFavoriteUsersAndCleanup(
-          item.productId,
-          order.userId!,
-          item.productName
-        );
-      }
-    } catch (err) {
-      console.error(err instanceof Error ? err.message : err);
-    }
   }
 }

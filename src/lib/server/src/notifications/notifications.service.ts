@@ -20,6 +20,11 @@ export class NotificationService {
   }
 
   async getUserNotifications(userId: string): Promise<NotificationWithUser[]> {
+    const validation = userIdSchema.safeParse({ userId });
+    if (!validation.success) {
+      throw new Error('ID utilisateur invalide');
+    }
+
     return await this.notificationRepository.findByUserId(userId);
   }
 
@@ -27,7 +32,7 @@ export class NotificationService {
     try {
       return await this.notificationRepository.create(data);
     } catch (err) {
-      console.error(err instanceof Error ? err.message : err);
+      console.error('[NotificationService] Erreur création notification:', err instanceof Error ? err.message : err);
       throw new Error('Erreur lors de la création de la notification');
     }
   }
@@ -55,43 +60,20 @@ export class NotificationService {
     };
   }
 
-  async markNotificationAsRead(notificationId: string, userId: string, userRole: string) {
-    const validation = notificationIdSchema.safeParse({ notificationId });
-    if (!validation.success) {
-      throw new Error('ID notification invalide');
-    }
-
-    const notification = await this.notificationRepository.findById(notificationId);
-
-    if (!notification) {
-      throw new Error('Notification non trouvée');
-    }
-
-    if (notification.userId !== userId && userRole !== 'ADMIN') {
-      throw new Error('Non autorisé à modifier cette notification');
-    }
-
-    await this.notificationRepository.markAsRead(notificationId);
-
-    return {
-      message: 'Notification marquée comme lue',
-    };
-  }
-
-  async markAllNotificationsAsRead(targetUserId: string, currentUserId: string, userRole: string) {
+  async deleteAllUserNotifications(targetUserId: string, currentUserId: string, userRole: string) {
     const validation = userIdSchema.safeParse({ userId: targetUserId });
     if (!validation.success) {
       throw new Error('ID utilisateur invalide');
     }
 
     if (targetUserId !== currentUserId && userRole !== 'ADMIN') {
-      throw new Error('Non autorisé à modifier les notifications de cet utilisateur');
+      throw new Error('Non autorisé à supprimer les notifications de cet utilisateur');
     }
 
-    const result = await this.notificationRepository.markAllAsReadForUser(targetUserId);
+    const result = await this.notificationRepository.deleteAllForUser(targetUserId);
 
     return {
-      message: `${result.count} notifications marquées comme lues`,
+      message: `${result.count} notification(s) supprimée(s) avec succès`,
       count: result.count,
     };
   }

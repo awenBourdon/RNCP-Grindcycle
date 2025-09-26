@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { applyGetRateLimit } from '@/lib/rateLimit';
 import { auth } from '@/lib/auth';
-import { UserService } from '@/lib/server/src/users/users-service';
+import { PointsHistoryService } from '@/lib/server/src/points-history/points-history.service';
 
-const userService = new UserService();
+const pointsHistoryService = new PointsHistoryService();
 
 export async function GET(req: NextRequest) {
   const rateLimitResponse = applyGetRateLimit(req, 'generalGet');
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const pointsHistory = await userService.getUserPointsHistory(targetUserId);
+    const pointsHistory = await pointsHistoryService.getUserPointsHistory(targetUserId);
 
     return NextResponse.json({
       success: true,

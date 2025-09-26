@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { OrderService } from '@/lib/server/src/orders/orders.service';
+import { PaymentService } from '@/lib/server/src/payments/payments.service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
@@ -26,8 +26,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const orderService = new OrderService();
-    const updatedOrder = await orderService.confirmStripePayment(orderId);
+    const paymentService = new PaymentService();
+    const updatedOrder = await paymentService.confirmStripePayment(orderId);
 
     const orderDetails = {
       id: updatedOrder.id,

@@ -2,9 +2,9 @@
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { OrderService } from '@/lib/server/src/orders/orders.service';
+import { PaymentService } from '@/lib/server/src/payments/payments.service';
 
-const orderService = new OrderService();
+const paymentService = new PaymentService();
 
 export async function purchaseWithPointsAction(formData: FormData) {
   const headersList = await headers();
@@ -40,7 +40,7 @@ export async function purchaseWithPointsAction(formData: FormData) {
       };
     }
 
-    const order = await orderService.purchaseWithPoints({
+    const order = await paymentService.processPointsPayment({
       userId: session.user.id,
       cartItems,
       shippingAddress,

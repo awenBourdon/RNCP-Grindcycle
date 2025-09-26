@@ -71,13 +71,23 @@ export const pointsShippingSchema = z.object({
 );
 
 export const cartItemSchema = z.object({
-  productId: z.string().uuid('ID produit invalide'),
+  id: z.string().uuid('ID invalide').optional(),
+  productId: z.string().uuid('ID produit invalide').optional(),
   name: z.string().min(1, 'Nom requis'),
   type: z.nativeEnum(BoardType, { message: 'Type de planche invalide' }),
   priceEuro: z.number().min(0, 'Prix invalide'),
   pricePoints: z.number().min(0, 'Points invalides'),
   quantity: z.number().int().min(1, 'Quantité minimum 1'),
-});
+  imageUrl: z.array(z.string()).optional(),
+})
+.refine((data) => data.id || data.productId, {
+  message: "Soit 'id' soit 'productId' doit être fourni",
+})
+.transform((data) => ({
+  ...data,
+  productId: data.productId || data.id!,
+  id: data.id || data.productId!,
+}));
 
 export const pointsPurchaseSchema = z.object({
   cartItems: z

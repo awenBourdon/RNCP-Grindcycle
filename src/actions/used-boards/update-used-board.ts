@@ -46,7 +46,7 @@ export async function updateUsedBoardAction(
 
     const { boardId: validatedBoardId, ...updateData } = validation.data;
 
-    const result = await usedBoardService.updateUsedBoard(
+    const result = await usedBoardService.updateUsedBoardStatus(
       validatedBoardId,
       updateData
     );

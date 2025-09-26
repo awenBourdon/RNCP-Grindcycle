@@ -221,14 +221,7 @@ export const ChangePasswordForm = () => {
               isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
-            {isSubmitting ? (
-              <Spinner />
-            ) : (
-              <>
-                <Key size={16} className="mr-2" />
-                Modifier le mot de passe
-              </>
-            )}
+            {isSubmitting ? <Spinner /> : <p>Modifier le mot de passe</p>}
           </button>
         </form>
       </div>

@@ -1,10 +1,6 @@
 'use client';
 import React from 'react';
-import {
-  type OrderStatus,
-  type OrderWithRelations,
-  PaymentType,
-} from '@/lib/types';
+import { type OrderWithRelations } from '@/lib/types';
 import {
   ShoppingBag,
   Hash,
@@ -18,6 +14,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import { OrderStatus, PaymentType } from '@/generated/prisma';
 
 interface AdminOrdersTableProps {
   orders: OrderWithRelations[];

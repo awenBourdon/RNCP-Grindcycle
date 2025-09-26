@@ -16,7 +16,7 @@ export async function markNotificationAsReadAction(notificationId: string) {
   }
 
   try {
-    await notificationService.markNotificationAsRead(
+    await notificationService.deleteNotification(
       notificationId,
       session.user.id,
       session.user.role
@@ -50,7 +50,7 @@ export async function markAllNotificationsAsReadAction(userId: string) {
   }
 
   try {
-    const result = await notificationService.markAllNotificationsAsRead(
+    const result = await notificationService.deleteAllUserNotifications(
       userId,
       session.user.id,
       session.user.role

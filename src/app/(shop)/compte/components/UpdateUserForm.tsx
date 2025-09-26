@@ -117,7 +117,7 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
           <button
             type="submit"
             disabled={isPending}
-            className={`w-full px-6 py-3 bg-[#0a3d3f] text-white rounded-lg font-medium hover:bg-[#0a4d4f] transition-colors flex items-center justify-center ${
+            className={`w-full px-6 py-3 bg-[#0a3d3f] text-white rounded-full font-medium cursor-pointer hover:bg-[#0a4d4f] transition-colors flex items-center justify-center ${
               isPending ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
