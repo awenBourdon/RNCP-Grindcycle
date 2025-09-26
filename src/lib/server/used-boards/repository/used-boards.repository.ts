@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/utils/prisma';
 import { UsedBoard, UsedBoardStatus, PointsType } from '@/generated/prisma';
 import {
   InterfaceUsedBoardRepository,

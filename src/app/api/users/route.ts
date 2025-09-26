@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { applyGetRateLimit } from '@/lib/rateLimit';
-import { auth } from '@/lib/auth';
-import { User } from '@/lib/types';
+import { applyGetRateLimit } from '@/lib/utils/rateLimit';
+import { auth } from '@/lib/utils/auth';
+import { User } from '@/lib/utils/types/types';
 import { UserService } from '@/lib/server/users/users-service';
 
 const userService = new UserService();

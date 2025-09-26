@@ -1,5 +1,5 @@
 'use server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { UserService } from '@/lib/server/users/users-service';
 import { headers } from 'next/headers';
 import { z } from 'zod';

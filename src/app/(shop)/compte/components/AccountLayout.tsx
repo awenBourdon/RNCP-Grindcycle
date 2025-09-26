@@ -3,7 +3,7 @@ import type React from 'react';
 import { usePathname } from 'next/navigation';
 import { AccountSidebar } from './AccountSidebar';
 import { AccountHeader } from './AccountHeader';
-import { Session } from '@/lib/types';
+import { Session } from '@/lib/utils/types/types';
 
 interface AccountLayoutProps {
   session: Session;

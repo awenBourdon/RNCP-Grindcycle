@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { AdminNotifications } from '../components/AdminNotifications';
 

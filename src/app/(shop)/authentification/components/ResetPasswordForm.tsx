@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Spinner } from '@/components/ui/Spinner';
-import { resetPassword } from '@/lib/auth-client';
+import { resetPassword } from '@/lib/utils/auth-client';
 import { Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { resetPasswordSchema } from '@/lib/validations/auth.validation';

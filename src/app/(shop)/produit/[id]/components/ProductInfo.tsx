@@ -1,4 +1,4 @@
-import { BoardType, ProductType } from '@/lib/types';
+import { BoardType, ProductType } from '@/lib/utils/types/types';
 
 interface ProductInfoProps {
   product: ProductType;

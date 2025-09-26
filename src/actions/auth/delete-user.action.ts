@@ -1,5 +1,5 @@
 'use server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { UserService } from '@/lib/server/users/users-service';
 import { deleteUserSchema } from '@/lib/validations/auth.validation';
 import { APIError } from 'better-auth/api';

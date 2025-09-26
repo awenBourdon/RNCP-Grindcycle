@@ -1,9 +1,9 @@
 import type React from 'react';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AdminLayout } from './components/AdminLayout';
-import { Session } from '@/lib/types';
+import { Session } from '@/lib/utils/types/types';
 
 export const metadata = {
   title: 'Dashboard Grindcycle',

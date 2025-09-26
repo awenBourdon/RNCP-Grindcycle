@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { ReturnButton } from '@/components/ui/ReturnButton';
 import { AdminNavbar } from './AdminNavbar';
 import { AdminHeader } from './AdminHeader';
-import { Session } from '@/lib/types';
+import { Session } from '@/lib/utils/types/types';
 
 interface AdminLayoutProps {
   session: Session;

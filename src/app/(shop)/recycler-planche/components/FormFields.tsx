@@ -1,4 +1,4 @@
-import { BoardCondition, BoardType } from '@/lib/types';
+import { BoardCondition, BoardType } from '@/lib/utils/types/types';
 import {
   formatBoardType,
   formatBoardCondition,

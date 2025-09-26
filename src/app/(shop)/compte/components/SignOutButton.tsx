@@ -1,8 +1,8 @@
 'use client';
 
 import { Spinner } from '@/components/ui/Spinner';
-import { signOut } from '@/lib/auth-client';
-import type { ErrorContext } from '@/lib/types';
+import { signOut } from '@/lib/utils/auth-client';
+import type { ErrorContext } from '@/lib/utils/types/types';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { toast } from 'sonner';

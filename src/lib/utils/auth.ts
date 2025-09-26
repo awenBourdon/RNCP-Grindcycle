@@ -2,7 +2,7 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { PrismaClient, UserRole } from '@/generated/prisma/client';
-import { hashPassword, verifyPassword } from '@/lib/argon2';
+import { hashPassword, verifyPassword } from '@/lib/utils/argon2';
 import { createAuthMiddleware, APIError } from 'better-auth/api';
 import { getValidDomains, normalizeName } from './utils';
 import { admin, magicLink } from 'better-auth/plugins';

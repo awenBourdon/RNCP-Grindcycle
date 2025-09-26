@@ -1,14 +1,14 @@
 'use server';
 import { revalidatePath } from 'next/cache';
 import { recycleSchema } from '@/lib/validations/boards.validation';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import {
   checkRateLimit,
   getClientIP,
   RATE_LIMIT_MESSAGES,
-} from '@/lib/rateLimit';
+} from '@/lib/utils/rateLimit';
 import { UsedBoardService } from '@/lib/server/used-boards/used-boards.service';
 
 const usedBoardService = new UsedBoardService();

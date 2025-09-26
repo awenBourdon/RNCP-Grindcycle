@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { redirect } from 'next/navigation';
 import { ExchangePointsShipping } from '../../components/ExchangePointsShipping';
 

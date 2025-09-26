@@ -1,8 +1,8 @@
 'use client';
 import { Spinner } from '@/components/ui/Spinner';
 import type { UserRole } from '@/generated/prisma';
-import { admin } from '@/lib/auth-client';
-import type { ErrorContext } from '@/lib/types';
+import { admin } from '@/lib/utils/auth-client';
+import type { ErrorContext } from '@/lib/utils/types/types';
 import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useTransition } from 'react';

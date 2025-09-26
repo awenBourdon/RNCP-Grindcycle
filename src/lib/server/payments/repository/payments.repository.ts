@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/utils/prisma';
 import { OrderStatus, PointsType } from '@/generated/prisma';
 import { NotificationTemplates } from '../../notifications/notifications.service';
 import { InterfacePaymentRepository, PaymentServices, PointsPaymentTransactionData } from './interface-payments.repository';

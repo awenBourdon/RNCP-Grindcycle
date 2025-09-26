@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/utils/prisma';
 import { User } from '@/generated/prisma';
 import {
   InterfaceUserRepository,

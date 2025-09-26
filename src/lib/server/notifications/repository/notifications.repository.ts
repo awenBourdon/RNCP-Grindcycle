@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/utils/prisma';
 import { Notification } from '@/generated/prisma';
 import {
   InterfaceNotificationRepository,

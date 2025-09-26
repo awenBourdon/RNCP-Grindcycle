@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductList } from './ProductsList';
 import { Filters } from './Filters';
-import { ProductType } from '@/lib/types';
+import { ProductType } from '@/lib/utils/types/types';
 
 interface CatalogProps {
   products: ProductType[];

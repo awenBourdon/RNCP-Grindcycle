@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ProductType } from '@/lib/types';
+import { ProductType } from '@/lib/utils/types/types';
 
 type Props = {
   product: ProductType;

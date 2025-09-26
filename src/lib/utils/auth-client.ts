@@ -4,8 +4,8 @@ import {
   magicLinkClient,
 } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
-import type { auth } from '@/lib/auth';
-import { ac, roles } from '@/lib/permissions';
+import type { auth } from '@/lib/utils/auth';
+import { ac, roles } from '@/lib/utils/permissions';
 
 const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_API_URL,

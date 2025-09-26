@@ -22,7 +22,7 @@ export interface NotificationWithUser {
   } | null;
 }
 
-type PrismaTransaction = Parameters<Parameters<typeof import('@/lib/prisma').prisma.$transaction>[0]>[0];
+type PrismaTransaction = Parameters<Parameters<typeof import('@/lib/utils/prisma').prisma.$transaction>[0]>[0];
 export interface InterfaceNotificationRepository {
  
   create(data: CreateNotificationData): Promise<Notification>;

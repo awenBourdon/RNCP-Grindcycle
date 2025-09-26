@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { CartItemType } from '@/lib/types';
+import { CartItemType } from '@/lib/utils/types/types';
 
 export const Item = ({ item }: { item: CartItemType }) => {
   const { removeFromCart } = useCart();

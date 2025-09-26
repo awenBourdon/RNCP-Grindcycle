@@ -1,8 +1,8 @@
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { UserNotifications } from '../components/UserNotifications';
-import { Session } from '@/lib/types';
+import { Session } from '@/lib/utils/types/types';
 
 export default async function NotificationsPage() {
   const headersList = await headers();

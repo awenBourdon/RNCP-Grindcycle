@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { applyGetRateLimit } from '@/lib/rateLimit';
-import { auth } from '@/lib/auth';
+import { applyGetRateLimit } from '@/lib/utils/rateLimit';
+import { auth } from '@/lib/utils/auth';
 import { FavoriteService } from '@/lib/server/favorites/favorites.service';
 
 const favoriteService = new FavoriteService();

@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/utils/prisma';
 import { OrderItem } from '@/generated/prisma';
 import { InterfaceOrderItemRepository, OrderItemWithProduct, CreateOrderItemData, UpdateOrderItemData } from './interface-order-items';
 

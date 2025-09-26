@@ -1,7 +1,7 @@
 import { Footer } from '../../components/ui/Footer';
 import { Navbar } from '../../components/ui/Navbar';
 import { headers } from 'next/headers';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 
 export default async function AppLayout({
   children,

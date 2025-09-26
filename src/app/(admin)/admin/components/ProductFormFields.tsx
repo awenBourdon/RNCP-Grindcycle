@@ -1,4 +1,4 @@
-import { BoardType } from '@/lib/types';
+import { BoardType } from '@/lib/utils/types/types';
 import { formatBoardType } from '@/lib/validations/boards.validation';
 
 interface UsedBoard {

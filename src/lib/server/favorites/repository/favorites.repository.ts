@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/lib/utils/prisma';
 import { Favorite } from '@/generated/prisma';
 import { FavoriteWithProduct, InterfaceFavoriteRepository } from './interface-favorites.repository';
 

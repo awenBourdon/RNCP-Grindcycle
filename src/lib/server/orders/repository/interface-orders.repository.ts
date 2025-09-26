@@ -62,7 +62,7 @@ export interface CreateOrderData {
 /**
  * Type pour les transactions Prisma
  */
-type PrismaTransaction = Parameters<Parameters<typeof import('@/lib/prisma').prisma.$transaction>[0]>[0];
+type PrismaTransaction = Parameters<Parameters<typeof import('@/lib/utils/prisma').prisma.$transaction>[0]>[0];
 
 
 /**

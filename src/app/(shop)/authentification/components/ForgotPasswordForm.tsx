@@ -1,6 +1,6 @@
 'use client';
 import { Spinner } from '@/components/ui/Spinner';
-import { forgetPassword } from '@/lib/auth-client';
+import { forgetPassword } from '@/lib/utils/auth-client';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
