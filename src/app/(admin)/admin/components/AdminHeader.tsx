@@ -1,4 +1,4 @@
-import { Session } from '@/lib/types';
+import { Session } from '@/lib/types/types';
 
 interface AdminHeaderProps {
   session: Session;

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BoardCondition, BoardType } from '../types';
+import { BoardCondition, BoardType } from '../types/types';
 
 export const IMAGE_CONFIG = {
   maxSize: 5 * 1024 * 1024,

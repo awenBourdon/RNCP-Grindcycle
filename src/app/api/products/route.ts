@@ -1,6 +1,6 @@
 import { type NextRequest } from 'next/server';
-import { ProductService } from '@/lib/server/src/products/products.service';
-import { applyGetRateLimit } from '@/lib/rateLimit';
+import { ProductService } from '@/server/products/products.service';
+import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 
 const productService = new ProductService();
 

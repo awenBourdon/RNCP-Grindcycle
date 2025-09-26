@@ -2,7 +2,7 @@
 import { useState, useTransition } from 'react';
 import { Bell, Check } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Notification } from '@/lib/types';
+import type { Notification } from '@/lib/types/types';
 import {
   markAllNotificationsAsReadAction,
   markNotificationAsReadAction,

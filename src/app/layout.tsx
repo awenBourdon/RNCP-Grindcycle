@@ -2,7 +2,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
-import { CartProvider } from '@/contexts/CartContext';
+import { CartProvider } from '@/app/contexts/CartContext';
 
 const splineSans = localFont({
   src: '../../public/fonts/SplineSans.ttf',

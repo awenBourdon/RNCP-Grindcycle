@@ -1,6 +1,6 @@
 'use client';
 import { OrderStatus, PaymentType } from '@/generated/prisma';
-import { type OrderWithRelations } from '@/lib/types';
+import { type OrderWithRelations } from '@/lib/types/types';
 import { Package, Coins, CreditCard, Calendar, Truck } from 'lucide-react';
 import Image from 'next/image';
 

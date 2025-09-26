@@ -1,8 +1,8 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
-import { notificationService } from '@/lib/server/src/notifications/notifications.service';
+import { notificationService } from '@/server/notifications/notifications.service';
 
 export async function markNotificationAsReadAction(notificationId: string) {
   const headersList = await headers();

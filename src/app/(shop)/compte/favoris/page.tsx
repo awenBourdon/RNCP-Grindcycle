@@ -1,11 +1,11 @@
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { BoardType } from '@/generated/prisma';
-import { ProductType } from '@/lib/types';
+import { ProductType } from '@/lib/types/types';
 
 const getBoardTypeText = (type: BoardType) => {
   switch (type) {

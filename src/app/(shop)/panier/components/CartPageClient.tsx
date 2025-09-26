@@ -1,5 +1,5 @@
 'use client';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/app/contexts/CartContext';
 import { EmptyCart } from './EmptyCart';
 import { Header } from './Header';
 import { ItemsList } from './ItemsList';

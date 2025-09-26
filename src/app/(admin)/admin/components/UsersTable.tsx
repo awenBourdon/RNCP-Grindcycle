@@ -4,7 +4,7 @@ import {
   PlaceholderDeleteUserButton,
   DeleteUserButton,
 } from './DeleteUserButton';
-import { User } from '@/lib/types';
+import { User } from '@/lib/types/types';
 
 interface UsersTableProps {
   users: User[];

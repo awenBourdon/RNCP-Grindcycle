@@ -1,7 +1,7 @@
 'use client';
 import { useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/app/contexts/CartContext';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';

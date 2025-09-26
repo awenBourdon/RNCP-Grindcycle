@@ -1,10 +1,10 @@
 'use server';
-import { auth, ErrorCode } from '@/lib/auth';
+import { auth, ErrorCode } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { APIError } from 'better-auth/api';
 import { redirect } from 'next/navigation';
 import { signInSchema } from '@/lib/validations/auth.validation';
-import { getClientIP, hasExcessiveFailures, recordFailedSignIn, resetSignInAttempts } from '@/lib/rateLimit';
+import { getClientIP, hasExcessiveFailures, recordFailedSignIn, resetSignInAttempts } from '@/lib/utils/rateLimit';
 
 export async function signInEmailAction(formData: FormData) {
   const headersList = await headers();

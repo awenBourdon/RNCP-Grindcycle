@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
 import type React from 'react';
-import { signIn } from '@/lib/auth-client';
+import { signIn } from '@/lib/utils/auth-client';
 import { toast } from 'sonner';
-import type { ErrorContext } from '@/lib/types';
+import type { ErrorContext } from '@/lib/types/types';
 import { Mail } from 'lucide-react';
 
 export const MagicLinkLoginForm = () => {

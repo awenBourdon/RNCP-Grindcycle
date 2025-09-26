@@ -1,13 +1,13 @@
 'use client';
 import { useState, useTransition, useEffect } from 'react';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/app/contexts/CartContext';
 import { ReturnButton } from '@/components/ui/ReturnButton';
 import { toast } from 'sonner';
 import { ProductImageGallery } from './ProductImageGallery';
 import { ProductInfo } from './ProductInfo';
 import { ProductActions } from './ProductActions';
-import { ProductType } from '@/lib/types';
-import { useAbortController } from '@/hooks/useAbortController';
+import { ProductType } from '@/lib/types/types';
+import { useAbortController } from '@/app/hooks/useAbortController';
 import { favoritesAction } from '@/actions/favorites/favorite.action';
 
 interface ProductDisplayProps {

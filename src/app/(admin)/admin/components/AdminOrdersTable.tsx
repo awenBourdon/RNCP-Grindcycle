@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { type OrderWithRelations } from '@/lib/types';
+import { type OrderWithRelations } from '@/lib/types/types';
 import {
   ShoppingBag,
   Hash,

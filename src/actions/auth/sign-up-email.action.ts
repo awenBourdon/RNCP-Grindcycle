@@ -1,5 +1,5 @@
 'use server';
-import { auth, ErrorCode } from '@/lib/auth';
+import { auth, ErrorCode } from '@/lib/utils/auth';
 import { signUpServerSchema } from '@/lib/validations/auth.validation';
 import { APIError } from 'better-auth/api';
 import { cookies } from 'next/headers';

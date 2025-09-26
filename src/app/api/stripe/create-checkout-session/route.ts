@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { pointsShippingSchema, cartItemSchema } from '@/lib/validations/shipping.validation';
 import { z } from 'zod';
-import { CartItemForPurchase, PaymentService, ShippingAddress } from '@/lib/server/src/payments/payments.service';
+import { CartItemForPurchase, PaymentService, ShippingAddress } from '@/server/payments/payments.service';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',

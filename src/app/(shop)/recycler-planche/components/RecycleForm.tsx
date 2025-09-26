@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { FormFields } from './FormFields';
 import { ImageUpload } from '../../../../components/form/ImageUpload';
 import { Spinner } from '@/components/ui/Spinner';
-import { BoardCondition, BoardType } from '@/lib/types';
+import { BoardCondition, BoardType } from '@/lib/types/types';
 import {
   recycleSchema,
   IMAGE_CONFIG,

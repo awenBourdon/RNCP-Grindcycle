@@ -1,7 +1,7 @@
 'use client';
 import type React from 'react';
 import { useState } from 'react';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/app/contexts/CartContext';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Coins, CreditCard, Truck } from 'lucide-react';

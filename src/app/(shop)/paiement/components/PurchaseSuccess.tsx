@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle, CreditCard, Package } from 'lucide-react';
 import Link from 'next/link';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/app/contexts/CartContext';
 
 interface OrderDetails {
   id: string;

@@ -26,7 +26,7 @@ import type {
   UsedBoardStatus,
   BoardCondition,
 } from '@/generated/prisma';
-import { useImageModal } from '@/hooks/useImageModal';
+import { useImageModal } from '@/app/hooks/useImageModal';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
 import { deleteUsedBoardAction } from '@/actions/used-boards/delete-used-board';
 
