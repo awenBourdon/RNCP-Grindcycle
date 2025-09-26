@@ -1,6 +1,6 @@
 'use server';
 import { auth } from '@/lib/auth';
-import { deleteUserSchema } from '@/lib/validations/authValidation';
+import { deleteUserSchema } from '@/lib/validations/auth.validation';
 import { APIError } from 'better-auth/api';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';

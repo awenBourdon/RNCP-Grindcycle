@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Upload, Info } from 'lucide-react';
-import { IMAGE_CONFIG } from '@/lib/validations/boardsValidation';
+import { IMAGE_CONFIG } from '@/lib/validations/boards.validation';
 
 interface FormErrors {
   [key: string]: string;

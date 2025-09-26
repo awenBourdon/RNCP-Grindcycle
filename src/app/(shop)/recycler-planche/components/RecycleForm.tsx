@@ -10,7 +10,7 @@ import { BoardCondition, BoardType } from '@/lib/types';
 import {
   recycleSchema,
   IMAGE_CONFIG,
-} from '@/lib/validations/boardsValidation';
+} from '@/lib/validations/boards.validation';
 import { createUsedBoardAction } from '@/actions/used-boards/add-used-board.action';
 
 interface RecycleFormProps {

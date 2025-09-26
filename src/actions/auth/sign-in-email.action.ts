@@ -3,7 +3,7 @@ import { auth, ErrorCode } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { APIError } from 'better-auth/api';
 import { redirect } from 'next/navigation';
-import { signInSchema } from '@/lib/validations/authValidation';
+import { signInSchema } from '@/lib/validations/auth.validation';
 import { getClientIP, hasExcessiveFailures, recordFailedSignIn, resetSignInAttempts } from '@/lib/rateLimit';
 
 export async function signInEmailAction(formData: FormData) {

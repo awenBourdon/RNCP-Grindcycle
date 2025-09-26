@@ -1,5 +1,5 @@
 import { BoardType } from '@/lib/types';
-import { formatBoardType } from '@/lib/validations/boardsValidation';
+import { formatBoardType } from '@/lib/validations/boards.validation';
 
 interface UsedBoard {
   id: string;

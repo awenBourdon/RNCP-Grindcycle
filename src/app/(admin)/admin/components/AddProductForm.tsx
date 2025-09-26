@@ -9,7 +9,7 @@ import { ImageUpload } from '@/components/form/ImageUpload';
 import {
   IMAGE_CONFIG,
   productSchema,
-} from '@/lib/validations/boardsValidation';
+} from '@/lib/validations/boards.validation';
 import { ProductFormFields } from './ProductFormFields';
 import { createProductAction } from '@/actions/products/add-product';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
