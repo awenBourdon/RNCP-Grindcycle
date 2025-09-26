@@ -3,7 +3,7 @@ import {
   isAllowedMimeType,
   isAllowedExtension,
 } from './upload';
-import { EnhancedImageValidator } from '@/lib/validations/imagesValidations';
+import { EnhancedImageValidator } from '@/lib/validations/images.validation';
 
 export interface ImageValidationResult {
   isValid: boolean;
