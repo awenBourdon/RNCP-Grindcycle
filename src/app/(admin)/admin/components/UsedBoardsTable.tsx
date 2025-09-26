@@ -19,7 +19,6 @@ import { ImageModal } from './ImageModal';
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Spinner } from '@/components/ui/Spinner';
 import Image from 'next/image';
 import type {
   UsedBoard,
@@ -29,6 +28,7 @@ import type {
 import { useImageModal } from '@/app/hooks/useImageModal';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
 import { deleteUsedBoardAction } from '@/actions/used-boards/delete-used-board';
+import { Spinner } from '@/app/components/ui/Spinner';
 
 interface UsedBoardWithUser extends UsedBoard {
   user: {

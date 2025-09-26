@@ -4,8 +4,6 @@ import { useRouter } from 'next/navigation';
 import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { ZodError } from 'zod';
-import { Spinner } from '@/components/ui/Spinner';
-import { ImageUpload } from '@/components/form/ImageUpload';
 import {
   IMAGE_CONFIG,
   productSchema,
@@ -14,6 +12,8 @@ import { ProductFormFields } from './ProductFormFields';
 import { createProductAction } from '@/actions/products/add-product';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
 import { UsedBoardStatus } from '@/generated/prisma';
+import { ImageUpload } from '@/app/components/form/ImageUpload';
+import { Spinner } from '@/app/components/ui/Spinner';
 
 interface UsedBoard {
   id: string;
