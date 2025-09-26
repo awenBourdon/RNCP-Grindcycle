@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { applyGetRateLimit } from '@/lib/rateLimit';
 import { auth } from '@/lib/auth';
-import { NotificationService } from '@/lib/server/src/notifications/notifications.service';
+import { NotificationService } from '@/lib/server/notifications/notifications.service';
 
 export async function GET(request: NextRequest) {
   const rateLimitResponse = applyGetRateLimit(request, 'getNotifications');

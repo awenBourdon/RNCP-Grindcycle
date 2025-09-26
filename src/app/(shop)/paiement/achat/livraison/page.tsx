@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
 import { ReturnButton } from '@/components/ui/ReturnButton';
 import { toast } from 'sonner';
-import type { PointsShippingInput } from '@/lib/validations/shippingValidation';
+import type { PointsShippingInput } from '@/lib/validations/shipping.validation';
 import { ShippingForm } from '@/components/form/ShippingForm';
 
 export default function ShippingPage() {

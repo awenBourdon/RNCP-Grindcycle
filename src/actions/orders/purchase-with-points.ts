@@ -2,7 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { PaymentService } from '@/lib/server/src/payments/payments.service';
+import { PaymentService } from '@/lib/server/payments/payments.service';
 
 const paymentService = new PaymentService();
 

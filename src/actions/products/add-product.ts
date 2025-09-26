@@ -1,10 +1,10 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { ProductService } from '@/lib/server/src/products/products.service';
-import { productSchema } from '@/lib/validations/boardsValidation';
+import { productSchema } from '@/lib/validations/boards.validation';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { ProductService } from '@/lib/server/products/products.service';
 
 const productService = new ProductService();
 

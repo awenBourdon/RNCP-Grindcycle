@@ -6,11 +6,11 @@ import {
   UsedBoardWithRelations
 } from './repository/interface-used-boards.repository';
 import { UsedBoardRepository } from './repository/used-boards.repository';
-import { ImageService } from '@/lib/server/src/upload-images/images.service';
 import { PointsHistoryService } from '../points-history/points-history.service';
 import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
 import { UserService } from '../users/users-service';
 import { PointsCalculatorService } from '../points-calculator/points-calculator';
+import { ImageService } from '../upload-images/images.service';
 
 export class UsedBoardService {
   constructor(

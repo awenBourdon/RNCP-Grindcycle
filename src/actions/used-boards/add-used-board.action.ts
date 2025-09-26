@@ -1,6 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { recycleSchema } from '@/lib/validations/boardsValidation';
+import { recycleSchema } from '@/lib/validations/boards.validation';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -9,7 +9,7 @@ import {
   getClientIP,
   RATE_LIMIT_MESSAGES,
 } from '@/lib/rateLimit';
-import { UsedBoardService } from '@/lib/server/src/used-boards/used-boards.service';
+import { UsedBoardService } from '@/lib/server/used-boards/used-boards.service';
 
 const usedBoardService = new UsedBoardService();
 

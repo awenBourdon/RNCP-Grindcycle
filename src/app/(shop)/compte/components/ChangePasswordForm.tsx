@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Key, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { z } from 'zod';
 import { changePasswordAction } from '@/actions/auth/change-password.action';
-import { passwordSchema } from '@/lib/validations/authValidation';
+import { passwordSchema } from '@/lib/validations/auth.validation';
 import { Spinner } from '@/components/ui/Spinner';
 import { PasswordValidation } from '../../authentification/components/PasswordValidation';
 

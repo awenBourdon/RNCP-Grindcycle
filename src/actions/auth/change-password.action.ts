@@ -5,7 +5,7 @@ import {
   getClientIP,
   RATE_LIMIT_MESSAGES,
 } from '@/lib/rateLimit';
-import { passwordSchema } from '@/lib/validations/authValidation';
+import { passwordSchema } from '@/lib/validations/auth.validation';
 import { APIError } from 'better-auth/api';
 import { headers } from 'next/headers';
 

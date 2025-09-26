@@ -6,8 +6,8 @@ import {
   ProductWithRelations
 } from './repository/interface-products.repository';
 import { ProductRepository } from './repository/products.repository';
-import { ImageService } from '@/lib/server/src/upload-images/images.service';
 import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
+import { ImageService } from '../upload-images/images.service';
 
 export class ProductService {
   constructor(
