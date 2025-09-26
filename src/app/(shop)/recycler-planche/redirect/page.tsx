@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { headers } from 'next/headers';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { redirect } from 'next/navigation';
 import { LogIn } from 'lucide-react';
 import { ReturnButton } from '@/components/ui/ReturnButton';

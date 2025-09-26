@@ -1,5 +1,5 @@
 'use client';
-import type { CartItemType, ProductType } from '@/lib/types';
+import type { CartItemType, ProductType } from '@/lib/utils/types/types';
 import {
   createContext,
   useContext,

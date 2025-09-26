@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { purchaseWithPointsAction } from '@/actions/orders/purchase-with-points';
-import { type PointsShippingInput } from '@/lib/validations/shippingValidation';
+import { type PointsShippingInput } from '@/lib/validations/shipping.validation';
 import { ShippingForm } from '@/components/form/ShippingForm';
 
 interface ExchangePointsShippingProps {

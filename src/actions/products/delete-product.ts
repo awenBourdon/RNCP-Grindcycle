@@ -1,9 +1,9 @@
 'use server';
 import { revalidatePath } from 'next/cache';
-import { ProductService } from '@/lib/server/src/products/products.service';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
+import { ProductService } from '@/lib/server/products/products.service';
 
 const productService = new ProductService();
 

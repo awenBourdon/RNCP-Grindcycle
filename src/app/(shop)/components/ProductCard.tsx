@@ -1,5 +1,5 @@
 'use client';
-import { ProductType } from '@/lib/types';
+import { ProductType } from '@/lib/utils/types/types';
 import Image from 'next/image';
 
 interface ProductCardProps {

@@ -1,8 +1,8 @@
-import { BoardCondition, BoardType } from '@/lib/types';
+import { BoardCondition, BoardType } from '@/lib/utils/types/types';
 import {
   formatBoardType,
   formatBoardCondition,
-} from '@/lib/validations/boardsValidation';
+} from '@/lib/validations/boards.validation';
 
 interface FormErrors {
   [key: string]: string;

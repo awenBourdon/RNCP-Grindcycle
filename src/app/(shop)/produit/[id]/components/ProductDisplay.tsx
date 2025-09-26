@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { ProductImageGallery } from './ProductImageGallery';
 import { ProductInfo } from './ProductInfo';
 import { ProductActions } from './ProductActions';
-import { ProductType } from '@/lib/types';
+import { ProductType } from '@/lib/utils/types/types';
 import { useAbortController } from '@/hooks/useAbortController';
 import { favoritesAction } from '@/actions/favorites/favorite.action';
 

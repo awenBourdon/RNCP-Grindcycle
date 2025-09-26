@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Shield } from 'lucide-react';
 import { SignOutButton } from './SignOutButton';
-import { Session } from '@/lib/types';
+import { Session } from '@/lib/utils/types/types';
 
 interface AccountHeaderProps {
   session: Session;

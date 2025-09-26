@@ -5,7 +5,7 @@ import {
   pointsShippingSchema,
   SHIPPING_CONFIG,
   type PointsShippingInput,
-} from '@/lib/validations/shippingValidation';
+} from '@/lib/validations/shipping.validation';
 
 interface ShippingFormProps {
   onSubmit: (data: PointsShippingInput) => void;

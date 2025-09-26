@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { User, X, Menu, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
-import { Notification } from '@/lib/types';
+import { Notification } from '@/lib/utils/types/types';
 import { useAbortController } from '@/hooks/useAbortController';
 
 interface NavbarUser {

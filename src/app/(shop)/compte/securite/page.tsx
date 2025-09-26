@@ -1,8 +1,8 @@
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { ChangePasswordForm } from '../components/ChangePasswordForm';
-import { Session } from '@/lib/types';
+import { Session } from '@/lib/utils/types/types';
 import { DeleteAccountModal } from '../components/DeleteAccountModal';
 
 export default async function ChangePasswordPage() {

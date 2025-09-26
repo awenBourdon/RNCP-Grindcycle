@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { DashboardStats } from '../components/DashboardStats';
-import type { Notification, UsedBoard } from '@/lib/types';
+import type { Notification, UsedBoard } from '@/lib/utils/types/types';
 import { Product } from '@/generated/prisma';
 
 export default async function DashboardPage() {
