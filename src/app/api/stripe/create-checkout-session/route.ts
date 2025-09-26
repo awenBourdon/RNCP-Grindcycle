@@ -61,8 +61,7 @@ export async function POST(request: Request) {
       price_data: {
         currency: 'eur',
         product_data: {
-          name: item.name,
-          description: `Type: ${item.type}`,
+          name: item.name
         },
         unit_amount: Math.round(item.priceEuro * 100),
       },
@@ -74,8 +73,7 @@ export async function POST(request: Request) {
         price_data: {
           currency: 'eur',
           product_data: {
-            name: 'Frais de livraison',
-            description: ''
+            name: 'Frais de livraison'
           },
           unit_amount: Math.round(shippingCost * 100),
         },

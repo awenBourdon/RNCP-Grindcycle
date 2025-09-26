@@ -151,8 +151,8 @@ model Verification {
 model UsedBoard {
   id             String           @id @default(uuid())
   name           String
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String
+  user           User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId         String?
   status         UsedBoardStatus  @default(PENDING_VALIDATION)
   boardType      BoardType
   boardCondition BoardCondition?

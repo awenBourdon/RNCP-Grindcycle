@@ -71,37 +71,35 @@ export class UserRepository implements InterfaceUserRepository {
   }
 
   // TODO : appeler les repositorys
-  async deleteWithRelationsCleanup(id: string): Promise<void> {
-    await prisma.$transaction(async (tx) => {
-      await tx.usedBoard.updateMany({
-        where: { userId: id },
-        data: { userId: undefined }
-      });
-
-      await tx.order.updateMany({
-        where: { userId: id },
-        data: { userId: null },
-      });
-
-      await tx.favorite.deleteMany({
-        where: { userId: id },
-      });
-
-      await tx.notification.deleteMany({
-        where: { userId: id },
-      });
-
-      await tx.session.deleteMany({
-        where: { userId: id },
-      });
-
-      await tx.account.deleteMany({
-        where: { userId: id },
-      });
-
-      await tx.user.delete({
-        where: { id },
-      });
+ async deleteWithRelationsCleanup(id: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    // Les UsedBoards auront automatiquement userId = null grâce à onDelete: SetNull
+    
+    await tx.order.updateMany({
+      where: { userId: id },
+      data: { userId: null },
     });
-  }
+    
+    await tx.favorite.deleteMany({
+      where: { userId: id },
+    });
+    
+    await tx.notification.deleteMany({
+      where: { userId: id },
+    });
+    
+    await tx.session.deleteMany({
+      where: { userId: id },
+    });
+    
+    await tx.account.deleteMany({
+      where: { userId: id },
+    });
+    
+    // Maintenant on peut supprimer physiquement l'utilisateur
+    await tx.user.delete({
+      where: { id },
+    });
+  });
+}
 }
