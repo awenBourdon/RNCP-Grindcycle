@@ -1,4 +1,4 @@
-import { ReturnButton } from '@/components/ui/ReturnButton';
+import { ReturnButton } from '@/app/(shop)/components/ReturnButton';
 import { AuthContainer } from '../components/AuthContainer';
 
 export default function AuthPage() {

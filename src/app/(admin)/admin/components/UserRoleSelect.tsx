@@ -1,5 +1,5 @@
 'use client';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import type { UserRole } from '@/generated/prisma';
 import { admin } from '@/lib/utils/auth-client';
 import type { ErrorContext } from '@/lib/utils/types/types';

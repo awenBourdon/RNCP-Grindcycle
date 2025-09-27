@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { ArrowLeft, Recycle } from 'lucide-react';
 import { toast } from 'sonner';
 import { FormFields } from './FormFields';
-import { ImageUpload } from '../../../../components/form/ImageUpload';
-import { Spinner } from '@/components/ui/Spinner';
+import { ImageUpload } from './ImageUpload';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import { BoardCondition, BoardType } from '@/lib/utils/types/types';
 import {
   recycleSchema,

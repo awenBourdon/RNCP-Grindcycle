@@ -4,7 +4,7 @@ import { Team } from './components/Team';
 import { Impact } from './components/Impact';
 import { Faq } from './components/Faq';
 import { ContactUs } from '../components/ContactUs';
-import { ToTop } from '../../../components/ui/ToTop';
+import { ToTop } from '../components/ToTop';
 
 export default function AboutPage() {
   return (

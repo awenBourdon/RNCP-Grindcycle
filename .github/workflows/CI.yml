@@ -55,11 +55,11 @@ jobs:
       - name: Wait for server to start
         run: npx wait-on http://localhost:3000 -t 60000
 
-      # - name: Run unit tests
-      #   run: npm run test
+      - name: Run unit tests
+        run: npm run test
 
-      # - name: Generate coverage report
-      #   run: npm run test:coverage
+      - name: Generate coverage report
+        run: npm run test:coverage
 
       # - name: Install Playwright browsers
       #   run: npx playwright install --with-deps chromium

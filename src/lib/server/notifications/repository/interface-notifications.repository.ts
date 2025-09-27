@@ -11,7 +11,6 @@ export interface NotificationWithUser {
   userId: string | null;
   target: NotificationTarget;
   description: string;
-  isRead: boolean;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

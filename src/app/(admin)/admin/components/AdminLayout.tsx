@@ -1,7 +1,7 @@
 'use client';
 import type React from 'react';
 import { usePathname } from 'next/navigation';
-import { ReturnButton } from '@/components/ui/ReturnButton';
+import { ReturnButton } from '@/app/(shop)/components/ReturnButton';
 import { AdminNavbar } from './AdminNavbar';
 import { AdminHeader } from './AdminHeader';
 import { Session } from '@/lib/utils/types/types';

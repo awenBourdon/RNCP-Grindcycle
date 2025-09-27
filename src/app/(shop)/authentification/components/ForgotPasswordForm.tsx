@@ -1,5 +1,5 @@
 'use client';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import { forgetPassword } from '@/lib/utils/auth-client';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';

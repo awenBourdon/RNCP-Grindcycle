@@ -3,7 +3,7 @@ import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Mail, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import { updateProfileAction } from '@/actions/auth/update-profile.action';
 
 interface UpdateUserFormProps {
