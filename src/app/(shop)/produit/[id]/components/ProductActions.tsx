@@ -1,6 +1,6 @@
 'use client';
 import { ShoppingCart, X } from 'lucide-react';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import { FavoriteButton } from './FavoriteButton';
 import { ProductType } from '@/lib/utils/types/types';
 

@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { ZodError } from 'zod';
-import { Spinner } from '@/components/ui/Spinner';
-import { ImageUpload } from '@/components/form/ImageUpload';
+import { Spinner } from '@/app/(shop)/components/Spinner';
+import { ImageUpload } from '@/app/(shop)/recycler-planche/components/ImageUpload';
 import {
   IMAGE_CONFIG,
   productSchema,

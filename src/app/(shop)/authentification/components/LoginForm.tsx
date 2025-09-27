@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import Link from 'next/link';
 import { LogIn, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { signInEmailAction } from '@/actions/auth/sign-in-email.action';

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import { sendVerificationEmail } from '@/lib/utils/auth-client';
 import { Mail, Send } from 'lucide-react';
 import { emailVerificationSchema } from '@/lib/validations/auth.validation';

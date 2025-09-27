@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
-import { ReturnButton } from '@/components/ui/ReturnButton';
+import { ReturnButton } from '@/app/(shop)/components/ReturnButton';
 import { toast } from 'sonner';
 import { ProductImageGallery } from './ProductImageGallery';
 import { ProductInfo } from './ProductInfo';

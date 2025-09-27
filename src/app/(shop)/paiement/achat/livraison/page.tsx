@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
-import { ReturnButton } from '@/components/ui/ReturnButton';
+import { ReturnButton } from '@/app/(shop)/components/ReturnButton';
 import { toast } from 'sonner';
 import type { PointsShippingInput } from '@/lib/validations/shipping.validation';
-import { ShippingForm } from '@/components/form/ShippingForm';
+import { ShippingForm } from '@/app/(shop)/panier/components/ShippingForm';
 
 export default function ShippingPage() {
   const router = useRouter();

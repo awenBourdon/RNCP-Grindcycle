@@ -1,5 +1,5 @@
 import { Catalog } from './components/Catalog';
-import { ToTop } from '../../../components/ui/ToTop';
+import { ToTop } from '../components/ToTop';
 
 export default async function CatalogPage() {
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';

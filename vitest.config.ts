@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     include: [
       'src/tests/tests-server/**.{test,spec}.{js,ts}',
-      'src/components/**/__tests__/**/*.{test,spec}.{jsx,tsx}',
+      'src/tests/web/**/*.{test,spec}.{jsx,tsx}',
     ],
     setupFiles: ['./vitest.setup.ts'],
     environment: 'node',

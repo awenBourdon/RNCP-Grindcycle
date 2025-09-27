@@ -1,6 +1,6 @@
 'use client';
 
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import { signOut } from '@/lib/utils/auth-client';
 import type { ErrorContext } from '@/lib/utils/types/types';
 import { useRouter } from 'next/navigation';

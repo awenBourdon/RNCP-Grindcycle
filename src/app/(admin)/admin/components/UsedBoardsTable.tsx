@@ -19,7 +19,7 @@ import { ImageModal } from './ImageModal';
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/app/(shop)/components/Spinner';
 import Image from 'next/image';
 import type {
   UsedBoard,
