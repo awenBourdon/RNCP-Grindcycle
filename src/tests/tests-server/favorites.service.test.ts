@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { FavoriteService } from '../favorites.service'
-import { InterfaceFavoriteRepository } from '../repository/interface-favorites.repository'
-import { InterfaceProductRepository } from '../../products/repository/interface-products.repository'
-import { mockFavorite, mockProduct, mockFavoriteWithProduct } from './favorites.mock'
+import { FavoriteService } from '../../lib/server/favorites/favorites.service'
+import { InterfaceFavoriteRepository } from '../../lib/server/favorites/repository/interface-favorites.repository'
+import { InterfaceProductRepository } from '../../lib/server/products/repository/interface-products.repository'
+import { mockFavorite, mockProduct, mockFavoriteWithProduct } from '../mocks/favorites.mock'
 
 vi.mock('../repository/favorites.repository')
 vi.mock('../../products/repository/products.repository')

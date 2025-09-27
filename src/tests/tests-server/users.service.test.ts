@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { UserService } from '../users-service'
-import { InterfaceUserRepository } from '../repository/interface-users.repository'
-import { mockUser, mockAdminUser, mockUserWithLowPoints, mockUsers } from './users.mock'
+import { UserService } from '../../lib/server/users/users-service'
+import { InterfaceUserRepository } from '../../lib/server/users/repository/interface-users.repository'
+import { mockUser, mockAdminUser, mockUserWithLowPoints, mockUsers } from '../mocks/users.mock'
 
 vi.mock('../repository/users.repository')
 

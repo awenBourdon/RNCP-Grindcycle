@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { UsedBoardService } from '../used-boards.service'
-import { InterfaceUsedBoardRepository } from '../repository/interface-used-boards.repository'
-import { ImageService } from '../../upload-images/images.service'
-import { PointsHistoryService } from '../../points-history/points-history.service'
-import { UserService } from '../../users/users-service'
-import { InterfacePointsHistoryRepository } from '../../points-history/repository/interface-points-history.repository'
-import { InterfaceUserRepository } from '../../users/repository/interface-users.repository'
+import { UsedBoardService } from '../../lib/server/used-boards/used-boards.service'
+import { InterfaceUsedBoardRepository } from '../../lib/server/used-boards/repository/interface-used-boards.repository'
+import { ImageService } from '../../lib/server/upload-images/images.service'
+import { PointsHistoryService } from '../../lib/server/points-history/points-history.service'
+import { UserService } from '../../lib/server/users/users-service'
+import { InterfacePointsHistoryRepository } from '../../lib/server/points-history/repository/interface-points-history.repository'
+import { InterfaceUserRepository } from '../../lib/server/users/repository/interface-users.repository'
 import { UsedBoardStatus } from '@/generated/prisma'
-import { mockUsedBoard, mockValidatedBoard, mockReceivedBoard, mockCreateUsedBoardData } from './used-boards.mock'
+import { mockUsedBoard, mockValidatedBoard, mockReceivedBoard, mockCreateUsedBoardData } from '../mocks/used-boards.mock'
 
 vi.mock('../repository/used-boards.repository')
 vi.mock('../../upload-images/images.service')

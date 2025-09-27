@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { PointsCalculatorService } from '../points-calculator'
+import { PointsCalculatorService } from '../../lib/server/points-calculator/points-calculator'
 import { BoardType, BoardCondition } from '@/generated/prisma'
 
 describe('PointsCalculatorService', () => {

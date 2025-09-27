@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { OrderService } from '../orders.service'
-import { InterfaceOrderRepository } from '../repository/interface-orders.repository'
+import { OrderService } from '../../lib/server/orders/orders.service'
+import { InterfaceOrderRepository } from '../../lib/server/orders/repository/interface-orders.repository'
 import { OrderStatus } from '@/generated/prisma'
 import {
   mockOrder,
   mockConfirmedOrder,
   mockOrders,
   mockUserOrders
-} from './orders.mock'
+} from '../mocks/orders.mock'
 
 vi.mock('../repository/orders.repository')
 

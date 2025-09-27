@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { OrderItemService } from '../order-items.service'
-import { InterfaceOrderItemRepository } from '../repository/interface-order-items'
-import { mockOrderItem, mockOrderItems, mockCreateOrderItemData } from './order-items.mock'
+import { OrderItemService } from '../../lib/server/order-items/order-items.service'
+import { InterfaceOrderItemRepository } from '../../lib/server/order-items/repository/interface-order-items'
+import { mockOrderItem, mockOrderItems, mockCreateOrderItemData } from '../mocks/order-items.mock'
 
 vi.mock('../repository/order-items.repository')
 

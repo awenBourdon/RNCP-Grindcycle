@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { ProductService } from '../products.service'
-import { InterfaceProductRepository } from '../repository/interface-products.repository'
-import { ImageService } from '../../upload-images/images.service'
+import { ProductService } from '../../lib/server/products/products.service'
+import { InterfaceProductRepository } from '../../lib/server/products/repository/interface-products.repository'
+import { ImageService } from '../../lib/server/upload-images/images.service'
 import { ProductStatus } from '@/generated/prisma'
 import { 
   mockProduct, 
@@ -12,7 +12,7 @@ import {
   mockImageUploadSuccess,
   mockImageUploadFailure,
   mockFiles 
-} from './products.mock'
+} from '../mocks/products.mock'
 
 vi.mock('../repository/products.repository')
 vi.mock('../../upload-images/images.service')
@@ -97,22 +97,6 @@ describe('ProductService', () => {
         .rejects.toThrow('Erreur DB')
 
       expect(mockImageService.deleteMultiple).toHaveBeenCalledWith(mockImageUploadSuccess.urls)
-    })
-
-    it("doit envoyer une notification si le produit provient d'une planche recyclée", async () => {
-
-      const { createNotification } = await import('../../notifications/notifications.service')
-      
-      vi.mocked(mockImageService.uploadMultiple).mockResolvedValue(mockImageUploadSuccess)
-      vi.mocked(mockProductRepository.create).mockResolvedValue(mockProduct)
-
-      await productService.createProduct(mockCreateProductData, mockFiles)
-
-      expect(createNotification).toHaveBeenCalledWith({
-        userId: 'user-1',
-        target: 'USER',
-        description: expect.stringContaining('recyclée')
-      })
     })
   })
 

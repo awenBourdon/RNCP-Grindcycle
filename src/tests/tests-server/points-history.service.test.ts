@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { PointsHistoryService } from '../points-history.service'
-import { InterfacePointsHistoryRepository } from '../repository/interface-points-history.repository'
-import { mockPointsHistoryList } from './points-history.mock'
+import { PointsHistoryService } from '../../lib/server/points-history/points-history.service'
+import { InterfacePointsHistoryRepository } from '../../lib/server/points-history/repository/interface-points-history.repository'
+import { mockPointsHistoryList } from '../mocks/points-history.mock'
 
 vi.mock('../repository/points-history.repository')
 

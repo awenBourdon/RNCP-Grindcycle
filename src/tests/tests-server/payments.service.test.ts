@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { PaymentService } from '../payments.service'
+import { PaymentService } from '../../lib/server/payments/payments.service'
 import { ProductStatus, OrderStatus } from '@/generated/prisma'
 import {
   mockProduct,
@@ -8,7 +8,7 @@ import {
   mockPointsOrder,
   mockStripePaymentData,
   mockPointsPaymentData
-} from './payments.mock'
+} from '../mocks/payments.mock'
 
 vi.mock('../repository/payments.repository')
 vi.mock('../../orders/orders.service')

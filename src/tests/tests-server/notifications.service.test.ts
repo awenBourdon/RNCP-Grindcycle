@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { NotificationService } from '../notifications.service'
+import { NotificationService } from '../../lib/server/notifications/notifications.service'
 import { NotificationTarget } from '@/generated/prisma'
 
 
