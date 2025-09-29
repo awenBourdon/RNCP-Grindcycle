@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ProductService } from '../../lib/server/products/products.service'
 import { InterfaceProductRepository } from '../../lib/server/products/repository/interface-products.repository'
 import { ImageService } from '../../lib/server/upload-images/images.service'
-import { ProductStatus } from '@/generated/prisma'
+import { BoardType, ProductStatus } from '@/generated/prisma'
 import { 
   mockProduct, 
   mockProductWithoutUsedBoard, 
@@ -138,16 +138,48 @@ describe('ProductService', () => {
     })
   })
 
-  describe('getAvailableProducts', () => {
-    it('doit retourner seulement les produits disponibles', async () => {
+   describe('getAvailableProducts', () => {
+    it('doit retourner les produits disponibles avec pagination', async () => {
+      const mockPaginatedResponse = {
+        data: [mockProduct, mockProductWithoutUsedBoard],
+        meta: {
+          currentPage: 1,
+          totalPages: 3,
+          totalItems: 46,
+          itemsPerPage: 20,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        }
+      }
+      
+      vi.mocked(mockProductRepository.findAvailable).mockResolvedValue(mockPaginatedResponse)
 
-      const availableProducts = [mockProduct, mockProductWithoutUsedBoard]
-      vi.mocked(mockProductRepository.findAvailable).mockResolvedValue(availableProducts)
+      const result = await productService.getAvailableProducts({ page: 1, limit: 20 })
 
-      const result = await productService.getAvailableProducts()
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockProductRepository.findAvailable).toHaveBeenCalledWith(1, 20, undefined)
+    })
 
-      expect(result).toEqual(availableProducts)
-      expect(mockProductRepository.findAvailable).toHaveBeenCalled()
+    it('doit retourner les produits disponibles avec filtres', async () => {
+      const mockPaginatedResponse = {
+        data: [mockProduct],
+        meta: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 1,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        }
+      }
+      
+      const filters = { type: BoardType.SKATE, minPrice: 50, maxPrice: 150 }
+      vi.mocked(mockProductRepository.findAvailable).mockResolvedValue(mockPaginatedResponse)
+
+      const result = await productService.getAvailableProducts({ page: 1, limit: 20 }, filters)
+
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockProductRepository.findAvailable).toHaveBeenCalledWith(1, 20, filters)
     })
   })
 
