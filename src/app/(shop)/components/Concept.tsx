@@ -82,9 +82,7 @@ export const Concept = () => {
                 </div>
                 <span className="font-medium">Paiement sécurisé</span>
               </div>
-              <p className="text-sm text-gray-600">
-                Plusieurs options de paiement disponibles
-              </p>
+              <p className="text-sm text-gray-600">On gère, tu roules</p>
             </div>
           </div>
         </div>
