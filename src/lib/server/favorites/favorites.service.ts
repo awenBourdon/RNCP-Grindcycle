@@ -1,3 +1,4 @@
+import { normalizePaginationParams, PaginatedResponse, PaginationParams } from "@/lib/utils/pagination";
 import { InterfaceProductRepository } from "../products/repository/interface-products.repository";
 import { ProductRepository } from "../products/repository/products.repository";
 import { FavoriteRepository } from "./repository/favorites.repository";
@@ -10,8 +11,12 @@ export class FavoriteService {
     private productRepository: InterfaceProductRepository = new ProductRepository()
   ) {}
 
-  async getUserFavorites(userId: string): Promise<FavoriteWithProduct[]> {
-    return await this.favoriteRepository.findByUserId(userId);
+    async getUserFavorites(
+    userId: string, 
+    params: PaginationParams
+  ): Promise<PaginatedResponse<FavoriteWithProduct>> {
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.favoriteRepository.findByUserId(userId, page, limit);
   }
 
   async isFavorite(userId: string, productId: string): Promise<boolean> {

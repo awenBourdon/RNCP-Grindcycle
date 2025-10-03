@@ -152,7 +152,7 @@ describe('ProductService', () => {
       expect(mockProductRepository.findAllWithPagination).toHaveBeenCalledWith(1, 20)
     })
 
-    it('doit normaliser les paramètres de pagination', async () => {
+    it('doit retourner selon les paramètres de pagination', async () => {
       const mockPaginatedResponse = {
         data: mockProducts,
         meta: {
@@ -175,7 +175,7 @@ describe('ProductService', () => {
   })
 
   describe('getAvailableProducts', () => {
-    it('doit retourner les produits disponibles avec pagination', async () => {
+    it('doit retourner les produits disponibles avec la pagination', async () => {
       const mockPaginatedResponse = {
         data: [mockProduct, mockProductWithoutUsedBoard],
         meta: {

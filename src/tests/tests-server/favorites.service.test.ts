@@ -23,6 +23,7 @@ describe('FavoriteService', () => {
     mockProductRepository = {
       findById: vi.fn(),
       findAll: vi.fn(),
+      findAllWithPagination: vi.fn(),
       findAvailable: vi.fn(),
       findLatest: vi.fn(),
       create: vi.fn(),
@@ -36,29 +37,71 @@ describe('FavoriteService', () => {
   })
 
   describe('getUserFavorites', () => {
-    it("doit retourner les favoris d'un utilisateur", async () => {
+    it("doit retourner les favoris d'un utilisateur avec pagination", async () => {
+      const mockPaginatedResponse = {
+        data: [mockFavoriteWithProduct],
+        meta: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 1,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        }
+      }
 
-      vi.mocked(mockFavoriteRepository.findByUserId).mockResolvedValue([mockFavoriteWithProduct])
+      vi.mocked(mockFavoriteRepository.findByUserId).mockResolvedValue(mockPaginatedResponse)
 
-      const result = await favoriteService.getUserFavorites('user-1')
+      const result = await favoriteService.getUserFavorites('user-1', { page: 1, limit: 20 })
 
-      expect(result).toEqual([mockFavoriteWithProduct])
-      expect(mockFavoriteRepository.findByUserId).toHaveBeenCalledWith('user-1')
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockFavoriteRepository.findByUserId).toHaveBeenCalledWith('user-1', 1, 20)
     })
 
-    it("doit retourner un tableau vide si l'utilisateur n'a pas de favoris", async () => {
+    it("doit retourner une réponse paginée vide si l'utilisateur n'a pas de favoris", async () => {
+      const mockEmptyPaginatedResponse = {
+        data: [],
+        meta: {
+          currentPage: 1,
+          totalPages: 0,
+          totalItems: 0,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        }
+      }
 
-      vi.mocked(mockFavoriteRepository.findByUserId).mockResolvedValue([])
+      vi.mocked(mockFavoriteRepository.findByUserId).mockResolvedValue(mockEmptyPaginatedResponse)
 
-      const result = await favoriteService.getUserFavorites('user-1')
+      const result = await favoriteService.getUserFavorites('user-1', { page: 1, limit: 20 })
 
-      expect(result).toEqual([])
+      expect(result).toEqual(mockEmptyPaginatedResponse)
+    })
+
+    it('doit normaliser les paramètres de pagination', async () => {
+      const mockPaginatedResponse = {
+        data: [mockFavoriteWithProduct],
+        meta: {
+          currentPage: 2,
+          totalPages: 3,
+          totalItems: 50,
+          itemsPerPage: 20,
+          hasNextPage: true,
+          hasPreviousPage: true,
+        }
+      }
+
+      vi.mocked(mockFavoriteRepository.findByUserId).mockResolvedValue(mockPaginatedResponse)
+
+      const result = await favoriteService.getUserFavorites('user-1', { page: 2, limit: 20 })
+
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockFavoriteRepository.findByUserId).toHaveBeenCalledWith('user-1', 2, 20)
     })
   })
 
   describe('isFavorite', () => {
     it('doit retourner true si le produit est dans les favoris', async () => {
-
       vi.mocked(mockFavoriteRepository.exists).mockResolvedValue(true)
 
       const result = await favoriteService.isFavorite('user-1', 'product-1')
@@ -68,7 +111,6 @@ describe('FavoriteService', () => {
     })
 
     it("doit retourner false si le produit n'est pas dans les favoris", async () => {
-
       vi.mocked(mockFavoriteRepository.exists).mockResolvedValue(false)
 
       const result = await favoriteService.isFavorite('user-1', 'product-1')
@@ -79,7 +121,6 @@ describe('FavoriteService', () => {
 
   describe('toggleFavorite', () => {
     it("doit ajouter un produit aux favoris s'il n'y est pas déjà", async () => {
-
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
       vi.mocked(mockFavoriteRepository.exists).mockResolvedValue(false)
       vi.mocked(mockFavoriteRepository.create).mockResolvedValue(mockFavorite)
@@ -94,7 +135,6 @@ describe('FavoriteService', () => {
     })
 
     it("doit retirer un produit des favoris s'il y est déjà", async () => {
-
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
       vi.mocked(mockFavoriteRepository.exists).mockResolvedValue(true)
       vi.mocked(mockFavoriteRepository.delete).mockResolvedValue(undefined)
@@ -109,7 +149,6 @@ describe('FavoriteService', () => {
     })
 
     it("doit retourner une erreur si le produit n'existe pas", async () => {
-
       vi.mocked(mockProductRepository.findById).mockResolvedValue(null)
 
       await expect(favoriteService.toggleFavorite('user-1', 'product-1'))

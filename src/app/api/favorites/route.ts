@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
 import { FavoriteService } from '@/lib/server/favorites/favorites.service';
+import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
 
 const favoriteService = new FavoriteService();
 
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     if (productId) {
       const targetUserId = userId || session.user.id;
-      
+     
       if (targetUserId !== session.user.id && session.user.role !== 'ADMIN') {
         return NextResponse.json(
           { success: false, error: 'Non autorisé' },
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
     }
 
     const targetUserId = userId || session.user.id;
-
+    
     if (targetUserId !== session.user.id && session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { success: false, error: 'Non autorisé' },
@@ -53,11 +54,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const favorites = await favoriteService.getUserFavorites(targetUserId);
-    return NextResponse.json({
-      success: true,
-      data: favorites,
-    });
+    const { page, limit } = extractPaginationFromSearchParams(searchParams);
+    const result = await favoriteService.getUserFavorites(targetUserId, { page, limit });
+
+    return NextResponse.json(result, { status: 200 });
 
   } catch (error) {
     console.error(error);

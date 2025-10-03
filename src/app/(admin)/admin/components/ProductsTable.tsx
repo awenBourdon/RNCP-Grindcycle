@@ -117,7 +117,6 @@ export const ProductsTable = () => {
         const result = await deleteProductAction(productId);
         if (result.success) {
           toast.success(result.message);
-          // Recharger les produits après suppression
           await fetchProducts(1);
         } else {
           toast.error(result.error);
@@ -324,13 +323,12 @@ export const ProductsTable = () => {
         )}
       </div>
 
-      {/* Bouton "Charger plus" */}
       {meta.hasNextPage && (
         <div className="mt-8 flex justify-center">
           <button
             onClick={loadMoreProducts}
             disabled={loading}
-            className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full hover:bg-[#083032] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full cursor-pointer hover:bg-[#083032] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading
               ? 'Chargement...'
