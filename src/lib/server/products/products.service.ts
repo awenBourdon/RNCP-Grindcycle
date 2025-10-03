@@ -3,8 +3,7 @@ import {
   InterfaceProductRepository,
   CreateProductData,
   UpdateProductData,
-  ProductWithRelations,
-  ProductFilters
+  ProductWithRelations
 } from './repository/interface-products.repository';
 import { ProductRepository } from './repository/products.repository';
 import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
@@ -55,10 +54,9 @@ export class ProductService {
 
   async getAvailableProducts(
   params: PaginationParams,
-  filters?: ProductFilters
 ): Promise<PaginatedResponse<ProductWithRelations>> {
   const { page, limit } = normalizePaginationParams(params);
-  return await this.productRepository.findAvailable(page, limit, filters);
+  return await this.productRepository.findAvailable(page, limit);
 }
 
   async getProductById(productId: string): Promise<ProductWithRelations> {
