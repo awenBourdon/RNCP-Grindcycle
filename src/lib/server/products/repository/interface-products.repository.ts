@@ -36,15 +36,6 @@ export interface ProductWithRelations extends Product {
   } | null;
 }
 
-export interface ProductFilters {
-  search?: string;
-  type?: BoardType;
-  minPrice?: number;
-  maxPrice?: number;
-  minPoints?: number;
-  maxPoints?: number;
-}
-
 export interface InterfaceProductRepository {
   create(data: CreateProductData): Promise<ProductWithRelations>;
   findById(id: string): Promise<ProductWithRelations | null>;
@@ -52,7 +43,6 @@ export interface InterfaceProductRepository {
   findAvailable(
     page: number,
     limit: number,
-    filters?: ProductFilters
   ): Promise<PaginatedResponse<ProductWithRelations>>;
   findLatest(limit?: number): Promise<ProductWithRelations[]>;
   update(id: string, data: UpdateProductData): Promise<ProductWithRelations>;

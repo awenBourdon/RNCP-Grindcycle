@@ -1,7 +1,6 @@
 import { type NextRequest } from 'next/server';
 import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { ProductService } from '@/lib/server/products/products.service';
-import { BoardType } from '@/generated/prisma';
 import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
 
 const productService = new ProductService();
@@ -30,31 +29,10 @@ export async function GET(req: NextRequest) {
     if (available === 'true') {
       const { page, limit } = extractPaginationFromSearchParams(searchParams);
 
-      const type = searchParams.get('type') as BoardType | undefined;
-      const minPrice = searchParams.get('minPrice') 
-        ? parseFloat(searchParams.get('minPrice')!) 
-        : undefined;
-      const maxPrice = searchParams.get('maxPrice') 
-        ? parseFloat(searchParams.get('maxPrice')!) 
-        : undefined;
-      const minPoints = searchParams.get('minPoints') 
-        ? parseInt(searchParams.get('minPoints')!, 10) 
-        : undefined;
-      const maxPoints = searchParams.get('maxPoints') 
-        ? parseInt(searchParams.get('maxPoints')!, 10) 
-        : undefined;
-
-      const filters = {
-        type,
-        minPrice,
-        maxPrice,
-        minPoints,
-        maxPoints,
-      };
+      
 
       const result = await productService.getAvailableProducts(
         { page, limit },
-        filters
       );
 
       return Response.json(result, { status: 200 });
