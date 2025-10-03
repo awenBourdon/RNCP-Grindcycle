@@ -50,6 +50,35 @@ export class ProductRepository implements InterfaceProductRepository {
     return products as ProductWithRelations[];
   }
 
+  async findAllWithPagination(
+  page: number,
+  limit: number
+): Promise<PaginatedResponse<ProductWithRelations>> {
+  const skip = (page - 1) * limit;
+  
+  const where = {
+    deletedAt: null
+  };
+
+  const [products, total] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      include: this.getIncludeRelations(),
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.product.count({ where }),
+  ]);
+
+  return createPaginatedResponse(
+    products as ProductWithRelations[],
+    total,
+    page,
+    limit
+  );
+}
+
   async findAvailable(
     page: number,
     limit: number,
