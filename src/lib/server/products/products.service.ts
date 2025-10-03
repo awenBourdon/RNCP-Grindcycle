@@ -8,6 +8,7 @@ import {
 import { ProductRepository } from './repository/products.repository';
 import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
 import { ImageService } from '../upload-images/images.service';
+import { normalizePaginationParams, PaginatedResponse, PaginationParams } from '@/lib/utils/pagination';
 
 export class ProductService {
   constructor(
@@ -51,9 +52,12 @@ export class ProductService {
     return await this.productRepository.findAll();
   }
 
-  async getAvailableProducts(): Promise<ProductWithRelations[]> {
-    return await this.productRepository.findAvailable();
-  }
+  async getAvailableProducts(
+  params: PaginationParams,
+): Promise<PaginatedResponse<ProductWithRelations>> {
+  const { page, limit } = normalizePaginationParams(params);
+  return await this.productRepository.findAvailable(page, limit);
+}
 
   async getProductById(productId: string): Promise<ProductWithRelations> {
     if (!productId) {

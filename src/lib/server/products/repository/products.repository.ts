@@ -4,8 +4,9 @@ import {
   InterfaceProductRepository,
   CreateProductData,
   UpdateProductData,
-  ProductWithRelations
+  ProductWithRelations,
 } from './interface-products.repository';
+import { PaginatedResponse, createPaginatedResponse } from '@/lib/utils/pagination';
 
 export class ProductRepository implements InterfaceProductRepository {
 
@@ -49,21 +50,38 @@ export class ProductRepository implements InterfaceProductRepository {
     return products as ProductWithRelations[];
   }
 
-  async findAvailable(): Promise<ProductWithRelations[]> {
-    const products = await prisma.product.findMany({
-      where: { 
-        deletedAt: null,
-        status: ProductStatus.CATALOG 
-      },
-      include: this.getIncludeRelations(),
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAvailable(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedResponse<ProductWithRelations>> {
+    const skip = (page - 1) * limit;
+   
+     const where = {
+    deletedAt: null,
+    status: ProductStatus.CATALOG
+  };
 
-    return products as ProductWithRelations[];
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: this.getIncludeRelations(),
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      products as ProductWithRelations[],
+      total,
+      page,
+      limit
+    );
   }
 
   async findLatest(limit: number = 6): Promise<ProductWithRelations[]> {
-    const safeLimit = Math.min(Math.max(limit, 1), 20); // Entre 1 et 20
+    const safeLimit = Math.min(Math.max(limit, 1), 20);
 
     const products = await prisma.product.findMany({
       where: { 

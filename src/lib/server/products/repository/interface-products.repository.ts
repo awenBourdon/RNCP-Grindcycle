@@ -1,4 +1,5 @@
 import { Product, ProductStatus, BoardType } from '@/generated/prisma';
+import { PaginatedResponse } from '@/lib/utils/pagination';
 
 export interface CreateProductData {
   name: string;
@@ -39,7 +40,10 @@ export interface InterfaceProductRepository {
   create(data: CreateProductData): Promise<ProductWithRelations>;
   findById(id: string): Promise<ProductWithRelations | null>;
   findAll(): Promise<ProductWithRelations[]>;
-  findAvailable(): Promise<ProductWithRelations[]>;
+  findAvailable(
+    page: number,
+    limit: number,
+  ): Promise<PaginatedResponse<ProductWithRelations>>;
   findLatest(limit?: number): Promise<ProductWithRelations[]>;
   update(id: string, data: UpdateProductData): Promise<ProductWithRelations>;
   delete(id: string): Promise<void>;

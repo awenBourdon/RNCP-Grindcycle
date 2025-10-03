@@ -138,18 +138,27 @@ describe('ProductService', () => {
     })
   })
 
-  describe('getAvailableProducts', () => {
-    it('doit retourner seulement les produits disponibles', async () => {
+   describe('getAvailableProducts', () => {
+    it('doit retourner les produits disponibles avec pagination', async () => {
+      const mockPaginatedResponse = {
+        data: [mockProduct, mockProductWithoutUsedBoard],
+        meta: {
+          currentPage: 1,
+          totalPages: 3,
+          totalItems: 46,
+          itemsPerPage: 20,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        }
+      }
+      
+      vi.mocked(mockProductRepository.findAvailable).mockResolvedValue(mockPaginatedResponse)
 
-      const availableProducts = [mockProduct, mockProductWithoutUsedBoard]
-      vi.mocked(mockProductRepository.findAvailable).mockResolvedValue(availableProducts)
+      const result = await productService.getAvailableProducts({ page: 1, limit: 20 })
 
-      const result = await productService.getAvailableProducts()
-
-      expect(result).toEqual(availableProducts)
-      expect(mockProductRepository.findAvailable).toHaveBeenCalled()
-    })
-  })
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockProductRepository.findAvailable).toHaveBeenCalledWith(1, 20)
+    })  })
 
   describe('getLatestProducts', () => {
     it('doit retourner les derniers produits avec limite par défaut', async () => {

@@ -3,7 +3,6 @@ import { revalidatePath } from 'next/cache';
 import { productSchema } from '@/lib/validations/boards.validation';
 import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { ProductService } from '@/lib/server/products/products.service';
 
 const productService = new ProductService();
@@ -13,7 +12,10 @@ export async function createProductAction(formData: FormData) {
   const session = await auth.api.getSession({ headers: headersList });
   
   if (!session || session.user.role !== 'ADMIN') {
-    redirect('/authentification/connexion');
+    return {
+      success: false,
+      error: 'Non autorisé',
+    };
   }
 
   try {
