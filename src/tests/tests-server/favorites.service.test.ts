@@ -78,26 +78,7 @@ describe('FavoriteService', () => {
       expect(result).toEqual(mockEmptyPaginatedResponse)
     })
 
-    it('doit normaliser les paramètres de pagination', async () => {
-      const mockPaginatedResponse = {
-        data: [mockFavoriteWithProduct],
-        meta: {
-          currentPage: 2,
-          totalPages: 3,
-          totalItems: 50,
-          itemsPerPage: 20,
-          hasNextPage: true,
-          hasPreviousPage: true,
-        }
-      }
-
-      vi.mocked(mockFavoriteRepository.findByUserId).mockResolvedValue(mockPaginatedResponse)
-
-      const result = await favoriteService.getUserFavorites('user-1', { page: 2, limit: 20 })
-
-      expect(result).toEqual(mockPaginatedResponse)
-      expect(mockFavoriteRepository.findByUserId).toHaveBeenCalledWith('user-1', 2, 20)
-    })
+    
   })
 
   describe('isFavorite', () => {

@@ -5,6 +5,7 @@ import {
   CreateNotificationData,
   NotificationWithUser
 } from './interface-notifications.repository';
+import { PaginatedResponse, createPaginatedResponse } from '@/lib/utils/pagination';
 
 type PrismaTransaction = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
@@ -55,6 +56,84 @@ export class NotificationRepository implements InterfaceNotificationRepository {
     return notifications as NotificationWithUser[];
   }
 
+  async findAdminNotificationsWithPagination(
+    page: number, 
+    limit: number
+  ): Promise<PaginatedResponse<NotificationWithUser>> {
+    const skip = (page - 1) * limit;
+    
+    const where = {
+      target: 'ADMIN' as const,
+      deletedAt: null,
+    };
+
+    const [notifications, total] = await Promise.all([
+      prisma.notification.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.notification.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      notifications as NotificationWithUser[],
+      total,
+      page,
+      limit
+    );
+  }
+
+  async findByUserIdWithPagination(
+    userId: string, 
+    page: number, 
+    limit: number
+  ): Promise<PaginatedResponse<NotificationWithUser>> {
+    const skip = (page - 1) * limit;
+    
+    const where = { 
+      userId,
+      target: 'USER' as const,
+      deletedAt: null,
+    };
+
+    const [notifications, total] = await Promise.all([
+      prisma.notification.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.notification.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      notifications as NotificationWithUser[],
+      total,
+      page,
+      limit
+    );
+  }
+
   async findById(id: string): Promise<Notification | null> {
     return await prisma.notification.findUnique({
       where: { 
@@ -74,7 +153,6 @@ export class NotificationRepository implements InterfaceNotificationRepository {
     });
   }
 
-
   async createInTransaction(tx: PrismaTransaction, data: CreateNotificationData): Promise<Notification> {
     return await tx.notification.create({
       data: {
@@ -90,7 +168,6 @@ export class NotificationRepository implements InterfaceNotificationRepository {
       where: { id },
     });
   }
-
 
   async deleteAllForUser(userId: string): Promise<{ count: number }> {
     const result = await prisma.notification.deleteMany({
