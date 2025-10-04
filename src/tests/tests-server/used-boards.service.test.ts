@@ -29,6 +29,7 @@ describe('UsedBoardService', () => {
   beforeEach(() => {
     mockPointsHistoryRepository = {
       findByUserId: vi.fn(),
+      findByUserIdWithPagination: vi.fn(),
       create: vi.fn(),
       createInTransaction: vi.fn(),
     }
@@ -48,6 +49,8 @@ describe('UsedBoardService', () => {
       findById: vi.fn(),
       findAll: vi.fn(),
       findByUserId: vi.fn(),
+      findAllWithPagination: vi.fn(),
+      findByUserIdWithPagination: vi.fn(),
       findAvailable: vi.fn(),
       update: vi.fn(),
       updateWithPointsAndUserTransaction: vi.fn(),
@@ -65,6 +68,7 @@ describe('UsedBoardService', () => {
 
     mockPointsHistoryService = {
         getUserPointsHistory: vi.fn(),
+        getUserPointsHistoryWithPagination: vi.fn(),
         getRepository: () => mockPointsHistoryRepository,
     } as unknown as PointsHistoryService
 
@@ -108,7 +112,6 @@ describe('UsedBoardService', () => {
     })
 
     it('doit nettoyer les images si la création échoue', async () => {
-
       const mockFiles = [new File([''], 'test.jpg')] as File[]
       vi.mocked(mockImageService.uploadMultiple).mockResolvedValue({
         success: true,
@@ -128,7 +131,6 @@ describe('UsedBoardService', () => {
 
   describe('getUsedBoardById', () => {
     it('doit retourner une planche usagée par son ID', async () => {
-
       vi.mocked(mockUsedBoardRepository.findById).mockResolvedValue(mockUsedBoard)
 
       const result = await usedBoardService.getUsedBoardById('board-1')
@@ -138,7 +140,6 @@ describe('UsedBoardService', () => {
     })
 
     it("doit lever une erreur si la planche usagée n'existe pas", async () => {
-
       vi.mocked(mockUsedBoardRepository.findById).mockResolvedValue(null)
 
       await expect(usedBoardService.getUsedBoardById('board-inexistant'))
@@ -146,15 +147,91 @@ describe('UsedBoardService', () => {
     })
 
     it("doit lever une erreur si l'ID est vide", async () => {
-
       await expect(usedBoardService.getUsedBoardById(''))
         .rejects.toThrow('ID de planche requis')
     })
   })
 
+  describe('getAllUsedBoards', () => {
+    it('doit retourner toutes les planches usagées sans pagination', async () => {
+      vi.mocked(mockUsedBoardRepository.findAll).mockResolvedValue([mockUsedBoard])
+
+      const result = await usedBoardService.getAllUsedBoards()
+
+      expect(result).toEqual([mockUsedBoard])
+      expect(mockUsedBoardRepository.findAll).toHaveBeenCalled()
+    })
+  })
+
+  describe('getAllUsedBoardsWithPagination', () => {
+    it('doit retourner toutes les planches avec pagination', async () => {
+      const mockPaginatedResponse = {
+        data: [mockUsedBoard],
+        meta: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 1,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        }
+      }
+
+      vi.mocked(mockUsedBoardRepository.findAllWithPagination).mockResolvedValue(mockPaginatedResponse)
+
+      const result = await usedBoardService.getAllUsedBoardsWithPagination({ page: 1, limit: 20 })
+
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockUsedBoardRepository.findAllWithPagination).toHaveBeenCalledWith(1, 20)
+    })
+  })
+
+  describe('getUserUsedBoards', () => {
+    it("doit retourner les planches usagées d'un utilisateur sans pagination", async () => {
+      vi.mocked(mockUsedBoardRepository.findByUserId).mockResolvedValue([mockUsedBoard])
+
+      const result = await usedBoardService.getUserUsedBoards('user-1')
+
+      expect(result).toEqual([mockUsedBoard])
+      expect(mockUsedBoardRepository.findByUserId).toHaveBeenCalledWith('user-1')
+    })
+
+    it("doit lever une erreur si l'ID utilisateur est vide", async () => {
+      await expect(usedBoardService.getUserUsedBoards(''))
+        .rejects.toThrow('ID utilisateur requis')
+    })
+  })
+
+  describe('getUserUsedBoardsWithPagination', () => {
+    it("doit retourner les planches d'un utilisateur avec pagination", async () => {
+      const mockPaginatedResponse = {
+        data: [mockUsedBoard],
+        meta: {
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: 1,
+          itemsPerPage: 20,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        }
+      }
+
+      vi.mocked(mockUsedBoardRepository.findByUserIdWithPagination).mockResolvedValue(mockPaginatedResponse)
+
+      const result = await usedBoardService.getUserUsedBoardsWithPagination('user-1', { page: 1, limit: 20 })
+
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockUsedBoardRepository.findByUserIdWithPagination).toHaveBeenCalledWith('user-1', 1, 20)
+    })
+
+    it("doit lever une erreur si l'ID utilisateur est vide", async () => {
+      await expect(usedBoardService.getUserUsedBoardsWithPagination('', { page: 1, limit: 20 }))
+        .rejects.toThrow('ID utilisateur requis')
+    })
+  })
+
   describe('updateUsedBoardStatus', () => {
     it('doit mettre à jour le statut vers VALIDATED', async () => {
-
       vi.mocked(mockUsedBoardRepository.findById).mockResolvedValue(mockUsedBoard)
       vi.mocked(mockUsedBoardRepository.updateWithPointsAndUserTransaction).mockResolvedValue(mockValidatedBoard)
 
@@ -173,7 +250,6 @@ describe('UsedBoardService', () => {
     })
 
     it('doit mettre à jour le statut vers RECEIVED et calculer les points', async () => {
-
       vi.mocked(mockUsedBoardRepository.findById).mockResolvedValue(mockUsedBoard)
       vi.mocked(mockUsedBoardRepository.updateWithPointsAndUserTransaction).mockResolvedValue(mockReceivedBoard)
 
@@ -194,7 +270,6 @@ describe('UsedBoardService', () => {
 
   describe('deleteUsedBoard', () => {
     it('doit supprimer une planche usagée et ses images', async () => {
-
       vi.mocked(mockUsedBoardRepository.findById).mockResolvedValue(mockUsedBoard)
       vi.mocked(mockImageService.deleteMultiple).mockResolvedValue({ deleted: ['board1.jpg'], failed: [] })
       vi.mocked(mockUsedBoardRepository.delete).mockResolvedValue(undefined)
@@ -206,27 +281,8 @@ describe('UsedBoardService', () => {
     })
   })
 
-  describe('getUserUsedBoards', () => {
-    it("doit retourner les planches usagées d'un utilisateur", async () => {
-
-      vi.mocked(mockUsedBoardRepository.findByUserId).mockResolvedValue([mockUsedBoard])
-
-      const result = await usedBoardService.getUserUsedBoards('user-1')
-
-      expect(result).toEqual([mockUsedBoard])
-      expect(mockUsedBoardRepository.findByUserId).toHaveBeenCalledWith('user-1')
-    })
-
-    it("doit lever une erreur si l'ID utilisateur est vide", async () => {
-
-      await expect(usedBoardService.getUserUsedBoards(''))
-        .rejects.toThrow('ID utilisateur requis')
-    })
-  })
-
   describe('getAvailableUsedBoards', () => {
     it('doit retourner les planches usagées disponibles', async () => {
-
       vi.mocked(mockUsedBoardRepository.findAvailable).mockResolvedValue([mockReceivedBoard])
 
       const result = await usedBoardService.getAvailableUsedBoards()

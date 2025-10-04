@@ -5,6 +5,7 @@ import {
   CreateOrderData,
   OrderWithRelations
 } from './interface-orders.repository';
+import { PaginatedResponse, createPaginatedResponse } from '@/lib/utils/pagination';
 
 type PrismaTransaction = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
@@ -90,6 +91,63 @@ export class OrderRepository implements InterfaceOrderRepository {
     return orders as OrderWithRelations[];
   }
 
+  async findByUserIdWithPagination(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<PaginatedResponse<OrderWithRelations>> {
+    const skip = (page - 1) * limit;
+    
+    const where = { 
+      userId,
+      deletedAt: null 
+    };
+
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        include: this.getIncludeRelations(),
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      orders as OrderWithRelations[],
+      total,
+      page,
+      limit
+    );
+  }
+
+  async findAllWithPagination(
+    page: number,
+    limit: number
+  ): Promise<PaginatedResponse<OrderWithRelations>> {
+    const skip = (page - 1) * limit;
+    
+    const where = { deletedAt: null };
+
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        include: this.getIncludeRelations(),
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      orders as OrderWithRelations[],
+      total,
+      page,
+      limit
+    );
+  }
 
   async updateStatus(id: string, status: OrderStatus): Promise<OrderWithRelations> {
     const order = await prisma.order.update({
@@ -100,7 +158,6 @@ export class OrderRepository implements InterfaceOrderRepository {
 
     return order as OrderWithRelations;
   }
-
 
   private getIncludeRelations() {
     return {

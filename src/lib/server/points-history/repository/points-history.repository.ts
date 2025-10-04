@@ -4,6 +4,7 @@ import {
   InterfacePointsHistoryRepository, 
   CreatePointsHistoryData 
 } from './interface-points-history.repository';
+import { PaginatedResponse, createPaginatedResponse } from '@/lib/utils/pagination';
 
 type PrismaTransaction = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
@@ -17,6 +18,36 @@ export class PointsHistoryRepository implements InterfacePointsHistoryRepository
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async findByUserIdWithPagination(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<PaginatedResponse<PointsHistory>> {
+    const skip = (page - 1) * limit;
+    
+    const where = { 
+      userId,
+      deletedAt: null 
+    };
+
+    const [pointsHistory, total] = await Promise.all([
+      prisma.pointsHistory.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.pointsHistory.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      pointsHistory,
+      total,
+      page,
+      limit
+    );
   }
 
   async create(data: CreatePointsHistoryData): Promise<PointsHistory> {

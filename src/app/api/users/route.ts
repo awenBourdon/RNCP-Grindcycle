@@ -1,8 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
-import { User } from '@/lib/utils/types/types';
 import { UserService } from '@/lib/server/users/users-service';
+import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
+
 
 const userService = new UserService();
 
@@ -16,6 +17,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('id');
     const admin = searchParams.get('admin');
+    const page = searchParams.get('page');
 
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -36,17 +38,16 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      const users = await userService.getAllUsers();
-      
-      const sortedUsers = users.sort((a: User, b: User) => {
-        if (a.role === 'ADMIN' && b.role !== 'ADMIN') return -1;
-        if (a.role !== 'ADMIN' && b.role === 'ADMIN') return 1;
-        return 0;
-      });
+      if (page) {
+        const { page: currentPage, limit } = extractPaginationFromSearchParams(searchParams);
+        const result = await userService.getAllUsersWithPagination({ page: currentPage, limit });
+        return NextResponse.json(result, { status: 200 });
+      }
 
+      const users = await userService.getAllUsers();
       return NextResponse.json({
         success: true,
-        data: sortedUsers,
+        data: users,
       });
     }
 
@@ -74,7 +75,10 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : 'Erreur serveur' },
+      { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Erreur serveur' 
+      },
       { status: 500 }
     );
   }

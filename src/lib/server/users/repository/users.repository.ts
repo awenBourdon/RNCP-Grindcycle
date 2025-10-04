@@ -4,6 +4,7 @@ import {
   InterfaceUserRepository,
   UpdateUserData
 } from './interface-users.repository';
+import { PaginatedResponse, createPaginatedResponse } from '@/lib/utils/pagination';
 
 type PrismaTransaction = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
@@ -12,8 +13,36 @@ export class UserRepository implements InterfaceUserRepository {
   async findAll(): Promise<User[]> {
     return await prisma.user.findMany({
       where: { deletedAt: null },
-      orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async findAllWithPagination(
+    page: number,
+    limit: number
+  ): Promise<PaginatedResponse<User>> {
+    const skip = (page - 1) * limit;
+    
+    const where = { deletedAt: null };
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: [
+          { role: 'desc' },
+          { createdAt: 'desc' }
+        ],
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      users,
+      total,
+      page,
+      limit
+    );
   }
 
   async findById(id: string): Promise<User | null> {
@@ -34,7 +63,7 @@ export class UserRepository implements InterfaceUserRepository {
     });
   }
 
-  async update(id: string, data: UpdateUserData): Promise<User> {
+async update(id: string, data: UpdateUserData): Promise<User> {
     return await prisma.user.update({
       where: { id },
       data: {

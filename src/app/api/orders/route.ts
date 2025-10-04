@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
 import { OrderService } from '@/lib/server/orders/orders.service';
+import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
 
 const orderService = new OrderService();
 
@@ -16,6 +17,7 @@ export async function GET(req: NextRequest) {
     const orderId = searchParams.get('id');
     const userId = searchParams.get('userId');
     const admin = searchParams.get('admin');
+    const page = searchParams.get('page');
 
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -28,24 +30,9 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    if (admin === 'true') {
-      if (session.user.role !== 'ADMIN') {
-        return NextResponse.json(
-          { success: false, error: 'Accès non autorisé' },
-          { status: 403 }
-        );
-      }
-
-      const orders = await orderService.getAllOrders();
-
-      return NextResponse.json({
-        success: true,
-        data: orders,
-      });
-    }
-
     if (orderId) {
       const order = await orderService.getOrderById(orderId);
+      
       if (order.userId !== session.user.id && session.user.role !== 'ADMIN') {
         return NextResponse.json(
           { success: false, error: 'Non autorisé' },
@@ -59,13 +46,40 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    if (admin === 'true') {
+      if (session.user.role !== 'ADMIN') {
+        return NextResponse.json(
+          { success: false, error: 'Accès non autorisé' },
+          { status: 403 }
+        );
+      }
+
+      if (page) {
+        const { page: currentPage, limit } = extractPaginationFromSearchParams(searchParams);
+        const result = await orderService.getAllOrdersWithPagination({ page: currentPage, limit });
+        return NextResponse.json(result, { status: 200 });
+      }
+
+      const orders = await orderService.getAllOrders();
+      return NextResponse.json({
+        success: true,
+        data: orders,
+      });
+    }
+
     const targetUserId = userId || session.user.id;
-    
+   
     if (targetUserId !== session.user.id && session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { success: false, error: 'Non autorisé' },
         { status: 403 }
       );
+    }
+
+    if (page) {
+      const { page: currentPage, limit } = extractPaginationFromSearchParams(searchParams);
+      const result = await orderService.getUserOrdersWithPagination(targetUserId, { page: currentPage, limit });
+      return NextResponse.json(result, { status: 200 });
     }
 
     const orders = await orderService.getUserOrders(targetUserId);

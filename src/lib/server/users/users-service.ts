@@ -4,6 +4,7 @@ import {
   UpdateUserData
 } from './repository/interface-users.repository';
 import { UserRepository } from './repository/users.repository';
+import { PaginatedResponse, PaginationParams, normalizePaginationParams } from '@/lib/utils/pagination';
 
 export class UserService {
   constructor(
@@ -14,17 +15,24 @@ export class UserService {
     return await this.userRepository.findAll();
   }
 
+  async getAllUsersWithPagination(
+    params: PaginationParams
+  ): Promise<PaginatedResponse<User>> {
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.userRepository.findAllWithPagination(page, limit);
+  }
+
   async getUserById(userId: string): Promise<User> {
     if (!userId) {
       throw new Error('ID utilisateur requis');
     }
 
     const user = await this.userRepository.findById(userId);
-    
+
     if (!user) {
       throw new Error('Utilisateur non trouvé');
     }
-    
+
     return user;
   }
 
@@ -34,15 +42,15 @@ export class UserService {
     }
 
     const user = await this.userRepository.findByEmail(email);
-    
+
     if (!user) {
       throw new Error('Utilisateur non trouvé');
     }
-    
+
     return user;
   }
 
-  async updateUserProfile(userId: string, data: UpdateUserData): Promise<User> {
+ async updateUserProfile(userId: string, data: UpdateUserData): Promise<User> {
     if (!userId) {
       throw new Error('ID utilisateur requis');
     }

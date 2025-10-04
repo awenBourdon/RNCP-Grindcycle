@@ -1,4 +1,5 @@
 import { User } from '@/generated/prisma';
+import { PaginatedResponse } from '@/lib/utils/pagination';
 
 export interface UpdateUserData {
   name?: string;
@@ -9,6 +10,7 @@ type PrismaTransaction = Parameters<Parameters<typeof import('@/lib/utils/prisma
 
 export interface InterfaceUserRepository {
   findAll(): Promise<User[]>;
+  findAllWithPagination(page: number, limit: number): Promise<PaginatedResponse<User>>;
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
   update(id: string, data: UpdateUserData): Promise<User>;

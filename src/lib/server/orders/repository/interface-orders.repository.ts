@@ -1,4 +1,6 @@
 import { OrderStatus } from '@/generated/prisma';
+import { PaginatedResponse } from '@/lib/utils/pagination';
+
 export interface OrderWithRelations {
   id: string;
   userId: string | null;
@@ -42,9 +44,6 @@ export interface OrderWithRelations {
   }>;
 }
 
-/**
- * Interface pour les données de création d'une commande
- */
 export interface CreateOrderData {
   userId: string | null;
   totalAmount: number;
@@ -59,56 +58,16 @@ export interface CreateOrderData {
   shippingPhone?: string | null;
 }
 
-/**
- * Type pour les transactions Prisma
- */
 type PrismaTransaction = Parameters<Parameters<typeof import('@/lib/utils/prisma').prisma.$transaction>[0]>[0];
 
-
-/**
- * Interface du repository Orders
- * Responsabilité : CRUD des commandes
- */
 export interface InterfaceOrderRepository {
-  /**
-   * Crée une nouvelle commande
-   * @param data - Données de création
-   * @returns Commande créée avec relations
-   */
   create(data: CreateOrderData): Promise<OrderWithRelations>;
-
-  /**
-   * Crée une nouvelle commande au sein d'une transaction
-   * @param tx - Transaction Prisma
-   * @param data - Données de création
-   * @returns Commande créée avec relations
-   */
   createInTransaction(tx: PrismaTransaction, data: CreateOrderData): Promise<OrderWithRelations>;
-  /**
-   * Récupère une commande par son ID
-   * @param id - ID de la commande
-   * @returns Commande avec relations ou null si non trouvée
-   */
   findById(id: string): Promise<OrderWithRelations | null>;
-
-  /**
-   * Récupère toutes les commandes d'un utilisateur
-   * @param userId - ID de l'utilisateur
-   * @returns Liste des commandes triées par date décroissante
-   */
   findByUserId(userId: string): Promise<OrderWithRelations[]>;
-
-  /**
-   * Récupère toutes les commandes (pour admin)
-   * @returns Liste de toutes les commandes triées par date décroissante
-   */
   findAll(): Promise<OrderWithRelations[]>;
-
-  /**
-   * Met à jour le statut d'une commande
-   * @param id - ID de la commande
-   * @param status - Nouveau statut
-   * @returns Commande mise à jour
-   */
+  findByUserIdWithPagination(userId: string, page: number, limit: number): Promise<PaginatedResponse<OrderWithRelations>>;
+  findAllWithPagination(page: number, limit: number): Promise<PaginatedResponse<OrderWithRelations>>;
+  
   updateStatus(id: string, status: OrderStatus): Promise<OrderWithRelations>;
 }

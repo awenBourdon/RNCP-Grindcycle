@@ -1,7 +1,9 @@
 import { PointsHistory } from '@/generated/prisma';
 import { 
-  InterfacePointsHistoryRepository} from './repository/interface-points-history.repository';
+  InterfacePointsHistoryRepository
+} from './repository/interface-points-history.repository';
 import { PointsHistoryRepository } from './repository/points-history.repository';
+import { PaginatedResponse, PaginationParams, normalizePaginationParams } from '@/lib/utils/pagination';
 
 export class PointsHistoryService {
   constructor(
@@ -14,6 +16,18 @@ export class PointsHistoryService {
     }
 
     return await this.pointsHistoryRepository.findByUserId(userId);
+  }
+
+  async getUserPointsHistoryWithPagination(
+    userId: string,
+    params: PaginationParams
+  ): Promise<PaginatedResponse<PointsHistory>> {
+    if (!userId) {
+      throw new Error('ID utilisateur requis');
+    }
+
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.pointsHistoryRepository.findByUserIdWithPagination(userId, page, limit);
   }
 
   getRepository(): InterfacePointsHistoryRepository {

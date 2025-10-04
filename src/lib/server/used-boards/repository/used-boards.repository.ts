@@ -8,6 +8,7 @@ import {
 } from './interface-used-boards.repository';
 import { UserService } from '../../users/users-service';
 import { PointsHistoryService } from '../../points-history/points-history.service';
+import { PaginatedResponse, createPaginatedResponse } from '@/lib/utils/pagination';
 
 type PrismaTransaction = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
@@ -62,6 +63,64 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
     });
 
     return boards as UsedBoardWithRelations[];
+  }
+
+  async findAllWithPagination(
+    page: number,
+    limit: number
+  ): Promise<PaginatedResponse<UsedBoardWithRelations>> {
+    const skip = (page - 1) * limit;
+    
+    const where = { deletedAt: null };
+
+    const [boards, total] = await Promise.all([
+      prisma.usedBoard.findMany({
+        where,
+        include: this.getIncludeRelations(),
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.usedBoard.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      boards as UsedBoardWithRelations[],
+      total,
+      page,
+      limit
+    );
+  }
+
+  async findByUserIdWithPagination(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<PaginatedResponse<UsedBoardWithRelations>> {
+    const skip = (page - 1) * limit;
+    
+    const where = { 
+      userId,
+      deletedAt: null 
+    };
+
+    const [boards, total] = await Promise.all([
+      prisma.usedBoard.findMany({
+        where,
+        include: this.getIncludeRelations(),
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.usedBoard.count({ where }),
+    ]);
+
+    return createPaginatedResponse(
+      boards as UsedBoardWithRelations[],
+      total,
+      page,
+      limit
+    );
   }
 
   async findAvailable(): Promise<UsedBoardWithRelations[]> {
@@ -195,7 +254,6 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
           usedBoardId: updatedBoard.id,
         });
 
-
         await services.userService.getRepository().updatePointsInTransaction(
           tx,
           updatedBoard.userId!,
@@ -205,7 +263,7 @@ export class UsedBoardRepository implements InterfaceUsedBoardRepository {
     }
   }
 
- private getIncludeRelations() {
+  private getIncludeRelations() {
     return {
       user: {
         select: {

@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
 import { PointsHistoryService } from '@/lib/server/points-history/points-history.service';
+import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
 
 const pointsHistoryService = new PointsHistoryService();
 
@@ -14,6 +15,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
+    const page = searchParams.get('page');
 
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -35,18 +37,24 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const pointsHistory = await pointsHistoryService.getUserPointsHistory(targetUserId);
+    if (page) {
+      const { page: currentPage, limit } = extractPaginationFromSearchParams(searchParams);
+      const result = await pointsHistoryService.getUserPointsHistoryWithPagination(targetUserId, { page: currentPage, limit });
+      return NextResponse.json(result, { status: 200 });
+    }
 
+    const pointsHistory = await pointsHistoryService.getUserPointsHistory(targetUserId);
     return NextResponse.json({
       success: true,
       data: pointsHistory,
     });
+
   } catch (error) {
     console.error('Erreur API points history:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Erreur serveur' 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Erreur serveur'
       },
       { status: 500 }
     );
