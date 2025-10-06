@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
 import { NotificationService } from '@/lib/server/notifications/notifications.service';
+import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
 
 export async function GET(request: NextRequest) {
   const rateLimitResponse = applyGetRateLimit(request, 'getNotifications');
@@ -24,7 +25,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const type = searchParams.get('type');
-    
+    const page = searchParams.get('page');
+   
     const notificationService = new NotificationService();
 
     if (type === 'admin') {
@@ -33,6 +35,12 @@ export async function GET(request: NextRequest) {
           { error: 'Accès non autorisé' },
           { status: 403 }
         );
+      }
+
+      if (page) {
+        const { page: currentPage, limit } = extractPaginationFromSearchParams(searchParams);
+        const result = await notificationService.getAdminNotificationsWithPagination({ page: currentPage, limit });
+        return NextResponse.json(result, { status: 200 });
       }
 
       const notifications = await notificationService.getAdminNotifications();
@@ -53,9 +61,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    if (page) {
+      const { page: currentPage, limit } = extractPaginationFromSearchParams(searchParams);
+      const result = await notificationService.getUserNotificationsWithPagination(userId, { page: currentPage, limit });
+      return NextResponse.json(result, { status: 200 });
+    }
+
     const notifications = await notificationService.getUserNotifications(userId);
-    
     return NextResponse.json({ success: true, data: notifications });
+
   } catch (error) {
     console.error(error);
     return NextResponse.json(

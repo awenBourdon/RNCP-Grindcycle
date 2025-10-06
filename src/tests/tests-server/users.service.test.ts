@@ -12,6 +12,7 @@ describe('UserService', () => {
   beforeEach(() => {
     mockUserRepository = {
       findAll: vi.fn(),
+      findAllWithPagination: vi.fn(),
       findById: vi.fn(),
       findByEmail: vi.fn(),
       update: vi.fn(),

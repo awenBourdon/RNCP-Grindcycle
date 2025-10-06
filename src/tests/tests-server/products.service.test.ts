@@ -33,6 +33,7 @@ describe('ProductService', () => {
       create: vi.fn(),
       findById: vi.fn(),
       findAll: vi.fn(),
+      findAllWithPagination: vi.fn(),
       findAvailable: vi.fn(),
       findLatest: vi.fn(),
       update: vi.fn(),
@@ -55,10 +56,8 @@ describe('ProductService', () => {
 
   describe('createProduct', () => {
     it('doit créer un produit', async () => {
-
       vi.mocked(mockImageService.uploadMultiple).mockResolvedValue(mockImageUploadSuccess)
       vi.mocked(mockProductRepository.create).mockResolvedValue(mockProduct)
-
 
       const result = await productService.createProduct(mockCreateProductData, mockFiles)
 
@@ -71,7 +70,6 @@ describe('ProductService', () => {
     })
 
     it("doit retourner une erreur si l'upload des images échoue", async () => {
-
       vi.mocked(mockImageService.uploadMultiple).mockResolvedValue(mockImageUploadFailure)
 
       await expect(productService.createProduct(mockCreateProductData, mockFiles))
@@ -79,7 +77,6 @@ describe('ProductService', () => {
     })
 
     it("doit retourner une erreur si aucune image n'est uploadée", async () => {
-
       const emptyUpload = { ...mockImageUploadSuccess, urls: [] }
       vi.mocked(mockImageService.uploadMultiple).mockResolvedValue(emptyUpload)
 
@@ -88,7 +85,6 @@ describe('ProductService', () => {
     })
 
     it('doit supprimer les images si la création du produit échoue', async () => {
-
       vi.mocked(mockImageService.uploadMultiple).mockResolvedValue(mockImageUploadSuccess)
       vi.mocked(mockProductRepository.create).mockRejectedValue(new Error('Erreur DB'))
       vi.mocked(mockImageService.deleteMultiple).mockResolvedValue({ deleted: [], failed: [] })
@@ -102,7 +98,6 @@ describe('ProductService', () => {
 
   describe('getProductById', () => {
     it('doit retourner un produit par son ID', async () => {
-
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
 
       const result = await productService.getProductById('product-1')
@@ -112,7 +107,6 @@ describe('ProductService', () => {
     })
 
     it("doit retourner une erreur si le produit n'existe pas", async () => {
-
       vi.mocked(mockProductRepository.findById).mockResolvedValue(null)
 
       await expect(productService.getProductById('product-inexistant'))
@@ -120,15 +114,13 @@ describe('ProductService', () => {
     })
 
     it("doit retourner une erreur si l'ID est vide", async () => {
-
       await expect(productService.getProductById(''))
         .rejects.toThrow('ID produit requis')
     })
   })
 
   describe('getAllProducts', () => {
-    it('doit retourner tous les produits', async () => {
-
+    it('doit retourner tous les produits sans pagination', async () => {
       vi.mocked(mockProductRepository.findAll).mockResolvedValue(mockProducts)
 
       const result = await productService.getAllProducts()
@@ -138,8 +130,52 @@ describe('ProductService', () => {
     })
   })
 
-   describe('getAvailableProducts', () => {
-    it('doit retourner les produits disponibles avec pagination', async () => {
+  describe('getAllProductsWithPagination', () => {
+    it('doit retourner tous les produits avec pagination', async () => {
+      const mockPaginatedResponse = {
+        data: [mockProduct, mockProductWithoutUsedBoard],
+        meta: {
+          currentPage: 1,
+          totalPages: 5,
+          totalItems: 100,
+          itemsPerPage: 20,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        }
+      }
+      
+      vi.mocked(mockProductRepository.findAllWithPagination).mockResolvedValue(mockPaginatedResponse)
+
+      const result = await productService.getAllProductsWithPagination({ page: 1, limit: 20 })
+
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockProductRepository.findAllWithPagination).toHaveBeenCalledWith(1, 20)
+    })
+
+    it('doit retourner selon les paramètres de pagination', async () => {
+      const mockPaginatedResponse = {
+        data: mockProducts,
+        meta: {
+          currentPage: 2,
+          totalPages: 5,
+          totalItems: 100,
+          itemsPerPage: 20,
+          hasNextPage: true,
+          hasPreviousPage: true,
+        }
+      }
+      
+      vi.mocked(mockProductRepository.findAllWithPagination).mockResolvedValue(mockPaginatedResponse)
+
+      const result = await productService.getAllProductsWithPagination({ page: 2, limit: 20 })
+
+      expect(result).toEqual(mockPaginatedResponse)
+      expect(mockProductRepository.findAllWithPagination).toHaveBeenCalledWith(2, 20)
+    })
+  })
+
+  describe('getAvailableProducts', () => {
+    it('doit retourner les produits disponibles avec la pagination', async () => {
       const mockPaginatedResponse = {
         data: [mockProduct, mockProductWithoutUsedBoard],
         meta: {
@@ -158,11 +194,11 @@ describe('ProductService', () => {
 
       expect(result).toEqual(mockPaginatedResponse)
       expect(mockProductRepository.findAvailable).toHaveBeenCalledWith(1, 20)
-    })  })
+    })
+  })
 
   describe('getLatestProducts', () => {
     it('doit retourner les derniers produits avec limite par défaut', async () => {
-
       const latestProducts = [mockProduct, mockProductWithoutUsedBoard]
       vi.mocked(mockProductRepository.findLatest).mockResolvedValue(latestProducts)
 
@@ -173,10 +209,8 @@ describe('ProductService', () => {
     })
 
     it('doit retourner les derniers produits avec limite personnalisée', async () => {
-
       const latestProducts = [mockProduct]
       vi.mocked(mockProductRepository.findLatest).mockResolvedValue(latestProducts)
-
 
       const result = await productService.getLatestProducts(3)
 
@@ -187,7 +221,6 @@ describe('ProductService', () => {
 
   describe('updateProduct', () => {
     it('doit mettre à jour un produit avec succès', async () => {
-
       const updateData = { name: 'Nouveau nom', priceEuro: 99.99 }
       const updatedProduct = { ...mockProduct, ...updateData }
       
@@ -201,7 +234,6 @@ describe('ProductService', () => {
     })
 
     it('doit retourner une erreur si le nom est vide', async () => {
-
       const updateData = { name: '' }
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
 
@@ -210,17 +242,14 @@ describe('ProductService', () => {
     })
 
     it('doit retourner une erreur si le prix en euros est négatif', async () => {
-
       const updateData = { priceEuro: -10 }
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
-
 
       await expect(productService.updateProduct('product-1', updateData))
         .rejects.toThrow('Le prix en euros ne peut pas être négatif')
     })
 
     it('doit retourner une erreur si le prix en points est négatif', async () => {
-
       const updateData = { pricePoints: -100 }
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
 
@@ -231,7 +260,6 @@ describe('ProductService', () => {
 
   describe('updateProductStatus', () => {
     it("doit mettre à jour le statut d'un produit", async () => {
-
       const updatedProduct = { ...mockProduct, status: ProductStatus.SOLD }
       
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
@@ -244,7 +272,6 @@ describe('ProductService', () => {
     })
 
     it('doit retourner une erreur pour un statut invalide', async () => {
-
       await expect(productService.updateProductStatus('product-1', 'INVALID_STATUS' as ProductStatus))
         .rejects.toThrow('Statut de produit invalide')
     })
@@ -252,7 +279,6 @@ describe('ProductService', () => {
 
   describe('deleteProduct', () => {
     it('doit supprimer un produit avec ses images', async () => {
-
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
       vi.mocked(mockImageService.deleteMultiple).mockResolvedValue({ deleted: mockProduct.imageUrl, failed: [] })
       vi.mocked(mockProductRepository.delete).mockResolvedValue(undefined)
@@ -264,16 +290,13 @@ describe('ProductService', () => {
     })
 
     it('doit retourner une erreur si on tente de supprimer un produit vendu', async () => {
-
       vi.mocked(mockProductRepository.findById).mockResolvedValue(mockSoldProduct)
-
 
       await expect(productService.deleteProduct('product-3'))
         .rejects.toThrow('Impossible de supprimer un produit vendu')
     })
 
     it('doit supprimer même si le produit n\'a pas d\'images', async () => {
-
       const productWithoutImages = { ...mockProduct, imageUrl: [] }
       vi.mocked(mockProductRepository.findById).mockResolvedValue(productWithoutImages)
       vi.mocked(mockProductRepository.delete).mockResolvedValue(undefined)
@@ -294,10 +317,8 @@ describe('ProductService', () => {
 
     validationTestCases.forEach(({ field, value, error }) => {
       it(`doit valider le champ ${field}`, async () => {
-   
         const updateData = { [field]: value }
         vi.mocked(mockProductRepository.findById).mockResolvedValue(mockProduct)
-
 
         await expect(productService.updateProduct('product-1', updateData))
           .rejects.toThrow(error)
@@ -307,16 +328,13 @@ describe('ProductService', () => {
 
   describe('Gestion des erreurs', () => {
     it('doit gérer les erreurs de repository', async () => {
-
       vi.mocked(mockProductRepository.findById).mockRejectedValue(new Error('Erreur DB'))
-
 
       await expect(productService.getProductById('product-1'))
         .rejects.toThrow('Erreur DB')
     })
 
     it("doit gérer les erreurs d'upload d'images", async () => {
-
       vi.mocked(mockImageService.uploadMultiple).mockRejectedValue(new Error('Erreur upload'))
 
       await expect(productService.createProduct(mockCreateProductData, mockFiles))

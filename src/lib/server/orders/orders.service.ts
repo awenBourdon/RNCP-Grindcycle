@@ -4,6 +4,8 @@ import {
   OrderWithRelations
 } from './repository/interface-orders.repository';
 import { OrderRepository } from './repository/orders.repository';
+import { PaginatedResponse, PaginationParams, normalizePaginationParams } from '@/lib/utils/pagination';
+
 export class OrderService {
   constructor(
     private orderRepository: InterfaceOrderRepository = new OrderRepository()
@@ -33,6 +35,25 @@ export class OrderService {
 
   async getAllOrders(): Promise<OrderWithRelations[]> {
     return await this.orderRepository.findAll();
+  }
+
+  async getUserOrdersWithPagination(
+    userId: string,
+    params: PaginationParams
+  ): Promise<PaginatedResponse<OrderWithRelations>> {
+    if (!userId) {
+      throw new Error('ID utilisateur requis');
+    }
+
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.orderRepository.findByUserIdWithPagination(userId, page, limit);
+  }
+
+  async getAllOrdersWithPagination(
+    params: PaginationParams
+  ): Promise<PaginatedResponse<OrderWithRelations>> {
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.orderRepository.findAllWithPagination(page, limit);
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus): Promise<OrderWithRelations> {

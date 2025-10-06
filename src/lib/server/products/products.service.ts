@@ -48,9 +48,16 @@ export class ProductService {
     }
   }
 
-  async getAllProducts(): Promise<ProductWithRelations[]> {
-    return await this.productRepository.findAll();
-  }
+async getAllProducts(): Promise<ProductWithRelations[]> {
+  return await this.productRepository.findAll();
+}
+
+async getAllProductsWithPagination(
+  params: PaginationParams
+): Promise<PaginatedResponse<ProductWithRelations>> {
+  const { page, limit } = normalizePaginationParams(params);
+  return await this.productRepository.findAllWithPagination(page, limit);
+}
 
   async getAvailableProducts(
   params: PaginationParams,

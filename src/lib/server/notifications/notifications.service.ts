@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { CreateNotificationData, InterfaceNotificationRepository, NotificationWithUser } from './repository/interface-notifications.repository';
 import { NotificationRepository } from './repository/notifications.repository';
+import { PaginatedResponse, PaginationParams, normalizePaginationParams } from '@/lib/utils/pagination';
 
 const notificationIdSchema = z.object({
   notificationId: z.string().min(1, 'ID notification requis'),
@@ -26,6 +27,26 @@ export class NotificationService {
     }
 
     return await this.notificationRepository.findByUserId(userId);
+  }
+
+  async getAdminNotificationsWithPagination(
+    params: PaginationParams
+  ): Promise<PaginatedResponse<NotificationWithUser>> {
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.notificationRepository.findAdminNotificationsWithPagination(page, limit);
+  }
+
+  async getUserNotificationsWithPagination(
+    userId: string, 
+    params: PaginationParams
+  ): Promise<PaginatedResponse<NotificationWithUser>> {
+    const validation = userIdSchema.safeParse({ userId });
+    if (!validation.success) {
+      throw new Error('ID utilisateur invalide');
+    }
+
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.notificationRepository.findByUserIdWithPagination(userId, page, limit);
   }
 
   async createNotification(data: CreateNotificationData) {

@@ -95,25 +95,6 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
               />
             </div>
           </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle
-                size={20}
-                className="text-blue-600 mt-0.5 flex-shrink-0"
-              />
-              <div className="text-blue-800 text-sm">
-                <p className="font-medium mb-1">Attention</p>
-                <p>
-                  Le changement d&apos;email de connexion ne sera pas appliqué
-                  si tu te connectes via le service Google. Les comptes Google
-                  utilisent l&apos;authentification de Google et donc
-                  n&apos;utilisent pas d&apos;adresse email local.
-                </p>
-              </div>
-            </div>
-          </div>
-
           <button
             type="submit"
             disabled={isPending}
@@ -131,6 +112,23 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
             )}
           </button>
         </form>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle
+              size={20}
+              className="text-blue-600 mt-0.5 flex-shrink-0"
+            />
+            <div className="text-blue-800 text-sm">
+              <p className="font-medium mb-1">Information importante</p>
+              <p>
+                Le changement d&apos;email de connexion ne sera pas appliqué si
+                tu te connectes via le service Google. Les comptes Google
+                utilisent l&apos;authentification de Google et donc
+                n&apos;utilisent pas d&apos;adresse email local.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const productId = searchParams.get('id');
   const latest = searchParams.get('latest');
   const available = searchParams.get('available');
+  const admin = searchParams.get('admin');
 
   try {
     if (productId) {
@@ -28,18 +29,28 @@ export async function GET(req: NextRequest) {
 
     if (available === 'true') {
       const { page, limit } = extractPaginationFromSearchParams(searchParams);
-
-      
-
-      const result = await productService.getAvailableProducts(
-        { page, limit },
-      );
-
+      const result = await productService.getAvailableProducts({ page, limit });
       return Response.json(result, { status: 200 });
     }
 
-    const products = await productService.getAllProducts();
-    return Response.json({ success: true, data: products }, { status: 200 });
+    if (admin === 'true') {
+      const page = searchParams.get('page');
+      
+
+      if (page) {
+        const { page: currentPage, limit } = extractPaginationFromSearchParams(searchParams);
+        const result = await productService.getAllProductsWithPagination({ page: currentPage, limit });
+        return Response.json(result, { status: 200 });
+      }
+      
+      const products = await productService.getAllProducts();
+      return Response.json({ success: true, data: products }, { status: 200 });
+    }
+
+    return Response.json(
+      { success: false, error: 'Paramètre requis: id, latest, available, ou admin' },
+      { status: 400 }
+    );
 
   } catch (error) {
     console.error('Erreur getProducts:', error);

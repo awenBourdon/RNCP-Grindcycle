@@ -11,6 +11,7 @@ import { createNotification, NotificationTemplates } from '../notifications/noti
 import { UserService } from '../users/users-service';
 import { PointsCalculatorService } from '../points-calculator/points-calculator';
 import { ImageService } from '../upload-images/images.service';
+import { PaginatedResponse, PaginationParams, normalizePaginationParams } from '@/lib/utils/pagination';
 
 export class UsedBoardService {
   constructor(
@@ -77,6 +78,25 @@ export class UsedBoardService {
     }
 
     return await this.usedBoardRepository.findByUserId(userId);
+  }
+
+  async getAllUsedBoardsWithPagination(
+    params: PaginationParams
+  ): Promise<PaginatedResponse<UsedBoardWithRelations>> {
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.usedBoardRepository.findAllWithPagination(page, limit);
+  }
+
+  async getUserUsedBoardsWithPagination(
+    userId: string,
+    params: PaginationParams
+  ): Promise<PaginatedResponse<UsedBoardWithRelations>> {
+    if (!userId) {
+      throw new Error('ID utilisateur requis');
+    }
+
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.usedBoardRepository.findByUserIdWithPagination(userId, page, limit);
   }
 
   async getAvailableUsedBoards(): Promise<UsedBoardWithRelations[]> {
@@ -164,7 +184,7 @@ export class UsedBoardService {
     }
   }
 
-private async createStatusChangeNotification(board: UsedBoardWithRelations): Promise<void> {
+  private async createStatusChangeNotification(board: UsedBoardWithRelations): Promise<void> {
     try {
       if (!board.userId) return;
 
