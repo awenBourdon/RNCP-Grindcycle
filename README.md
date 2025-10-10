@@ -1,6 +1,5 @@
 # GrindCycle
 
-
 <img width="1920" height="997" alt="image" src="https://github.com/user-attachments/assets/9215a891-fa0b-48a4-81dc-471ffe4735b4" />
 
 A web e-commerce application built with Next.js featuring authentication, payments, and database integration.
@@ -19,6 +18,7 @@ A web e-commerce application built with Next.js featuring authentication, paymen
 ## 📋 Prerequisites
 
 Before you begin, ensure you have the following installed:
+
 - Node.js (version 22 or higher)
 - npm or yarn
 - Docker (if running locally)
@@ -47,7 +47,7 @@ Create a `.env` file in the root directory and add the following variables:
 ```env
 # Authentication
 BETTER_AUTH_SECRET="your-auth-secret"
-BETTER_AUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_URL="http://localhost:3000"
 NEXT_PUBLIC_API_URL="http://localhost:3000"
 
 # Database
@@ -80,11 +80,13 @@ SUPABASE_SERVICE_ROLE_KEY="your-supabase-service-role-key"
 ### 4. Database Setup
 
 #### Option A: Using Supabase (Recommended)
+
 1. Create a new project on [Supabase](https://supabase.com/)
 2. Get your database URL from the project settings
 3. Update the `DATABASE_URL` in your `.env`
 
 #### Option B: Local PostgreSQL with Docker
+
 ```bash
 # Uncomment the Docker DATABASE_URL in your .env
 docker compose -up
@@ -110,6 +112,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 ## 🔧 Configuration
 
 ### Google OAuth Setup
+
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
 3. Enable the Google+ API
@@ -117,11 +120,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 5. Add your domain to authorized origins
 
 ### Stripe Setup
+
 1. Create a [Stripe account](https://stripe.com/)
 2. Get your publishable and secret keys from the dashboard
 3. Set up webhooks for your application events
 
 ### Email Configuration
+
 1. Enable 2-factor authentication on your Gmail account
 2. Generate an app-specific password
 3. Use this password in your `NODEMAILER_APP_PASSWORD`

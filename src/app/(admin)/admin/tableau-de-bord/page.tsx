@@ -6,7 +6,7 @@ import { ProductStatus, UsedBoardStatus } from '@/lib/utils/enums/enums';
 export default async function DashboardPage() {
   const headersList = await headers();
 
-  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
   const fetchHeaders = {
     ...Object.fromEntries(headersList.entries()),
   };

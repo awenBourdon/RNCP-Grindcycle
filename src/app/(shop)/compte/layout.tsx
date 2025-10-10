@@ -17,7 +17,7 @@ export default async function ProfileLayout({
 
   if (!session) redirect('/authentification/connexion');
 
-  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
 
   let userPoints = 0;
 

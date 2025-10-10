@@ -8,6 +8,7 @@ const styles = {
     'font-size:20px;color:#0a3d3f;font-weight:normal;margin-bottom:20px;',
   paragraph: 'font-size:16px;color:#333333;line-height:1.5;margin-bottom:20px;',
   link: 'display:inline-block;margin-top:15px;padding:12px 24px;background:#0a3d3f;color:#ffffff;text-decoration:none;border-radius:50px;font-weight:normal;',
+  logo: 'max-width:150px;margin-bottom:20px;display:block;',
 };
 
 export async function sendEmailAction({
@@ -28,6 +29,7 @@ export async function sendEmailAction({
     subject: `GRINDCYCLE - ${subject}`,
     html: `
     <div style="${styles.container}">
+      <img src="https://rncp-grindcycle.vercel.app/banner.png" alt="banner" style="${styles.logo}" />
       <h1 style="${styles.heading}">${subject}</h1>
       <p style="${styles.paragraph}">${meta.description}</p>
       <a href="${meta.link}" style="${styles.link}">Vérifier mon compte</a>
