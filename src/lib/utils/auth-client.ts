@@ -8,7 +8,7 @@ import type { auth } from '@/lib/utils/auth';
 import { ac, roles } from '@/lib/utils/permissions';
 
 const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_URL,
   plugins: [
     inferAdditionalFields<typeof auth>(),
     adminClient({ ac, roles }),
