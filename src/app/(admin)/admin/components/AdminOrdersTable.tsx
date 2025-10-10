@@ -13,19 +13,25 @@ import {
   Truck,
 } from 'lucide-react';
 import Image from 'next/image';
-import { OrderStatus, PaymentType } from '@/generated/prisma';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
+import { OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
 
 const getStatusText = (status: OrderStatus) => {
-  const statusMap = {
-    PENDING: 'En attente',
-    CONFIRMED: 'Confirmée',
-    SHIPPED: 'Expédiée',
-    DELIVERED: 'Livrée',
-    CANCELLED: 'Annulée',
-  };
-  return statusMap[status] || status;
+  switch (status) {
+    case OrderStatus.PENDING:
+      return 'En attente';
+    case OrderStatus.CONFIRMED:
+      return 'Confirmée';
+    case OrderStatus.SHIPPED:
+      return 'Expédiée';
+    case OrderStatus.DELIVERED:
+      return 'Livrée';
+    case OrderStatus.CANCELLED:
+      return 'Annulée';
+    default:
+      return status;
+  }
 };
 
 const getPaymentTypeIcon = (paymentType: PaymentType) => {

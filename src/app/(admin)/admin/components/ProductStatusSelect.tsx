@@ -1,5 +1,4 @@
 'use client';
-import type { ProductStatus } from '@/generated/prisma';
 import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useTransition } from 'react';
@@ -12,6 +11,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { updateProductStatusAction } from '@/actions/products/update-product';
+import { ProductStatus } from '@/lib/utils/enums/enums';
 
 interface ProductStatusSelectProps {
   productId: string;
@@ -48,13 +48,13 @@ export const ProductStatusSelect = ({
 
   const getStatusIcon = (productStatus: ProductStatus) => {
     switch (productStatus) {
-      case 'CATALOG':
+      case ProductStatus.CATALOG:
         return <Package size={14} />;
-      case 'SOLD':
+      case ProductStatus.SOLD:
         return <ShoppingCart size={14} />;
-      case 'SHIPPED':
+      case ProductStatus.SHIPPED:
         return <Truck size={14} />;
-      case 'DELIVERED':
+      case ProductStatus.DELIVERED:
         return <CheckCircle size={14} />;
       default:
         return <Package size={14} />;
@@ -63,13 +63,13 @@ export const ProductStatusSelect = ({
 
   const getStatusText = (productStatus: ProductStatus) => {
     switch (productStatus) {
-      case 'CATALOG':
+      case ProductStatus.CATALOG:
         return 'Disponible';
-      case 'SOLD':
+      case ProductStatus.SOLD:
         return 'Vendu';
-      case 'SHIPPED':
+      case ProductStatus.SHIPPED:
         return 'Expédié';
-      case 'DELIVERED':
+      case ProductStatus.DELIVERED:
         return 'Livré';
       default:
         return productStatus;
@@ -77,10 +77,10 @@ export const ProductStatusSelect = ({
   };
 
   const allStatuses: ProductStatus[] = [
-    'CATALOG',
-    'SOLD',
-    'SHIPPED',
-    'DELIVERED',
+    ProductStatus.CATALOG,
+    ProductStatus.SOLD,
+    ProductStatus.SHIPPED,
+    ProductStatus.DELIVERED,
   ];
 
   return (

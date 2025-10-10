@@ -6,12 +6,12 @@ import { toast } from 'sonner';
 import { FormFields } from './FormFields';
 import { ImageUpload } from './ImageUpload';
 import { Spinner } from '@/app/(shop)/components/Spinner';
-import { BoardCondition, BoardType } from '@/lib/utils/types/types';
 import {
   recycleSchema,
   IMAGE_CONFIG,
 } from '@/lib/validations/boards.validation';
 import { createUsedBoardAction } from '@/actions/used-boards/add-used-board.action';
+import { BoardCondition, BoardType } from '@/lib/utils/enums/enums';
 
 interface RecycleFormProps {
   userId: string;

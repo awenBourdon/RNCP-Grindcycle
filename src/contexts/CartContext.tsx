@@ -1,5 +1,5 @@
 'use client';
-import type { CartItemType, ProductType } from '@/lib/utils/types/types';
+import type { CartItem, Product } from '@/lib/utils/types/types';
 import {
   createContext,
   useContext,
@@ -11,14 +11,14 @@ import {
 } from 'react';
 
 type CartContextType = {
-  cartItems: CartItemType[];
-  addToCart: (product: ProductType) => void;
-  removeFromCart: (product: ProductType | string) => void;
+  cartItems: CartItem[];
+  addToCart: (product: Product) => void;
+  removeFromCart: (product: Product | string) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   getCartCount: () => number;
   getShippingCost: () => number;
-  isInCart: (product: ProductType) => boolean;
+  isInCart: (product: Product) => boolean;
 };
 
 const CartContext = createContext<CartContextType>({
@@ -35,14 +35,14 @@ const CartContext = createContext<CartContextType>({
 export const useCart = () => useContext(CartContext);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('cart');
       if (savedCart) {
-        const parsedCart: CartItemType[] = JSON.parse(savedCart);
+        const parsedCart: CartItem[] = JSON.parse(savedCart);
 
         if (Array.isArray(parsedCart)) {
           const validCart = parsedCart.filter(
@@ -75,7 +75,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timeoutId);
   }, [cartItems, isLoaded]);
 
-  const addToCart = useCallback((product: ProductType) => {
+  const addToCart = useCallback((product: Product) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
 
@@ -102,7 +102,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const removeFromCart = useCallback((productOrId: ProductType | string) => {
+  const removeFromCart = useCallback((productOrId: Product | string) => {
     const id = typeof productOrId === 'string' ? productOrId : productOrId.id;
     setCartItems(prevItems => prevItems.filter(item => item.id !== id));
   }, []);
@@ -131,7 +131,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const getShippingCost = useCallback(() => shippingCost, [shippingCost]);
 
   const isInCart = useCallback(
-    (product: ProductType) => {
+    (product: Product) => {
       return cartItems.some(item => item.id === product.id);
     },
     [cartItems]

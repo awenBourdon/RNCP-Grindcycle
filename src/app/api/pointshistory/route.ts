@@ -3,6 +3,7 @@ import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
 import { PointsHistoryService } from '@/lib/server/points-history/points-history.service';
 import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 const pointsHistoryService = new PointsHistoryService();
 
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
 
     const targetUserId = userId || session.user.id;
 
-    if (targetUserId !== session.user.id && session.user.role !== 'ADMIN') {
+    if (targetUserId !== session.user.id && session.user.role !== UserRole.ADMIN) {
       return NextResponse.json(
         { success: false, error: 'Non autorisé' },
         { status: 403 }

@@ -1,25 +1,31 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { OrderStatus, PaymentType } from '@/generated/prisma';
 import { type OrderWithRelations } from '@/lib/utils/types/types';
 import { Package, Coins, CreditCard, Calendar, Truck } from 'lucide-react';
 import Image from 'next/image';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
+import { OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
 
 interface UserOrdersListProps {
   userId: string;
 }
 
 const getStatusText = (status: OrderStatus) => {
-  const statusMap = {
-    PENDING: 'En attente',
-    CONFIRMED: 'Confirmée',
-    SHIPPED: 'Expédiée',
-    DELIVERED: 'Livrée',
-    CANCELLED: 'Annulée',
-  };
-  return statusMap[status] || status;
+  switch (status) {
+    case OrderStatus.PENDING:
+      return 'En attente';
+    case OrderStatus.CONFIRMED:
+      return 'Confirmée';
+    case OrderStatus.SHIPPED:
+      return 'Expédiée';
+    case OrderStatus.DELIVERED:
+      return 'Livrée';
+    case OrderStatus.CANCELLED:
+      return 'Annulée';
+    default:
+      return status;
+  }
 };
 
 export const UserOrdersList = ({ userId }: UserOrdersListProps) => {

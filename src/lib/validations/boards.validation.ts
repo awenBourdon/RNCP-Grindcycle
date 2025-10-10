@@ -1,5 +1,5 @@
+import { BoardCondition, BoardType } from '@/generated/prisma';
 import { z } from 'zod';
-import { BoardCondition, BoardType } from '../utils/types/types';
 
 export const IMAGE_CONFIG = {
   maxSize: 5 * 1024 * 1024,

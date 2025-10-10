@@ -3,6 +3,7 @@ import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
 import { UsedBoardService } from '@/lib/server/used-boards/used-boards.service';
 import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 const usedBoardService = new UsedBoardService();
 
@@ -28,7 +29,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (admin === 'true') {
-      if (session.user.role !== 'ADMIN') {
+      if (session.user.role !== UserRole.ADMIN) {
         return NextResponse.json(
           { success: false, error: 'Accès non autorisé' },
           { status: 403 }
@@ -53,7 +54,7 @@ export async function GET(req: NextRequest) {
     if (boardId) {
       const board = await usedBoardService.getUsedBoardById(boardId);
       
-      if (board.user?.id !== session.user.id && session.user.role !== 'ADMIN') {
+      if (board.user?.id !== session.user.id && session.user.role !== UserRole.ADMIN) {
         return NextResponse.json(
           { success: false, error: 'Non autorisé' },
           { status: 403 }
@@ -65,7 +66,7 @@ export async function GET(req: NextRequest) {
 
     const targetUserId = userId || session.user.id;
 
-    if (targetUserId !== session.user.id && session.user.role !== 'ADMIN') {
+    if (targetUserId !== session.user.id && session.user.role !== UserRole.ADMIN) {
       return NextResponse.json(
         { success: false, error: 'Non autorisé' },
         { status: 403 }

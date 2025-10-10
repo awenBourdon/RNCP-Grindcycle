@@ -4,6 +4,7 @@ import { productSchema } from '@/lib/validations/boards.validation';
 import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { ProductService } from '@/lib/server/products/products.service';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 const productService = new ProductService();
 
@@ -11,7 +12,7 @@ export async function createProductAction(formData: FormData) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
   
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user.role !== UserRole.ADMIN) {
     return {
       success: false,
       error: 'Non autorisé',

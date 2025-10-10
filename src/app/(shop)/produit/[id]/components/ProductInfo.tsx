@@ -1,16 +1,17 @@
-import { BoardType, ProductType } from '@/lib/utils/types/types';
+import { BoardType } from '@/lib/utils/enums/enums';
+import { Product } from '@/lib/utils/types/types';
 
 interface ProductInfoProps {
-  product: ProductType;
+  product: Product;
 }
 
 const getBoardTypeText = (type: BoardType) => {
   switch (type) {
-    case 'SKATE':
+    case BoardType.SKATE:
       return 'Skateboard';
-    case 'CRUISER':
+    case BoardType.CRUISER:
       return 'Cruiser';
-    case 'LONG':
+    case BoardType.LONG:
       return 'Longboard';
     default:
       return type;

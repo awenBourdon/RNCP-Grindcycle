@@ -6,12 +6,12 @@ import { toast } from 'sonner';
 import { ProductImageGallery } from './ProductImageGallery';
 import { ProductInfo } from './ProductInfo';
 import { ProductActions } from './ProductActions';
-import { ProductType } from '@/lib/utils/types/types';
+import { Product } from '@/lib/utils/types/types';
 import { useAbortController } from '@/hooks/useAbortController';
 import { favoritesAction } from '@/actions/favorites/favorite.action';
 
 interface ProductDisplayProps {
-  product: ProductType;
+  product: Product;
 }
 
 interface FavoriteResponse {

@@ -8,9 +8,10 @@ import {
   ShoppingBag,
   RefreshCw,
 } from 'lucide-react';
-import { PointsHistory, PointsType } from '@/generated/prisma';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
+import { PointsType } from '@/lib/utils/enums/enums';
+import { PointsHistory } from '@/lib/utils/types/types';
 
 interface PointsHistoryProps {
   userId: string;
@@ -18,11 +19,11 @@ interface PointsHistoryProps {
 
 const getPointsTypeIcon = (type: PointsType) => {
   switch (type) {
-    case 'RECYCLING':
+    case PointsType.RECYCLING:
       return <Recycle size={16} className="text-[#0a3d3f]" />;
-    case 'PURCHASE':
+    case PointsType.PURCHASE:
       return <ShoppingBag size={16} className="text-[#7f1d1d]" />;
-    case 'ADJUSTMENT_RECYCLING':
+    case PointsType.ADJUSTMENT_RECYCLING:
       return <RefreshCw size={16} className="text-gray-600" />;
     default:
       return <Clock size={16} className="text-gray-600" />;
@@ -31,11 +32,11 @@ const getPointsTypeIcon = (type: PointsType) => {
 
 const getPointsTypeText = (type: PointsType) => {
   switch (type) {
-    case 'RECYCLING':
+    case PointsType.RECYCLING:
       return 'Planche usagée envoyée';
-    case 'PURCHASE':
+    case PointsType.PURCHASE:
       return 'Achat';
-    case 'ADJUSTMENT_RECYCLING':
+    case PointsType.ADJUSTMENT_RECYCLING:
       return 'Recalcul des points';
     default:
       return type;
@@ -43,13 +44,13 @@ const getPointsTypeText = (type: PointsType) => {
 };
 
 const getPointsTypeColor = (type: PointsType, isPositive: boolean) => {
-  if (type === 'RECYCLING') {
+  if (type === PointsType.RECYCLING) {
     return 'text-[#0a3d3f] bg-[#0a3d3f]/10 border-[#0a3d3f]/20';
   }
-  if (type === 'PURCHASE') {
+  if (type === PointsType.PURCHASE) {
     return 'text-[#7f1d1d] bg-[#7f1d1d]/10 border-[#7f1d1d]/20';
   }
-  if (type === 'ADJUSTMENT_RECYCLING') {
+  if (type === PointsType.ADJUSTMENT_RECYCLING) {
     return isPositive
       ? 'text-[#0a3d3f] bg-[#0a3d3f]/10 border-[#0a3d3f]/20'
       : 'text-[#7f1d1d] bg-[#7f1d1d]/10 border-[#7f1d1d]/20';

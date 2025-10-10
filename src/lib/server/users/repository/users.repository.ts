@@ -99,10 +99,8 @@ async update(id: string, data: UpdateUserData): Promise<User> {
     });
   }
 
-  // TODO : appeler les repositorys
  async deleteWithRelationsCleanup(id: string): Promise<void> {
   await prisma.$transaction(async (tx) => {
-    // Les UsedBoards auront automatiquement userId = null grâce à onDelete: SetNull
     
     await tx.order.updateMany({
       where: { userId: id },
@@ -125,7 +123,6 @@ async update(id: string, data: UpdateUserData): Promise<User> {
       where: { userId: id },
     });
     
-    // Maintenant on peut supprimer physiquement l'utilisateur
     await tx.user.delete({
       where: { id },
     });

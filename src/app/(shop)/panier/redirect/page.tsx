@@ -1,18 +1,8 @@
-import { headers } from 'next/headers';
-import { auth } from '@/lib/utils/auth';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { LogIn, ShoppingCart, User, Zap } from 'lucide-react';
 import { ReturnButton } from '@/app/(shop)/components/ReturnButton';
 
 export default async function RedirectPage() {
-  const headersList = await headers();
-  const session = await auth.api.getSession({ headers: headersList });
-
-  if (session) {
-    redirect('/paiement/achat/livraison');
-  }
-
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">

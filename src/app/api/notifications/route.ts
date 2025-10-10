@@ -3,6 +3,7 @@ import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
 import { NotificationService } from '@/lib/server/notifications/notifications.service';
 import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 export async function GET(request: NextRequest) {
   const rateLimitResponse = applyGetRateLimit(request, 'getNotifications');
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
     const notificationService = new NotificationService();
 
     if (type === 'admin') {
-      if (session.user.role !== 'ADMIN') {
+      if (session.user.role !== UserRole.ADMIN) {
         return NextResponse.json(
           { error: 'Accès non autorisé' },
           { status: 403 }

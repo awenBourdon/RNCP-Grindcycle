@@ -9,6 +9,7 @@ import {
 import { User } from '@/lib/utils/types/types';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 export const UsersTable = () => {
   const { createSignal } = useAbortController();
@@ -169,7 +170,7 @@ export const UsersTable = () => {
                           <span className="text-sm font-medium text-[#010101]">
                             {user.name}
                           </span>
-                          {user.role === 'ADMIN' && (
+                          {user.role === UserRole.ADMIN && (
                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#0a3d3f] text-white">
                               Admin
                             </span>
@@ -184,11 +185,11 @@ export const UsersTable = () => {
                       <td className="px-6 py-4 text-center">
                         <UserRoleSelect
                           userId={user.id}
-                          role={user.role as 'ADMIN' | 'USER'}
+                          role={user.role as UserRole.ADMIN | UserRole.USER}
                         />
                       </td>
                       <td className="px-6 py-4 text-center">
-                        {user.role === 'ADMIN' ? (
+                        {user.role === UserRole.ADMIN ? (
                           <PlaceholderDeleteUserButton />
                         ) : (
                           <DeleteUserButton userId={user.id} />

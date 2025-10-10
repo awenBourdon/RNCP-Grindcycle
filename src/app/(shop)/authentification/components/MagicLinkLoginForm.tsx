@@ -7,7 +7,7 @@ import type { ErrorContext } from '@/lib/utils/types/types';
 import { Mail } from 'lucide-react';
 
 export const MagicLinkLoginForm = () => {
-  const [isPending, setIsPending] = useState(false); // TODO : Utiliser useTransition
+  const [isPending, setIsPending] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isOpen, setIsOpen] = useState(false);
 

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ProductType } from '@/lib/utils/types/types';
+import { Product } from '@/lib/utils/types/types';
 
 type Props = {
-  product: ProductType;
+  product: Product;
 };
 
 export const ProductCard = ({ product }: Props) => {

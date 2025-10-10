@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { UsedBoardService } from '@/lib/server/used-boards/used-boards.service';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 const usedBoardService = new UsedBoardService();
 
@@ -10,7 +11,7 @@ export async function deleteUsedBoardAction(boardId: string) {
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
 
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user.role !== UserRole.ADMIN) {
     return {
       success: false,
       error: 'Non autorisé',

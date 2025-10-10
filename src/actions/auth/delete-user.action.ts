@@ -5,6 +5,7 @@ import { deleteUserSchema } from '@/lib/validations/auth.validation';
 import { APIError } from 'better-auth/api';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 export async function deleteUserAction({ userId }: { userId: string }) {
   const headersList = await headers();
@@ -26,7 +27,7 @@ export async function deleteUserAction({ userId }: { userId: string }) {
   }
   
   const isOwnAccount = session.user.id === userId;
-  const isAdmin = session.user.role === 'ADMIN';
+  const isAdmin = session.user.role === UserRole.ADMIN;
   
   if (!isOwnAccount && !isAdmin) {
     return {
@@ -41,7 +42,7 @@ export async function deleteUserAction({ userId }: { userId: string }) {
     try {
       const targetUser = await userService.getUserById(userId);
       
-      if (targetUser.role === 'ADMIN') {
+      if (targetUser.role === UserRole.ADMIN) {
         return {
           success: false,
           error: 'Un administrateur ne peut pas supprimer un autre administrateur'

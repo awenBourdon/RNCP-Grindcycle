@@ -1,19 +1,10 @@
-import { redirect } from 'next/navigation';
-import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { DashboardStats } from '../components/DashboardStats';
-import type { Notification, UsedBoard } from '@/lib/utils/types/types';
-import { Product } from '@/generated/prisma';
+import type { Notification, Product, UsedBoard } from '@/lib/utils/types/types';
+import { ProductStatus, UsedBoardStatus } from '@/lib/utils/enums/enums';
 
 export default async function DashboardPage() {
   const headersList = await headers();
-  const session = await auth.api.getSession({
-    headers: headersList,
-  });
-
-  if (!session || session.user.role !== 'ADMIN') {
-    redirect('/authentification/connexion');
-  }
 
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
   const fetchHeaders = {
@@ -80,17 +71,18 @@ export default async function DashboardPage() {
       totalUsers: users.length,
       totalBoards: usedBoards.length,
       pendingBoards: usedBoards.filter(
-        (board: UsedBoard) => board.status === 'PENDING_VALIDATION'
+        (board: UsedBoard) =>
+          board.status === UsedBoardStatus.PENDING_VALIDATION
       ).length,
       receivedBoards: usedBoards.filter(
-        (board: UsedBoard) => board.status === 'RECEIVED'
+        (board: UsedBoard) => board.status === UsedBoardStatus.RECEIVED
       ).length,
       totalProducts: products.length,
       catalogProducts: products.filter(
-        (product: Product) => product.status === 'CATALOG'
+        (product: Product) => product.status === ProductStatus.CATALOG
       ).length,
       purchasedProducts: products.filter(
-        (product: Product) => product.status === 'SOLD'
+        (product: Product) => product.status === ProductStatus.SOLD
       ).length,
       unreadNotifications: adminNotifications.filter(
         (notif: Notification) => !notif.isRead

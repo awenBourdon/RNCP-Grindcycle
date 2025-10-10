@@ -2,10 +2,10 @@
 import { ShoppingCart, X } from 'lucide-react';
 import { Spinner } from '@/app/(shop)/components/Spinner';
 import { FavoriteButton } from './FavoriteButton';
-import { ProductType } from '@/lib/utils/types/types';
+import { Product } from '@/lib/utils/types/types';
 
 interface ProductActionsProps {
-  product: ProductType;
+  product: Product;
   added: boolean;
   handleToggleCart: () => void;
   isPending: boolean;
