@@ -7,7 +7,7 @@ import { NewProducts } from '@/app/(shop)/components/NewProducts';
 import { ToTop } from '@/app/(shop)/components/ToTop';
 
 export default async function HomePage() {
-  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
   let products = [];
 
   try {

@@ -4,7 +4,7 @@ import { AddProductForm } from '../components/AddProductForm';
 export default async function AjouterProduitPage() {
   const headersList = await headers();
 
-  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
 
   try {
     const response = await fetch(

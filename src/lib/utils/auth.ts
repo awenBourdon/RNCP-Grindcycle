@@ -60,9 +60,9 @@ export const auth = betterAuth({
 
       await sendEmailAction({
         to: user.email,
-        subject: 'Test email smtp',
+        subject: 'Vérification de ton adresse email',
         meta: {
-          description: 'Test email smtp',
+          description: 'Clique ici pour valider ton inscription',
           link: String(link),
         },
       });
@@ -198,9 +198,9 @@ export const auth = betterAuth({
       sendMagicLink: async ({ email, url }) => {
         await sendEmailAction({
           to: email,
-          subject: 'Magic Link Login',
+          subject: 'Connecte toi en un clic',
           meta: {
-            description: 'Please click the link below to log in.',
+            description: 'Clique ici pour te connecter directement',
             link: String(url),
           },
         });
