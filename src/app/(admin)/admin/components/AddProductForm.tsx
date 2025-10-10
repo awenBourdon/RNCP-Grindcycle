@@ -14,12 +14,7 @@ import { ProductFormFields } from './ProductFormFields';
 import { createProductAction } from '@/actions/products/add-product';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
 import { UsedBoardStatus } from '@/lib/utils/enums/enums';
-
-interface UsedBoard {
-  id: string;
-  name: string;
-  status: string;
-}
+import { UsedBoard } from '@/lib/utils/types/types';
 
 interface AddProductFormProps {
   usedBoards: UsedBoard[];
