@@ -1,11 +1,6 @@
-import { BoardType } from '@/lib/utils/types/types';
+import { BoardType } from '@/lib/utils/enums/enums';
+import { UsedBoard } from '@/lib/utils/types/types';
 import { formatBoardType } from '@/lib/validations/boards.validation';
-
-interface UsedBoard {
-  id: string;
-  name: string;
-  status: string;
-}
 
 interface FormData {
   name: string;
