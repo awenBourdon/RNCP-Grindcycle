@@ -3,8 +3,8 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { z } from 'zod';
-import { ProductStatus } from '@/generated/prisma';
 import { ProductService } from '@/lib/server/products/products.service';
+import { ProductStatus, UserRole } from '@/lib/utils/enums/enums';
 
 const productService = new ProductService();
 
@@ -20,7 +20,7 @@ export async function updateProductStatusAction(
   const headersList = await headers();
   const session = await auth.api.getSession({ headers: headersList });
   
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user.role !== UserRole.ADMIN) {
     return {
       success: false,
       error: 'Non autorisé',

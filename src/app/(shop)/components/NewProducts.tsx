@@ -4,10 +4,10 @@ import { motion, useAnimation, useMotionValue } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { NewProductCard } from './ProductCard';
-import { ProductType } from '@/lib/utils/types/types';
+import { Product } from '@/lib/utils/types/types';
 
 interface NewProductsProps {
-  products: ProductType[];
+  products: Product[];
 }
 
 export const NewProducts = ({ products }: NewProductsProps) => {

@@ -13,12 +13,7 @@ export default function ShippingPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleShippingSubmit = async (formData: PointsShippingInput) => {
-    console.log('🚀 [SHIPPING PAGE] === DÉBUT SOUMISSION ===');
-    console.log('🚀 [SHIPPING PAGE] Form data:', formData);
-    console.log('🚀 [SHIPPING PAGE] Cart items bruts:', cartItems);
-
     if (cartItems.length === 0) {
-      console.error('❌ [SHIPPING PAGE] Panier vide');
       toast.error('Le panier est vide');
       router.push('/panier');
       return;
@@ -27,20 +22,13 @@ export default function ShippingPage() {
     setIsLoading(true);
 
     try {
-      // Plus besoin de transformation manuelle, le schema s'en charge !
       const requestBody = {
-        cartItems, // Envoi direct - le schema transformera automatiquement
+        cartItems,
         shippingCost: getShippingCost(),
         shippingAddress: formData,
-        userId: null, // TODO: récupérer depuis un contexte d'auth si nécessaire
+        userId: null,
       };
 
-      console.log(
-        '📨 [SHIPPING PAGE] Request body:',
-        JSON.stringify(requestBody, null, 2)
-      );
-
-      console.log('🌐 [SHIPPING PAGE] Appel API...');
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -49,26 +37,15 @@ export default function ShippingPage() {
         body: JSON.stringify(requestBody),
       });
 
-      console.log(
-        '📨 [SHIPPING PAGE] Réponse reçue:',
-        response.status,
-        response.statusText
-      );
-
       const data = await response.json();
-      console.log('📨 [SHIPPING PAGE] Data reçue:', data);
 
       if (!response.ok) {
-        console.error('❌ [SHIPPING PAGE] Erreur API:', data);
         throw new Error(
           data.error || 'Erreur lors de la création de la session'
         );
       }
 
       if (data.url) {
-        console.log('✅ [SHIPPING PAGE] URL Stripe reçue:', data.url);
-        console.log('💾 [SHIPPING PAGE] Sauvegarde pending order...');
-
         sessionStorage.setItem(
           'pendingOrder',
           JSON.stringify({
@@ -80,23 +57,13 @@ export default function ShippingPage() {
           })
         );
 
-        console.log('🔄 [SHIPPING PAGE] Redirection vers Stripe...');
         window.location.href = data.url;
       } else {
-        console.error(
-          "❌ [SHIPPING PAGE] Pas d'URL de paiement dans la réponse"
-        );
         throw new Error('URL de paiement non disponible');
       }
-    } catch (error) {
-      console.error('💥 [SHIPPING PAGE] Erreur complète:', error);
-      console.error(
-        '💥 [SHIPPING PAGE] Stack:',
-        error instanceof Error ? error.stack : 'Pas de stack'
-      );
+    } catch {
       toast.error('Une erreur est survenue. Veuillez réessayer.');
     } finally {
-      console.log('🏁 [SHIPPING PAGE] === FIN SOUMISSION ===');
       setIsLoading(false);
     }
   };
@@ -104,18 +71,6 @@ export default function ShippingPage() {
   const subtotal = getCartTotal();
   const shipping = getShippingCost();
   const total = subtotal + shipping;
-
-  // Debug des données du panier
-  console.log('🛒 [SHIPPING PAGE] Cart items actuels:', cartItems);
-  console.log('💰 [SHIPPING PAGE] Subtotal:', subtotal);
-  console.log('🚚 [SHIPPING PAGE] Shipping:', shipping);
-  console.log('💳 [SHIPPING PAGE] Total:', total);
-
-  if (cartItems.length === 0) {
-    console.log('🔄 [SHIPPING PAGE] Panier vide, redirection...');
-    router.push('/panier');
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-white">

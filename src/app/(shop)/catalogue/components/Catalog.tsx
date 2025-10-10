@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProductList } from './ProductsList';
 import { Filters } from './Filters';
-import { ProductType } from '@/lib/utils/types/types';
+import { Product } from '@/lib/utils/types/types';
 import { PaginationMeta } from '@/lib/utils/pagination';
 import { useAbortController } from '@/hooks/useAbortController';
 
@@ -14,7 +14,7 @@ export const Catalog = () => {
   const searchParams = useSearchParams();
   const { createSignal } = useAbortController();
 
-  const [allProducts, setAllProducts] = useState<ProductType[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [meta, setMeta] = useState<PaginationMeta>({
     currentPage: 1,
     totalPages: 0,

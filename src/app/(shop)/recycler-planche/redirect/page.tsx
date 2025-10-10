@@ -1,20 +1,8 @@
 import Link from 'next/link';
-import { headers } from 'next/headers';
-import { auth } from '@/lib/utils/auth';
-import { redirect } from 'next/navigation';
 import { LogIn } from 'lucide-react';
 import { ReturnButton } from '@/app/(shop)/components/ReturnButton';
 
 const RedirectPage = async () => {
-  const headersList = await headers();
-  const session = await auth.api.getSession({
-    headers: headersList,
-  });
-
-  if (session) {
-    redirect('/recycler-planche');
-  }
-
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-40">

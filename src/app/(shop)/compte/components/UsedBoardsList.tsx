@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import type { UsedBoardStatus } from '@/generated/prisma';
 import {
   Clock,
   CheckCircle,
@@ -14,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
+import { UsedBoardStatus } from '@/lib/utils/enums/enums';
 
 interface UsedBoard {
   id: string;
@@ -41,19 +41,19 @@ interface UsedBoardsListProps {
 
 const getStatusText = (status: UsedBoardStatus) => {
   switch (status) {
-    case 'PENDING_VALIDATION':
+    case UsedBoardStatus.PENDING_VALIDATION:
       return 'À valider';
-    case 'VALIDATED':
+    case UsedBoardStatus.VALIDATED:
       return 'Validé';
-    case 'REJECTED':
+    case UsedBoardStatus.REJECTED:
       return 'Rejeté';
-    case 'SENT':
+    case UsedBoardStatus.SENT:
       return 'Envoyé';
-    case 'RECEIVED':
+    case UsedBoardStatus.RECEIVED:
       return 'Reçu';
-    case 'RECYCLED_TO_PRODUCT':
+    case UsedBoardStatus.RECYCLED_TO_PRODUCT:
       return 'Recyclé en produit';
-    case 'SOLD':
+    case UsedBoardStatus.SOLD:
       return 'Vendu';
     default:
       return status;
@@ -62,19 +62,19 @@ const getStatusText = (status: UsedBoardStatus) => {
 
 const getStatusIcon = (status: UsedBoardStatus) => {
   switch (status) {
-    case 'PENDING_VALIDATION':
+    case UsedBoardStatus.PENDING_VALIDATION:
       return <AlertCircle size={16} />;
-    case 'VALIDATED':
+    case UsedBoardStatus.VALIDATED:
       return <CheckCircle size={16} />;
-    case 'REJECTED':
+    case UsedBoardStatus.REJECTED:
       return <XCircle size={16} />;
-    case 'SENT':
+    case UsedBoardStatus.SENT:
       return <Truck size={16} />;
-    case 'RECEIVED':
+    case UsedBoardStatus.RECEIVED:
       return <CheckCircle size={16} />;
-    case 'RECYCLED_TO_PRODUCT':
+    case UsedBoardStatus.RECYCLED_TO_PRODUCT:
       return <Recycle size={16} />;
-    case 'SOLD':
+    case UsedBoardStatus.SOLD:
       return <ShoppingCart size={16} />;
     default:
       return <Clock size={16} />;

@@ -13,13 +13,8 @@ import {
 import { ProductFormFields } from './ProductFormFields';
 import { createProductAction } from '@/actions/products/add-product';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
-import { UsedBoardStatus } from '@/generated/prisma';
-
-interface UsedBoard {
-  id: string;
-  name: string;
-  status: string;
-}
+import { UsedBoardStatus } from '@/lib/utils/enums/enums';
+import { UsedBoard } from '@/lib/utils/types/types';
 
 interface AddProductFormProps {
   usedBoards: UsedBoard[];
@@ -54,7 +49,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   const [errors, setErrors] = useState<FormErrors>({});
 
   const availableUsedBoards = usedBoards.filter(
-    board => board.status === 'RECEIVED'
+    board => board.status === UsedBoardStatus.RECEIVED
   );
 
   const validateFile = (file: File): string | null => {

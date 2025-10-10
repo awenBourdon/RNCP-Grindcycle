@@ -13,19 +13,25 @@ import {
   Truck,
 } from 'lucide-react';
 import Image from 'next/image';
-import { OrderStatus, PaymentType } from '@/generated/prisma';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
+import { OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
 
 const getStatusText = (status: OrderStatus) => {
-  const statusMap = {
-    PENDING: 'En attente',
-    CONFIRMED: 'Confirmée',
-    SHIPPED: 'Expédiée',
-    DELIVERED: 'Livrée',
-    CANCELLED: 'Annulée',
-  };
-  return statusMap[status] || status;
+  switch (status) {
+    case OrderStatus.PENDING:
+      return 'En attente';
+    case OrderStatus.CONFIRMED:
+      return 'Confirmée';
+    case OrderStatus.SHIPPED:
+      return 'Expédiée';
+    case OrderStatus.DELIVERED:
+      return 'Livrée';
+    case OrderStatus.CANCELLED:
+      return 'Annulée';
+    default:
+      return status;
+  }
 };
 
 const getPaymentTypeIcon = (paymentType: PaymentType) => {
@@ -189,7 +195,7 @@ export const AdminOrdersTable = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {orders.map(order => (
-                    <React.Fragment key={order.id}>
+                    <div key={order.id}>
                       <tr className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4">
                           <span className="text-sm font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">
@@ -415,7 +421,7 @@ export const AdminOrdersTable = () => {
                           </td>
                         </tr>
                       )}
-                    </React.Fragment>
+                    </div>
                   ))}
                 </tbody>
               </table>

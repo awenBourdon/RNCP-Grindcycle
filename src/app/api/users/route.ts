@@ -3,6 +3,7 @@ import { applyGetRateLimit } from '@/lib/utils/rateLimit';
 import { auth } from '@/lib/utils/auth';
 import { UserService } from '@/lib/server/users/users-service';
 import { extractPaginationFromSearchParams } from '@/lib/utils/pagination';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 
 const userService = new UserService();
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (admin === 'true') {
-      if (session.user.role !== 'ADMIN') {
+      if (session.user.role !== UserRole.ADMIN) {
         return NextResponse.json(
           { success: false, error: 'Accès non autorisé' },
           { status: 403 }
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (userId) {
-      if (userId !== session.user.id && session.user.role !== 'ADMIN') {
+      if (userId !== session.user.id && session.user.role !== UserRole.ADMIN) {
         return NextResponse.json(
           { success: false, error: 'Non autorisé' },
           { status: 403 }

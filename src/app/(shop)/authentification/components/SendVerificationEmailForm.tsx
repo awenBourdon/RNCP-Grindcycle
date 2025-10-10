@@ -10,7 +10,6 @@ import { emailVerificationSchema } from '@/lib/validations/auth.validation';
 export const SendVerificationEmailForm = () => {
   const [email, setEmail] = useState('');
 
-  // TODO : convertir en useTransition()
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
 

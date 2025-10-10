@@ -2,12 +2,16 @@ import {
   UsedBoardStatus,
   BoardCondition,
   UserRole,
-  Order,
-  OrderItem,
   BoardType,
-} from '@/generated/prisma';
+  ProductStatus,
+  NotificationTarget,
+  PaymentType,
+  OrderStatus,
+  PointsType,
+} from '../enums/enums';
 
-export interface ProductType {
+
+export interface Product {
   id: string;
   name: string;
   description?: string | null;
@@ -15,7 +19,7 @@ export interface ProductType {
   priceEuro: number;
   pricePoints: number;
   imageUrl: string[];
-  status: string;
+  status: ProductStatus;
   usedBoard?: {
     id: string;
     name: string;
@@ -24,20 +28,22 @@ export interface ProductType {
       id: string;
       name: string;
       email: string;
-    };
+    } | null;
   } | null;
 }
 
-export type CartItemType = {
+
+export interface CartItem {
   id: string;
   name: string;
-  type: string;
+  type: BoardType;
   size?: number;
   priceEuro: number;
   pricePoints: number;
   quantity: number;
   imageUrl: string[];
-};
+}
+
 
 export interface ErrorContext {
   error: {
@@ -45,19 +51,15 @@ export interface ErrorContext {
   };
 }
 
+
 export interface Notification {
   id: string;
-  description?: string;
-  isRead: boolean;
-  createdAt?: string | Date;
-}
-
-export interface User {
-  id: string;
-  name?: string;
-  email: string;
-  role: UserRole;
-  createdAt: Date;
+  target: NotificationTarget;
+  description: string;
+  createdAt: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  isRead?: boolean;
 }
 
 export interface AdminNotification {
@@ -72,14 +74,15 @@ export interface AdminNotification {
   } | null;
 }
 
-export interface UsedBoard {
+
+export interface User {
   id: string;
-  name: string | null;
-  image: string[];
-  description: string | null;
+  name?: string;
+  email: string;
+  role: UserRole;
+  points: number;
   createdAt: Date;
-  status: UsedBoardStatus;
-  pointsAwarded: number | null;
+  updatedAt: Date;
 }
 
 export interface Session {
@@ -87,23 +90,64 @@ export interface Session {
     id: string;
     name: string | null;
     email: string;
-    role: string;
+    role: UserRole;
     createdAt: Date;
   };
 }
-export { BoardType, BoardCondition, UsedBoardStatus, UserRole };
+
+export interface UsedBoard {
+  id: string;
+  name: string;
+  description: string | null;
+  image: string[];
+  userId?: string | null;
+  boardType: BoardType;
+  boardCondition?: BoardCondition | null;
+  status: UsedBoardStatus;
+  pointsAwarded?: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 
-export interface OrderWithRelations extends Order {
-  user:
-    | {
-        id: string;
-        name: string;
-        email: string;
-      }
-    | null
-    | undefined;
-  orderItems: OrderItemWithProduct[];
+export interface PointsHistory {
+  id: string;
+  userId?: string | null;
+  usedBoardId?: string | null;
+  type: PointsType;
+  pointsAmount: number;
+  createdAt: Date;
+  deletedAt?: Date | null;
+}
+
+export interface Order {
+  id: string;
+  userId?: string | null;
+  totalAmount: number;
+  shippingCost: number;
+  paymentType: PaymentType;
+  pointsUsed?: number;
+  status: OrderStatus;
+  shippingAddress?: string | null;
+  shippingCity?: string | null;
+  shippingPostalCode?: string | null;
+  shippingCountry?: string | null;
+  shippingPhone?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrderItem {
+  id: string;
+  orderId: string;
+  productId: string;
+  productName: string;
+  productType: BoardType;
+  priceEuro: number;
+  pricePoints?: number | null;
+  quantity: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface OrderItemWithProduct extends OrderItem {
@@ -112,6 +156,22 @@ export interface OrderItemWithProduct extends OrderItem {
     name: string;
     type: BoardType;
     imageUrl: string[];
-    status: string;
+    status: ProductStatus;
   };
+}
+
+export interface OrderWithRelations extends Order {
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
+  orderItems: OrderItemWithProduct[];
+}
+
+export interface Favorite {
+  userId: string;
+  productId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

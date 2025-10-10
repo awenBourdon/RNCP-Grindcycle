@@ -20,18 +20,16 @@ import { ImageModal } from './ImageModal';
 import { toast } from 'sonner';
 import { Spinner } from '@/app/(shop)/components/Spinner';
 import Image from 'next/image';
-import type {
-  UsedBoard,
-  UsedBoardStatus,
-  BoardCondition,
-} from '@/generated/prisma';
 import { useImageModal } from '@/hooks/useImageModal';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
 import { deleteUsedBoardAction } from '@/actions/used-boards/delete-used-board';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
+import { UsedBoardStatus, BoardCondition } from '@/lib/utils/enums/enums';
+import { UsedBoard } from '@/lib/utils/types/types';
 
 interface UsedBoardWithUser extends UsedBoard {
+  boardCondition: BoardCondition | null;
   user: {
     id: string;
     name: string;
@@ -48,12 +46,12 @@ interface StatusSelectProps {
   boardId: string;
   currentStatus: UsedBoardStatus;
   onUpdate: () => void;
-  currentPoints: number | null;
+  currentPoints: number | null | undefined;
 }
 
 interface PointsSelectProps {
   boardId: string;
-  currentPoints: number | null;
+  currentPoints: number | null | undefined;
   currentStatus: UsedBoardStatus;
   onUpdate: () => void;
 }
@@ -84,19 +82,19 @@ const StatusSelect = ({
 
   const getStatusIcon = (status: UsedBoardStatus) => {
     switch (status) {
-      case 'PENDING_VALIDATION':
+      case UsedBoardStatus.PENDING_VALIDATION:
         return <AlertCircle size={14} />;
-      case 'VALIDATED':
+      case UsedBoardStatus.VALIDATED:
         return <CheckCircle size={14} />;
-      case 'REJECTED':
+      case UsedBoardStatus.REJECTED:
         return <XCircle size={14} />;
-      case 'SENT':
+      case UsedBoardStatus.SENT:
         return <Truck size={14} />;
-      case 'RECEIVED':
+      case UsedBoardStatus.RECEIVED:
         return <CheckCircle size={14} />;
-      case 'RECYCLED_TO_PRODUCT':
+      case UsedBoardStatus.RECYCLED_TO_PRODUCT:
         return <Recycle size={14} />;
-      case 'SOLD':
+      case UsedBoardStatus.SOLD:
         return <ShoppingCart size={14} />;
       default:
         return <Clock size={14} />;
@@ -165,10 +163,7 @@ const PointsSelect = ({
     });
   };
 
-  const canEditPoints =
-    currentStatus === 'RECEIVED' ||
-    currentStatus === 'RECYCLED_TO_PRODUCT' ||
-    currentStatus === 'SOLD';
+  const canEditPoints = currentStatus === UsedBoardStatus.RECEIVED;
 
   return (
     <div className="relative inline-flex items-center group">
@@ -291,11 +286,11 @@ export const UsedBoardsTable = () => {
   const getConditionText = (condition: BoardCondition | null) => {
     if (!condition) return 'Non défini';
     switch (condition) {
-      case 'GOOD':
+      case BoardCondition.GOOD:
         return 'Bon état';
-      case 'AVERAGE':
+      case BoardCondition.AVERAGE:
         return 'État moyen';
-      case 'BAD':
+      case BoardCondition.BAD:
         return 'Mauvais état';
       default:
         return condition;

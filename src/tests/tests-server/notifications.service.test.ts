@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { NotificationService } from '../../lib/server/notifications/notifications.service'
-import { NotificationTarget } from '@/generated/prisma'
+import { NotificationTarget, UserRole } from '@/generated/prisma'
 
 vi.mock('../repository/notifications.repository')
 
@@ -212,7 +212,7 @@ describe('NotificationService', () => {
       mockRepository.findById.mockResolvedValue(otherUserNotification)
       mockRepository.delete.mockResolvedValue(undefined)
 
-      const result = await notificationService.deleteNotification('notif-1', 'user-1', 'ADMIN')
+      const result = await notificationService.deleteNotification('notif-1', 'user-1', UserRole.ADMIN)
 
       expect(result.message).toBe('Notification supprimée avec succès')
     })
@@ -252,7 +252,7 @@ describe('NotificationService', () => {
     it('doit permettre à un admin de supprimer toutes les notifications d\'un utilisateur', async () => {
       mockRepository.deleteAllForUser.mockResolvedValue({ count: 3 })
 
-      const result = await notificationService.deleteAllUserNotifications('user-2', 'user-1', 'ADMIN')
+      const result = await notificationService.deleteAllUserNotifications('user-2', 'user-1', UserRole.ADMIN)
 
       expect(result.message).toBe('3 notification(s) supprimée(s) avec succès')
       expect(result.count).toBe(3)

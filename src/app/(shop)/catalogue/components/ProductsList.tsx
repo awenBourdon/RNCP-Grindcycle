@@ -1,9 +1,9 @@
 'use client';
-import { ProductType } from '@/lib/utils/types/types';
+import { Product } from '@/lib/utils/types/types';
 import { ProductCard } from './ProductCard';
 
 type Props = {
-  filteredProducts: ProductType[];
+  filteredProducts: Product[];
 };
 
 export const ProductList = ({ filteredProducts }: Props) => {

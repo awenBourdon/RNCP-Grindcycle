@@ -14,8 +14,6 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
   const [error, setError] = useState<string | null>(null);
   const action = signUp ? "S'inscrire" : 'Se connecter';
 
-  // TODO : Ouvrir dans une modale || fenêtre
-
   useEffect(() => {
     if (error) {
       toast.error(error);

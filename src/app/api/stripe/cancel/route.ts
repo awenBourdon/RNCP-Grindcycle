@@ -1,4 +1,5 @@
 import { OrderService } from '@/lib/server/orders/orders.service';
+import { OrderStatus } from '@/lib/utils/enums/enums';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -19,12 +20,16 @@ export async function POST(req: Request) {
     try {
       const order = await orderService.getOrderById(orderId);
 
-      if (order.status === 'CONFIRMED' || order.status === 'SHIPPED' || order.status === 'DELIVERED') {
-        return NextResponse.json(
-          { error: 'Cette commande ne peut plus être annulée' },
-          { status: 400 }
-        );
-      }
+     if (
+  order.status === OrderStatus.CONFIRMED || 
+  order.status === OrderStatus.SHIPPED || 
+  order.status === OrderStatus.DELIVERED
+) {
+  return NextResponse.json(
+    { error: 'Cette commande ne peut plus être annulée' },
+    { status: 400 }
+  );
+}
 
       const cancelledOrder = await orderService.updateOrderStatus(orderId, 'CANCELLED');
 

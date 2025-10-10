@@ -1,9 +1,9 @@
 'use client';
-import { ProductType } from '@/lib/utils/types/types';
+import { Product } from '@/lib/utils/types/types';
 import Image from 'next/image';
 
 interface ProductCardProps {
-  product: ProductType;
+  product: Product;
 }
 
 export const NewProductCard = ({ product }: ProductCardProps) => {

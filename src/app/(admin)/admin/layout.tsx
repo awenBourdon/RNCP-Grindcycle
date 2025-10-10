@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AdminLayout } from './components/AdminLayout';
 import { Session } from '@/lib/utils/types/types';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 export const metadata = {
   title: 'Dashboard Grindcycle',
@@ -19,7 +20,7 @@ export default async function AdminLayoutWrapper({
     headers: headersList,
   })) as Session | null;
 
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || session.user.role !== UserRole.ADMIN) {
     redirect('/authentification/connexion');
   }
 

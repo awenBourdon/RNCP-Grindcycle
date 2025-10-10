@@ -3,17 +3,20 @@ import { Hash, Eye, Trash2, Package } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import type { Product, BoardType } from '@/generated/prisma';
 import { useTransition, useState, useEffect } from 'react';
 import { deleteProductAction } from '@/actions/products/delete-product';
 import { ProductStatusSelect } from './ProductStatusSelect';
 import { PaginationMeta } from '@/lib/utils/pagination';
 import { useAbortController } from '@/hooks/useAbortController';
+import { BoardType } from '@/lib/utils/enums/enums';
+import { Product } from '@/lib/utils/types/types';
 
 interface ProductWithUsedBoard extends Product {
+  createdAt: string | number | Date;
   usedBoard?: {
     id: string;
     name: string;
+    boardType: BoardType;
     user: {
       id: string;
       name: string;
@@ -24,11 +27,11 @@ interface ProductWithUsedBoard extends Product {
 
 const getBoardTypeText = (type: BoardType) => {
   switch (type) {
-    case 'SKATE':
+    case BoardType.SKATE:
       return 'Skateboard';
-    case 'CRUISER':
+    case BoardType.CRUISER:
       return 'Cruiser';
-    case 'LONG':
+    case BoardType.LONG:
       return 'Longboard';
     default:
       return type;

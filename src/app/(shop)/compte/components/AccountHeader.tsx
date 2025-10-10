@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Shield } from 'lucide-react';
 import { SignOutButton } from './SignOutButton';
 import { Session } from '@/lib/utils/types/types';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 interface AccountHeaderProps {
   session: Session;
@@ -28,7 +29,7 @@ export const AccountHeader = ({ session, userPoints }: AccountHeaderProps) => {
               {userPoints === 1 ? '' : 's'}
             </p>
 
-            {session.user.role === 'ADMIN' && (
+            {session.user.role === UserRole.ADMIN && (
               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#0a3d3f] text-white">
                 <Shield size={12} className="mr-1" />
                 Administrateur
@@ -37,7 +38,7 @@ export const AccountHeader = ({ session, userPoints }: AccountHeaderProps) => {
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          {session.user.role === 'ADMIN' && (
+          {session.user.role === UserRole.ADMIN && (
             <Link
               href="/admin/tableau-de-bord"
               className="inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-2 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors"
