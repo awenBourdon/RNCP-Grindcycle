@@ -5,6 +5,7 @@ import {
   CreateProductData,
   UpdateProductData,
   ProductWithRelations,
+  PriceFilters,
 } from './interface-products.repository';
 import { PaginatedResponse, createPaginatedResponse } from '@/lib/utils/pagination';
 
@@ -51,44 +52,58 @@ export class ProductRepository implements InterfaceProductRepository {
   }
 
   async findAllWithPagination(
-  page: number,
-  limit: number
-): Promise<PaginatedResponse<ProductWithRelations>> {
-  const skip = (page - 1) * limit;
-  
-  const where = {
-    deletedAt: null
-  };
+    page: number,
+    limit: number
+  ): Promise<PaginatedResponse<ProductWithRelations>> {
+    const skip = (page - 1) * limit;
+    
+    const where = {
+      deletedAt: null
+    };
 
-  const [products, total] = await Promise.all([
-    prisma.product.findMany({
-      where,
-      include: this.getIncludeRelations(),
-      orderBy: { createdAt: 'desc' },
-      skip,
-      take: limit,
-    }),
-    prisma.product.count({ where }),
-  ]);
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        include: this.getIncludeRelations(),
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count({ where }),
+    ]);
 
-  return createPaginatedResponse(
-    products as ProductWithRelations[],
-    total,
-    page,
-    limit
-  );
-}
+    return createPaginatedResponse(
+      products as ProductWithRelations[],
+      total,
+      page,
+      limit
+    );
+  }
 
   async findAvailable(
     page: number,
     limit: number,
+    filters?: PriceFilters
   ): Promise<PaginatedResponse<ProductWithRelations>> {
     const skip = (page - 1) * limit;
    
-     const where = {
-    deletedAt: null,
-    status: ProductStatus.CATALOG
-  };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = {
+      deletedAt: null,
+      status: ProductStatus.CATALOG
+    };
+
+    if (filters?.minPrice !== undefined || filters?.maxPrice !== undefined) {
+      where.priceEuro = {};
+      
+      if (filters.minPrice !== undefined) {
+        where.priceEuro.gte = filters.minPrice;
+      }
+      
+      if (filters.maxPrice !== undefined) {
+        where.priceEuro.lte = filters.maxPrice;
+      }
+    }
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({

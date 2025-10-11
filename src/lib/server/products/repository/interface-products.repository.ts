@@ -35,12 +35,18 @@ export interface ProductWithRelations extends Product {
     } | null;
   } | null;
 }
+
+export interface PriceFilters {
+  minPrice?: number;
+  maxPrice?: number;
+}
+
 export interface InterfaceProductRepository {
   create(data: CreateProductData): Promise<ProductWithRelations>;
   findById(id: string): Promise<ProductWithRelations | null>;
   findAll(): Promise<ProductWithRelations[]>;
   findAllWithPagination(page: number, limit: number): Promise<PaginatedResponse<ProductWithRelations>>;
-  findAvailable(page: number, limit: number): Promise<PaginatedResponse<ProductWithRelations>>;
+  findAvailable(page: number, limit: number, filters?: PriceFilters): Promise<PaginatedResponse<ProductWithRelations>>;
   findLatest(limit?: number): Promise<ProductWithRelations[]>;
   update(id: string, data: UpdateProductData): Promise<ProductWithRelations>;
   delete(id: string): Promise<void>;

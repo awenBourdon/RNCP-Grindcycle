@@ -238,6 +238,12 @@ export const Catalog = () => {
           <div className="flex justify-center items-center py-20">
             <div className="text-gray-600">Chargement des produits...</div>
           </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="text-gray-600 text-lg">
+              Aucun produit disponible
+            </div>
+          </div>
         ) : (
           <>
             <ProductList filteredProducts={filteredProducts} />

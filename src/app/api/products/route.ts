@@ -14,6 +14,9 @@ export async function GET(req: NextRequest) {
   const latest = searchParams.get('latest');
   const available = searchParams.get('available');
   const admin = searchParams.get('admin');
+  
+  const minPrice = searchParams.get('minPrice');
+  const maxPrice = searchParams.get('maxPrice');
 
   try {
     if (productId) {
@@ -29,20 +32,30 @@ export async function GET(req: NextRequest) {
 
     if (available === 'true') {
       const { page, limit } = extractPaginationFromSearchParams(searchParams);
-      const result = await productService.getAvailableProducts({ page, limit });
+      
+      const filters = {
+        minPrice: minPrice ? parseFloat(minPrice) : undefined,
+        maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+      };
+      
+      const result = await productService.getAvailableProducts({ 
+        page, 
+        limit,
+        ...filters 
+      });
+      
       return Response.json(result, { status: 200 });
     }
 
     if (admin === 'true') {
       const page = searchParams.get('page');
-      
-
+     
       if (page) {
         const { page: currentPage, limit } = extractPaginationFromSearchParams(searchParams);
         const result = await productService.getAllProductsWithPagination({ page: currentPage, limit });
         return Response.json(result, { status: 200 });
       }
-      
+     
       const products = await productService.getAllProducts();
       return Response.json({ success: true, data: products }, { status: 200 });
     }
@@ -51,19 +64,18 @@ export async function GET(req: NextRequest) {
       { success: false, error: 'Paramètre requis: id, latest, available, ou admin' },
       { status: 400 }
     );
-
   } catch (error) {
     console.error('Erreur getProducts:', error);
-    
+   
     if (error instanceof Error && error.message.includes('non trouvé')) {
       return Response.json(
-        { success: false, error: 'Produit non trouvé' }, 
+        { success: false, error: 'Produit non trouvé' },
         { status: 404 }
       );
     }
-
+    
     return Response.json(
-      { success: false, error: 'Erreur serveur' }, 
+      { success: false, error: 'Erreur serveur' },
       { status: 500 }
     );
   }

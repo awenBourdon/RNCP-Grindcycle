@@ -3,7 +3,8 @@ import {
   InterfaceProductRepository,
   CreateProductData,
   UpdateProductData,
-  ProductWithRelations
+  ProductWithRelations,
+  PriceFilters
 } from './repository/interface-products.repository';
 import { ProductRepository } from './repository/products.repository';
 import { createNotification, NotificationTemplates } from '../notifications/notifications.service';
@@ -48,23 +49,25 @@ export class ProductService {
     }
   }
 
-async getAllProducts(): Promise<ProductWithRelations[]> {
-  return await this.productRepository.findAll();
-}
+  async getAllProducts(): Promise<ProductWithRelations[]> {
+    return await this.productRepository.findAll();
+  }
 
-async getAllProductsWithPagination(
-  params: PaginationParams
-): Promise<PaginatedResponse<ProductWithRelations>> {
-  const { page, limit } = normalizePaginationParams(params);
-  return await this.productRepository.findAllWithPagination(page, limit);
-}
+  async getAllProductsWithPagination(
+    params: PaginationParams
+  ): Promise<PaginatedResponse<ProductWithRelations>> {
+    const { page, limit } = normalizePaginationParams(params);
+    return await this.productRepository.findAllWithPagination(page, limit);
+  }
 
   async getAvailableProducts(
-  params: PaginationParams,
-): Promise<PaginatedResponse<ProductWithRelations>> {
-  const { page, limit } = normalizePaginationParams(params);
-  return await this.productRepository.findAvailable(page, limit);
-}
+    params: PaginationParams & PriceFilters
+  ): Promise<PaginatedResponse<ProductWithRelations>> {
+    const { page, limit } = normalizePaginationParams(params);
+    const { minPrice, maxPrice } = params;
+    
+    return await this.productRepository.findAvailable(page, limit, { minPrice, maxPrice });
+  }
 
   async getProductById(productId: string): Promise<ProductWithRelations> {
     if (!productId) {
