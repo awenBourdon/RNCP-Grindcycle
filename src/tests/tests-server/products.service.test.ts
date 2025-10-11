@@ -193,7 +193,10 @@ describe('ProductService', () => {
       const result = await productService.getAvailableProducts({ page: 1, limit: 20 })
 
       expect(result).toEqual(mockPaginatedResponse)
-      expect(mockProductRepository.findAvailable).toHaveBeenCalledWith(1, 20)
+      expect(mockProductRepository.findAvailable).toHaveBeenCalledWith(1, 20, {
+        minPrice: undefined,
+        maxPrice: undefined,
+      })
     })
   })
 

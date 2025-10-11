@@ -47,8 +47,8 @@ export async function GET(req: NextRequest) {
     }
 
     const targetUserId = userId || session.user.id;
-    
-    if (targetUserId !== session.user.id && session.user.role !== UserRole.ADMIN ) {
+   
+    if (targetUserId !== session.user.id && session.user.role !== UserRole.ADMIN) {
       return NextResponse.json(
         { success: false, error: 'Non autorisé' },
         { status: 403 }
@@ -57,9 +57,14 @@ export async function GET(req: NextRequest) {
 
     const { page, limit } = extractPaginationFromSearchParams(searchParams);
     const result = await favoriteService.getUserFavorites(targetUserId, { page, limit });
-
-    return NextResponse.json(result, { status: 200 });
-
+    
+    return NextResponse.json(
+      {
+        success: true,
+        ...result
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
