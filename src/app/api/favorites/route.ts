@@ -58,7 +58,6 @@ export async function GET(req: NextRequest) {
     const { page, limit } = extractPaginationFromSearchParams(searchParams);
     const result = await favoriteService.getUserFavorites(targetUserId, { page, limit });
     
-    // ✅ CORRECTION : Ajouter success: true dans la réponse
     return NextResponse.json(
       {
         success: true,
