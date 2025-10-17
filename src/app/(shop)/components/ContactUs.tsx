@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 export const ContactUs = () => {
@@ -10,14 +9,17 @@ export const ContactUs = () => {
             Tu veux en savoir plus ?
           </h2>
 
-          <Link href="/contact" className="flex items-center group">
+          <a
+            href="mailto:contact@tondomaine.com"
+            className="flex items-center group"
+          >
             <span className="mr-2 border-b border-black pb-1 group-hover:border-[#0a3d3f] transition-colors">
               Contacte-nous
             </span>
             <div className="w-8 h-8 bg-[#0a3d3f] rounded-full flex items-center justify-center">
               <ArrowRight size={16} className="text-white" />
             </div>
-          </Link>
+          </a>
         </div>
       </div>
     </section>
