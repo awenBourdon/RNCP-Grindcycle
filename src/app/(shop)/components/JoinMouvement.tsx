@@ -1,43 +1,57 @@
-'use client';
-import Marquee from 'react-fast-marquee';
-import { useEffect, useState } from 'react';
-
 export const JoinMovement = () => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
-    <section className="py-16 bg-white text-[#010101]">
+    <section className="hidden sm:block py-16 bg-white text-[#010101]">
       <div className="w-full overflow-hidden">
-        {isMobile ? (
-          <div className="py-6 text-4xl font-bold uppercase flex flex-col items-center">
-            <span className="tracking-wider">Rejoins le</span>
-            <div className="my-2"></div>
-            <span className="tracking-wider">Mouvement</span>
-          </div>
-        ) : (
-          <Marquee
-            className="py-8 text-3xl sm:text-7xl font-bold uppercase flex items-center"
-            speed={80}
-            direction="right"
-            gradient={false}
-          >
-            {Array(5)
+        <style>{`
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .marquee-content {
+            display: flex;
+            animation: marquee 30s linear infinite;
+            width: fit-content;
+          }
+          .marquee-item {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            margin-right: 3.5rem;
+          }
+          .marquee-text {
+            letter-spacing: 0.125em;
+          }
+          .marquee-dot {
+            width: 1rem;
+            height: 1rem;
+            background-color: #0a3d3f;
+            border-radius: 9999px;
+            margin: 0 2.5rem;
+          }
+        `}</style>
+
+        <div className="py-8 text-3xl sm:text-7xl font-bold uppercase">
+          <div className="marquee-content">
+            {Array(4)
               .fill(null)
               .map((_, id) => (
-                <div className="flex items-center" key={id}>
-                  <span className="tracking-wider">Rejoins le Mouvement</span>
-                  <div className="mx-10 sm:mx-14 w-4 h-4 bg-[#0a3d3f] rounded-full"></div>
+                <div key={id} className="flex items-center">
+                  <div className="marquee-item">
+                    <span className="marquee-text">Recycle</span>
+                    <div className="marquee-dot"></div>
+                  </div>
+                  <div className="marquee-item">
+                    <span className="marquee-text">Roule</span>
+                    <div className="marquee-dot"></div>
+                  </div>
+                  <div className="marquee-item">
+                    <span className="marquee-text">Recommence</span>
+                    <div className="marquee-dot"></div>
+                  </div>
                 </div>
               ))}
-          </Marquee>
-        )}
+          </div>
+        </div>
       </div>
     </section>
   );

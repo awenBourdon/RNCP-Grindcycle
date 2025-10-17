@@ -42,12 +42,11 @@ export const Hero = () => {
           </div>
 
           <div className="relative flex items-center justify-center">
-            <div className="relative w-full h-[500px] rounded-xl overflow-hidden border-4 border-white shadow-xl">
+            <div className="relative w-full aspect-[6/5] rounded-xl overflow-hidden border-4 border-white shadow-xl">
               <Image
-                src="/placeholder.webp"
+                src="/hero.webp"
                 alt="Skate recyclé"
-                width={600}
-                height={400}
+                fill
                 className="object-cover"
                 priority
               />
