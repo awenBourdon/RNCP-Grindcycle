@@ -1,6 +1,5 @@
 import { Mission } from './components/Mission';
 import { Process } from './components/Process';
-import { Team } from './components/Team';
 import { Impact } from './components/Impact';
 import { Faq } from './components/Faq';
 import { ContactUs } from '../components/ContactUs';
@@ -18,7 +17,6 @@ export default function AboutPage() {
       </div>
       <Mission />
       <Process />
-      <Team />
       <Impact />
       <Faq />
       <ContactUs />

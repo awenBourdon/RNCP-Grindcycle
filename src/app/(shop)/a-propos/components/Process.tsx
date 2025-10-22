@@ -13,8 +13,9 @@ export const Process = () => (
             <div>
               <p className="text-xl font-medium mb-3">Collecte</p>
               <p className="text-gray-600">
-                Nous récupérons les planches usées dans nos points de collecte
-                partenaires.
+                Remplit le formulaire d&apos;envoi avec des photos et la
+                description de ta planche. Si on valide, on te recontacte par
+                email avec un bon d&apos;envoi gratuit.
               </p>
             </div>
           </div>
@@ -27,8 +28,8 @@ export const Process = () => (
             <div>
               <p className="text-xl font-medium mb-3">Transformation</p>
               <p className="text-gray-600">
-                Chaque planche est soigneusement démontée, nettoyée et préparée
-                pour sa nouvelle vie dans notre atelier.
+                Chaque planche est soigneusement nettoyée, poncée, taillée et
+                préparée pour sa nouvelle vie dans notre atelier.
               </p>
             </div>
           </div>
@@ -41,8 +42,8 @@ export const Process = () => (
             <div>
               <p className="text-xl font-medium mb-3">Création</p>
               <p className="text-gray-600">
-                Nos artisans transforment le bois récupéré en nouvelles planches
-                uniques, prêtes à rider à nouveau.
+                Notre équipe transforme les transforme ainsi en nouvelles
+                planches uniques, prêtes à rider à nouveau.
               </p>
             </div>
           </div>

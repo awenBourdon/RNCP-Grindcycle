@@ -22,7 +22,7 @@ export const Mission = () => (
         </div>
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
           <Image
-            src="/placeholder.webp"
+            src="/aboutHero.webp"
             alt="Atelier grindcycle"
             className="object-cover"
             width={600}
