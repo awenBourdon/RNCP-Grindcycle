@@ -67,7 +67,7 @@ export const Concept = () => {
           <div className="relative">
             <div className="relative overflow-hidden aspect-[4/3] rounded-xl">
               <Image
-                src="/placeholder.webp"
+                src="/concept1.webp"
                 alt="Achat de planches recyclées"
                 width={800}
                 height={600}
@@ -91,7 +91,7 @@ export const Concept = () => {
           <div className="order-2 lg:order-1 relative">
             <div className="relative overflow-hidden aspect-[4/3] rounded-xl">
               <Image
-                src="/placeholder.webp"
+                src="/concept2.webp"
                 alt="Recyclage de skate"
                 width={800}
                 height={600}
