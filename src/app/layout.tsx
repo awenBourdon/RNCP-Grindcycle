@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={`${splineSans.className} antialiased`}>
+      <body className={`${splineSans.className} antialiased min-h-screen`}>
         <CartProvider>
           {children}
           <Toaster position="top-center" richColors />
