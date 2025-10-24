@@ -5,6 +5,7 @@ import {
   UpdateUserData
 } from './interface-users.repository';
 import { PaginatedResponse, createPaginatedResponse } from '@/lib/utils/pagination';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 type PrismaTransaction = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
@@ -63,13 +64,20 @@ export class UserRepository implements InterfaceUserRepository {
     });
   }
 
-async update(id: string, data: UpdateUserData): Promise<User> {
+  async update(id: string, data: UpdateUserData): Promise<User> {
     return await prisma.user.update({
       where: { id },
       data: {
-        name: data.name,
-        email: data.email,
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.email !== undefined && { email: data.email }),
       },
+    });
+  }
+
+  async updateRole(id: string, role: UserRole): Promise<User> {
+    return await prisma.user.update({
+      where: { id },
+      data: { role },
     });
   }
 
@@ -99,33 +107,33 @@ async update(id: string, data: UpdateUserData): Promise<User> {
     });
   }
 
- async deleteWithRelationsCleanup(id: string): Promise<void> {
-  await prisma.$transaction(async (tx) => {
-    
-    await tx.order.updateMany({
-      where: { userId: id },
-      data: { userId: null },
+  async deleteWithRelationsCleanup(id: string): Promise<void> {
+    await prisma.$transaction(async (tx) => {
+      
+      await tx.order.updateMany({
+        where: { userId: id },
+        data: { userId: null },
+      });
+      
+      await tx.favorite.deleteMany({
+        where: { userId: id },
+      });
+      
+      await tx.notification.deleteMany({
+        where: { userId: id },
+      });
+      
+      await tx.session.deleteMany({
+        where: { userId: id },
+      });
+      
+      await tx.account.deleteMany({
+        where: { userId: id },
+      });
+      
+      await tx.user.delete({
+        where: { id },
+      });
     });
-    
-    await tx.favorite.deleteMany({
-      where: { userId: id },
-    });
-    
-    await tx.notification.deleteMany({
-      where: { userId: id },
-    });
-    
-    await tx.session.deleteMany({
-      where: { userId: id },
-    });
-    
-    await tx.account.deleteMany({
-      where: { userId: id },
-    });
-    
-    await tx.user.delete({
-      where: { id },
-    });
-  });
-}
+  }
 }

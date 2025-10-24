@@ -6,7 +6,6 @@ import { hashPassword, verifyPassword } from '@/lib/utils/argon2';
 import { createAuthMiddleware, APIError } from 'better-auth/api';
 import { getValidDomains, normalizeName } from './utils';
 import { admin, magicLink } from 'better-auth/plugins';
-import { ac, roles } from './permissions';
 import {
   getClientIP,
   checkRateLimit,
@@ -190,9 +189,7 @@ export const auth = betterAuth({
     nextCookies(),
     admin({
       defaultRole: UserRole.USER,
-      adminRoles: [UserRole.ADMIN],
-      ac,
-      roles,
+      adminRoles: [UserRole.ADMIN]
     }),
     magicLink({
       sendMagicLink: async ({ email, url }) => {

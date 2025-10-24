@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { UserService } from '../../lib/server/users/users-service'
 import { InterfaceUserRepository } from '../../lib/server/users/repository/interface-users.repository'
+import { UserRole } from '@/lib/utils/enums/enums'
 import { mockUser, mockAdminUser, mockUserWithLowPoints, mockUsers } from '../mocks/users.mock'
 
 vi.mock('../repository/users.repository')
@@ -16,6 +17,7 @@ describe('UserService', () => {
       findById: vi.fn(),
       findByEmail: vi.fn(),
       update: vi.fn(),
+      updateRole: vi.fn(),
       updatePoints: vi.fn(),
       updatePointsInTransaction: vi.fn(),
       deleteWithRelationsCleanup: vi.fn(),
@@ -95,6 +97,57 @@ describe('UserService', () => {
       const result = await userService.getAllUsers()
 
       expect(result).toEqual([])
+    })
+  })
+
+  describe('updateUserRole', () => {
+    it('doit mettre à jour le rôle de USER à ADMIN', async () => {
+
+      const updatedUser = { ...mockUser, role: UserRole.ADMIN }
+      
+      vi.mocked(mockUserRepository.findById).mockResolvedValue(mockUser)
+      vi.mocked(mockUserRepository.updateRole).mockResolvedValue(updatedUser)
+
+      const result = await userService.updateUserRole('user-1', UserRole.ADMIN)
+
+      expect(result).toEqual(updatedUser)
+      expect(mockUserRepository.updateRole).toHaveBeenCalledWith('user-1', UserRole.ADMIN)
+    })
+
+    it('doit mettre à jour le rôle de ADMIN à USER', async () => {
+
+      const updatedUser = { ...mockAdminUser, role: UserRole.USER }
+      
+      vi.mocked(mockUserRepository.findById).mockResolvedValue(mockAdminUser)
+      vi.mocked(mockUserRepository.updateRole).mockResolvedValue(updatedUser)
+
+      const result = await userService.updateUserRole('admin-1', UserRole.USER)
+
+      expect(result).toEqual(updatedUser)
+      expect(mockUserRepository.updateRole).toHaveBeenCalledWith('admin-1', UserRole.USER)
+    })
+
+    it("doit retourner une erreur si l'utilisateur n'existe pas", async () => {
+
+      vi.mocked(mockUserRepository.findById).mockResolvedValue(null)
+
+      await expect(userService.updateUserRole('user-inexistant', UserRole.ADMIN))
+        .rejects.toThrow('Utilisateur non trouvé')
+    })
+
+    it("doit retourner une erreur si l'ID est vide", async () => {
+
+      await expect(userService.updateUserRole('', UserRole.ADMIN))
+        .rejects.toThrow('ID utilisateur requis')
+    })
+
+    it("doit retourner une erreur si le rôle est invalide", async () => {
+
+      vi.mocked(mockUserRepository.findById).mockResolvedValue(mockUser)
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await expect(userService.updateUserRole('user-1', 'INVALID_ROLE' as any))
+        .rejects.toThrow('Rôle invalide')
     })
   })
 
