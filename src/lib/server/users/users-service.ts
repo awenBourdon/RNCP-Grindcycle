@@ -5,6 +5,7 @@ import {
 } from './repository/interface-users.repository';
 import { UserRepository } from './repository/users.repository';
 import { PaginatedResponse, PaginationParams, normalizePaginationParams } from '@/lib/utils/pagination';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 export class UserService {
   constructor(
@@ -50,7 +51,7 @@ export class UserService {
     return user;
   }
 
- async updateUserProfile(userId: string, data: UpdateUserData): Promise<User> {
+  async updateUserProfile(userId: string, data: UpdateUserData): Promise<User> {
     if (!userId) {
       throw new Error('ID utilisateur requis');
     }
@@ -67,6 +68,20 @@ export class UserService {
     this.validateUpdateData(data);
     
     return await this.userRepository.update(userId, data);
+  }
+
+  async updateUserRole(userId: string, newRole: UserRole): Promise<User> {
+    if (!userId) {
+      throw new Error('ID utilisateur requis');
+    }
+
+    if (!Object.values(UserRole).includes(newRole)) {
+      throw new Error('Rôle invalide');
+    }
+
+    await this.getUserById(userId);
+
+    return await this.userRepository.updateRole(userId, newRole);
   }
 
   async updateUserPoints(userId: string, points: number): Promise<User> {
@@ -105,7 +120,6 @@ export class UserService {
   getRepository(): InterfaceUserRepository {
     return this.userRepository;
   }
-
 
   private validateUpdateData(data: UpdateUserData): void {
     if (data.name !== undefined) {

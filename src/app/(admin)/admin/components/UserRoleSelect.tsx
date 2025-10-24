@@ -1,13 +1,12 @@
 'use client';
 import { Spinner } from '@/app/(shop)/components/Spinner';
-import { admin } from '@/lib/utils/auth-client';
-import type { ErrorContext } from '@/lib/utils/types/types';
 import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
 import { ChevronDown, Shield, User } from 'lucide-react';
 import { UserRole } from '@/lib/utils/enums/enums';
+import { updateUserRoleAction } from '@/actions/users/update-user.-role.action';
 
 interface UserRoleSelectProps {
   userId: string;
@@ -20,30 +19,19 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
 
   const handleChange = (evt: React.ChangeEvent<HTMLSelectElement>) => {
     const newRole = evt.target.value as UserRole;
+
+    if (newRole === role) return;
+
     startTransition(async () => {
       try {
-        const canChangeRole = await admin.hasPermission({
-          permissions: {
-            user: ['set-role'],
-          },
-        });
-        if (!canChangeRole || canChangeRole.error) {
-          toast.error('Interdit');
-          return;
+        const result = await updateUserRoleAction(userId, newRole);
+
+        if (result.success) {
+          toast.success(result.message);
+          router.refresh();
+        } else {
+          toast.error(result.error);
         }
-        await admin.setRole({
-          userId,
-          role: newRole,
-          fetchOptions: {
-            onError: (ctx: ErrorContext) => {
-              toast.error(ctx.error.message);
-            },
-            onSuccess: () => {
-              toast.success('Rôle mis à jour.');
-              router.refresh();
-            },
-          },
-        });
       } catch {
         toast.error("Une erreur s'est produite.");
       }

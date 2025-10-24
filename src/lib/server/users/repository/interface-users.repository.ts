@@ -1,5 +1,6 @@
 import { User } from '@/generated/prisma';
 import { PaginatedResponse } from '@/lib/utils/pagination';
+import { UserRole } from '@/lib/utils/enums/enums';
 
 export interface UpdateUserData {
   name?: string;
@@ -14,6 +15,7 @@ export interface InterfaceUserRepository {
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
   update(id: string, data: UpdateUserData): Promise<User>;
+  updateRole(id: string, role: UserRole): Promise<User>;
   updatePoints(id: string, points: number): Promise<User>;
   updatePointsInTransaction(tx: PrismaTransaction, id: string, points: number): Promise<User>;
   deleteWithRelationsCleanup(id: string): Promise<void>;
