@@ -59,7 +59,7 @@ test.describe('Navbar', () => {
   });
 });
 
-test.describe('Barre de navigation - Navigation mobile', () => {
+test.describe('navbar - Navigation mobile', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
@@ -97,7 +97,7 @@ test.describe('Barre de navigation - Navigation mobile', () => {
   });
 });
 
-test.describe('Barre de navigation - Comportement persistant', () => {
+test.describe('navbar - Comportement persistant', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
@@ -142,7 +142,7 @@ test.describe('Barre de navigation - Comportement persistant', () => {
   });
 });
 
-test.describe('Barre de navigation - Badges du panier et notifications', () => {
+test.describe('navbar - Badges du panier et notifications', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/');
@@ -165,7 +165,7 @@ test.describe('Barre de navigation - Badges du panier et notifications', () => {
   });
 });
 
-test.describe('Barre de navigation - Lien du logo', () => {
+test.describe('navbar - Lien du logo', () => {
   test('doit naviguer vers l\'accueil en cliquant sur le logo', async ({ page }) => {
     await page.goto('/a-propos');
     const logo = page.locator('a[href="/"]').filter({ hasText: 'GRINDCYCLE' }).first();
@@ -184,7 +184,7 @@ test.describe('Barre de navigation - Lien du logo', () => {
   });
 });
 
-test.describe('Barre de navigation - Style des boutons', () => {
+test.describe('navbar - Style des boutons', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/');
