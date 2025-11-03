@@ -31,7 +31,7 @@ export const Item = ({ item }: { item: CartItem }) => {
 
         <div className="mt-2">
           <p className="text-[#0a3d3f] text-lg">{item.priceEuro} €</p>
-          <p className="text-gray-500 text-sm mt-1">{item.type}.to</p>
+          <p className="text-gray-500 text-sm mt-1">{item.type}</p>
         </div>
       </div>
     </div>
