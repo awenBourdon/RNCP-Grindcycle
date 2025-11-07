@@ -42,7 +42,7 @@ export const auth = betterAuth({
         to: user.email,
         subject: 'Réinitialiser ton mot de passe',
         meta: {
-          description: 'Clique ici pour réinitialiser ton mot de passe.',
+          description: 'Clique ici pour réinitialiser ton mot de passe !',
           link: String(url),
         },
       });

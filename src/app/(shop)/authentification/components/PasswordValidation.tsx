@@ -162,7 +162,7 @@ export const PasswordValidation = ({
             <>
               <Check size={16} className="text-green-800" />
               <span className="text-sm text-green-800 font-medium">
-                Les mots de passe correspondent ✓
+                Les mots de passe correspondent
               </span>
             </>
           ) : (
