@@ -20,7 +20,7 @@ export const NewProductCard = ({ product }: ProductCardProps) => {
         <div className="absolute inset-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
 
         <div className="absolute bottom-0 left-0 w-full p-4 bg-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <button className="w-full py-2 bg-[#0a3d3f] text-white rounded-full font-medium hover:bg-[#0a4d4f] transition-all duration-300">
+          <button className="w-full py-2 bg-[#0a3d3f] text-white rounded-full font-medium hover:bg-[#0a4d4f] transition-all duration-300 cursor-pointer">
             Voir produit
           </button>
         </div>

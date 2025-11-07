@@ -8,7 +8,7 @@ const styles = {
     'font-size:20px;color:#0a3d3f;font-weight:normal;margin-bottom:20px;',
   paragraph: 'font-size:16px;color:#333333;line-height:1.5;margin-bottom:20px;',
   link: 'display:inline-block;margin-top:15px;padding:12px 24px;background:#0a3d3f;color:#ffffff;text-decoration:none;border-radius:50px;font-weight:normal;',
-  logo: 'max-width:150px;margin-bottom:20px;display:block;',
+   logo: 'max-width:100%;width:500px;height:auto;margin-bottom:20px;display:block;', // ← CHANGÉ
 };
 
 export async function sendEmailAction({
