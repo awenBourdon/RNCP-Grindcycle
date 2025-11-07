@@ -1,0 +1,42 @@
+import { test } from '@playwright/test';
+
+const email = process.env.TEST_EMAIL || "";
+  const password = process.env.TEST_PASSWORD || "";
+
+test('Envoi d\'une planche usagée', async ({ page }) => {
+  await page.goto('http://localhost:3000/');
+  await page.getByRole('link', { name: 'RECYCLER MA PLANCHE', exact: true }).click();
+  await page.getByRole('link', { name: 'Se connecter' }).click();
+  await page.locator('html').click();
+  await page.locator('#email').click();
+  await page.locator('#email').fill(email);
+  await page.locator('#email').press('Tab');
+  await page.getByRole('textbox', { name: 'Mot de passe' }).click();
+  await page.getByRole('textbox', { name: 'Mot de passe' }).fill('email');
+  await page.getByRole('textbox', { name: 'Mot de passe' }).press('CapsLock');
+  await page.getByRole('textbox', { name: 'Mot de passe' }).fill(password);
+  await page.getByRole('button', { name: 'Se connecter', exact: true }).click();
+  await page.getByText('AccueilSe connecterAccède à').click();
+  await page.getByRole('link', { name: 'RECYCLER MA PLANCHE' }).click();
+  await page.goto('http://localhost:3000/recycler-planche');
+  await page.locator('input[name="name"]').click();
+  await page.locator('input[name="name"]').fill('S');
+  await page.locator('input[name="name"]').press('CapsLock');
+  await page.locator('input[name="name"]').fill('Skate ');
+  await page.locator('input[name="name"]').press('CapsLock');
+  await page.locator('input[name="name"]').fill('Skate Z');
+  await page.locator('input[name="name"]').press('CapsLock');
+  await page.locator('input[name="name"]').fill('Skate Zero taille 8');
+  await page.getByRole('button', { name: 'Skate' }).click();
+  await page.getByRole('button', { name: 'Bon état' }).click();
+  await page.getByRole('textbox', { name: 'Description (optionnel)' }).click();
+  await page.getByRole('textbox', { name: 'Description (optionnel)' }).press('CapsLock');
+  await page.getByRole('textbox', { name: 'Description (optionnel)' }).fill('L');
+  await page.getByRole('textbox', { name: 'Description (optionnel)' }).press('CapsLock');
+  await page.getByRole('textbox', { name: 'Description (optionnel)' }).fill('Légèrement fissuré');
+  await page.getByRole('button', { name: 'Choose File' }).click();
+  await page.getByRole('button', { name: 'Choose File' }).setInputFiles('aboutHero.webp');
+  await page.getByRole('button', { name: 'Soumettre ma planche' }).click();
+  await page.getByRole('link', { name: 'Mon compte' }).click();
+  await page.getByRole('link', { name: 'Planches envoyés' }).click();
+});
