@@ -24,7 +24,6 @@ export const mockCartItem = {
   type: BoardType.SKATE,
   priceEuro: 89.99,
   pricePoints: 450,
-  quantity: 1
 }
 
 export const mockShippingAddress = {
@@ -60,7 +59,6 @@ export const mockOrder = {
     productType: BoardType.SKATE,
     priceEuro: 89.99,
     pricePoints: 450,
-    quantity: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
     deletedAt: null,

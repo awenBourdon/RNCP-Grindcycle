@@ -18,7 +18,7 @@ export const Checkout = ({ userPoints, isAuthenticated }: CheckoutProps) => {
   const router = useRouter();
 
   const totalPoints = cartItems.reduce((total, item) => {
-    return total + item.priceEuro * item.quantity;
+    return total + item.pricePoints;
   }, 0);
 
   const canPayWithPoints = isAuthenticated && userPoints >= totalPoints;
@@ -68,10 +68,7 @@ export const Checkout = ({ userPoints, isAuthenticated }: CheckoutProps) => {
               <p className="text-sm text-gray-600">
                 Total:{' '}
                 {cartItems
-                  .reduce(
-                    (total, item) => total + item.priceEuro * item.quantity,
-                    0
-                  )
+                  .reduce((total, item) => total + item.priceEuro, 0)
                   .toFixed(2)}
                 €
               </p>

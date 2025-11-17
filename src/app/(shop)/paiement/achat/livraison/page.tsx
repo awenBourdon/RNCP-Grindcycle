@@ -100,7 +100,7 @@ export default function ShippingPage() {
                 {cartItems.map(item => (
                   <div key={item.id} className="flex justify-between text-sm">
                     <span className="text-gray-600">{item.name}</span>
-                    <span>{(item.priceEuro * item.quantity).toFixed(2)} €</span>
+                    <span>{item.priceEuro.toFixed(2)} €</span>
                   </div>
                 ))}
 

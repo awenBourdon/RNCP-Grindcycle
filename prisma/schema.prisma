@@ -242,7 +242,6 @@ model OrderItem {
   productType String
   priceEuro   Float
   pricePoints Int?
-  quantity    Int      @default(1)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?

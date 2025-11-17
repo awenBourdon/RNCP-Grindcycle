@@ -319,22 +319,15 @@ export const AdminOrdersTable = () => {
                                           {item.productType.toLowerCase()}
                                         </p>
                                         <div className="flex items-center gap-4 mt-1">
-                                          <span className="text-xs text-gray-600">
-                                            Quantité: {item.quantity}
-                                          </span>
                                           {order.paymentType ===
                                           PaymentType.POINTS ? (
                                             <span className="text-xs font-medium text-[#010101]">
-                                              {(item.pricePoints || 0) *
-                                                item.quantity}{' '}
+                                              {item.pricePoints || 0}
                                               points
                                             </span>
                                           ) : (
                                             <span className="text-xs font-medium text-[#010101]">
-                                              {(
-                                                item.priceEuro * item.quantity
-                                              ).toFixed(2)}
-                                              €
+                                              {item.priceEuro.toFixed(2)}€
                                             </span>
                                           )}
                                         </div>

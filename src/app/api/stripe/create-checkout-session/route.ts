@@ -65,7 +65,7 @@ export async function POST(request: Request) {
         },
         unit_amount: Math.round(item.priceEuro * 100),
       },
-      quantity: item.quantity,
+      quantity: 1,
     }));
 
     if (shippingCost > 0) {
@@ -144,7 +144,6 @@ function convertCartItemsToPaymentFormat(items: StripePaymentInput['cartItems'])
     type: item.type,
     priceEuro: item.priceEuro,
     pricePoints: item.pricePoints,
-    quantity: item.quantity,
   }));
 }
 

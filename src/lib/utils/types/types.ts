@@ -40,7 +40,6 @@ export interface CartItem {
   size?: number;
   priceEuro: number;
   pricePoints: number;
-  quantity: number;
   imageUrl: string[];
 }
 
@@ -145,7 +144,6 @@ export interface OrderItem {
   productType: BoardType;
   priceEuro: number;
   pricePoints?: number | null;
-  quantity: number;
   createdAt: Date;
   updatedAt: Date;
 }

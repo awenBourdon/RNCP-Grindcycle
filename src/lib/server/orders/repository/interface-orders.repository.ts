@@ -30,7 +30,6 @@ export interface OrderWithRelations {
     productType: string;
     priceEuro: number;
     pricePoints: number | null;
-    quantity: number;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;

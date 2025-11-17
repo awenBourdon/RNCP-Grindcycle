@@ -23,7 +23,7 @@ export function ExchangePointsShipping({
   const [isPending, startTransition] = useTransition();
 
   const totalPoints = cartItems.reduce((total, item) => {
-    return total + item.priceEuro * item.quantity;
+    return total + item.priceEuro;
   }, 0);
 
   const canPayWithPoints = isAuthenticated && userPoints >= totalPoints;
@@ -73,7 +73,6 @@ export function ExchangePointsShipping({
           type: item.type,
           priceEuro: item.priceEuro,
           pricePoints: item.pricePoints,
-          quantity: item.quantity,
         }));
 
         formDataAction.append(
@@ -156,12 +155,9 @@ export function ExchangePointsShipping({
                   >
                     <div>
                       <p className="font-medium">{item.name}</p>
-                      <p className="text-sm text-gray-600">
-                        Quantité: {item.quantity}
-                      </p>
                     </div>
                     <p className="text-[#0a3d3f] font-medium">
-                      {item.priceEuro * item.quantity} points
+                      {item.pricePoints} points
                     </p>
                   </div>
                 ))}
