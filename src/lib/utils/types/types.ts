@@ -143,7 +143,7 @@ export interface OrderItem {
   productName: string;
   productType: BoardType;
   priceEuro: number;
-  pricePoints?: number | null;
+  pricePoints: number;
   createdAt: Date;
   updatedAt: Date;
 }

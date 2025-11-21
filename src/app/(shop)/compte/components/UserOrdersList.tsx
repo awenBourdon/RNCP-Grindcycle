@@ -238,7 +238,7 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
                           <div className="flex items-center gap-4 mt-1">
                             {order.paymentType === PaymentType.POINTS ? (
                               <span className="text-sm font-medium text-[#010101]">
-                                {item.pricePoints || 0} points
+                                {item.pricePoints} points
                               </span>
                             ) : (
                               <span className="text-sm font-medium text-[#010101]">

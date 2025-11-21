@@ -29,7 +29,7 @@ export interface OrderWithRelations {
     productName: string;
     productType: BoardType;
     priceEuro: number;
-    pricePoints: number | null;
+    pricePoints: number;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;

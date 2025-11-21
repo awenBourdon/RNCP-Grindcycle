@@ -76,7 +76,7 @@ export class PaymentService {
       productName: item.name,
       productType: item.type,
       priceEuro: item.priceEuro,
-      pricePoints: null,
+      pricePoints: item.pricePoints,
     }));
 
     await this.orderItemService.getRepository().createMultiple(orderItems);

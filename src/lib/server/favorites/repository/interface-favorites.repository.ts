@@ -7,7 +7,7 @@ export interface FavoriteWithProduct extends Favorite {
     name: string;
     type: string;
     priceEuro: number;
-    pricePoints: number | null;
+    pricePoints: number;
     imageUrl: string[];
     status: string;
     usedBoard: {

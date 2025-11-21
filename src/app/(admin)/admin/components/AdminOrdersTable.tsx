@@ -335,7 +335,7 @@ export const AdminOrdersTable = () => {
                                           {order.paymentType ===
                                           PaymentType.POINTS ? (
                                             <span className="text-xs font-medium text-[#010101]">
-                                              {item.pricePoints || 0}
+                                              {item.pricePoints}
                                               points
                                             </span>
                                           ) : (
