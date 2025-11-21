@@ -1,4 +1,4 @@
-import { ProductStatus, OrderStatus } from '@/generated/prisma';
+import { ProductStatus, OrderStatus, BoardType } from '@/generated/prisma';
 import { OrderService } from '../orders/orders.service';
 import { OrderItemService } from '../order-items/order-items.service';
 import { ProductService } from '../products/products.service';
@@ -25,7 +25,7 @@ export interface PointsPaymentData {
 export interface CartItemForPurchase {
   productId: string;
   name: string;
-  type: string;
+  type: BoardType;
   priceEuro: number;
   pricePoints: number;
 }

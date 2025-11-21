@@ -5,7 +5,7 @@ import { Package, Coins, CreditCard, Calendar, Truck } from 'lucide-react';
 import Image from 'next/image';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
-import { OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
+import { BoardType, OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
 
 interface UserOrdersListProps {
   userId: string;
@@ -25,6 +25,19 @@ const getStatusText = (status: OrderStatus) => {
       return 'Annulée';
     default:
       return status;
+  }
+};
+
+const getProductTypeText = (type: BoardType) => {
+  switch (type) {
+    case BoardType.SKATE:
+      return 'Skateboard';
+    case BoardType.CRUISER:
+      return 'Cruiser';
+    case BoardType.LONG:
+      return 'Longboard';
+    default:
+      return type;
   }
 };
 
@@ -220,7 +233,7 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
                             {item.productName}
                           </h4>
                           <p className="text-sm text-gray-500 capitalize">
-                            {item.productType.toLowerCase()}
+                            {getProductTypeText(item.productType)}
                           </p>
                           <div className="flex items-center gap-4 mt-1">
                             {order.paymentType === PaymentType.POINTS ? (
