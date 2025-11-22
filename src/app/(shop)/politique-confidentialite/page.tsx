@@ -132,7 +132,7 @@ export default function PrivacyPolicyPage() {
                       <ul className="list-disc list-inside text-gray-700 mt-2 space-y-1">
                         <li>Nom d&apos;utilisateur</li>
                         <li>Adresse email</li>
-                        <li>Mot de passe (chiffré avec bcrypt)</li>
+                        <li>Mot de passe (chiffré avec argon2)</li>
                       </ul>
                     </div>
                     <div>
@@ -433,7 +433,7 @@ export default function PrivacyPolicyPage() {
 
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-medium text-[#010101] mb-3">
-                      Droit à la portabilité
+                      Bientôt : Droit à la portabilité
                     </h3>
                     <p className="text-gray-700 text-sm">
                       Récupérer vos données dans un format structuré et lisible
