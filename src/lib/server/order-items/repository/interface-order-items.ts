@@ -6,7 +6,7 @@ export interface CreateOrderItemData {
   productName: string;
   productType: BoardType;
   priceEuro: number;
-  pricePoints: number | null;
+  pricePoints: number;
 }
 
 export interface UpdateOrderItemData {

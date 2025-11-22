@@ -103,6 +103,7 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
 
   useEffect(() => {
     fetchOrders(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadMoreOrders = async () => {
