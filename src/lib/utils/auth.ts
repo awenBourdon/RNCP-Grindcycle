@@ -178,9 +178,9 @@ export const auth = betterAuth({
       generateId: false,
     },
     defaultCookieAttributes: {
-      secure: false, // Mettre true en prod'
+      secure: true,
       httpOnly: true,
-      sameSite: 'lax', // Mettre strict en prod'
+      sameSite: 'strict',
       partitioned: false,
     },
   },
