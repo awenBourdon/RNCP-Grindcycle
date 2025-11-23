@@ -16,7 +16,15 @@ vi.mock('../../order-items/order-items.service')
 vi.mock('../../products/products.service')
 vi.mock('../../users/users-service')
 vi.mock('../../points-history/points-history.service')
-vi.mock('../../notifications/notifications.service')
+vi.mock('@/lib/server/notifications/notifications.service', () => ({
+  createNotification: vi.fn().mockResolvedValue(undefined),
+  NotificationTemplates: {
+    orderConfirmed: vi.fn(() => 'Commande confirmée'),
+    orderCancelled: vi.fn(() => 'Commande annulée'),
+    orderShipped: vi.fn(() => 'Commande expédiée'),
+    orderDelivered: vi.fn(() => 'Commande livrée'),
+  },
+}))
 
 describe('PaymentService', () => {
   let paymentService: PaymentService

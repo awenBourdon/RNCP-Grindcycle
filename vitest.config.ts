@@ -8,7 +8,6 @@ export default defineConfig({
        'src/tests/tests-server-actions/**.{test,spec}.{js,ts}',
       'src/tests/web/**/*.{test,spec}.{jsx,tsx}',
     ],
-    setupFiles: ['./vitest.setup.ts'],
     environment: 'node',
   },
   resolve: {
