@@ -108,7 +108,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         fieldErrors[field] = err.message;
       });
       setErrors(fieldErrors);
-      toast.error('Veuillez corriger les erreurs dans le formulaire');
+      toast.error('Il y a des erreurs dans le formulaire !');
       setIsPending(false);
       return;
     }

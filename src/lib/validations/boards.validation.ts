@@ -1,33 +1,25 @@
 import { BoardCondition, BoardType } from '@/generated/prisma';
 import { z } from 'zod';
+import { UPLOAD_CONFIG, isAllowedMimeType } from '@/lib/server/upload-images/upload';
 
-export const IMAGE_CONFIG = {
-  maxSize: 5 * 1024 * 1024,
-  maxFiles: 3,
-  acceptedFormats: [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/webp',
-    'image/gif',
-  ] as const,
-  acceptedFormatsDisplay: 'JPG, PNG, WebP',
-  get maxSizeMB() {
-    return this.maxSize / (1024 * 1024);
-  },
-} as const;
+// ============================================================================
+// SCHÉMA IMAGE (réutilisable)
+// ============================================================================
 
 const imageFileSchema = z
   .instanceof(File)
   .refine(
-    file => file.size <= IMAGE_CONFIG.maxSize,
-    `Taille max: ${IMAGE_CONFIG.maxSizeMB}MB`
+    file => file.size <= UPLOAD_CONFIG.maxFileSize,
+    `Taille max: ${UPLOAD_CONFIG.maxFileSize / (1024 * 1024)}MB`
   )
   .refine(
-    file =>
-      (IMAGE_CONFIG.acceptedFormats as readonly string[]).includes(file.type),
-    `Formats acceptés: ${IMAGE_CONFIG.acceptedFormatsDisplay}`
+    file => isAllowedMimeType(file.type),
+    `Formats acceptés: JPG, PNG, WebP`
   );
+
+// ============================================================================
+// SCHEMAS FORMULAIRES
+// ============================================================================
 
 export const recycleSchema = z.object({
   userId: z.string().min(1, 'ID utilisateur requis'),
@@ -41,8 +33,8 @@ export const recycleSchema = z.object({
   description: z.string().max(500, 'Max 500 caractères').optional(),
   images: z
     .array(imageFileSchema)
-    .min(1, 'Au moins 1 photo')
-    .max(IMAGE_CONFIG.maxFiles, `Max ${IMAGE_CONFIG.maxFiles} photos`),
+    .min(UPLOAD_CONFIG.minFiles.usedBoards, `Au moins ${UPLOAD_CONFIG.minFiles.usedBoards} photo(s)`)
+    .max(UPLOAD_CONFIG.maxFiles.usedBoards, `Max ${UPLOAD_CONFIG.maxFiles.usedBoards} photos`),
 });
 
 export const productSchema = z.object({
@@ -66,12 +58,20 @@ export const productSchema = z.object({
     }),
   images: z
     .array(imageFileSchema)
-    .min(1, 'Au moins 1 photo')
-    .max(IMAGE_CONFIG.maxFiles, `Max ${IMAGE_CONFIG.maxFiles} photos`),
+    .min(UPLOAD_CONFIG.minFiles.products, `Au moins ${UPLOAD_CONFIG.minFiles.products} photo(s)`)
+    .max(UPLOAD_CONFIG.maxFiles.products, `Max ${UPLOAD_CONFIG.maxFiles.products} photos`),
 });
+
+// ============================================================================
+// TYPES
+// ============================================================================
 
 export type RecycleFormInput = z.infer<typeof recycleSchema>;
 export type ProductInput = z.infer<typeof productSchema>;
+
+// ============================================================================
+// FORMATTERS
+// ============================================================================
 
 export const formatBoardType = (type: BoardType): string => {
   const labels = {

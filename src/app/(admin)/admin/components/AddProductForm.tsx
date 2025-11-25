@@ -3,13 +3,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
-import { ZodError } from 'zod';
 import { Spinner } from '@/app/(shop)/components/Spinner';
 import { ImageUpload } from '@/app/(shop)/recycler-planche/components/ImageUpload';
-import {
-  IMAGE_CONFIG,
-  productSchema,
-} from '@/lib/validations/boards.validation';
+import { UPLOAD_CONFIG } from '@/lib/server/upload-images/upload';
+import { productSchema } from '@/lib/validations/boards.validation';
 import { ProductFormFields } from './ProductFormFields';
 import { createProductAction } from '@/actions/products/add-product';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
@@ -20,31 +17,23 @@ interface AddProductFormProps {
   usedBoards: UsedBoard[];
 }
 
-interface FormData {
-  name: string;
-  description: string;
-  type: string;
-  priceEuro: number;
-  pricePoints: number;
-  usedBoardId: string;
-}
-
 interface FormErrors {
   [key: string]: string;
 }
 
 export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   const router = useRouter();
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    description: '',
-    type: '',
-    priceEuro: 0,
-    pricePoints: 0,
-    usedBoardId: '',
-  });
+
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [type, setType] = useState<string>('');
+  const [priceEuro, setPriceEuro] = useState(0);
+  const [pricePoints, setPricePoints] = useState(0);
+  const [usedBoardId, setUsedBoardId] = useState('');
+
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+
   const [isPending, setIsPending] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -53,38 +42,14 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   );
 
   const validateFile = (file: File): string | null => {
-    if (file.size > IMAGE_CONFIG.maxSize) {
-      return `Fichier trop volumineux (${(file.size / (1024 * 1024)).toFixed(1)}MB) - Maximum ${IMAGE_CONFIG.maxSizeMB}MB`;
+    if (file.size > UPLOAD_CONFIG.maxFileSize) {
+      return `Fichier trop volumineux (${(file.size / (1024 * 1024)).toFixed(1)}MB) - Maximum ${UPLOAD_CONFIG.maxFileSize / (1024 * 1024)}MB`;
     }
-    if (
-      !(IMAGE_CONFIG.acceptedFormats as readonly string[]).includes(file.type)
-    ) {
-      return `Format non supporté. Utilisez ${IMAGE_CONFIG.acceptedFormatsDisplay}`;
+    const acceptedTypes = UPLOAD_CONFIG.allowedMimeTypes as readonly string[];
+    if (!acceptedTypes.includes(file.type)) {
+      return `Format non supporté. Formats acceptés: JPG, PNG, WebP`;
     }
     return null;
-  };
-
-  const validateFormData = () => {
-    setErrors({});
-    try {
-      const completeFormData = {
-        ...formData,
-        images: selectedFiles,
-        usedBoardId: formData.usedBoardId || null,
-      };
-      productSchema.parse(completeFormData);
-      return true;
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const fieldErrors: FormErrors = {};
-        error.errors.forEach(err => {
-          const field = err.path.join('.');
-          fieldErrors[field] = err.message;
-        });
-        setErrors(fieldErrors);
-      }
-      return false;
-    }
   };
 
   const handleImageUpload = (
@@ -103,7 +68,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
 
       const newFiles = [...selectedFiles];
       newFiles[index] = file;
-      setSelectedFiles(newFiles.filter(Boolean));
+      setSelectedFiles(newFiles);
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -123,57 +88,52 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   };
 
   const removeImage = (index: number) => {
-    const newFiles = [...selectedFiles];
-    newFiles.splice(index, 1);
+    const newFiles = selectedFiles.filter((_, i) => i !== index);
     setSelectedFiles(newFiles);
 
     const newImages = [...previewImages];
-    newImages.splice(index, 1);
+    newImages[index] = '';
     setPreviewImages(newImages);
-
-    const newErrors = { ...errors };
-    delete newErrors[`image-${index}`];
-    setErrors(newErrors);
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]:
-        name === 'priceEuro' || name === 'pricePoints' ? Number(value) : value,
-    }));
-
-    if (errors[name]) {
-      const newErrors = { ...errors };
-      delete newErrors[name];
-      setErrors(newErrors);
-    }
-  };
-
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsPending(true);
+    setErrors({});
 
-    if (!validateFormData()) {
+    const validation = productSchema.safeParse({
+      name,
+      description,
+      type,
+      priceEuro,
+      pricePoints,
+      usedBoardId: usedBoardId || null,
+      images: selectedFiles,
+    });
+
+    if (!validation.success) {
+      const fieldErrors: FormErrors = {};
+      validation.error.errors.forEach(err => {
+        const field = err.path.join('.');
+        fieldErrors[field] = err.message;
+      });
+      setErrors(fieldErrors);
+      toast.error('Veuillez corriger les erreurs dans le formulaire');
       setIsPending(false);
-      toast.error('Erreurs dans le formulaire');
       return;
     }
 
     try {
       const formDataToSend = new FormData();
+      formDataToSend.append('name', name);
+      formDataToSend.append('description', description);
+      formDataToSend.append('type', type);
+      formDataToSend.append('priceEuro', priceEuro.toString());
+      formDataToSend.append('pricePoints', pricePoints.toString());
 
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key === 'usedBoardId' && !value) {
-          return;
-        }
-        formDataToSend.append(key, value.toString());
-      });
+      if (usedBoardId) {
+        formDataToSend.append('usedBoardId', usedBoardId);
+      }
 
       selectedFiles.forEach(file => {
         formDataToSend.append('images', file);
@@ -183,12 +143,13 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
 
       if (!productResult.success) {
         toast.error(productResult.error);
+        setIsPending(false);
         return;
       }
 
-      if (formData.usedBoardId) {
+      if (usedBoardId) {
         const updateResult = await updateUsedBoardAction(
-          formData.usedBoardId,
+          usedBoardId,
           UsedBoardStatus.RECYCLED_TO_PRODUCT
         );
 
@@ -196,6 +157,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           toast.error(
             `Produit créé mais erreur mise à jour planche: ${updateResult.error}`
           );
+          setIsPending(false);
           return;
         }
 
@@ -206,17 +168,17 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         toast.success('Produit créé avec succès !');
       }
 
-      setFormData({
-        name: '',
-        description: '',
-        type: '',
-        priceEuro: 0,
-        pricePoints: 0,
-        usedBoardId: '',
-      });
+      setName('');
+      setDescription('');
+      setType('');
+      setPriceEuro(0);
+      setPricePoints(0);
+      setUsedBoardId('');
       setSelectedFiles([]);
       setPreviewImages([]);
       setErrors({});
+
+      (e.target as HTMLFormElement).reset();
 
       setTimeout(() => {
         router.refresh();
@@ -239,9 +201,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
             Ajouter un nouveau produit
           </h2>
           <p className="text-gray-600 max-w-3xl">
-            Remplissez ce formulaire pour ajouter un nouveau produit au
-            catalogue. Vous pouvez créer un produit indépendant ou recycler une
-            planche reçue.
+            Remplis ce formulaire pour ajouter un nouveau produit au catalogue.
+            Tu peux créer un produit indépendant ou recycler une planche reçue.
           </p>
         </div>
       </div>
@@ -258,10 +219,24 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
           </h3>
           <div className="space-y-6">
             <ProductFormFields
-              formData={formData}
+              name={name}
+              description={description}
+              type={type}
+              priceEuro={priceEuro}
+              pricePoints={pricePoints}
+              usedBoardId={usedBoardId}
               availableUsedBoards={availableUsedBoards}
               errors={errors}
-              onChange={handleChange}
+              onNameChange={setName}
+              onDescriptionChange={setDescription}
+              onTypeChange={setType}
+              onPriceEuroChange={(value: string) =>
+                setPriceEuro(value ? parseFloat(value) : 0)
+              }
+              onPricePointsChange={(value: string) =>
+                setPricePoints(value ? parseFloat(value) : 0)
+              }
+              onUsedBoardIdChange={setUsedBoardId}
             />
             <ImageUpload
               selectedFiles={selectedFiles}
@@ -276,12 +251,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
         <div className="flex justify-center">
           <button
             type="submit"
-            disabled={
-              !formData.type ||
-              !formData.name ||
-              selectedFiles.length === 0 ||
-              isPending
-            }
+            disabled={!type || !name || selectedFiles.length === 0 || isPending}
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending ? (

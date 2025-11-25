@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Upload, Info } from 'lucide-react';
-import { IMAGE_CONFIG } from '@/lib/validations/boards.validation';
+import { UPLOAD_CONFIG } from '@/lib/server/upload-images/upload';
 
 interface FormErrors {
   [key: string]: string;
@@ -13,7 +13,7 @@ interface ImageUploadProps {
   onImageUpload: (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
-  ) => void;
+  ) => void | Promise<void>;
   onRemoveImage: (index: number) => void;
 }
 
@@ -29,6 +29,8 @@ export const ImageUpload = ({
     return selectedFiles.length > index - 1 && previewImages[index - 1] !== '';
   };
 
+  const acceptedFormats = UPLOAD_CONFIG.allowedMimeTypes.join(',');
+
   return (
     <div className="col-span-1 md:col-span-2">
       <label className="block text-sm text-gray-600 mb-3">
@@ -40,12 +42,12 @@ export const ImageUpload = ({
         <div className="flex items-center gap-2 mb-6">
           <Info size={16} className="text-gray-600" />
           <p className="text-sm text-gray-600">
-            Ajoute au moins une photo montrant l&apos;état général de ta
-            planche. Tu peux ajouter jusqu&apos;à 3 photos.
+            Ajoute au moins une photo montrant entièrement la planche. Tu peux
+            ajouter jusqu&apos;à {UPLOAD_CONFIG.maxFiles.usedBoards} photos.
             <br />
-            <strong>Format accepté :</strong>{' '}
-            {IMAGE_CONFIG.acceptedFormatsDisplay} | <strong>Poids max :</strong>{' '}
-            {IMAGE_CONFIG.maxSize / (1024 * 1024)}MB par image
+            <strong>Format accepté :</strong> JPG, PNG, WebP |{' '}
+            <strong>Poids max :</strong>{' '}
+            {UPLOAD_CONFIG.maxFileSize / (1024 * 1024)}MB par image
           </p>
         </div>
 
@@ -109,7 +111,7 @@ export const ImageUpload = ({
                   <input
                     type="file"
                     name={`image-${index}`}
-                    accept={IMAGE_CONFIG.acceptedFormats.join(',')}
+                    accept={acceptedFormats}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     onChange={e => onImageUpload(e, index)}
                   />

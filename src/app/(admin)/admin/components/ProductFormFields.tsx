@@ -2,51 +2,43 @@ import { BoardType } from '@/lib/utils/enums/enums';
 import { UsedBoard } from '@/lib/utils/types/types';
 import { formatBoardType } from '@/lib/validations/boards.validation';
 
-interface FormData {
+interface FormErrors {
+  [key: string]: string;
+}
+
+interface ProductFormFieldsProps {
   name: string;
   description: string;
   type: string;
   priceEuro: number;
   pricePoints: number;
   usedBoardId: string;
-}
-
-interface FormErrors {
-  [key: string]: string;
-}
-
-interface ProductFormFieldsProps {
-  formData: FormData;
   availableUsedBoards: UsedBoard[];
   errors: FormErrors;
-  onChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => void;
+  onNameChange: (value: string) => void;
+  onDescriptionChange: (value: string) => void;
+  onTypeChange: (value: string) => void;
+  onPriceEuroChange: (value: string) => void;
+  onPricePointsChange: (value: string) => void;
+  onUsedBoardIdChange: (value: string) => void;
 }
 
 export const ProductFormFields = ({
-  formData,
+  name,
+  description,
+  type,
+  priceEuro,
+  pricePoints,
+  usedBoardId,
   availableUsedBoards,
   errors,
-  onChange,
+  onNameChange,
+  onDescriptionChange,
+  onTypeChange,
+  onPriceEuroChange,
+  onPricePointsChange,
+  onUsedBoardIdChange,
 }: ProductFormFieldsProps) => {
-  const priceEuroError =
-    formData.priceEuro < 0 ? 'Le prix ne peut pas être négatif' : null;
-  const pricePointsError =
-    formData.pricePoints < 0
-      ? 'Le nombre de points ne peut pas être négatif'
-      : null;
-  const nameError =
-    formData.name.length > 100
-      ? 'Le nom ne peut pas dépasser 100 caractères'
-      : null;
-  const descriptionError =
-    formData.description.length > 1000
-      ? 'La description ne peut pas dépasser 1000 caractères'
-      : null;
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div>
@@ -55,25 +47,22 @@ export const ProductFormFields = ({
         </label>
         <input
           type="text"
-          name="name"
-          value={formData.name}
-          onChange={onChange}
+          value={name}
+          onChange={e => onNameChange(e.target.value)}
           maxLength={100}
           placeholder="Nom du produit"
           className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
-            errors.name || nameError
+            errors.name
               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
               : 'border-gray-200 focus:border-[#0a3d3f] focus:ring-[#0a3d3f]'
           }`}
           required
         />
         <p className="text-xs text-gray-500 mt-1">
-          {formData.name.length}/100 caractères
+          {name.length}/100 caractères
         </p>
-        {(errors.name || nameError) && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.name || nameError}
-          </p>
+        {errors.name && (
+          <p className="text-red-500 text-sm mt-1">{errors.name}</p>
         )}
       </div>
 
@@ -82,22 +71,18 @@ export const ProductFormFields = ({
           Type de planche <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {Object.values(BoardType).map(type => (
+          {Object.values(BoardType).map(boardType => (
             <button
-              key={type}
+              key={boardType}
               type="button"
-              onClick={() =>
-                onChange({
-                  target: { name: 'type', value: type },
-                } as React.ChangeEvent<HTMLSelectElement>)
-              }
-              className={`py-3 px-2 rounded-md text-center transition-colors ${
-                formData.type === type
+              onClick={() => onTypeChange(boardType)}
+              className={`py-3 px-2 rounded-md text-center transition-colors text-sm ${
+                type === boardType
                   ? 'bg-[#0a3d3f] text-white'
                   : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
               }`}
             >
-              {formatBoardType(type)}
+              {formatBoardType(boardType)}
             </button>
           ))}
         </div>
@@ -110,31 +95,26 @@ export const ProductFormFields = ({
         <label className="block text-sm text-gray-600 mb-3">
           Prix en Euros <span className="text-red-500">*</span>
         </label>
-        <div className="relative">
-          <input
-            type="number"
-            step="0.01"
-            min="0.01"
-            max="9999.99"
-            name="priceEuro"
-            value={formData.priceEuro || ''}
-            onChange={onChange}
-            placeholder="0.00"
-            className={`w-full pl-8 pr-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
-              errors.priceEuro || priceEuroError
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                : 'border-gray-200 focus:border-[#0a3d3f] focus:ring-[#0a3d3f]'
-            }`}
-            required
-          />
-        </div>
+        <input
+          type="number"
+          step="0.01"
+          min="0.01"
+          max="9999.99"
+          value={priceEuro || ''}
+          onChange={e => onPriceEuroChange(e.target.value)}
+          placeholder="0.00"
+          className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
+            errors.priceEuro
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+              : 'border-gray-200 focus:border-[#0a3d3f] focus:ring-[#0a3d3f]'
+          }`}
+          required
+        />
         <p className="text-xs text-gray-500 mt-1">
           Entre 0.01€ et 9999.99€ (ex: 89.99)
         </p>
-        {(errors.priceEuro || priceEuroError) && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.priceEuro || priceEuroError}
-          </p>
+        {errors.priceEuro && (
+          <p className="text-red-500 text-sm mt-1">{errors.priceEuro}</p>
         )}
       </div>
 
@@ -142,83 +122,66 @@ export const ProductFormFields = ({
         <label className="block text-sm text-gray-600 mb-3">
           Prix en Points <span className="text-red-500">*</span>
         </label>
-        <div className="relative">
-          <input
-            type="number"
-            min="1"
-            max="999999"
-            step="1"
-            name="pricePoints"
-            value={formData.pricePoints || ''}
-            onChange={onChange}
-            placeholder="0"
-            className={`w-full pl-10 pr-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
-              errors.pricePoints || pricePointsError
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                : 'border-gray-200 focus:border-[#0a3d3f] focus:ring-[#0a3d3f]'
-            }`}
-            required
-          />
-        </div>
+        <input
+          type="number"
+          min="1"
+          max="999999"
+          step="1"
+          value={pricePoints || ''}
+          onChange={e => onPricePointsChange(e.target.value)}
+          placeholder="0"
+          className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
+            errors.pricePoints
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+              : 'border-gray-200 focus:border-[#0a3d3f] focus:ring-[#0a3d3f]'
+          }`}
+          required
+        />
         <p className="text-xs text-gray-500 mt-1">
           Entre 1 et 999,999 points (ex: 150)
         </p>
-        {(errors.pricePoints || pricePointsError) && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.pricePoints || pricePointsError}
-          </p>
+        {errors.pricePoints && (
+          <p className="text-red-500 text-sm mt-1">{errors.pricePoints}</p>
         )}
       </div>
 
       <div className="col-span-1 md:col-span-2">
-        <label
-          htmlFor="description"
-          className="block text-sm text-gray-600 mb-3"
-        >
+        <label className="block text-sm text-gray-600 mb-3">
           Description (optionnel)
         </label>
         <textarea
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={onChange}
+          value={description}
+          onChange={e => onDescriptionChange(e.target.value)}
           placeholder="Décrivez l'état du produit, son histoire, les défauts éventuels..."
           rows={4}
           maxLength={1000}
           className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
-            errors.description || descriptionError
+            errors.description
               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
               : 'border-gray-200 focus:border-[#0a3d3f] focus:ring-[#0a3d3f]'
           }`}
         />
         <div className="flex justify-between items-center mt-1">
           <div>
-            {(errors.description || descriptionError) && (
-              <p className="text-red-500 text-sm">
-                {errors.description || descriptionError}
-              </p>
+            {errors.description && (
+              <p className="text-red-500 text-sm">{errors.description}</p>
             )}
           </div>
           <p
-            className={`text-sm ${formData.description.length > 1000 ? 'text-red-500' : 'text-gray-500'}`}
+            className={`text-sm ${description.length > 1000 ? 'text-red-500' : 'text-gray-500'}`}
           >
-            {formData.description.length}/1000
+            {description.length}/1000
           </p>
         </div>
       </div>
 
       <div className="col-span-1 md:col-span-2">
-        <label
-          htmlFor="usedBoardId"
-          className="block text-sm text-gray-600 mb-3"
-        >
+        <label className="block text-sm text-gray-600 mb-3">
           Planche d&apos;occasion à recycler
         </label>
         <select
-          id="usedBoardId"
-          name="usedBoardId"
-          value={formData.usedBoardId}
-          onChange={onChange}
+          value={usedBoardId}
+          onChange={e => onUsedBoardIdChange(e.target.value)}
           className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
             errors.usedBoardId
               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
@@ -237,7 +200,7 @@ export const ProductFormFields = ({
         {errors.usedBoardId && (
           <p className="text-red-500 text-sm mt-1">{errors.usedBoardId}</p>
         )}
-        {formData.usedBoardId ? (
+        {usedBoardId ? (
           <p className="text-xs text-gray-500 mt-2">
             Cette planche sera automatiquement marquée comme &quot;Recyclée en
             produit&quot; après création.
