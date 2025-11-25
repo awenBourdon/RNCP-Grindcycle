@@ -1,8 +1,4 @@
 import { BoardCondition, BoardType } from '@/lib/utils/enums/enums';
-import {
-  formatBoardType,
-  formatBoardCondition,
-} from '@/lib/validations/boards.validation';
 
 interface FormErrors {
   [key: string]: string;
@@ -17,6 +13,39 @@ interface FormFieldsProps {
   onConditionSelect: (condition: BoardCondition) => void;
   onDescriptionChange: (length: number) => void;
 }
+
+const BOARD_TYPES = [BoardType.SKATE, BoardType.CRUISER, BoardType.LONG];
+const BOARD_CONDITIONS = [
+  BoardCondition.GOOD,
+  BoardCondition.AVERAGE,
+  BoardCondition.BAD,
+];
+
+const getBoardTypeLabel = (type: BoardType): string => {
+  switch (type) {
+    case BoardType.SKATE:
+      return 'Skate';
+    case BoardType.CRUISER:
+      return 'Cruiser';
+    case BoardType.LONG:
+      return 'Long';
+    default:
+      return type;
+  }
+};
+
+const getBoardConditionLabel = (condition: BoardCondition): string => {
+  switch (condition) {
+    case BoardCondition.GOOD:
+      return 'Bon état';
+    case BoardCondition.AVERAGE:
+      return 'État moyen';
+    case BoardCondition.BAD:
+      return 'Mauvais état';
+    default:
+      return condition;
+  }
+};
 
 export const FormFields = ({
   selectedType,
@@ -52,7 +81,7 @@ export const FormFields = ({
           Type de planche <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {Object.values(BoardType).map(type => (
+          {BOARD_TYPES.map(type => (
             <button
               key={type}
               type="button"
@@ -63,7 +92,7 @@ export const FormFields = ({
                   : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
               }`}
             >
-              {formatBoardType(type)}
+              {getBoardTypeLabel(type)}
             </button>
           ))}
         </div>
@@ -77,7 +106,7 @@ export const FormFields = ({
           État de la planche <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {Object.values(BoardCondition).map(condition => (
+          {BOARD_CONDITIONS.map(condition => (
             <button
               key={condition}
               type="button"
@@ -88,7 +117,7 @@ export const FormFields = ({
                   : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
               }`}
             >
-              {formatBoardCondition(condition)}
+              {getBoardConditionLabel(condition)}
             </button>
           ))}
         </div>

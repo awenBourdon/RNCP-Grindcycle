@@ -55,21 +55,3 @@ export const productSchema = recycleSchema
 
 export type RecycleFormInput = z.infer<typeof recycleSchema>;
 export type ProductInput = z.infer<typeof productSchema>;
-
-export const formatBoardType = (type: BoardType): string => {
-  const labels = {
-    [BoardType.SKATE]: 'Skate',
-    [BoardType.CRUISER]: 'Cruiser',
-    [BoardType.LONG]: 'Long',
-  };
-  return labels[type] || type;
-};
-
-export const formatBoardCondition = (condition: BoardCondition): string => {
-  const labels = {
-    [BoardCondition.GOOD]: 'Bon état',
-    [BoardCondition.AVERAGE]: 'État moyen',
-    [BoardCondition.BAD]: 'Mauvais état',
-  };
-  return labels[condition] || condition;
-};

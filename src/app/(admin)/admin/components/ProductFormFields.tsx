@@ -1,6 +1,5 @@
 import { BoardType } from '@/lib/utils/enums/enums';
 import { UsedBoard } from '@/lib/utils/types/types';
-import { formatBoardType } from '@/lib/validations/boards.validation';
 
 interface FormErrors {
   [key: string]: string;
@@ -22,6 +21,21 @@ interface ProductFormFieldsProps {
   onPricePointsChange: (value: string) => void;
   onUsedBoardIdChange: (value: string) => void;
 }
+
+const BOARD_TYPES = [BoardType.SKATE, BoardType.CRUISER, BoardType.LONG];
+
+const getBoardTypeLabel = (type: BoardType): string => {
+  switch (type) {
+    case BoardType.SKATE:
+      return 'Skate';
+    case BoardType.CRUISER:
+      return 'Cruiser';
+    case BoardType.LONG:
+      return 'Long';
+    default:
+      return type;
+  }
+};
 
 export const ProductFormFields = ({
   name,
@@ -71,7 +85,7 @@ export const ProductFormFields = ({
           Type de planche <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {Object.values(BoardType).map(boardType => (
+          {BOARD_TYPES.map(boardType => (
             <button
               key={boardType}
               type="button"
@@ -82,7 +96,7 @@ export const ProductFormFields = ({
                   : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
               }`}
             >
-              {formatBoardType(boardType)}
+              {getBoardTypeLabel(boardType)}
             </button>
           ))}
         </div>
