@@ -2,10 +2,6 @@ import { BoardCondition, BoardType } from '@/generated/prisma';
 import { z } from 'zod';
 import { UPLOAD_CONFIG, isAllowedMimeType } from '@/lib/server/upload-images/upload';
 
-// ============================================================================
-// SCHÉMA IMAGE (réutilisable)
-// ============================================================================
-
 const imageFileSchema = z
   .instanceof(File)
   .refine(
@@ -17,9 +13,10 @@ const imageFileSchema = z
     `Formats acceptés: JPG, PNG, WebP`
   );
 
-// ============================================================================
-// SCHEMAS FORMULAIRES
-// ============================================================================
+const baseImageSchema = z
+  .array(imageFileSchema)
+  .min(1, 'Au moins 1 photo requise')
+  .max(3, 'Maximum 3 photos');
 
 export const recycleSchema = z.object({
   userId: z.string().min(1, 'ID utilisateur requis'),
@@ -31,47 +28,33 @@ export const recycleSchema = z.object({
     errorMap: () => ({ message: 'État invalide' }),
   }),
   description: z.string().max(500, 'Max 500 caractères').optional(),
-  images: z
-    .array(imageFileSchema)
-    .min(UPLOAD_CONFIG.minFiles.usedBoards, `Au moins ${UPLOAD_CONFIG.minFiles.usedBoards} photo(s)`)
-    .max(UPLOAD_CONFIG.maxFiles.usedBoards, `Max ${UPLOAD_CONFIG.maxFiles.usedBoards} photos`),
+  images: baseImageSchema,
 });
 
-export const productSchema = z.object({
-  name: z.string().min(1, 'Nom requis').max(100, 'Max 100 caractères'),
-  description: z.string().max(1000, 'Max 1000 caractères').optional(),
-  type: z.nativeEnum(BoardType, {
-    errorMap: () => ({ message: 'Type invalide' }),
-  }),
-  priceEuro: z.number().min(0.01, 'Min 0.01€').max(9999.99, 'Max 9999.99€'),
-  pricePoints: z
-    .number()
-    .min(1, 'Min 1 point')
-    .max(999999, 'Max 999,999 points'),
-  usedBoardId: z
-    .string()
-    .optional()
-    .nullable()
-    .transform(val => {
-      if (val === '' || val === undefined) return null;
-      return val;
+export const productSchema = recycleSchema
+  .omit({ userId: true, boardCondition: true, description: true })
+  .extend({
+    description: z.string().max(1000, 'Max 1000 caractères').optional(),
+    type: z.nativeEnum(BoardType, {
+      errorMap: () => ({ message: 'Type invalide' }),
     }),
-  images: z
-    .array(imageFileSchema)
-    .min(UPLOAD_CONFIG.minFiles.products, `Au moins ${UPLOAD_CONFIG.minFiles.products} photo(s)`)
-    .max(UPLOAD_CONFIG.maxFiles.products, `Max ${UPLOAD_CONFIG.maxFiles.products} photos`),
-});
-
-// ============================================================================
-// TYPES
-// ============================================================================
+    priceEuro: z.number().min(0.01, 'Min 0.01€').max(9999.99, 'Max 9999.99€'),
+    pricePoints: z
+      .number()
+      .min(1, 'Min 1 point')
+      .max(999999, 'Max 999,999 points'),
+    usedBoardId: z
+      .string()
+      .optional()
+      .nullable()
+      .transform(val => {
+        if (val === '' || val === undefined) return null;
+        return val;
+      }),
+  });
 
 export type RecycleFormInput = z.infer<typeof recycleSchema>;
 export type ProductInput = z.infer<typeof productSchema>;
-
-// ============================================================================
-// FORMATTERS
-// ============================================================================
 
 export const formatBoardType = (type: BoardType): string => {
   const labels = {
