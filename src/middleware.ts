@@ -22,12 +22,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (pathname.startsWith('/paiement/echange') && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/panier', req.url));
-  }
-
   if (isOnAuthRoute && isLoggedIn) {
     return NextResponse.redirect(new URL('/compte', req.url));
+  }
+
+  if (pathname.startsWith('/paiement/echange') && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/panier', req.url));
   }
 
   if (pathname === '/panier/redirect' && isLoggedIn) {
@@ -36,6 +36,10 @@ export async function middleware(req: NextRequest) {
 
   if (pathname === '/recycler-planche/redirect' && isLoggedIn) {
     return NextResponse.redirect(new URL('/recycler-planche', req.url));
+  }
+
+  if (pathname === '/recycler-planche' && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/recycler-planche/redirect', req.url));
   }
 
   return NextResponse.next();

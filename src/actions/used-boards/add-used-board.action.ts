@@ -1,12 +1,10 @@
 'use server';
-import { revalidatePath } from 'next/cache';
 import { recycleSchema } from '@/lib/validations/boards.validation';
 import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import {
   checkRateLimit,
-  getClientIP,
   RATE_LIMIT_MESSAGES,
 } from '@/lib/utils/rateLimit';
 import { UsedBoardService } from '@/lib/server/used-boards/used-boards.service';
@@ -21,8 +19,10 @@ export async function createUsedBoardAction(formData: FormData) {
     redirect('/authentification/connexion');
   }
   
-  const request = new Request('http://localhost', { headers: headersList });
-  const ip = getClientIP(request);
+  const ip =
+    headersList.get('x-forwarded-for')?.split(',')[0] ??
+    headersList.get('x-real-ip') ??
+    '0.0.0.0';
 
   if (!checkRateLimit(ip, 'createUsedBoard')) {
     return {
@@ -67,9 +67,6 @@ export async function createUsedBoardAction(formData: FormData) {
       validation.data,
       images
     );
-    
-    revalidatePath('/compte/planches');
-    revalidatePath('/admin/planches');
     
      return {
       success: true,

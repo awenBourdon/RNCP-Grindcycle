@@ -6,12 +6,10 @@ import { toast } from 'sonner';
 import { FormFields } from './FormFields';
 import { ImageUpload } from './ImageUpload';
 import { Spinner } from '@/app/(shop)/components/Spinner';
-import {
-  recycleSchema,
-  IMAGE_CONFIG,
-} from '@/lib/validations/boards.validation';
+import { recycleSchema } from '@/lib/validations/boards.validation';
 import { createUsedBoardAction } from '@/actions/used-boards/add-used-board.action';
 import { BoardCondition, BoardType } from '@/lib/utils/enums/enums';
+import { EnhancedImageValidator } from '@/lib/validations/images.validations';
 
 interface RecycleFormProps {
   userId: string;
@@ -33,71 +31,53 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
-  const validateFile = (file: File): string | null => {
-    if (file.size > IMAGE_CONFIG.maxSize) {
-      return `Image trop volumineuse (${(file.size / (1024 * 1024)).toFixed(1)}MB) - Max: ${IMAGE_CONFIG.maxSize / (1024 * 1024)}MB`;
-    }
-    const acceptedTypes = IMAGE_CONFIG.acceptedFormats as readonly string[];
-    if (!acceptedTypes.includes(file.type)) {
-      return `Format non supporté. Formats acceptés : ${IMAGE_CONFIG.acceptedFormatsDisplay}`;
-    }
-    return null;
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
-  };
-
-  const handleImageUpload = (
+  const handleImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const fileError = validateFile(file);
-      if (fileError) {
-        const newErrors = { ...errors };
-        newErrors[`image-${index}`] = fileError;
+    if (!file) return;
 
-        if (file.size > IMAGE_CONFIG.maxSize) {
-          newErrors[`image-${index}`] =
-            `Fichier trop volumineux (${formatFileSize(file.size)}) - Maximum ${IMAGE_CONFIG.maxSize / (1024 * 1024)}MB`;
-        }
-        setErrors(newErrors);
-        return;
-      }
+    const validation = await EnhancedImageValidator.validateImage(file);
 
-      const newFiles = [...selectedFiles];
-      newFiles[index] = file;
-      setSelectedFiles(newFiles);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          const newImages = [...previewImages];
-          newImages[index] = reader.result as string;
-          setPreviewImages(newImages);
-        }
-      };
-      reader.readAsDataURL(file);
-
-      const newErrors = { ...errors };
-      delete newErrors[`image-${index}`];
-      delete newErrors.images;
-      setErrors(newErrors);
+    if (!validation.isValid) {
+      setErrors(prev => ({
+        ...prev,
+        [`image-${index}`]: validation.errors[0],
+      }));
+      return;
     }
+
+    const newFiles = [...selectedFiles];
+    newFiles[index] = file;
+    setSelectedFiles(newFiles);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        const newImages = [...previewImages];
+        newImages[index] = reader.result;
+        setPreviewImages(newImages);
+      }
+    };
+    reader.readAsDataURL(file);
+
+    const newErrors = { ...errors };
+    delete newErrors[`image-${index}`];
+    delete newErrors.images;
+    setErrors(newErrors);
   };
 
   const removeImage = (index: number) => {
-    const newFiles = selectedFiles.filter((_, i) => i !== index);
-    setSelectedFiles(newFiles);
-
-    const newImages = [...previewImages];
-    newImages[index] = '';
-    setPreviewImages(newImages);
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviewImages(prev => {
+      const newImages = [...prev];
+      newImages[index] = '';
+      return newImages;
+    });
   };
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsPending(true);
     setErrors({});
@@ -137,23 +117,23 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
 
     if (result.success) {
       toast.success(result.message || 'Planche soumise avec succès !');
+
       setSelectedCondition('');
       setSelectedType('');
       setSelectedFiles([]);
       setPreviewImages([]);
       setErrors({});
       setDescriptionLength(0);
-      setIsRateLimited(false);
       (e.target as HTMLFormElement).reset();
     } else {
       if (result.error?.toLowerCase().includes('limite')) {
         setIsRateLimited(true);
       }
-      toast.error('Erreur lors de la soumission');
+      toast.error(result.error || 'Erreur lors de la soumission.');
     }
 
     setIsPending(false);
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-6 pb-8">
@@ -235,7 +215,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
               isPending ||
               isRateLimited
             }
-            className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed  cursor-pointer "
+            className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             {isPending ? (
               <>
