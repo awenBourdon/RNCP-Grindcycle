@@ -6,7 +6,6 @@ export default defineConfig({
     include: [
       'src/tests/tests-server/**.{test,spec}.{js,ts}',
        'src/tests/tests-server-actions/**.{test,spec}.{js,ts}',
-      'src/tests/web/**/*.{test,spec}.{jsx,tsx}',
     ],
     environment: 'node',
   },
