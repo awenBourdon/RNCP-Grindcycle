@@ -59,12 +59,18 @@ export const FormFields = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div>
-        <label className="block text-sm text-gray-600 mb-3">
-          Nom <span className="text-red-500">*</span>
+        <label htmlFor="name" className="block text-sm text-gray-600 mb-3">
+          Nom{' '}
+          <span className="text-red-500" aria-label="requis">
+            *
+          </span>
         </label>
         <input
+          id="name"
           type="text"
           name="name"
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? 'name-error' : undefined}
           className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
             errors.name
               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
@@ -72,58 +78,86 @@ export const FormFields = ({
           }`}
         />
         {errors.name && (
-          <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+          <p id="name-error" className="text-red-500 text-sm mt-1" role="alert">
+            {errors.name}
+          </p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm text-gray-600 mb-3">
-          Type de planche <span className="text-red-500">*</span>
-        </label>
-        <div className="grid grid-cols-3 gap-3">
-          {BOARD_TYPES.map(type => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => onTypeSelect(type)}
-              className={`py-3 px-2 rounded-md text-center transition-colors ${
-                selectedType === type
-                  ? 'bg-[#0a3d3f] text-white'
-                  : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
-              }`}
-            >
-              {getBoardTypeLabel(type)}
-            </button>
-          ))}
-        </div>
-        {errors.boardType && (
-          <p className="text-red-500 text-sm mt-1">{errors.boardType}</p>
-        )}
+        <fieldset>
+          <legend className="block text-sm text-gray-600 mb-3">
+            Type de planche{' '}
+            <span className="text-red-500" aria-label="requis">
+              *
+            </span>
+          </legend>
+          <div
+            className="grid grid-cols-3 gap-3"
+            role="group"
+            aria-labelledby="boardType-legend"
+          >
+            {BOARD_TYPES.map(type => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => onTypeSelect(type)}
+                aria-pressed={selectedType === type}
+                aria-label={`Type de planche: ${getBoardTypeLabel(type)}`}
+                className={`py-3 px-2 rounded-md text-center transition-colors ${
+                  selectedType === type
+                    ? 'bg-[#0a3d3f] text-white'
+                    : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
+                }`}
+              >
+                {getBoardTypeLabel(type)}
+              </button>
+            ))}
+          </div>
+          {errors.boardType && (
+            <p className="text-red-500 text-sm mt-1" role="alert">
+              {errors.boardType}
+            </p>
+          )}
+        </fieldset>
       </div>
 
       <div>
-        <label className="block text-sm text-gray-600 mb-3">
-          État de la planche <span className="text-red-500">*</span>
-        </label>
-        <div className="grid grid-cols-3 gap-3">
-          {BOARD_CONDITIONS.map(condition => (
-            <button
-              key={condition}
-              type="button"
-              onClick={() => onConditionSelect(condition)}
-              className={`py-3 px-2 rounded-md text-center transition-colors ${
-                selectedCondition === condition
-                  ? 'bg-[#0a3d3f] text-white'
-                  : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
-              }`}
-            >
-              {getBoardConditionLabel(condition)}
-            </button>
-          ))}
-        </div>
-        {errors.boardCondition && (
-          <p className="text-red-500 text-sm mt-1">{errors.boardCondition}</p>
-        )}
+        <fieldset>
+          <legend className="block text-sm text-gray-600 mb-3">
+            État de la planche{' '}
+            <span className="text-red-500" aria-label="requis">
+              *
+            </span>
+          </legend>
+          <div
+            className="grid grid-cols-3 gap-3"
+            role="group"
+            aria-labelledby="boardCondition-legend"
+          >
+            {BOARD_CONDITIONS.map(condition => (
+              <button
+                key={condition}
+                type="button"
+                onClick={() => onConditionSelect(condition)}
+                aria-pressed={selectedCondition === condition}
+                aria-label={`État de la planche: ${getBoardConditionLabel(condition)}`}
+                className={`py-3 px-2 rounded-md text-center transition-colors ${
+                  selectedCondition === condition
+                    ? 'bg-[#0a3d3f] text-white'
+                    : 'bg-white text-black border border-gray-200 hover:bg-gray-50'
+                }`}
+              >
+                {getBoardConditionLabel(condition)}
+              </button>
+            ))}
+          </div>
+          {errors.boardCondition && (
+            <p className="text-red-500 text-sm mt-1" role="alert">
+              {errors.boardCondition}
+            </p>
+          )}
+        </fieldset>
       </div>
 
       <div className="col-span-1 md:col-span-2">
@@ -140,6 +174,12 @@ export const FormFields = ({
           rows={4}
           maxLength={500}
           onChange={e => onDescriptionChange(e.target.value.length)}
+          aria-invalid={!!(errors.description || descriptionLength > 500)}
+          aria-describedby={
+            errors.description || descriptionLength > 500
+              ? 'description-error'
+              : 'description-hint'
+          }
           className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
             errors.description || descriptionLength > 500
               ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
@@ -149,17 +189,29 @@ export const FormFields = ({
         <div className="flex justify-between items-center mt-1">
           <div>
             {errors.description && (
-              <p className="text-red-500 text-sm">{errors.description}</p>
+              <p
+                id="description-error"
+                className="text-red-500 text-sm"
+                role="alert"
+              >
+                {errors.description}
+              </p>
             )}
             {descriptionLength > 500 && (
-              <p className="text-red-500 text-sm">
+              <p
+                id="description-error"
+                className="text-red-500 text-sm"
+                role="alert"
+              >
                 La description ne peut pas dépasser 500 caractères (
                 {descriptionLength}/500)
               </p>
             )}
           </div>
           <p
+            id="description-hint"
             className={`text-sm ${descriptionLength > 500 ? 'text-red-500' : 'text-gray-500'}`}
+            aria-live="polite"
           >
             {descriptionLength}/500
           </p>

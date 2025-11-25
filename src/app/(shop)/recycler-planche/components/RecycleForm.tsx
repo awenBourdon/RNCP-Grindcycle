@@ -140,6 +140,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
       <Link
         href="/"
         className="inline-flex items-center mb-12 text-gray-600 group"
+        aria-label="Retour à l'accueil"
       >
         <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
         <span className="border-b border-transparent group-hover:border-gray-600 pb-1 transition-colors">
@@ -149,13 +150,16 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
 
       <div className="mb-12">
         <div className="flex items-start gap-6">
-          <div className="bg-[#0a3d3f] p-3 rounded-full text-white">
+          <div
+            className="bg-[#0a3d3f] p-3 rounded-full text-white"
+            aria-hidden="true"
+          >
             <Recycle size={24} />
           </div>
           <div>
-            <h2 className="text-3xl font-normal mb-6">
+            <h1 className="text-3xl font-normal mb-6">
               Donne une seconde vie à ta planche
-            </h2>
+            </h1>
             <p className="text-gray-600 max-w-3xl">
               Remplis ce formulaire pour nous aider à évaluer ta planche. Une
               fois soumis, nous te contacterons pour organiser la collecte et
@@ -166,7 +170,10 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
       </div>
 
       {isRateLimited && (
-        <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+        <div
+          className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-lg"
+          role="alert"
+        >
           <p className="text-sm text-orange-700">
             Tu as atteint la limite d&apos;envoi de planche. Attends 10 minutes
             avant de pouvoir en renvoyer.
@@ -179,11 +186,12 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
         className="space-y-16"
         encType="multipart/form-data"
         autoComplete="off"
+        aria-label="Formulaire de recyclage de planche"
       >
         <div className="bg-white rounded-lg p-6">
-          <h3 className="text-lg font-medium text-[#010101] mb-6">
+          <h2 className="text-lg font-medium text-[#010101] mb-6">
             Informations sur ta planche
-          </h3>
+          </h2>
           <div className="space-y-6">
             <FormFields
               selectedType={selectedType}
@@ -216,10 +224,18 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
               isRateLimited
             }
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full font-normal text-lg hover:bg-[#0a4d4f] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            aria-busy={isPending}
+            aria-disabled={
+              !selectedCondition ||
+              !selectedType ||
+              selectedFiles.length === 0 ||
+              isPending ||
+              isRateLimited
+            }
           >
             {isPending ? (
               <>
-                <Spinner />
+                <Spinner aria-hidden="true" />
                 <span className="ml-2">Envoi en cours...</span>
               </>
             ) : isRateLimited ? (
@@ -229,6 +245,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -241,7 +258,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
               </>
             ) : (
               <div className="flex items-center">
-                <Recycle className="mr-2 h-5 w-5" />
+                <Recycle className="mr-2 h-5 w-5" aria-hidden="true" />
                 Soumettre ma planche
               </div>
             )}
