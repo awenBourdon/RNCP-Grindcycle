@@ -6,15 +6,13 @@ import { toast } from 'sonner';
 import { ZodError } from 'zod';
 import { Spinner } from '@/app/(shop)/components/Spinner';
 import { ImageUpload } from '@/app/(shop)/recycler-planche/components/ImageUpload';
-import {
-  IMAGE_CONFIG,
-  productSchema,
-} from '@/lib/validations/boards.validation';
-import { ProductFormFields } from './ProductFormFields';
+import { productSchema } from '@/lib/validations/boards.validation';
 import { createProductAction } from '@/actions/products/add-product';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
 import { UsedBoardStatus } from '@/lib/utils/enums/enums';
 import { UsedBoard } from '@/lib/utils/types/types';
+import { EnhancedImageValidator } from '@/lib/validations/images.validations';
+import { ProductFormFields } from './ProductFormFields';
 
 interface AddProductFormProps {
   usedBoards: UsedBoard[];
@@ -52,18 +50,6 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     board => board.status === UsedBoardStatus.RECEIVED
   );
 
-  const validateFile = (file: File): string | null => {
-    if (file.size > IMAGE_CONFIG.maxSize) {
-      return `Fichier trop volumineux (${(file.size / (1024 * 1024)).toFixed(1)}MB) - Maximum ${IMAGE_CONFIG.maxSizeMB}MB`;
-    }
-    if (
-      !(IMAGE_CONFIG.acceptedFormats as readonly string[]).includes(file.type)
-    ) {
-      return `Format non supporté. Utilisez ${IMAGE_CONFIG.acceptedFormatsDisplay}`;
-    }
-    return null;
-  };
-
   const validateFormData = () => {
     setErrors({});
     try {
@@ -87,39 +73,40 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     }
   };
 
-  const handleImageUpload = (
+  const handleImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const fileError = validateFile(file);
-      if (fileError) {
-        const newErrors = { ...errors };
-        newErrors[`image-${index}`] = fileError;
-        setErrors(newErrors);
-        return;
-      }
+    if (!file) return;
+    const validation = await EnhancedImageValidator.validateImage(file);
 
-      const newFiles = [...selectedFiles];
-      newFiles[index] = file;
-      setSelectedFiles(newFiles.filter(Boolean));
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          const newImages = [...previewImages];
-          newImages[index] = reader.result;
-          setPreviewImages(newImages);
-        }
-      };
-      reader.readAsDataURL(file);
-
-      const newErrors = { ...errors };
-      delete newErrors[`image-${index}`];
-      delete newErrors.images;
-      setErrors(newErrors);
+    if (!validation.isValid) {
+      setErrors(prev => ({
+        ...prev,
+        [`image-${index}`]: validation.errors[0] || 'Image non valide.',
+      }));
+      return;
     }
+
+    const newFiles = [...selectedFiles];
+    newFiles[index] = file;
+    setSelectedFiles(newFiles.filter(Boolean));
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        const newImages = [...previewImages];
+        newImages[index] = reader.result;
+        setPreviewImages(newImages);
+      }
+    };
+    reader.readAsDataURL(file);
+
+    const newErrors = { ...errors };
+    delete newErrors[`image-${index}`];
+    delete newErrors.images;
+    setErrors(newErrors);
   };
 
   const removeImage = (index: number) => {
@@ -161,7 +148,30 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
 
     if (!validateFormData()) {
       setIsPending(false);
-      toast.error('Erreurs dans le formulaire');
+      toast.error('Erreurs dans les champs du formulaire');
+      return;
+    }
+
+    const multiFileValidation =
+      await EnhancedImageValidator.validateMultipleImages(selectedFiles);
+
+    if (!multiFileValidation.isValid) {
+      const fileErrors: FormErrors = { ...errors };
+      multiFileValidation.globalErrors.forEach((err, index) => {
+        fileErrors[`global-image-error-${index}`] = err;
+      });
+
+      multiFileValidation.results.forEach((res, index) => {
+        if (!res.validation.isValid) {
+          fileErrors[`image-${index}`] = res.validation.errors[0];
+        }
+      });
+
+      setErrors(fileErrors);
+      setIsPending(false);
+      toast.error(
+        "Erreurs de validation d'image (taille, format, sécurité, ou nombre de fichiers)."
+      );
       return;
     }
 
