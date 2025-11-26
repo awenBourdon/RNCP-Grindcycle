@@ -1,4 +1,3 @@
-import { SupabaseStorageService } from './supabase-storage.service';
 import {
   UPLOAD_CONFIG,
   isAllowedMimeType,
@@ -39,8 +38,11 @@ export class ImageService {
     this.minFiles = UPLOAD_CONFIG.minFiles[directory];
   }
 
-  private getStorageService() {
+  private async getStorageService() {
     if (!this.storageService) {
+      const { SupabaseStorageService } = await import(
+        '@/lib/server/upload-images/supabase-storage.service'
+      );
       this.storageService = new SupabaseStorageService(this.directory);
     }
     return this.storageService;
