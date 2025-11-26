@@ -38,10 +38,10 @@ export const recycleSchema = z.object({
   boardCondition: z.nativeEnum(BoardCondition, {
     errorMap: () => ({ message: 'État invalide' }),
   }),
-  description: z.string().max(500, 'Max 500 caractères').optional(),
+  description: z.string().max(500).optional(),
   images: z
     .array(imageFileSchema)
-    .min(1, 'Au moins 1 photo')
+    .min(1,)
     .max(IMAGE_CONFIG.maxFiles, `Max ${IMAGE_CONFIG.maxFiles} photos`),
 });
 
@@ -72,21 +72,3 @@ export const productSchema = z.object({
 
 export type RecycleFormInput = z.infer<typeof recycleSchema>;
 export type ProductInput = z.infer<typeof productSchema>;
-
-export const formatBoardType = (type: BoardType): string => {
-  const labels = {
-    [BoardType.SKATE]: 'Skate',
-    [BoardType.CRUISER]: 'Cruiser',
-    [BoardType.LONG]: 'Long',
-  };
-  return labels[type] || type;
-};
-
-export const formatBoardCondition = (condition: BoardCondition): string => {
-  const labels = {
-    [BoardCondition.GOOD]: 'Bon état',
-    [BoardCondition.AVERAGE]: 'État moyen',
-    [BoardCondition.BAD]: 'Mauvais état',
-  };
-  return labels[condition] || condition;
-};
