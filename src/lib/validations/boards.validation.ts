@@ -29,7 +29,7 @@ const imageFileSchema = z
     `Formats acceptés: ${IMAGE_CONFIG.acceptedFormatsDisplay}`
   );
 
-export const recycleSchema = z.object({
+export const usedBoardSchema = z.object({
   userId: z.string().min(1, 'ID utilisateur requis'),
   name: z.string().min(1, 'Nom requis').max(100, 'Max 100 caractères'),
   boardType: z.nativeEnum(BoardType, {
@@ -69,6 +69,3 @@ export const productSchema = z.object({
     .min(1, 'Au moins 1 photo')
     .max(IMAGE_CONFIG.maxFiles, `Max ${IMAGE_CONFIG.maxFiles} photos`),
 });
-
-export type RecycleFormInput = z.infer<typeof recycleSchema>;
-export type ProductInput = z.infer<typeof productSchema>;

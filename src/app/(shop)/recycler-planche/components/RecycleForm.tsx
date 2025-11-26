@@ -6,10 +6,10 @@ import { toast } from 'sonner';
 import { FormFields } from './FormFields';
 import { ImageUpload } from './ImageUpload';
 import { Spinner } from '@/app/(shop)/components/Spinner';
-import { recycleSchema } from '@/lib/validations/boards.validation';
+import { usedBoardSchema } from '@/lib/validations/boards.validation';
 import { createUsedBoardAction } from '@/actions/used-boards/add-used-board.action';
 import { BoardCondition, BoardType } from '@/lib/utils/enums/enums';
-import { EnhancedImageValidator } from '@/lib/validations/images.validations';
+import { ImageFileGuardValidation } from '@/lib/validations/images.validations';
 
 interface RecycleFormProps {
   userId: string;
@@ -38,7 +38,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const validation = await EnhancedImageValidator.validateImage(file);
+    const validation = await ImageFileGuardValidation.validateImage(file);
 
     if (!validation.isValid) {
       setErrors(prev => ({
@@ -92,7 +92,7 @@ export const RecycleForm = ({ userId }: RecycleFormProps) => {
       formData.append('image', file);
     });
 
-    const validation = recycleSchema.safeParse({
+    const validation = usedBoardSchema.safeParse({
       userId,
       name: formData.get('name') as string,
       boardType: selectedType,

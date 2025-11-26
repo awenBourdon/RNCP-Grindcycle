@@ -4,7 +4,7 @@ import {
   UPLOAD_CONFIG,
 } from '../server/upload-images/upload';
 
-export interface EnhancedImageValidationResult {
+export interface ImageValidationInterface {
   isValid: boolean;
   errors: string[];
   warnings: string[];
@@ -15,12 +15,13 @@ export interface EnhancedImageValidationResult {
   };
 }
 
-export class EnhancedImageValidator {
+export class ImageFileGuardValidation {
   private static readonly MAGIC_NUMBERS = {
     'image/jpeg': [[0xff, 0xd8, 0xff]],
     'image/png': [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
     'image/webp': [[0x52, 0x49, 0x46, 0x46]],
   };
+
 
   private static readonly SUSPICIOUS_PATTERNS = [
     /<script/gi,
@@ -32,10 +33,12 @@ export class EnhancedImageValidator {
     /document\.write/gi,
   ];
 
+  private static readonly MAX_CONTENT_SCAN_BYTES = 4096;
+
   static async validateImage(
     file: File
-  ): Promise<EnhancedImageValidationResult> {
-    const result: EnhancedImageValidationResult = {
+  ): Promise<ImageValidationInterface> {
+    const result: ImageValidationInterface = {
       isValid: true,
       errors: [],
       warnings: [],
@@ -62,7 +65,7 @@ export class EnhancedImageValidator {
         result.details = {};
       }
 
-      const contentValidation = this.scanContent(buffer);
+      const contentValidation = this.scanContent(bytes);
       if (contentValidation.suspicious) {
         result.errors.push('Contenu suspect détecté dans le fichier');
         result.details.suspiciousContent = true;
@@ -158,9 +161,10 @@ export class EnhancedImageValidator {
       return { isValid: false, errors };
     }
 
-    const isValidSignature = expectedSignatures.some(signature =>
-      signature.every((byte, index) => bytes[index] === byte)
-    );
+    const isValidSignature = expectedSignatures.some(signature => {
+      if (bytes.length < signature.length) return false;
+      return signature.every((signatureByte, index) => bytes[index] === signatureByte);
+    });
 
     if (!isValidSignature) {
       errors.push(
@@ -171,10 +175,14 @@ export class EnhancedImageValidator {
     return { isValid: errors.length === 0, errors };
   }
 
-  private static scanContent(buffer: ArrayBuffer): { suspicious: boolean } {
+  private static scanContent(buffer: Uint8Array): { suspicious: boolean } {
     try {
+      const scanBuffer = buffer.slice(
+        0,
+        Math.min(buffer.length, this.MAX_CONTENT_SCAN_BYTES)
+      );
       const textContent = new TextDecoder('utf-8', { fatal: false }).decode(
-        buffer
+        scanBuffer
       );
 
       for (const pattern of this.SUSPICIOUS_PATTERNS) {
@@ -202,7 +210,7 @@ export class EnhancedImageValidator {
 
     const parts = filename.toLowerCase().split('.');
     if (parts.length > 2) {
-      const suspiciousExtensions = ['php', 'js', 'html', 'asp', 'exe'];
+      const suspiciousExtensions = ['php', 'js', 'html', 'asp', 'exe', 'com', 'bat', 'sh', 'py'];
       for (let i = 1; i < parts.length - 1; i++) {
         if (suspiciousExtensions.includes(parts[i])) {
           errors.push('Extension suspecte détectée dans le nom de fichier');
@@ -234,20 +242,31 @@ export class EnhancedImageValidator {
         default:
           return null;
       }
-    } catch {
+    } catch (error) {
+      console.warn('Erreur extraction dimensions:', error);
       return null;
     }
   }
+
 
   private static extractPngDimensions(
     bytes: Uint8Array
   ): { width: number; height: number } | null {
     if (bytes.length < 24) return null;
 
+    const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+    for (let i = 0; i < pngSignature.length; i++) {
+      if (bytes[i] !== pngSignature[i]) return null;
+    }
+
     const width =
       (bytes[16] << 24) | (bytes[17] << 16) | (bytes[18] << 8) | bytes[19];
     const height =
       (bytes[20] << 24) | (bytes[21] << 16) | (bytes[22] << 8) | bytes[23];
+
+    if (width <= 0 || height <= 0 || width > 0x7fffffff || height > 0x7fffffff) {
+      return null;
+    }
 
     return { width, height };
   }
@@ -255,29 +274,47 @@ export class EnhancedImageValidator {
   private static extractJpegDimensions(
     bytes: Uint8Array
   ): { width: number; height: number } | null {
+    if (bytes.length < 10) return null;
+
     let i = 2;
 
-    while (i < bytes.length - 8) {
-      if (bytes[i] === 0xff) {
-        const marker = bytes[i + 1];
+    while (i < bytes.length - 9) {
+      if (bytes[i] !== 0xff) {
+        i++;
+        continue;
+      }
 
-        if (
-          marker >= 0xc0 &&
-          marker <= 0xcf &&
-          marker !== 0xc4 &&
-          marker !== 0xc8 &&
-          marker !== 0xcc
-        ) {
-          const height = (bytes[i + 5] << 8) | bytes[i + 6];
-          const width = (bytes[i + 7] << 8) | bytes[i + 8];
-          return { width, height };
+      const marker = bytes[i + 1];
+
+      if (marker === 0x00) {
+        i += 2;
+        continue;
+      }
+
+      if (
+        marker >= 0xc0 &&
+        marker <= 0xcf &&
+        marker !== 0xc4 &&
+        marker !== 0xc8 && 
+        marker !== 0xcc 
+      ) {
+        if (i + 9 > bytes.length) return null;
+
+        const height = (bytes[i + 5] << 8) | bytes[i + 6];
+        const width = (bytes[i + 7] << 8) | bytes[i + 8];
+
+        if (width <= 0 || height <= 0) {
+          i += 2;
+          continue;
         }
 
-        const segmentLength = (bytes[i + 2] << 8) | bytes[i + 3];
-        i += 2 + segmentLength;
-      } else {
-        i++;
+        return { width, height };
       }
+
+      if (i + 3 > bytes.length) break;
+
+      const segmentLength = (bytes[i + 2] << 8) | bytes[i + 3];
+      i += 2 + segmentLength;
     }
 
     return null;
@@ -288,14 +325,48 @@ export class EnhancedImageValidator {
   ): { width: number; height: number } | null {
     if (bytes.length < 30) return null;
 
-    const webpSignature = new TextDecoder().decode(bytes.slice(8, 12));
-    if (webpSignature !== 'WEBP') return null;
+    if (
+      bytes[0] !== 0x52 ||
+      bytes[1] !== 0x49 || 
+      bytes[2] !== 0x46 ||
+      bytes[3] !== 0x46 
+    ) {
+      return null;
+    }
 
-    const chunkType = new TextDecoder().decode(bytes.slice(12, 16));
+    if (
+      bytes[8] !== 0x57 ||
+      bytes[9] !== 0x45 ||
+      bytes[10] !== 0x42 || 
+      bytes[11] !== 0x50 
+    ) {
+      return null;
+    }
+
+    const chunkType = new TextDecoder('utf-8', { fatal: false }).decode(
+      bytes.slice(12, 16)
+    );
+
     if (chunkType === 'VP8 ') {
-      const width = (bytes[26] | (bytes[27] << 8)) & 0x3fff;
-      const height = (bytes[28] | (bytes[29] << 8)) & 0x3fff;
+      if (bytes.length < 30) return null;
+      const width = ((bytes[26] | (bytes[27] << 8)) & 0x3fff) + 1;
+      const height = ((bytes[28] | (bytes[29] << 8)) & 0x3fff) + 1;
       return { width, height };
+    }
+
+    if (chunkType === 'VP8L') {
+      if (bytes.length < 21) return null;
+      const size = bytes[20];
+      const width = ((size & 0x3f) + 1) * 1;
+      const height = (((size >> 6) & 0x3f) + 1) * 1;
+      return { width, height };
+    }
+
+    if (chunkType === 'VP8X') {
+      if (bytes.length < 26) return null;
+      const width = (bytes[24] | (bytes[25] << 8) | (bytes[26] << 16)) & 0xffffff;
+      const height = (bytes[27] | (bytes[28] << 8) | (bytes[29] << 16)) & 0xffffff;
+      return { width: width + 1, height: height + 1 };
     }
 
     return null;
@@ -304,6 +375,7 @@ export class EnhancedImageValidator {
   private static async fileToArrayBuffer(file: File): Promise<ArrayBuffer> {
     return await file.arrayBuffer();
   }
+
 
   static generateSecureFilename(originalName: string): string {
     const sanitized = originalName
@@ -315,13 +387,14 @@ export class EnhancedImageValidator {
     const extension = sanitized.split('.').pop() || 'bin';
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 8);
+    const counter = Math.floor(Math.random() * 10000);
 
-    return `img_${timestamp}_${random}.${extension}`;
+    return `img_${timestamp}_${counter}_${random}.${extension}`;
   }
 
   static async validateMultipleImages(files: File[]): Promise<{
     isValid: boolean;
-    results: Array<{ file: File; validation: EnhancedImageValidationResult }>;
+    results: Array<{ file: File; validation: ImageValidationInterface }>;
     globalErrors: string[];
   }> {
     const results = [];
@@ -344,9 +417,15 @@ export class EnhancedImageValidator {
       );
     }
 
-    for (const file of files) {
-      const validation = await this.validateImage(file);
-      results.push({ file, validation });
+    const validationPromises = files.map(file =>
+      this.validateImage(file).then(validation => ({ file, validation }))
+    );
+
+    try {
+      const allResults = await Promise.all(validationPromises);
+      results.push(...allResults);
+    } catch {
+      globalErrors.push('Erreur lors de la validation des fichiers');
     }
 
     const allValid =

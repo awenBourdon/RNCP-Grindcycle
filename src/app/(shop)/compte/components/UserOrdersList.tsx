@@ -41,7 +41,7 @@ const getProductTypeText = (type: BoardType) => {
   }
 };
 
-export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
+export const UserOrdersList = ({}: UserOrdersListProps) => {
   const { createSignal } = useAbortController();
   const [orders, setOrders] = useState<OrderWithRelations[]>([]);
   const [meta, setMeta] = useState<PaginationMeta>({
@@ -63,7 +63,6 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
 
     try {
       const params = new URLSearchParams({
-        userId,
         page: page.toString(),
         limit: '20',
       });
@@ -73,7 +72,10 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
       });
 
       if (!response.ok) {
-        throw new Error('Erreur chargement commandes');
+        const errorData = await response.json();
+        console.error('Status:', response.status);
+        console.error('Error details:', errorData);
+        throw new Error(errorData.error || 'Erreur chargement commandes');
       }
 
       const result = await response.json();

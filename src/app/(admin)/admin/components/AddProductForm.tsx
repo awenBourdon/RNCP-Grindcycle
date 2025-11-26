@@ -11,7 +11,7 @@ import { createProductAction } from '@/actions/products/add-product';
 import { updateUsedBoardAction } from '@/actions/used-boards/update-used-board';
 import { UsedBoardStatus } from '@/lib/utils/enums/enums';
 import { UsedBoard } from '@/lib/utils/types/types';
-import { EnhancedImageValidator } from '@/lib/validations/images.validations';
+import { ImageFileGuardValidation } from '@/lib/validations/images.validations';
 import { ProductFormFields } from './ProductFormFields';
 
 interface AddProductFormProps {
@@ -79,7 +79,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const validation = await EnhancedImageValidator.validateImage(file);
+    const validation = await ImageFileGuardValidation.validateImage(file);
 
     if (!validation.isValid) {
       setErrors(prev => ({
@@ -153,7 +153,7 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
     }
 
     const multiFileValidation =
-      await EnhancedImageValidator.validateMultipleImages(selectedFiles);
+      await ImageFileGuardValidation.validateMultipleImages(selectedFiles);
 
     if (!multiFileValidation.isValid) {
       const fileErrors: FormErrors = { ...errors };
