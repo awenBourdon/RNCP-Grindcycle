@@ -58,8 +58,8 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
-      - name: Generate coverage report
-        run: npm run test:coverage
+      - name: Wait for server to stop
+        run: sleep 2
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
