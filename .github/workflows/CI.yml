@@ -1,22 +1,26 @@
 name: CI/CD Pipeline
+
 on:
   push:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+
 jobs:
   ci:
     runs-on: ubuntu-latest
+
     env:
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
       TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,19 +47,6 @@ jobs:
       - name: Run linting
         run: npm run lint
 
-      - name: Debug - Check secrets availability
-        run: |
-          echo "=== Checking secrets ==="
-          echo "STRIPE_SECRET_KEY length: ${#STRIPE_SECRET_KEY}"
-          echo "DATABASE_URL length: ${#DATABASE_URL}"
-          echo "NEXTAUTH_SECRET length: ${#NEXTAUTH_SECRET}"
-          echo "NEXT_PUBLIC_URL length: ${#NEXT_PUBLIC_URL}"
-          echo "NEXT_PUBLIC_SUPABASE_URL length: ${#NEXT_PUBLIC_SUPABASE_URL}"
-          echo "SUPABASE_SERVICE_ROLE_KEY length: ${#SUPABASE_SERVICE_ROLE_KEY}"
-          echo "BETTER_AUTH_SECRET length: ${#BETTER_AUTH_SECRET}"
-          echo "TEST_EMAIL length: ${#TEST_EMAIL}"
-          echo "TEST_PASSWORD length: ${#TEST_PASSWORD}"
-
       - name: Run Next.js build
         run: npm run build
 
@@ -79,28 +70,6 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
-
-      - name: Create .env file for tests
-        run: |
-          cat > .env << 'EOF'
-          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-          NEXT_PUBLIC_URL=${{ secrets.NEXT_PUBLIC_URL }} 
-          NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
-          TEST_EMAIL=${{ secrets.TEST_EMAIL }}
-          TEST_PASSWORD=${{ secrets.TEST_PASSWORD }}
-          EOF
-          echo "=== .env file created ==="
-          wc -l .env
-
-      - name: Debug - Verify .env content
-        run: |
-          echo "=== Checking .env ==="
-          grep -c "^[^#]" .env || echo "No env vars in .env"
-          head -5 .env
 
       - name: Run Playwright tests
         run: npm run playwright
