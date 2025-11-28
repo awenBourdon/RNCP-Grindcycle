@@ -27,7 +27,7 @@ describe('ProductService', () => {
   let productService: ProductService
   let mockProductRepository: InterfaceProductRepository
   let mockImageService: ImageService
-
+  
   beforeEach(() => {
     mockProductRepository = {
       create: vi.fn(),
@@ -49,6 +49,13 @@ describe('ProductService', () => {
       validate: vi.fn(),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any
+
+    vi.mock('@/lib/server/notifications/notifications.service', () => ({
+  createNotification: vi.fn().mockResolvedValue(undefined),
+  NotificationTemplates: {
+    boardRecycled: vi.fn(),
+  },
+}))
     
     productService = new ProductService(mockProductRepository, mockImageService)
     vi.clearAllMocks()

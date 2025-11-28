@@ -2,7 +2,6 @@
 import { auth } from '@/lib/utils/auth';
 import {
   checkRateLimit,
-  getClientIP,
   RATE_LIMIT_MESSAGES,
 } from '@/lib/utils/rateLimit';
 import { passwordSchema } from '@/lib/validations/auth.validation';
@@ -14,11 +13,12 @@ const passwordSchemaZod = passwordSchema;
 export async function changePasswordAction(formData: FormData) {
   const headersList = await headers();
 
-  // TODO : Enlever localhost quand ce sera déployé
-  const request = new Request('http://localhost', { headers: headersList });
-  const clientIP = getClientIP(request);
+  const ip =
+    headersList.get('x-forwarded-for')?.split(',')[0] ??
+    headersList.get('x-real-ip') ??
+    '0.0.0.0';
 
-  if (!checkRateLimit(clientIP, 'changePassword')) {
+  if (!checkRateLimit(ip, 'changePassword')) {
     return { error: RATE_LIMIT_MESSAGES.changePassword };
   }
 

@@ -4,7 +4,7 @@ import {
   UPLOAD_CONFIG,
 } from '../server/upload-images/upload';
 
-export interface EnhancedImageValidationResult {
+export interface ImageValidationInterface {
   isValid: boolean;
   errors: string[];
   warnings: string[];
@@ -15,7 +15,7 @@ export interface EnhancedImageValidationResult {
   };
 }
 
-export class EnhancedImageValidator {
+export class ImageFileGuardValidation {
   private static readonly MAGIC_NUMBERS = {
     'image/jpeg': [[0xff, 0xd8, 0xff]],
     'image/png': [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
@@ -34,8 +34,8 @@ export class EnhancedImageValidator {
 
   static async validateImage(
     file: File
-  ): Promise<EnhancedImageValidationResult> {
-    const result: EnhancedImageValidationResult = {
+  ): Promise<ImageValidationInterface> {
+    const result: ImageValidationInterface = {
       isValid: true,
       errors: [],
       warnings: [],
@@ -321,7 +321,7 @@ export class EnhancedImageValidator {
 
   static async validateMultipleImages(files: File[]): Promise<{
     isValid: boolean;
-    results: Array<{ file: File; validation: EnhancedImageValidationResult }>;
+    results: Array<{ file: File; validation: ImageValidationInterface }>;
     globalErrors: string[];
   }> {
     const results = [];

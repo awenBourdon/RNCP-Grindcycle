@@ -12,11 +12,14 @@ jobs:
 
     env:
       STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       NEXT_PUBLIC_URL: ${{ secrets.NEXT_PUBLIC_URL }}
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
 
     steps:
       - name: Checkout repository
@@ -58,11 +61,15 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
-      - name: Generate coverage report
-        run: npm run test:coverage
+      - name: Stop Next.js server
+        run: pkill -f "next start" || true
+        if: always()
 
-      # - name: Install Playwright browsers
-      #   run: npx playwright install --with-deps chromium
+      - name: Wait for server to stop
+        run: sleep 2
 
-      # - name: Run Playwright tests
-      #   run: npm run test
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: npm run playwright

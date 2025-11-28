@@ -15,7 +15,7 @@ import {
 import Image from 'next/image';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
-import { OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
+import { BoardType, OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
 
 const getStatusText = (status: OrderStatus) => {
   switch (status) {
@@ -31,6 +31,19 @@ const getStatusText = (status: OrderStatus) => {
       return 'Annulée';
     default:
       return status;
+  }
+};
+
+const getProductTypeText = (type: BoardType) => {
+  switch (type) {
+    case BoardType.SKATE:
+      return 'Skateboard';
+    case BoardType.CRUISER:
+      return 'Cruiser';
+    case BoardType.LONG:
+      return 'Longboard';
+    default:
+      return type;
   }
 };
 
@@ -316,13 +329,13 @@ export const AdminOrdersTable = () => {
                                           {item.productName}
                                         </h5>
                                         <p className="text-xs text-gray-500 capitalize">
-                                          {item.productType.toLowerCase()}
+                                          {getProductTypeText(item.productType)}
                                         </p>
                                         <div className="flex items-center gap-4 mt-1">
                                           {order.paymentType ===
                                           PaymentType.POINTS ? (
                                             <span className="text-xs font-medium text-[#010101]">
-                                              {item.pricePoints || 0}
+                                              {item.pricePoints}
                                               points
                                             </span>
                                           ) : (

@@ -40,7 +40,7 @@ vi.mock('@/lib/utils/rateLimit', () => ({
 }))
 
 vi.mock('@/lib/validations/boards.validation', () => ({
-  recycleSchema: {
+  usedBoardSchema: {
     safeParse: vi.fn((data) => ({
       success: true,
       data

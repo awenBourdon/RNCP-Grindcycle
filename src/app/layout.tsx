@@ -3,6 +3,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
 import { CartProvider } from '@/contexts/CartContext';
+import { Analytics } from '@vercel/analytics/next';
 
 const splineSans = localFont({
   src: '../../public/fonts/SplineSans.ttf',
@@ -26,6 +27,7 @@ export default function RootLayout({
         <CartProvider>
           {children}
           <Toaster position="top-center" richColors />
+          <Analytics />
         </CartProvider>
       </body>
     </html>

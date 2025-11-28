@@ -1,4 +1,4 @@
-import { UsedBoard, UsedBoardStatus } from '@/generated/prisma';
+import { UsedBoard, UsedBoardStatus, UserRole } from '@/generated/prisma';
 import {
   InterfaceUsedBoardRepository,
   CreateUsedBoardData,
@@ -23,7 +23,7 @@ export class UsedBoardService {
 
   async createUsedBoard(
     data: Omit<CreateUsedBoardData, 'image'>,
-    imageFiles?: File[]
+    imageFiles: File[]
   ): Promise<UsedBoard> {
     let imageUrls: string[] = [];
 
@@ -164,7 +164,7 @@ export class UsedBoardService {
 
       await createNotification({
         userId: board.userId,
-        target: 'USER',
+        target: UserRole.USER,
         description: NotificationTemplates.boardSubmitted(board.name),
       });
 
@@ -172,7 +172,7 @@ export class UsedBoardService {
       if (user) {
         await createNotification({
           userId: null,
-          target: 'ADMIN',
+          target: UserRole.ADMIN,
           description: NotificationTemplates.newBoardSubmitted(
             user.name || 'Utilisateur',
             board.name

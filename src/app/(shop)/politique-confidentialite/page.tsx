@@ -132,7 +132,7 @@ export default function PrivacyPolicyPage() {
                       <ul className="list-disc list-inside text-gray-700 mt-2 space-y-1">
                         <li>Nom d&apos;utilisateur</li>
                         <li>Adresse email</li>
-                        <li>Mot de passe (chiffré avec bcrypt)</li>
+                        <li>Mot de passe (chiffré avec argon2)</li>
                       </ul>
                     </div>
                     <div>
@@ -433,7 +433,7 @@ export default function PrivacyPolicyPage() {
 
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-medium text-[#010101] mb-3">
-                      Droit à la portabilité
+                      Droit à la portabilité (demande par email)
                     </h3>
                     <p className="text-gray-700 text-sm">
                       Récupérer vos données dans un format structuré et lisible
@@ -443,7 +443,7 @@ export default function PrivacyPolicyPage() {
 
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-medium text-[#010101] mb-3">
-                      Droit d&apos;opposition
+                      Droit d&apos;opposition (demande par email)
                     </h3>
                     <p className="text-gray-700 text-sm">
                       Vous opposer au traitement de vos données pour des motifs
@@ -453,7 +453,7 @@ export default function PrivacyPolicyPage() {
 
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-medium text-[#010101] mb-3">
-                      Droit de limitation
+                      Droit de limitation (demande par email)
                     </h3>
                     <p className="text-gray-700 text-sm">
                       Demander la limitation du traitement de vos données dans
@@ -505,7 +505,7 @@ export default function PrivacyPolicyPage() {
                     </h3>
                     <p className="text-gray-700 text-sm">
                       Tous les mots de passe sont chiffrés avec
-                      l&apos;algorithme bcrypt avant stockage. Je ne peux pas
+                      l&apos;algorithme argon2 avant stockage. Je ne peux pas
                       voir votre mot de passe en clair.
                     </p>
                   </div>

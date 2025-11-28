@@ -61,7 +61,7 @@ export const SendVerificationEmailForm = () => {
       <button
         type="submit"
         disabled={isPending}
-        className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors ${
+        className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors cursor-pointer ${
           isPending ? 'opacity-70 cursor-not-allowed' : ''
         }`}
       >

@@ -1,15 +1,25 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type React from 'react';
-import { signIn } from '@/lib/utils/auth-client';
+import { signIn, useSession } from '@/lib/utils/auth-client';
 import { toast } from 'sonner';
 import type { ErrorContext } from '@/lib/utils/types/types';
 import { Mail } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export const MagicLinkLoginForm = () => {
   const [isPending, setIsPending] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (session?.user) {
+      router.push('/compte');
+    }
+  }, [session, router]);
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault();

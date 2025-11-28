@@ -1,6 +1,5 @@
 import { BoardType } from '@/lib/utils/enums/enums';
 import { UsedBoard } from '@/lib/utils/types/types';
-import { formatBoardType } from '@/lib/validations/boards.validation';
 
 interface FormData {
   name: string;
@@ -46,6 +45,22 @@ export const ProductFormFields = ({
     formData.description.length > 1000
       ? 'La description ne peut pas dépasser 1000 caractères'
       : null;
+
+  const handleNumberInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || !isNaN(Number(value))) {
+      onChange(e);
+    }
+  };
+
+  const formatBoardType = (type: BoardType): string => {
+    const labels = {
+      [BoardType.SKATE]: 'Skate',
+      [BoardType.CRUISER]: 'Cruiser',
+      [BoardType.LONG]: 'Long',
+    };
+    return labels[type] || type;
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -112,13 +127,11 @@ export const ProductFormFields = ({
         </label>
         <div className="relative">
           <input
-            type="number"
-            step="0.01"
-            min="0.01"
-            max="9999.99"
+            type="text"
+            inputMode="decimal"
             name="priceEuro"
             value={formData.priceEuro || ''}
-            onChange={onChange}
+            onChange={handleNumberInput}
             placeholder="0.00"
             className={`w-full pl-8 pr-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
               errors.priceEuro || priceEuroError
@@ -144,13 +157,11 @@ export const ProductFormFields = ({
         </label>
         <div className="relative">
           <input
-            type="number"
-            min="1"
-            max="999999"
-            step="1"
+            type="text"
+            inputMode="numeric"
             name="pricePoints"
             value={formData.pricePoints || ''}
-            onChange={onChange}
+            onChange={handleNumberInput}
             placeholder="0"
             className={`w-full pl-10 pr-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
               errors.pricePoints || pricePointsError

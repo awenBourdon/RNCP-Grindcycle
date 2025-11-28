@@ -173,7 +173,7 @@ export const Navbar = ({ user }: NavbarProps) => {
             CATALOGUE
           </Link>
           <Link
-            href="/recycler-planche/redirect"
+            href="/recycler-planche"
             className="bg-[#0a3d3f] text-white font-medium py-1.5 px-6 rounded-full hover:bg-[#0a4d4f] transition-colors"
           >
             RECYCLER MA PLANCHE
@@ -316,7 +316,7 @@ export const Navbar = ({ user }: NavbarProps) => {
               Conditions générales de vente
             </Link>
             <Link
-              href="/recycler-planche/redirect"
+              href="/recycler-planche"
               onClick={closeMenu}
               className="inline-flex h-14 items-center justify-center rounded-full px-10 py-4 text-lg font-medium uppercase tracking-wide text-white bg-[#0a3d3f] hover:bg-[#0a4d4f] transition-colors mt-4"
             >

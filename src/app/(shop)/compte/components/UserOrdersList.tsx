@@ -5,7 +5,7 @@ import { Package, Coins, CreditCard, Calendar, Truck } from 'lucide-react';
 import Image from 'next/image';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
-import { OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
+import { BoardType, OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
 
 interface UserOrdersListProps {
   userId: string;
@@ -28,7 +28,20 @@ const getStatusText = (status: OrderStatus) => {
   }
 };
 
-export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
+const getProductTypeText = (type: BoardType) => {
+  switch (type) {
+    case BoardType.SKATE:
+      return 'Skateboard';
+    case BoardType.CRUISER:
+      return 'Cruiser';
+    case BoardType.LONG:
+      return 'Longboard';
+    default:
+      return type;
+  }
+};
+
+export const UserOrdersList = ({}: UserOrdersListProps) => {
   const { createSignal } = useAbortController();
   const [orders, setOrders] = useState<OrderWithRelations[]>([]);
   const [meta, setMeta] = useState<PaginationMeta>({
@@ -50,7 +63,6 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
 
     try {
       const params = new URLSearchParams({
-        userId,
         page: page.toString(),
         limit: '20',
       });
@@ -60,7 +72,10 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
       });
 
       if (!response.ok) {
-        throw new Error('Erreur chargement commandes');
+        const errorData = await response.json();
+        console.error('Status:', response.status);
+        console.error('Error details:', errorData);
+        throw new Error(errorData.error || 'Erreur chargement commandes');
       }
 
       const result = await response.json();
@@ -90,6 +105,7 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
 
   useEffect(() => {
     fetchOrders(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadMoreOrders = async () => {
@@ -220,12 +236,12 @@ export const UserOrdersList = ({ userId }: UserOrdersListProps) => {
                             {item.productName}
                           </h4>
                           <p className="text-sm text-gray-500 capitalize">
-                            {item.productType.toLowerCase()}
+                            {getProductTypeText(item.productType)}
                           </p>
                           <div className="flex items-center gap-4 mt-1">
                             {order.paymentType === PaymentType.POINTS ? (
                               <span className="text-sm font-medium text-[#010101]">
-                                {item.pricePoints || 0} points
+                                {item.pricePoints} points
                               </span>
                             ) : (
                               <span className="text-sm font-medium text-[#010101]">

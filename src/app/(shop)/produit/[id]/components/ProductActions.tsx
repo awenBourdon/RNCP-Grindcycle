@@ -76,7 +76,7 @@ export const ProductActions = ({
             sous 14 jours
           </p>
           <p className="text-gray-600">
-            <span className="font-medium text-[#010101]">Garantie qualité</span>{' '}
+            <span className="font-medium text-[#010101]">Qualité garantie</span>{' '}
             - Vérifiée avant expédition
           </p>
         </div>

@@ -26,6 +26,19 @@ describe('UsedBoardService', () => {
   let mockPointsHistoryRepository: InterfacePointsHistoryRepository
   let mockUserRepository: InterfaceUserRepository
 
+  vi.mock('@/lib/server/notifications/notifications.service', () => ({
+  createNotification: vi.fn().mockResolvedValue(undefined),
+  NotificationTemplates: {
+    boardSubmitted: vi.fn(),
+    boardValidated: vi.fn(),
+    boardSent: vi.fn(),
+    boardReceived: vi.fn(),
+    boardRejected: vi.fn(),
+    boardRecycled: vi.fn(),
+    newBoardSubmitted: vi.fn(),
+  },
+}))
+
   beforeEach(() => {
     mockPointsHistoryRepository = {
       findByUserId: vi.fn(),
@@ -36,13 +49,15 @@ describe('UsedBoardService', () => {
 
     mockUserRepository = {
       findAll: vi.fn(),
+      findAllWithPagination: vi.fn(),
       findById: vi.fn(),
       findByEmail: vi.fn(),
       update: vi.fn(),
+      updateRole: vi.fn(),
       updatePoints: vi.fn(),
       updatePointsInTransaction: vi.fn(),
       deleteWithRelationsCleanup: vi.fn(),
-    }
+}
 
     mockUsedBoardRepository = {
       create: vi.fn(),
