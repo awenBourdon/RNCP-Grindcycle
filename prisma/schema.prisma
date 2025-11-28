@@ -173,8 +173,8 @@ model UsedBoard {
 
 model PointsHistory {
   id           String     @id @default(uuid())
-  user         User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String?
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
   usedBoardId  String?
   type         PointsType
   pointsAmount Int
@@ -217,11 +217,11 @@ model Order {
   paymentType        PaymentType @default(EURO)
   pointsUsed         Int?        @default(0)
   status             OrderStatus @default(PENDING)
-  shippingAddress    String?
-  shippingCity       String?
-  shippingPostalCode String?
-  shippingCountry    String?
-  shippingPhone      String?
+  shippingAddress    String
+  shippingCity       String
+  shippingPostalCode String
+  shippingCountry    String
+  shippingPhone      String
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
   deletedAt          DateTime?
@@ -239,10 +239,9 @@ model OrderItem {
   productId   String
   product     Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
   productName String
-  productType String
+  productType BoardType
   priceEuro   Float
-  pricePoints Int?
-  quantity    Int      @default(1)
+  pricePoints Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?

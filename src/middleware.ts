@@ -1,16 +1,11 @@
 import { getSessionCookie } from 'better-auth/cookies';
 import { NextRequest, NextResponse } from 'next/server';
 
-const protectedRoutes = ['/compte', '/admin/dashboard'];
+const protectedRoutes = ['/compte', '/admin/', '/api-docs'];
 
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
   const pathname = nextUrl.pathname;
-
-  // CVE-2025-29927
-  if (req.headers.get('x-middleware-subrequest')) {
-    return new NextResponse('Forbidden', { status: 403 });
-  }
 
   const sessionCookie = getSessionCookie(req);
   const googleAuthCookie = req.cookies.get('google-auth');
@@ -27,12 +22,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (pathname.startsWith('/paiement/echange') && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/panier', req.url));
-  }
-
   if (isOnAuthRoute && isLoggedIn) {
     return NextResponse.redirect(new URL('/compte', req.url));
+  }
+
+  if (pathname.startsWith('/paiement/echange') && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/panier', req.url));
   }
 
   if (pathname === '/panier/redirect' && isLoggedIn) {
@@ -41,6 +36,10 @@ export async function middleware(req: NextRequest) {
 
   if (pathname === '/recycler-planche/redirect' && isLoggedIn) {
     return NextResponse.redirect(new URL('/recycler-planche', req.url));
+  }
+
+  if (pathname === '/recycler-planche' && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/recycler-planche/redirect', req.url));
   }
 
   return NextResponse.next();

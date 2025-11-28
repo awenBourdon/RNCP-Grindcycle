@@ -1,3 +1,4 @@
+import { BoardType } from "@/generated/prisma";
 import { OrderItemService } from "../../order-items/order-items.service";
 import { OrderService } from "../../orders/orders.service";
 import { OrderWithRelations } from "../../orders/repository/interface-orders.repository";
@@ -26,7 +27,7 @@ export interface PointsPaymentTransactionData {
 export interface CartItemForPayment {
   productId: string;
   name: string;
-  type: string;
+  type: BoardType;
   priceEuro: number;
   pricePoints: number;
 }

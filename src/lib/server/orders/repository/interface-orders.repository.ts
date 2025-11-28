@@ -1,4 +1,4 @@
-import { OrderStatus } from '@/generated/prisma';
+import { BoardType, OrderStatus } from '@/generated/prisma';
 import { PaginatedResponse } from '@/lib/utils/pagination';
 
 export interface OrderWithRelations {
@@ -27,10 +27,9 @@ export interface OrderWithRelations {
     orderId: string;
     productId: string;
     productName: string;
-    productType: string;
+    productType: BoardType;
     priceEuro: number;
-    pricePoints: number | null;
-    quantity: number;
+    pricePoints: number;
     createdAt: Date;
     updatedAt: Date;
     deletedAt: Date | null;

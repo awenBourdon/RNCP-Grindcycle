@@ -1,4 +1,4 @@
-import { ProductStatus, OrderStatus } from '@/generated/prisma';
+import { ProductStatus, OrderStatus, BoardType } from '@/generated/prisma';
 import { OrderService } from '../orders/orders.service';
 import { OrderItemService } from '../order-items/order-items.service';
 import { ProductService } from '../products/products.service';
@@ -25,10 +25,9 @@ export interface PointsPaymentData {
 export interface CartItemForPurchase {
   productId: string;
   name: string;
-  type: string;
+  type: BoardType;
   priceEuro: number;
   pricePoints: number;
-  quantity: number;
 }
 
 export interface ShippingAddress {
@@ -77,8 +76,7 @@ export class PaymentService {
       productName: item.name,
       productType: item.type,
       priceEuro: item.priceEuro,
-      pricePoints: null,
-      quantity: item.quantity,
+      pricePoints: item.pricePoints,
     }));
 
     await this.orderItemService.getRepository().createMultiple(orderItems);
@@ -266,12 +264,12 @@ export class PaymentService {
   }
 
   private calculateTotalAmount(cartItems: CartItemForPurchase[]): number {
-    return cartItems.reduce((total, item) => total + (item.priceEuro * item.quantity), 0);
+    return cartItems.reduce((total, item) => total + item.priceEuro, 0);
   }
 
 
   private calculateTotalPoints(cartItems: CartItemForPurchase[]): number {
-    return cartItems.reduce((total, item) => total + (item.pricePoints * item.quantity), 0);
+    return cartItems.reduce((total, item) => total + item.pricePoints, 0);
   }
 
  
@@ -281,8 +279,7 @@ export class PaymentService {
       name: item.name,
       type: item.type,
       priceEuro: item.priceEuro,
-      pricePoints: item.pricePoints,
-      quantity: item.quantity,
+      pricePoints: item.pricePoints
     }));
   }
 

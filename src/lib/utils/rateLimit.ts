@@ -56,24 +56,19 @@ export const RATE_LIMIT_MESSAGES = {
 } as const;
 
 export function getClientIP(request: Request): string {
-  if (
-    !request ||
-    !request.headers ||
-    typeof request.headers.get !== 'function'
-  ) {
-    return 'localhost';
-  }
-
+  const cfConnectingIP = request.headers.get('cf-connecting-ip');
   const forwarded = request.headers.get('x-forwarded-for');
   const real = request.headers.get('x-real-ip');
-  const cfConnectingIP = request.headers.get('cf-connecting-ip');
 
-  return (
-    cfConnectingIP ||
-    (forwarded ? forwarded.split(',')[0].trim() : null) ||
-    real ||
-    'localhost'
-  );
+  const ip = cfConnectingIP || 
+             (forwarded ? forwarded.split(',')[0].trim() : null) || 
+             real;
+
+  if (!ip) {
+    console.error('Failed to determine client IP - Rate limiting may not work correctly');
+  }
+
+  return ip || 'unknown';
 }
 
 export function checkRateLimit(ip: string, action: RateLimitAction): boolean {

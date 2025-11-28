@@ -40,7 +40,6 @@ export interface CartItem {
   size?: number;
   priceEuro: number;
   pricePoints: number;
-  quantity: number;
   imageUrl: string[];
 }
 
@@ -128,11 +127,11 @@ export interface Order {
   paymentType: PaymentType;
   pointsUsed?: number;
   status: OrderStatus;
-  shippingAddress?: string | null;
-  shippingCity?: string | null;
-  shippingPostalCode?: string | null;
-  shippingCountry?: string | null;
-  shippingPhone?: string | null;
+  shippingAddress: string;
+  shippingCity: string;
+  shippingPostalCode: string;
+  shippingCountry: string;
+  shippingPhone: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -144,8 +143,7 @@ export interface OrderItem {
   productName: string;
   productType: BoardType;
   priceEuro: number;
-  pricePoints?: number | null;
-  quantity: number;
+  pricePoints: number;
   createdAt: Date;
   updatedAt: Date;
 }

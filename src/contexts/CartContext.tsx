@@ -46,12 +46,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         if (Array.isArray(parsedCart)) {
           const validCart = parsedCart.filter(
-            item =>
-              item.id &&
-              item.name &&
-              typeof item.priceEuro === 'number' &&
-              typeof item.quantity === 'number' &&
-              item.quantity > 0
+            item => item.id && item.name && typeof item.priceEuro === 'number'
           );
           setCartItems(validCart);
         }
@@ -77,16 +72,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = useCallback((product: Product) => {
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
-
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
       return [
         ...prevItems,
         {
@@ -95,7 +80,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
           type: product.type,
           priceEuro: product.priceEuro,
           pricePoints: product.pricePoints,
-          quantity: 1,
           imageUrl: product.imageUrl,
         },
       ];
@@ -104,7 +88,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const removeFromCart = useCallback((productOrId: Product | string) => {
     const id = typeof productOrId === 'string' ? productOrId : productOrId.id;
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+
+    // Supprime seulement la première occurrence du produit
+    setCartItems(prevItems => {
+      const index = prevItems.findIndex(item => item.id === id);
+      if (index === -1) return prevItems;
+
+      return [...prevItems.slice(0, index), ...prevItems.slice(index + 1)];
+    });
   }, []);
 
   const clearCart = useCallback(() => {
@@ -112,14 +103,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const cartTotal = useMemo(() => {
-    return cartItems.reduce(
-      (total, item) => total + item.priceEuro * item.quantity,
-      0
-    );
+    return cartItems.reduce((total, item) => total + item.priceEuro, 0);
   }, [cartItems]);
 
   const cartCount = useMemo(() => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
+    return cartItems.length;
   }, [cartItems]);
 
   const shippingCost = useMemo(() => {

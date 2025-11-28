@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { auth } from '@/lib/utils/auth';
+import { headers } from 'next/headers';
 import { pointsShippingSchema, cartItemSchema } from '@/lib/validations/shipping.validation';
 import { z } from 'zod';
 import { CartItemForPurchase, PaymentService, ShippingAddress } from '@/lib/server/payments/payments.service';
@@ -15,8 +17,6 @@ const stripePaymentSchema = z.object({
     .max(10, 'Maximum 10 articles'),
   
   shippingCost: z.number().min(0, 'Frais de livraison invalides'),
-  
-  userId: z.string().optional().nullable(),
   
   shippingAddress: pointsShippingSchema,
 });
@@ -34,6 +34,9 @@ export async function POST(request: Request) {
       );
     }
 
+   const headersList = await headers();
+    const session = await auth.api.getSession({ headers: headersList });
+
     const rawData = await request.json();
     
     const validation = stripePaymentSchema.safeParse(rawData);
@@ -46,10 +49,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const { cartItems, shippingCost, shippingAddress, userId } = validation.data;
+    const { cartItems, shippingCost, shippingAddress } = validation.data;
 
     const paymentData = {
-      userId: userId || null,
+      userId: session?.user?.id || null,
       cartItems: convertCartItemsToPaymentFormat(cartItems),
       shippingAddress: convertShippingAddressToPaymentFormat(shippingAddress),
       shippingCost,
@@ -65,10 +68,10 @@ export async function POST(request: Request) {
         },
         unit_amount: Math.round(item.priceEuro * 100),
       },
-      quantity: item.quantity,
+      quantity: 1,
     }));
 
-    if (shippingCost > 0) {
+     if (shippingCost > 0) {
       lineItems.push({
         price_data: {
           currency: 'eur',
@@ -90,6 +93,7 @@ export async function POST(request: Request) {
       customer_email: shippingAddress.email,
       metadata: {
         orderId: order.id,
+        userId: session?.user?.id || 'guest',
         shippingName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
         shippingAddress: shippingAddress.address,
         shippingCity: shippingAddress.city,
@@ -99,7 +103,7 @@ export async function POST(request: Request) {
       },
     };
 
-    if (shippingCost > 0) {
+   if (shippingCost > 0) {
       sessionParams.shipping_options = [{
         shipping_rate_data: {
           type: 'fixed_amount',
@@ -136,7 +140,6 @@ export async function POST(request: Request) {
   }
 }
 
-
 function convertCartItemsToPaymentFormat(items: StripePaymentInput['cartItems']): CartItemForPurchase[] {
   return items.map(item => ({
     productId: item.productId,
@@ -144,7 +147,6 @@ function convertCartItemsToPaymentFormat(items: StripePaymentInput['cartItems'])
     type: item.type,
     priceEuro: item.priceEuro,
     pricePoints: item.pricePoints,
-    quantity: item.quantity,
   }));
 }
 

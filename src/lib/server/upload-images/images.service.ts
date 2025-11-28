@@ -3,7 +3,7 @@ import {
   isAllowedMimeType,
   isAllowedExtension,
 } from './upload';
-import { EnhancedImageValidator } from '@/lib/validations/images.validations';
+import { ImageFileGuardValidation } from '@/lib/validations/images.validations';
 
 export interface ImageValidationResult {
   isValid: boolean;
@@ -79,7 +79,7 @@ export class ImageService {
     if (enhancedValidation) {
       try {
         const enhancedResults =
-          await EnhancedImageValidator.validateMultipleImages(files);
+          await ImageFileGuardValidation.validateMultipleImages(files);
 
         errors.push(...enhancedResults.globalErrors);
 
@@ -140,7 +140,7 @@ export class ImageService {
       }
 
       const renamedFiles = files.map(file => {
-        const secureFilename = EnhancedImageValidator.generateSecureFilename(
+        const secureFilename = ImageFileGuardValidation.generateSecureFilename(
           file.name
         );
         return new File([file], secureFilename, { type: file.type });

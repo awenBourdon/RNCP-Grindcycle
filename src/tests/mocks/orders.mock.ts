@@ -22,7 +22,6 @@ export const mockOrderItem = {
   productType: BoardType.SKATE,
   priceEuro: 89.99,
   pricePoints: 450,
-  quantity: 1,
   createdAt: new Date('2024-01-01T10:00:00Z'),
   updatedAt: new Date('2024-01-01T10:00:00Z'),
   deletedAt: null,

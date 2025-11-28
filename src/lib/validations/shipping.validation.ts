@@ -77,7 +77,6 @@ export const cartItemSchema = z.object({
   type: z.nativeEnum(BoardType, { message: 'Type de planche invalide' }),
   priceEuro: z.number().min(0, 'Prix invalide'),
   pricePoints: z.number().min(0, 'Points invalides'),
-  quantity: z.number().int().min(1, 'Quantité minimum 1'),
   imageUrl: z.array(z.string()).optional(),
 })
 .refine((data) => data.id || data.productId, {

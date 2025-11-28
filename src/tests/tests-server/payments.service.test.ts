@@ -16,7 +16,15 @@ vi.mock('../../order-items/order-items.service')
 vi.mock('../../products/products.service')
 vi.mock('../../users/users-service')
 vi.mock('../../points-history/points-history.service')
-vi.mock('../../notifications/notifications.service')
+vi.mock('@/lib/server/notifications/notifications.service', () => ({
+  createNotification: vi.fn().mockResolvedValue(undefined),
+  NotificationTemplates: {
+    orderConfirmed: vi.fn(() => 'Commande confirmée'),
+    orderCancelled: vi.fn(() => 'Commande annulée'),
+    orderShipped: vi.fn(() => 'Commande expédiée'),
+    orderDelivered: vi.fn(() => 'Commande livrée'),
+  },
+}))
 
 describe('PaymentService', () => {
   let paymentService: PaymentService
@@ -221,8 +229,8 @@ describe('PaymentService', () => {
     it('doit calculer correctement le montant total', async () => {
 
       const multipleItems = [
-        { ...mockStripePaymentData.cartItems[0], priceEuro: 50, quantity: 2 },
-        { ...mockStripePaymentData.cartItems[0], productId: 'product-2', priceEuro: 30, quantity: 1 }
+        { ...mockStripePaymentData.cartItems[0], priceEuro: 50},
+        { ...mockStripePaymentData.cartItems[0], productId: 'product-2', priceEuro: 30}
       ]
       const paymentData = { ...mockStripePaymentData, cartItems: multipleItems }
       
@@ -233,7 +241,7 @@ describe('PaymentService', () => {
 
       expect(mockOrderRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          totalAmount: 130
+          totalAmount: 80
         })
       )
     })
@@ -241,8 +249,8 @@ describe('PaymentService', () => {
     it('doit calculer correctement le total en points', async () => {
 
       const multipleItems = [
-        { ...mockPointsPaymentData.cartItems[0], pricePoints: 200, quantity: 2 },
-        { ...mockPointsPaymentData.cartItems[0], productId: 'product-2', pricePoints: 150, quantity: 1 }
+        { ...mockPointsPaymentData.cartItems[0], pricePoints: 200},
+        { ...mockPointsPaymentData.cartItems[0], productId: 'product-2', pricePoints: 150}
       ]
       const paymentData = { ...mockPointsPaymentData, cartItems: multipleItems }
       

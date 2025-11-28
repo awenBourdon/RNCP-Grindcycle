@@ -1,19 +1,19 @@
-import { OrderItem } from '@/generated/prisma';
+import { BoardType, OrderItem } from '@/generated/prisma';
 
 export interface CreateOrderItemData {
   orderId: string;
   productId: string;
   productName: string;
-  productType: string;
+  productType: BoardType;
   priceEuro: number;
-  pricePoints: number | null;
+  pricePoints: number;
 }
 
 export interface UpdateOrderItemData {
   productName?: string;
-  productType?: string;
+  productType?: BoardType;
   priceEuro?: number;
-  pricePoints?: number | null;
+  pricePoints?: number;
 }
 
 export interface OrderItemWithProduct extends OrderItem {

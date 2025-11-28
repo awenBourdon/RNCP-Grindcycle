@@ -1,3 +1,5 @@
+import { BoardType } from "@/generated/prisma"
+
 export const mockProduct = {
   id: 'product-1',
   name: 'Super Skateboard',
@@ -11,10 +13,9 @@ export const mockOrderItem = {
   orderId: 'order-1',
   productId: 'product-1',
   productName: 'Super Skateboard',
-  productType: 'SKATE',
+  productType: BoardType.SKATE,
   priceEuro: 89.99,
   pricePoints: 450,
-  quantity: 1,
   createdAt: new Date('2024-01-01T10:00:00Z'),
   updatedAt: new Date('2024-01-01T10:00:00Z'),
   deletedAt: null,
@@ -28,7 +29,7 @@ export const mockOrderItems = [
     id: 'item-2',
     productId: 'product-2',
     productName: 'Cruiser Board',
-    productType: 'CRUISER',
+    productType: BoardType.CRUISER,
     priceEuro: 129.99,
     pricePoints: 650,
   }
@@ -38,7 +39,7 @@ export const mockCreateOrderItemData = {
   orderId: 'order-1',
   productId: 'product-1',
   productName: 'Super Skateboard',
-  productType: 'SKATE',
+  productType: BoardType.SKATE,
   priceEuro: 89.99,
   pricePoints: 450,
 }
