@@ -58,6 +58,10 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
+      - name: Stop Next.js server
+        run: pkill -f "next start" || true
+        if: always()
+
       - name: Wait for server to stop
         run: sleep 2
 
