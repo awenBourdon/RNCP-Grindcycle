@@ -180,7 +180,7 @@ export const Checkout = ({ userPoints, isAuthenticated }: CheckoutProps) => {
           <button
             onClick={() => router.push('/panier/redirect')}
             className="w-full py-4 px-6 bg-[#0a3d3f] text-white rounded-full font-medium hover:bg-[#0a4d4f] transition-colors flex items-center justify-center cursor-pointer"
-            aria-label={`Continuer le paiement par carte, total ${totalEuro.toFixed(2)} euros`}
+            aria-label={`Payer par carte`}
           >
             <CreditCard size={20} className="mr-2" aria-hidden="true" />
             Payer par carte

@@ -181,7 +181,7 @@ export const FormFields = ({
           rows={4}
           maxLength={500}
           onChange={e => onDescriptionChange(e.target.value.length)}
-          aria-label="Description de la planche"
+          aria-label="Description (optionnel)"
           aria-invalid={!!(errors.description || descriptionLength > 500)}
           aria-describedby={
             errors.description || descriptionLength > 500
