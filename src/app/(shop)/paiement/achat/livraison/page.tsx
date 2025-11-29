@@ -89,16 +89,27 @@ export default function ShippingPage() {
               onSubmit={handleShippingSubmit}
               isLoading={isLoading}
               submitText="Procéder au paiement"
+              aria-label="Formulaire d'adresse de livraison pour le paiement par carte"
             />
           </div>
 
           <div>
-            <div className="bg-[#f8f7f4] p-6 rounded-lg sticky top-40">
+            <div
+              className="bg-[#f8f7f4] p-6 rounded-lg sticky top-40"
+              aria-label="Récapitulatif de la commande"
+            >
               <h2 className="text-xl font-medium mb-6">Récapitulatif</h2>
 
-              <div className="space-y-4 mb-6">
+              <div
+                className="space-y-4 mb-6"
+                aria-label="Liste des articles à acheter"
+              >
                 {cartItems.map(item => (
-                  <div key={item.id} className="flex justify-between text-sm">
+                  <div
+                    key={item.id}
+                    className="flex justify-between text-sm"
+                    aria-label={`Article : ${item.name}, ${item.priceEuro.toFixed(2)}€`}
+                  >
                     <span className="text-gray-600">{item.name}</span>
                     <span>{item.priceEuro.toFixed(2)} €</span>
                   </div>
@@ -123,7 +134,10 @@ export default function ShippingPage() {
                     </div>
                   )}
 
-                  <div className="border-t border-gray-200 pt-4 mt-4 flex justify-between font-medium">
+                  <div
+                    className="border-t border-gray-200 pt-4 mt-4 flex justify-between font-medium"
+                    aria-label={`Total : ${total.toFixed(2)}€`}
+                  >
                     <span>Total</span>
                     <span>{total.toFixed(2)} €</span>
                   </div>
