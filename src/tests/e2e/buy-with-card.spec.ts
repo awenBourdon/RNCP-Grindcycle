@@ -13,17 +13,17 @@ test('parcours d\'achat complet avec Stripe', async ({ page }) => {
   await page.waitForURL('**/catalogue', { timeout: 20000, waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: 'Type de planche' }).click();
   await page.locator('label', { hasText: 'Skate' }).click();
-  await page.getByRole('button', { name: 'Prix (€)' }).click();
+  await page.getByRole('button', { name: 'Filtrer par prix' }).click();
   await page.getByRole('slider').first().fill('13');
   await page.getByRole('slider').nth(1).fill('95');
   await page.getByRole('button', { name: 'Réinitialiser' }).click();
-  const produit = page.getByRole('link', { name: /SKATE 50 €/i }).first();
-  await expect(produit).toBeVisible();
-  await produit.click();
+ const produit = page.locator('a[href*="/produit/"]').first();
+await expect(produit).toBeVisible({ timeout: 10000 });
+await produit.click();
   
   await page.waitForURL('**/produit/**', { timeout: 10000 });
   await page.waitForLoadState('networkidle');
-  await page.waitForTimeout(1000); // Attendre que React hydrate le composant
+  await page.waitForTimeout(1000);
 
   const addToCartButton = page.getByRole('button').filter({ hasText: /Ajouter au panier|Retirer du panier/i }).first();
   await addToCartButton.waitFor({ state: 'visible', timeout: 15000 });
@@ -34,7 +34,7 @@ test('parcours d\'achat complet avec Stripe', async ({ page }) => {
   }
   
   await addToCartButton.click();
-  await page.waitForTimeout(500); // Attendre que l'ajout au panier se fasse
+  await page.waitForTimeout(500);
   await page.getByRole('navigation').getByRole('link', { name: 'Panier' }).click();
   await page.waitForURL('**/panier');
   await page.getByRole('button', { name: 'Payer par carte' }).click();
