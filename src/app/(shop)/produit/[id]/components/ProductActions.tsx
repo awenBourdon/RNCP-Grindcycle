@@ -34,6 +34,16 @@ export const ProductActions = ({
           onClick={handleToggleCart}
           disabled={isPending || !isAvailable}
           className="flex-1 px-6 py-4 text-base sm:text-lg font-medium rounded-full transition-all duration-300 flex items-center justify-center bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] cursor-pointer"
+          aria-label={
+            isPending
+              ? `Ajout de ${product.name} au panier en cours...`
+              : !isAvailable
+                ? `${product.name} - Produit vendu`
+                : added
+                  ? `Retirer ${product.name} du panier`
+                  : `Ajouter ${product.name} au panier`
+          }
+          aria-busy={isPending}
         >
           <div className="flex items-center justify-center min-w-[180px]">
             {isPending ? (
@@ -42,12 +52,12 @@ export const ProductActions = ({
               <span>Produit vendu</span>
             ) : added ? (
               <>
-                <X className="w-5 h-5 mr-2" />
+                <X className="w-5 h-5 mr-2" aria-hidden="true" />
                 <span>Retirer du panier</span>
               </>
             ) : (
               <>
-                <ShoppingCart className="w-5 h-5 mr-2" />
+                <ShoppingCart className="w-5 h-5 mr-2" aria-hidden="true" />
                 <span>Ajouter au panier</span>
               </>
             )}
@@ -63,7 +73,10 @@ export const ProductActions = ({
           />
         )}
       </div>
-      <div className="bg-[#f8f7f4] rounded-xl p-6">
+      <div
+        className="bg-[#f8f7f4] rounded-xl p-6"
+        aria-label="Avantages et garanties du produit"
+      >
         <div className="space-y-3">
           <p className="text-gray-600">
             <span className="font-medium text-[#010101]">

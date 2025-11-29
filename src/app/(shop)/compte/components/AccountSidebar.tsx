@@ -59,13 +59,15 @@ const sidebarItems: SidebarItem[] = [
 
 export const AccountSidebar = ({ currentPath }: AccountSidebarProps) => {
   return (
-    <div className="bg-[#f8f7f4] rounded-xl p-6 h-fit">
+    <div
+      className="bg-[#f8f7f4] rounded-xl p-6 h-fit"
+      aria-label="Navigation du compte utilisateur"
+    >
       <h3 className="text-lg font-medium text-[#010101] mb-6">Mon compte</h3>
-      <nav className="space-y-2">
+      <nav className="space-y-2" aria-label="Menu du compte">
         {sidebarItems.map(item => {
           const Icon = item.icon;
           const isActive = currentPath === item.href;
-
           return (
             <Link
               key={item.id}
@@ -75,8 +77,10 @@ export const AccountSidebar = ({ currentPath }: AccountSidebarProps) => {
                   ? 'bg-[#0a3d3f] text-white shadow-sm'
                   : 'text-[#010101] hover:bg-white hover:shadow-sm'
               }`}
+              aria-label={item.label}
+              aria-current={isActive ? 'page' : undefined}
             >
-              <Icon size={20} />
+              <Icon size={20} aria-hidden="true" />
               <span className="font-medium">{item.label}</span>
             </Link>
           );

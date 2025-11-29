@@ -5,9 +5,11 @@ import { CartItem } from '@/lib/utils/types/types';
 
 export const Item = ({ item }: { item: CartItem }) => {
   const { removeFromCart } = useCart();
-
   return (
-    <div className="flex flex-col sm:flex-row gap-6 pb-10 border-b border-gray-200">
+    <div
+      className="flex flex-col sm:flex-row gap-6 pb-10 border-b border-gray-200"
+      aria-label={`Article au panier : ${item.name}, ${item.priceEuro}€, type ${item.type}`}
+    >
       <div className="relative w-full sm:w-48 h-64 bg-[#f8f7f4] rounded-xl overflow-hidden">
         <Image
           src={item.imageUrl[0] || '/placeholder.webp'}
@@ -16,21 +18,24 @@ export const Item = ({ item }: { item: CartItem }) => {
           className="object-cover"
         />
       </div>
-
       <div className="flex-1 flex flex-col">
         <div className="flex justify-between">
           <h3 className="text-xl font-medium">{item.name}</h3>
           <button
             onClick={() => removeFromCart(item.id)}
             className="text-gray-400 hover:text-black transition-colors cursor-pointer"
-            aria-label="Supprimer l'article"
+            aria-label={`Supprimer ${item.name} du panier`}
           >
-            <X size={20} />
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
-
         <div className="mt-2">
-          <p className="text-[#0a3d3f] text-lg">{item.priceEuro} €</p>
+          <p
+            className="text-[#0a3d3f] text-lg"
+            aria-label={`Prix : ${item.priceEuro} euros`}
+          >
+            {item.priceEuro} €
+          </p>
           <p className="text-gray-500 text-sm mt-1">{item.type}</p>
         </div>
       </div>

@@ -41,6 +41,7 @@ export const ImageUpload = ({
       </legend>
       <div
         className={`bg-[#f8f7f4] p-6 rounded-lg ${errors.images ? 'border border-red-500' : ''}`}
+        aria-label="Section d'upload d'images"
       >
         <div className="flex items-center gap-2 mb-6">
           <Info size={16} className="text-gray-600" aria-hidden="true" />
@@ -54,7 +55,11 @@ export const ImageUpload = ({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          role="region"
+          aria-label="Grille d'upload d'images"
+        >
           {[0, 1, 2].map(index => {
             const canUpload = canUploadImage(index);
             const isMainImage = index === 0;
@@ -72,6 +77,7 @@ export const ImageUpload = ({
                       ? 'border-gray-300'
                       : 'border-gray-200 bg-gray-50'
                 }`}
+                aria-label={`Zone d'upload pour ${imageLabel.toLowerCase()}${previewImages[index] ? ' - image ajoutée' : ''}`}
               >
                 {previewImages[index] ? (
                   <>
@@ -123,7 +129,7 @@ export const ImageUpload = ({
                     accept={acceptedFormats}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     onChange={e => onImageUpload(e, index)}
-                    aria-label={`Ajouter ${imageLabel.toLowerCase()}`}
+                    aria-label={`Charger ${imageLabel.toLowerCase()}`}
                     disabled={!canUpload}
                   />
                 )}

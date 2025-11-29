@@ -23,7 +23,7 @@ export const ToTop = () => {
       <button
         onClick={scrollToTop}
         className="fixed z-40 bottom-12 right-12 p-3 rounded-full bg-[#0a3d3f] text-[#f8f7f4] cursor-pointer hover:bg-[#f8f7f4] hover:text-[#0a3d3f] transition-all"
-        aria-label="Scroll to top"
+        aria-label="Retour en haut de la page"
       >
         <ArrowUp className="w-6 h-6" />
       </button>

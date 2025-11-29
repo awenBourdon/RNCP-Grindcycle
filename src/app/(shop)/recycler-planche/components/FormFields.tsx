@@ -69,6 +69,7 @@ export const FormFields = ({
           id="name"
           type="text"
           name="name"
+          aria-label="Nom de la planche"
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? 'name-error' : undefined}
           className={`w-full px-4 py-3 bg-white border rounded-md focus:outline-none focus:ring-1 ${
@@ -86,7 +87,10 @@ export const FormFields = ({
 
       <div>
         <fieldset>
-          <legend className="block text-sm text-gray-600 mb-3">
+          <legend
+            id="boardType-legend"
+            className="block text-sm text-gray-600 mb-3"
+          >
             Type de planche{' '}
             <span className="text-red-500" aria-label="requis">
               *
@@ -124,7 +128,10 @@ export const FormFields = ({
 
       <div>
         <fieldset>
-          <legend className="block text-sm text-gray-600 mb-3">
+          <legend
+            id="boardCondition-legend"
+            className="block text-sm text-gray-600 mb-3"
+          >
             État de la planche{' '}
             <span className="text-red-500" aria-label="requis">
               *
@@ -174,6 +181,7 @@ export const FormFields = ({
           rows={4}
           maxLength={500}
           onChange={e => onDescriptionChange(e.target.value.length)}
+          aria-label="Description de la planche"
           aria-invalid={!!(errors.description || descriptionLength > 500)}
           aria-describedby={
             errors.description || descriptionLength > 500

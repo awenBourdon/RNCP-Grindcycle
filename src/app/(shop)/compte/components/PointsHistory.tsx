@@ -155,10 +155,13 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
     return (
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="text-center py-12">
-          <p className="text-red-500 mb-4">{error}</p>
+          <p className="text-red-500 mb-4" role="alert">
+            {error}
+          </p>
           <button
             onClick={() => fetchPointsHistory(1)}
             className="px-4 py-2 bg-[#0a3d3f] text-white rounded-lg hover:bg-[#083032] transition-colors"
+            aria-label="Réessayer de charger l'historique des points"
           >
             Réessayer
           </button>
@@ -171,12 +174,15 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
     <div>
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="flex items-center mb-8">
-          <Coins size={24} className="text-[#0a3d3f] mr-3" />
+          <Coins size={24} className="text-[#0a3d3f] mr-3" aria-hidden="true" />
           <h2 className="text-2xl font-normal text-[#010101]">
             Historique de mes points
           </h2>
           {meta.totalItems > 0 && (
-            <span className="ml-4 text-sm text-gray-600">
+            <span
+              className="ml-4 text-sm text-gray-600"
+              aria-label={`${pointsHistory.length} sur ${meta.totalItems} transaction${meta.totalItems !== 1 ? 's' : ''} affichée${pointsHistory.length !== 1 ? 's' : ''}`}
+            >
               {pointsHistory.length}/{meta.totalItems} transaction
               {meta.totalItems !== 1 ? 's' : ''}
             </span>
@@ -184,7 +190,10 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-lg p-6 border border-gray-200">
+          <div
+            className="bg-white rounded-lg p-6 border border-gray-200"
+            aria-label={`Points actuels : ${currentPoints}`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
@@ -194,13 +203,19 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
                   {currentPoints}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center">
+              <div
+                className="w-12 h-12 bg-[#0a3d3f] rounded-full flex items-center justify-center"
+                aria-hidden="true"
+              >
                 <Coins size={24} className="text-white" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 border border-gray-200">
+          <div
+            className="bg-white rounded-lg p-6 border border-gray-200"
+            aria-label={`Points utilisés : ${totalSpent}`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
@@ -210,7 +225,10 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
                   -{totalSpent}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
+              <div
+                className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center"
+                aria-hidden="true"
+              >
                 <TrendingDown size={24} className="text-red-800" />
               </div>
             </div>
@@ -218,14 +236,17 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
         </div>
 
         {loading && pointsHistory.length === 0 ? (
-          <div className="flex justify-center items-center py-20">
+          <div className="flex justify-center items-center py-20" role="status">
             <div className="text-gray-600">
               Chargement de l&apos;historique...
             </div>
           </div>
         ) : pointsHistory.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center">
+            <div
+              className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center"
+              aria-hidden="true"
+            >
               <Coins size={24} className="text-[#0a3d3f]" />
             </div>
             <h3 className="text-lg font-medium text-[#010101] mb-2">
@@ -237,7 +258,10 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div
+            className="space-y-4"
+            aria-label="Historique des transactions de points"
+          >
             <h3 className="text-lg font-medium text-[#010101] mb-4">
               Transactions récentes
             </h3>
@@ -258,6 +282,7 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
                 <div
                   key={entry.id}
                   className="bg-white rounded-lg p-6 border border-gray-200"
+                  aria-label={`${getPointsTypeText(entry.type)}, ${isPositive ? '+' : ''}${entry.pointsAmount} point${Math.abs(entry.pointsAmount) !== 1 ? 's' : ''}, ${formattedDate}`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -266,6 +291,7 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
                           entry.type,
                           isPositive
                         )}`}
+                        aria-hidden="true"
                       >
                         {getPointsTypeIcon(entry.type)}
                       </div>
@@ -311,6 +337,11 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
             onClick={loadMoreHistory}
             disabled={loading}
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full cursor-pointer hover:bg-[#083032] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={
+              loading
+                ? `Chargement de l'historique en cours... ${pointsHistory.length} sur ${meta.totalItems} transactions affichées`
+                : `Charger plus de transactions. ${pointsHistory.length} sur ${meta.totalItems} affichées`
+            }
           >
             {loading
               ? 'Chargement...'
@@ -320,7 +351,11 @@ export const PointsHistoryComponent = ({ userId }: PointsHistoryProps) => {
       )}
 
       {!meta.hasNextPage && pointsHistory.length > 0 && (
-        <div className="mt-8 text-center text-gray-600">
+        <div
+          className="mt-8 text-center text-gray-600"
+          role="status"
+          aria-label={`Tout l'historique des ${pointsHistory.length} transactions a été chargé`}
+        >
           <p>Tout l&apos;historique a été chargé</p>
         </div>
       )}

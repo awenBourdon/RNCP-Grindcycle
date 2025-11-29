@@ -126,7 +126,6 @@ export const Faq = () => (
           </p>
         </div>
 
-        {/* Section Retours et garantie */}
         <div>
           <h3 className="text-xl font-medium mb-3">
             Y a-t-il une garantie sur les planches achetées ?

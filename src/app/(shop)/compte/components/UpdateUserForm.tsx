@@ -37,9 +37,12 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
 
   return (
     <div className="space-y-8">
-      <div className="bg-[#f8f7f4] rounded-xl p-8">
+      <div
+        className="bg-[#f8f7f4] rounded-xl p-8"
+        aria-label="Formulaire d'informations personnelles"
+      >
         <div className="flex items-center mb-8">
-          <User size={24} className="text-[#0a3d3f] mr-3" />
+          <User size={24} className="text-[#0a3d3f] mr-3" aria-hidden="true" />
           <h2 className="text-2xl font-normal text-[#010101]">
             Informations personnelles
           </h2>
@@ -49,6 +52,7 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
           onSubmit={handleSubmit}
           autoComplete="off"
           className="space-y-6 max-w-md"
+          aria-label="Formulaire de mise à jour du profil"
         >
           <div>
             <label
@@ -58,7 +62,10 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
               Nom d&apos;utilisateur
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div
+                className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                aria-hidden="true"
+              >
                 <User size={16} className="text-gray-400" />
               </div>
               <input
@@ -68,6 +75,7 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
                 defaultValue={name}
                 className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
                 placeholder="Ton nom d'utilisateur"
+                aria-label="Nom d'utilisateur"
                 required
               />
             </div>
@@ -81,7 +89,10 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
               Adresse email
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div
+                className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                aria-hidden="true"
+              >
                 <Mail size={16} className="text-gray-400" />
               </div>
               <input
@@ -91,6 +102,7 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
                 defaultValue={email}
                 className="w-full pl-10 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
                 placeholder="ton@email.com"
+                aria-label="Adresse email"
                 required
               />
             </div>
@@ -101,6 +113,11 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
             className={`w-full px-6 py-3 bg-[#0a3d3f] text-white rounded-full font-medium cursor-pointer hover:bg-[#0a4d4f] transition-colors flex items-center justify-center ${
               isPending ? 'opacity-70 cursor-not-allowed' : ''
             }`}
+            aria-label={
+              isPending
+                ? 'Mise à jour du profil en cours...'
+                : 'Mettre à jour le profil'
+            }
           >
             {isPending ? (
               <>
@@ -112,11 +129,16 @@ export const UpdateUserForm = ({ name, email }: UpdateUserFormProps) => {
             )}
           </button>
         </form>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+        <div
+          className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6"
+          role="alert"
+          aria-label="Information importante sur les comptes Google"
+        >
           <div className="flex items-start gap-3">
             <AlertCircle
               size={20}
               className="text-blue-600 mt-0.5 flex-shrink-0"
+              aria-hidden="true"
             />
             <div className="text-blue-800 text-sm">
               <p className="font-medium mb-1">Information importante</p>

@@ -154,10 +154,13 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
     return (
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="text-center py-12">
-          <p className="text-red-500 mb-4">{error}</p>
+          <p className="text-red-500 mb-4" role="alert">
+            {error}
+          </p>
           <button
             onClick={() => fetchBoards(1)}
             className="px-4 py-2 bg-[#0a3d3f] text-white rounded-lg hover:bg-[#083032] transition-colors"
+            aria-label="Réessayer de charger les planches"
           >
             Réessayer
           </button>
@@ -170,12 +173,19 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
     <div>
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="flex items-center mb-8">
-          <Package size={24} className="text-[#0a3d3f] mr-3" />
+          <Package
+            size={24}
+            className="text-[#0a3d3f] mr-3"
+            aria-hidden="true"
+          />
           <h2 className="text-2xl font-normal text-[#010101]">
             Mes planches envoyées
           </h2>
           {meta.totalItems > 0 && (
-            <span className="ml-4 text-sm text-gray-600">
+            <span
+              className="ml-4 text-sm text-gray-600"
+              aria-label={`${usedBoards.length} sur ${meta.totalItems} planche${meta.totalItems !== 1 ? 's' : ''} affichée${usedBoards.length !== 1 ? 's' : ''}`}
+            >
               {usedBoards.length}/{meta.totalItems} planche
               {meta.totalItems !== 1 ? 's' : ''}
             </span>
@@ -183,12 +193,15 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
         </div>
 
         {loading && usedBoards.length === 0 ? (
-          <div className="flex justify-center items-center py-20">
+          <div className="flex justify-center items-center py-20" role="status">
             <div className="text-gray-600">Chargement des planches...</div>
           </div>
         ) : usedBoards.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center">
+            <div
+              className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center"
+              aria-hidden="true"
+            >
               <Recycle size={24} className="text-[#0a3d3f]" />
             </div>
             <h3 className="text-lg font-medium text-[#010101] mb-2">
@@ -200,11 +213,15 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div
+            className="space-y-6"
+            aria-label="Liste de vos planches envoyées"
+          >
             {usedBoards.map(board => (
               <div
                 key={board.id}
                 className="flex items-start gap-6 p-6 bg-white rounded-lg border border-gray-200"
+                aria-label={`Planche ${board.name || 'sans nom'}, statut ${getStatusText(board.status)}, ${board.pointsAwarded || 0} point${(board.pointsAwarded || 0) !== 1 ? 's' : ''}`}
               >
                 <div className="flex-shrink-0">
                   {board.image && board.image.length > 0 ? (
@@ -217,7 +234,10 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
                       priority
                     />
                   ) : (
-                    <div className="w-20 h-20 bg-[#f8f7f4] rounded-lg flex items-center justify-center text-[#0a3d3f]">
+                    <div
+                      className="w-20 h-20 bg-[#f8f7f4] rounded-lg flex items-center justify-center text-[#0a3d3f]"
+                      aria-hidden="true"
+                    >
                       <Recycle size={20} />
                     </div>
                   )}
@@ -228,7 +248,10 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
                     <h3 className="font-medium text-lg text-[#010101]">
                       {board.name || 'Sans nom'}
                     </h3>
-                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-[#0a3d3f] text-white rounded-full text-sm font-medium">
+                    <span
+                      className="inline-flex items-center gap-2 px-3 py-1 bg-[#0a3d3f] text-white rounded-full text-sm font-medium"
+                      aria-label={`Statut : ${getStatusText(board.status)}`}
+                    >
                       {getStatusIcon(board.status)}
                       {getStatusText(board.status)}
                     </span>
@@ -245,7 +268,10 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
                       Envoyée le{' '}
                       {new Date(board.createdAt).toLocaleDateString('fr-FR')}
                     </span>
-                    <span className="text-[#010101] font-medium">
+                    <span
+                      className="text-[#010101] font-medium"
+                      aria-label={`Points attribués : ${board.pointsAwarded || 0}`}
+                    >
                       {board.pointsAwarded || 0} point
                       {(board.pointsAwarded || 0) !== 1 ? 's' : ''}
                     </span>
@@ -281,6 +307,11 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
             onClick={loadMoreBoards}
             disabled={loading}
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full cursor-pointer hover:bg-[#083032] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={
+              loading
+                ? `Chargement des planches en cours... ${usedBoards.length} sur ${meta.totalItems} affichées`
+                : `Charger plus de planches. ${usedBoards.length} sur ${meta.totalItems} affichées`
+            }
           >
             {loading
               ? 'Chargement...'
@@ -290,7 +321,11 @@ export const UsedBoardsList = ({ userId }: UsedBoardsListProps) => {
       )}
 
       {!meta.hasNextPage && usedBoards.length > 0 && (
-        <div className="mt-8 text-center text-gray-600">
+        <div
+          className="mt-8 text-center text-gray-600"
+          role="status"
+          aria-label={`Toutes les ${usedBoards.length} planches ont été chargées`}
+        >
           <p>Toutes les planches ont été chargées</p>
         </div>
       )}

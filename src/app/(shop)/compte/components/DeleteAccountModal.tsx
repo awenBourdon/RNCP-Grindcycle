@@ -37,9 +37,16 @@ export function DeleteAccountModal({ userId }: { userId: string }) {
 
   return (
     <>
-      <div className="bg-[#f8f7f4] rounded-xl p-8 mt-8">
+      <div
+        className="bg-[#f8f7f4] rounded-xl p-8 mt-8"
+        aria-label="Section de suppression de compte"
+      >
         <div className="flex items-center mb-6">
-          <AlertTriangle size={24} className="text-[#0a3d3f] mr-3" />
+          <AlertTriangle
+            size={24}
+            className="text-[#0a3d3f] mr-3"
+            aria-hidden="true"
+          />
           <h2 className="text-2xl font-normal text-[#010101]">
             Supprimer mon compte
           </h2>
@@ -51,6 +58,7 @@ export function DeleteAccountModal({ userId }: { userId: string }) {
           <button
             onClick={() => setIsOpen(true)}
             className="text-red-600 hover:text-red-700 underline font-medium transition-colors cursor-pointer"
+            aria-label="Ouvrir la modale de confirmation de suppression de compte"
           >
             supprimer ton compte ici
           </button>
@@ -59,24 +67,37 @@ export function DeleteAccountModal({ userId }: { userId: string }) {
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title"
+          aria-describedby="delete-modal-description"
+        >
           <div className="bg-white rounded-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-red-900 flex items-center">
-                <AlertTriangle size={20} className="mr-2" />
+              <h3
+                id="delete-modal-title"
+                className="text-xl font-semibold text-red-900 flex items-center"
+              >
+                <AlertTriangle size={20} className="mr-2" aria-hidden="true" />
                 Supprimer ton compte
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
                 disabled={isDeleting}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Fermer la modale"
               >
-                <X size={20} />
+                <X size={20} aria-hidden="true" />
               </button>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div
+                className="bg-red-50 border border-red-200 rounded-lg p-4"
+                role="alert"
+              >
                 <p className="text-red-800 text-sm">
                   <strong>Attention :</strong> Cette action supprimera
                   définitivement :
@@ -89,7 +110,10 @@ export function DeleteAccountModal({ userId }: { userId: string }) {
                 </ul>
               </div>
 
-              <p className="text-gray-600 text-sm">
+              <p
+                id="delete-modal-description"
+                className="text-gray-600 text-sm"
+              >
                 Cette action est <strong>irréversible</strong>. Es-tu sûr de
                 vouloir continuer ?
               </p>
@@ -99,14 +123,20 @@ export function DeleteAccountModal({ userId }: { userId: string }) {
               <button
                 onClick={handleDeleteAccount}
                 disabled={isDeleting}
-                className="flex-1 text-red-500 px-4 py-3 font-medium cursor-pointer hover:underline"
+                className="flex-1 text-red-500 px-4 py-3 font-medium cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label={
+                  isDeleting
+                    ? 'Suppression du compte en cours...'
+                    : 'Confirmer la suppression du compte'
+                }
               >
                 {isDeleting ? 'Suppression...' : 'Supprimer'}
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 disabled={isDeleting}
-                className="flex-1 text-gray-700 px-4 py-3 font-medium cursor-pointer hover:underline"
+                className="flex-1 text-gray-700 px-4 py-3 font-medium cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Annuler la suppression du compte"
               >
                 Annuler
               </button>

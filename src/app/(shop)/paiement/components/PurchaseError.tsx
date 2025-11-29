@@ -11,7 +11,6 @@ export function PurchaseError() {
   useEffect(() => {
     const cancelOrder = async () => {
       if (!orderId) return;
-
       try {
         await fetch('/api/orders/cancel', {
           method: 'POST',
@@ -22,12 +21,14 @@ export function PurchaseError() {
         console.error("Erreur lors de l'annulation:", error);
       }
     };
-
     cancelOrder();
   }, [orderId]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div
+      className="min-h-screen bg-white"
+      aria-label="Page d'erreur de paiement"
+    >
       <div className="max-w-7xl mx-auto px-6 py-40">
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-normal text-black mb-6">
@@ -41,13 +42,15 @@ export function PurchaseError() {
             <Link
               href="/panier"
               className="inline-flex items-center justify-center rounded-full text-sm font-medium px-6 py-3 bg-[#0a3d3f] text-white hover:bg-[#0a4d4f] transition-colors"
+              aria-label="Retourner au panier"
             >
-              <ArrowLeft size={16} className="mr-2" />
+              <ArrowLeft size={16} className="mr-2" aria-hidden="true" />
               Retour au panier
             </Link>
             <Link
               href="/catalogue"
               className="inline-flex items-center justify-center rounded-full text-sm font-medium px-6 py-3 border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+              aria-label="Retourner au catalogue"
             >
               Retour au catalogue
             </Link>

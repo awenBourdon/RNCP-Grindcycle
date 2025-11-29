@@ -233,14 +233,21 @@ export const Catalog = () => {
         resetFilters={resetFilters}
         priceRangeValues={priceRangeValues}
       />
-      <div className="mt-8">
+      <div
+        className="mt-8"
+        aria-label="Liste des produits du catalogue"
+        aria-live="polite"
+        aria-busy={loading && allProducts.length === 0}
+      >
         {loading && allProducts.length === 0 ? (
           <div className="flex justify-center items-center py-20">
-            <div className="text-gray-600">Chargement des produits...</div>
+            <div className="text-gray-600" role="status">
+              Chargement des produits...
+            </div>
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="flex justify-center items-center py-20">
-            <div className="text-gray-600 text-lg">
+            <div className="text-gray-600 text-lg" role="status">
               Aucun produit disponible
             </div>
           </div>
@@ -254,6 +261,11 @@ export const Catalog = () => {
                   onClick={loadMoreProducts}
                   disabled={loading}
                   className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full cursor-pointer hover:bg-[#083032] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label={
+                    loading
+                      ? `Chargement des produits en cours... ${filteredProducts.length} sur ${meta.totalItems} produits affichés`
+                      : `Charger plus de produits. ${filteredProducts.length} sur ${meta.totalItems} produits affichés`
+                  }
                 >
                   {loading
                     ? 'Chargement...'
@@ -264,7 +276,12 @@ export const Catalog = () => {
 
             {!meta.hasNextPage && filteredProducts.length > 0 && (
               <div className="mt-12 text-center text-gray-600">
-                <p>Tous les produits ont été chargés</p>
+                <p
+                  role="status"
+                  aria-label={`Tous les ${filteredProducts.length} produits ont été chargés`}
+                >
+                  Tous les produits ont été chargés
+                </p>
               </div>
             )}
           </>

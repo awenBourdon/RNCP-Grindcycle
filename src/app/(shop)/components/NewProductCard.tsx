@@ -8,7 +8,7 @@ interface ProductCardProps {
 
 export const NewProductCard = ({ product }: ProductCardProps) => {
   return (
-    <div className="group">
+    <div className="group" aria-label={`Carte produit : ${product.name}`}>
       <div className="relative w-72 h-96 bg-white overflow-hidden rounded-xl">
         <Image
           src={product.imageUrl[0] || '/placeholder.webp'}
@@ -16,19 +16,25 @@ export const NewProductCard = ({ product }: ProductCardProps) => {
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
-
-        <div className="absolute inset-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
-
+        <div
+          className="absolute inset-0 group-hover:bg-opacity-10 transition-all duration-300"
+          aria-hidden="true"
+        ></div>
         <div className="absolute bottom-0 left-0 w-full p-4 bg-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <button className="w-full py-2 bg-[#0a3d3f] text-white rounded-full font-medium hover:bg-[#0a4d4f] transition-all duration-300 cursor-pointer">
+          <button
+            className="w-full py-2 bg-[#0a3d3f] text-white rounded-full font-medium hover:bg-[#0a4d4f] transition-all duration-300 cursor-pointer"
+            aria-label={`Voir les détails du produit ${product.name}`}
+          >
             Voir produit
           </button>
         </div>
       </div>
-
       <div className="mt-4 flex justify-between items-center">
         <h3 className="text-lg font-medium truncate">{product.name}</h3>
-        <span className="px-3 py-1 bg-[#0a3d3f] text-white rounded-full">
+        <span
+          className="px-3 py-1 bg-[#0a3d3f] text-white rounded-full"
+          aria-label={`Prix : ${product.priceEuro} euros`}
+        >
           {product.priceEuro}€
         </span>
       </div>

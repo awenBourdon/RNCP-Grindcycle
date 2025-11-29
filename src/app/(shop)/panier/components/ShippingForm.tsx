@@ -11,12 +11,14 @@ interface ShippingFormProps {
   onSubmit: (data: PointsShippingInput) => void;
   isLoading?: boolean;
   submitText?: string;
+  'aria-label'?: string;
 }
 
 export function ShippingForm({
   onSubmit,
   isLoading = false,
   submitText = 'Confirmer',
+  'aria-label': ariaLabel,
 }: ShippingFormProps) {
   const {
     register,
@@ -42,7 +44,11 @@ export function ShippingForm({
 
   const InputError = ({ error }: { error?: string }) => {
     if (!error) return null;
-    return <div className="mt-1 text-red-600 text-sm">{error}</div>;
+    return (
+      <div className="mt-1 text-red-600 text-sm" role="alert">
+        {error}
+      </div>
+    );
   };
 
   return (
@@ -50,6 +56,7 @@ export function ShippingForm({
       onSubmit={handleSubmit(onSubmit)}
       autoComplete="off"
       className="space-y-8"
+      aria-label={ariaLabel || "Formulaire d'adresse de livraison"}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
@@ -57,7 +64,10 @@ export function ShippingForm({
             htmlFor="firstName"
             className="text-sm font-medium text-gray-700"
           >
-            Prénom <span className="text-red-500">*</span>
+            Prénom{' '}
+            <span className="text-red-500" aria-label="requis">
+              *
+            </span>
           </label>
           <input
             {...register('firstName')}
@@ -66,8 +76,11 @@ export function ShippingForm({
             className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors ${
               errors.firstName ? 'border-red-300' : 'border-gray-300'
             }`}
+            aria-label="Prénom"
+            aria-invalid={errors.firstName ? 'true' : 'false'}
+            aria-describedby={errors.firstName ? 'firstName-error' : undefined}
           />
-          <InputError error={errors.firstName?.message} />
+          {errors.firstName && <InputError error={errors.firstName?.message} />}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -75,7 +88,10 @@ export function ShippingForm({
             htmlFor="lastName"
             className="text-sm font-medium text-gray-700"
           >
-            Nom <span className="text-red-500">*</span>
+            Nom{' '}
+            <span className="text-red-500" aria-label="requis">
+              *
+            </span>
           </label>
           <input
             {...register('lastName')}
@@ -84,14 +100,20 @@ export function ShippingForm({
             className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors ${
               errors.lastName ? 'border-red-300' : 'border-gray-300'
             }`}
+            aria-label="Nom"
+            aria-invalid={errors.lastName ? 'true' : 'false'}
+            aria-describedby={errors.lastName ? 'lastName-error' : undefined}
           />
-          <InputError error={errors.lastName?.message} />
+          {errors.lastName && <InputError error={errors.lastName?.message} />}
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
         <label htmlFor="address" className="text-sm font-medium text-gray-700">
-          Adresse <span className="text-red-500">*</span>
+          Adresse{' '}
+          <span className="text-red-500" aria-label="requis">
+            *
+          </span>
         </label>
         <input
           {...register('address')}
@@ -100,14 +122,20 @@ export function ShippingForm({
           className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors ${
             errors.address ? 'border-red-300' : 'border-gray-300'
           }`}
+          aria-label="Adresse de livraison"
+          aria-invalid={errors.address ? 'true' : 'false'}
+          aria-describedby={errors.address ? 'address-error' : undefined}
         />
-        <InputError error={errors.address?.message} />
+        {errors.address && <InputError error={errors.address?.message} />}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
           <label htmlFor="city" className="text-sm font-medium text-gray-700">
-            Ville <span className="text-red-500">*</span>
+            Ville{' '}
+            <span className="text-red-500" aria-label="requis">
+              *
+            </span>
           </label>
           <input
             {...register('city')}
@@ -116,8 +144,11 @@ export function ShippingForm({
             className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors ${
               errors.city ? 'border-red-300' : 'border-gray-300'
             }`}
+            aria-label="Ville"
+            aria-invalid={errors.city ? 'true' : 'false'}
+            aria-describedby={errors.city ? 'city-error' : undefined}
           />
-          <InputError error={errors.city?.message} />
+          {errors.city && <InputError error={errors.city?.message} />}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -125,7 +156,10 @@ export function ShippingForm({
             htmlFor="postalCode"
             className="text-sm font-medium text-gray-700"
           >
-            Code postal <span className="text-red-500">*</span>
+            Code postal{' '}
+            <span className="text-red-500" aria-label="requis">
+              *
+            </span>
           </label>
           <input
             {...register('postalCode')}
@@ -143,23 +177,34 @@ export function ShippingForm({
             className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors ${
               errors.postalCode ? 'border-red-300' : 'border-gray-300'
             }`}
+            aria-label={`Code postal (exemple pour ${country} : ${country === 'France' ? '75001' : country === 'Belgique' ? '1000' : '1000'})`}
+            aria-invalid={errors.postalCode ? 'true' : 'false'}
+            aria-describedby={
+              errors.postalCode ? 'postalCode-error' : undefined
+            }
           />
-          <InputError error={errors.postalCode?.message} />
+          {errors.postalCode && (
+            <InputError error={errors.postalCode?.message} />
+          )}
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
         <label htmlFor="country" className="text-sm font-medium text-gray-700">
-          Pays <span className="text-red-500">*</span>
+          Pays{' '}
+          <span className="text-red-500" aria-label="requis">
+            *
+          </span>
         </label>
         <select
           {...register('country')}
           id="country"
           className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+          aria-label="Sélectionner un pays"
         >
-          {SHIPPING_CONFIG.countries.map(country => (
-            <option key={country} value={country}>
-              {country}
+          {SHIPPING_CONFIG.countries.map(countryOption => (
+            <option key={countryOption} value={countryOption}>
+              {countryOption}
             </option>
           ))}
         </select>
@@ -168,7 +213,10 @@ export function ShippingForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
           <label htmlFor="email" className="text-sm font-medium text-gray-700">
-            Email <span className="text-red-500">*</span>
+            Email{' '}
+            <span className="text-red-500" aria-label="requis">
+              *
+            </span>
           </label>
           <input
             {...register('email')}
@@ -177,8 +225,11 @@ export function ShippingForm({
             className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors ${
               errors.email ? 'border-red-300' : 'border-gray-300'
             }`}
+            aria-label="Adresse email"
+            aria-invalid={errors.email ? 'true' : 'false'}
+            aria-describedby={errors.email ? 'email-error' : undefined}
           />
-          <InputError error={errors.email?.message} />
+          {errors.email && <InputError error={errors.email?.message} />}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -193,8 +244,11 @@ export function ShippingForm({
             className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors ${
               errors.phone ? 'border-red-300' : 'border-gray-300'
             }`}
+            aria-label="Numéro de téléphone (optionnel)"
+            aria-invalid={errors.phone ? 'true' : 'false'}
+            aria-describedby={errors.phone ? 'phone-error' : undefined}
           />
-          <InputError error={errors.phone?.message} />
+          {errors.phone && <InputError error={errors.phone?.message} />}
         </div>
       </div>
 
@@ -202,10 +256,15 @@ export function ShippingForm({
         type="submit"
         disabled={isLoading || !isValid || !isDirty}
         className="w-full py-4 px-6 bg-[#0a3d3f] text-white rounded-full font-medium cursor-pointer hover:bg-[#0a4d4f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        aria-label={isLoading ? 'Commande en cours...' : submitText}
+        aria-busy={isLoading}
       >
         {isLoading ? (
           <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+            <div
+              className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"
+              aria-hidden="true"
+            ></div>
             Commande en cours...
           </>
         ) : (

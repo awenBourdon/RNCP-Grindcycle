@@ -52,7 +52,12 @@ export const MagicLinkLoginForm = () => {
 
   return (
     <div className="w-full">
-      <form onSubmit={handleSubmit} autoComplete="off" className="space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        autoComplete="off"
+        className="space-y-4"
+        aria-label="Formulaire de connexion par lien magique"
+      >
         <div className="flex flex-col gap-2">
           <label
             htmlFor="magic-email"
@@ -61,7 +66,10 @@ export const MagicLinkLoginForm = () => {
             Email
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div
+              className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              aria-hidden="true"
+            >
               <Mail size={16} className="text-gray-400" />
             </div>
             <input
@@ -70,6 +78,8 @@ export const MagicLinkLoginForm = () => {
               name="email"
               placeholder="ton@email.com"
               className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+              aria-label="Adresse email pour la connexion par lien magique"
+              required
             />
           </div>
         </div>
@@ -80,12 +90,17 @@ export const MagicLinkLoginForm = () => {
           className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white cursor-pointer hover:bg-[#0a4d4f] transition-colors ${
             isPending ? 'opacity-70 cursor-not-allowed' : ''
           }`}
+          aria-label={
+            isPending
+              ? 'Envoi du lien magique en cours...'
+              : 'Envoyer le lien magique'
+          }
         >
           {isPending ? (
             'Envoi en cours...'
           ) : (
             <>
-              <Mail size={16} className="mr-2" />
+              <Mail size={16} className="mr-2" aria-hidden="true" />
               Envoyer le lien magique
             </>
           )}

@@ -11,6 +11,7 @@ export const ProductCard = ({ product }: Props) => {
     <Link
       href={`/produit/${product.id}`}
       className="block rounded-2xl border border-gray-200 hover:shadow-md transition-shadow overflow-hidden bg-white"
+      aria-label={`${product.name}, type ${product.type}, ${product.priceEuro}€${product.pricePoints ? ` ou ${product.pricePoints} points` : ''}`}
     >
       <div className="relative w-full aspect-[3/4] bg-gray-100">
         <Image

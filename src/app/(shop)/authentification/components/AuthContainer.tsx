@@ -41,6 +41,7 @@ export function AuthContainer() {
                   <button
                     onClick={() => setAuthMode('register')}
                     className="text-[#0a3d3f] hover:underline font-medium cursor-pointer"
+                    aria-label="Accéder au formulaire d'inscription"
                   >
                     S&apos;inscrire
                   </button>
@@ -51,6 +52,7 @@ export function AuthContainer() {
                   <button
                     onClick={() => setAuthMode('login')}
                     className="text-[#0a3d3f] hover:underline font-medium cursor-pointer"
+                    aria-label="Retourner au formulaire de connexion"
                   >
                     Se connecter
                   </button>
@@ -72,7 +74,15 @@ export function AuthContainer() {
                 ? 'Connecte-toi rapidement avec ton compte Google.'
                 : 'Inscris-toi rapidement avec ton compte Google, sans avoir à créer un nouveau mot de passe.'}
             </p>
-            <SignInOauthButton signUp={authMode === 'register'} />
+            <div
+              aria-label={
+                authMode === 'login'
+                  ? 'Connexion avec Google'
+                  : 'Inscription avec Google'
+              }
+            >
+              <SignInOauthButton signUp={authMode === 'register'} />
+            </div>
           </div>
 
           <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -81,7 +91,9 @@ export function AuthContainer() {
               Reçois un lien de connexion directement dans ta boîte mail, sans
               avoir à saisir ton mot de passe.
             </p>
-            <MagicLinkLoginForm />
+            <div aria-label="Connexion express par lien magique">
+              <MagicLinkLoginForm />
+            </div>
           </div>
         </div>
       </div>

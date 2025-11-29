@@ -99,10 +99,13 @@ export const FavoritesList = () => {
     return (
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="text-center py-12">
-          <p className="text-red-500 mb-4">{error}</p>
+          <p className="text-red-500 mb-4" role="alert">
+            {error}
+          </p>
           <button
             onClick={() => fetchFavorites(1)}
             className="px-4 py-2 bg-[#0a3d3f] text-white rounded-lg hover:bg-[#083032] transition-colors"
+            aria-label="Réessayer de charger les favoris"
           >
             Réessayer
           </button>
@@ -115,10 +118,13 @@ export const FavoritesList = () => {
     <div>
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="flex items-center mb-8">
-          <Heart size={24} className="text-[#0a3d3f] mr-3" />
+          <Heart size={24} className="text-[#0a3d3f] mr-3" aria-hidden="true" />
           <h2 className="text-2xl font-normal text-[#010101]">Mes favoris</h2>
           {meta.totalItems > 0 && (
-            <span className="ml-4 text-sm text-gray-600">
+            <span
+              className="ml-4 text-sm text-gray-600"
+              aria-label={`${favorites.length} sur ${meta.totalItems} produit${meta.totalItems !== 1 ? 's' : ''} affichés`}
+            >
               {favorites.length}/{meta.totalItems} produit
               {meta.totalItems !== 1 ? 's' : ''}
             </span>
@@ -126,29 +132,42 @@ export const FavoritesList = () => {
         </div>
 
         {loading && favorites.length === 0 ? (
-          <div className="flex justify-center items-center py-20">
+          <div className="flex justify-center items-center py-20" role="status">
             <div className="text-gray-600">Chargement des favoris...</div>
           </div>
         ) : favorites.length === 0 ? (
           <div className="text-center py-12">
-            <Heart size={48} className="mx-auto text-gray-300 mb-4" />
+            <Heart
+              size={48}
+              className="mx-auto text-gray-300 mb-4"
+              aria-hidden="true"
+            />
             <h3 className="text-lg font-medium text-[#010101] mb-2">
               Aucun favori
             </h3>
             <p className="text-gray-600 mb-6">
               Tu n&apos;as pas encore ajouté de produits en favoris
             </p>
-            <Link href="/catalogue" className="text-[#0a3d3f] hover:underline">
+            <Link
+              href="/catalogue"
+              className="text-[#0a3d3f] hover:underline"
+              aria-label="Accéder au catalogue pour découvrir les planches"
+            >
               Découvrir nos planches
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            role="region"
+            aria-label="Liste de vos produits favoris"
+          >
             {favorites.map(({ product }) => (
               <Link
                 key={product.id}
                 href={`/produit/${product.id}`}
                 className="bg-white rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                aria-label={`${product.name}, ${getBoardTypeText(product.type)}, ${product.priceEuro}€`}
               >
                 <div className="aspect-[3/4] relative">
                   <Image
@@ -179,6 +198,11 @@ export const FavoritesList = () => {
             onClick={loadMoreFavorites}
             disabled={loading}
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full cursor-pointer hover:bg-[#083032] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={
+              loading
+                ? `Chargement des favoris en cours... ${favorites.length} sur ${meta.totalItems} affichés`
+                : `Charger plus de favoris. ${favorites.length} sur ${meta.totalItems} affichés`
+            }
           >
             {loading
               ? 'Chargement...'
@@ -188,8 +212,12 @@ export const FavoritesList = () => {
       )}
 
       {!meta.hasNextPage && favorites.length > 0 && (
-        <div className="mt-8 text-center text-gray-600">
-          <p>Tous les favoris ont été chargés</p>
+        <div
+          className="mt-8 text-center text-gray-600"
+          role="status"
+          aria-label={`Tous les ${favorites.length} favoris ont été chargés`}
+        >
+          <p>Tous les articles favoris ont été chargés</p>
         </div>
       )}
     </div>

@@ -74,6 +74,8 @@ export const AdminSidebar = ({ currentPath }: AdminSidebarProps) => {
                   ? 'bg-[#0a3d3f] text-white shadow-sm'
                   : 'text-[#010101] hover:bg-white hover:shadow-sm'
               }`}
+              aria-current={isActive ? 'page' : undefined}
+              aria-label={item.label}
             >
               <Icon size={20} />
               <span className="font-medium">{item.label}</span>

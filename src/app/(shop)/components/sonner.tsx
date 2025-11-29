@@ -4,7 +4,6 @@ import { Toaster as Sonner, ToasterProps } from 'sonner';
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme();
-
   return (
     <Sonner
       theme={theme as ToasterProps['theme']}
@@ -16,9 +15,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           '--normal-border': 'var(--border)',
         } as React.CSSProperties
       }
+      aria-label="Notifications"
+      aria-live="polite"
+      aria-atomic="true"
       {...props}
     />
   );
 };
-
 export { Toaster };

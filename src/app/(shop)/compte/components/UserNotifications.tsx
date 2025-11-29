@@ -143,10 +143,13 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
     return (
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="text-center py-12">
-          <p className="text-red-500 mb-4">{error}</p>
+          <p className="text-red-500 mb-4" role="alert">
+            {error}
+          </p>
           <button
             onClick={() => fetchNotifications(1)}
             className="px-4 py-2 bg-[#0a3d3f] text-white rounded-lg hover:bg-[#083032] transition-colors"
+            aria-label="Réessayer de charger les notifications"
           >
             Réessayer
           </button>
@@ -160,11 +163,18 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
-            <Bell size={24} className="text-[#0a3d3f] mr-3" />
+            <Bell
+              size={24}
+              className="text-[#0a3d3f] mr-3"
+              aria-hidden="true"
+            />
             <h2 className="text-2xl font-normal text-[#010101]">
               Notifications
               {meta.totalItems > 0 && (
-                <span className="ml-2 text-sm text-gray-600">
+                <span
+                  className="ml-2 text-sm text-gray-600"
+                  aria-label={`${notifications.length} sur ${meta.totalItems} notification${meta.totalItems !== 1 ? 's' : ''} affichée${notifications.length !== 1 ? 's' : ''}`}
+                >
                   ({notifications.length}/{meta.totalItems})
                 </span>
               )}
@@ -175,6 +185,11 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
               onClick={handleMarkAllAsRead}
               disabled={isPending}
               className="px-6 py-3 text-sm font-medium text-white bg-[#0a3d3f] rounded-full hover:bg-[#0a4d4f] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label={
+                isPending
+                  ? 'Marquage de toutes les notifications en cours...'
+                  : 'Marquer toutes les notifications comme lues'
+              }
             >
               Tout marquer comme lu
             </button>
@@ -182,12 +197,15 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
         </div>
 
         {loading && notifications.length === 0 ? (
-          <div className="flex justify-center items-center py-20">
+          <div className="flex justify-center items-center py-20" role="status">
             <div className="text-gray-600">Chargement des notifications...</div>
           </div>
         ) : notifications.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center">
+            <div
+              className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center"
+              aria-hidden="true"
+            >
               <Bell size={24} className="text-[#0a3d3f]" />
             </div>
             <h3 className="text-lg font-medium text-[#010101] mb-2">
@@ -196,11 +214,16 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
             <p className="text-gray-600">Tu es à jour !</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div
+            className="space-y-4"
+            aria-label="Liste de vos notifications"
+            aria-live="polite"
+          >
             {notifications.map(notification => (
               <div
                 key={notification.id}
                 className="p-6 bg-white rounded-lg border border-gray-200"
+                aria-label={`Notification : ${notification.description}, reçue le ${notification.createdAt ? new Date(notification.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'date invalide'}`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -227,9 +250,9 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
                       onClick={() => handleMarkAsRead(notification.id)}
                       disabled={isPending}
                       className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-[#0a3d3f] rounded-full hover:bg-[#0a4d4f] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="Marquer comme lu"
+                      aria-label={`Marquer la notification comme lue : ${notification.description}`}
                     >
-                      <Check size={14} className="mr-1" />
+                      <Check size={14} className="mr-1" aria-hidden="true" />
                       Marquer comme lu
                     </button>
                   </div>
@@ -246,6 +269,11 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
             onClick={loadMoreNotifications}
             disabled={loading}
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full cursor-pointer hover:bg-[#083032] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={
+              loading
+                ? `Chargement des notifications en cours... ${notifications.length} sur ${meta.totalItems} affichées`
+                : `Charger plus de notifications. ${notifications.length} sur ${meta.totalItems} affichées`
+            }
           >
             {loading
               ? 'Chargement...'
@@ -255,7 +283,11 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
       )}
 
       {!meta.hasNextPage && notifications.length > 0 && (
-        <div className="mt-8 text-center text-gray-600">
+        <div
+          className="mt-8 text-center text-gray-600"
+          role="status"
+          aria-label={`Toutes les ${notifications.length} notifications ont été chargées`}
+        >
           <p>Toutes les notifications ont été chargées</p>
         </div>
       )}
