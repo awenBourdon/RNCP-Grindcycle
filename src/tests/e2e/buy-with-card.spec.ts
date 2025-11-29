@@ -41,8 +41,14 @@ await produit.click();
   await page.waitForURL('**/panier/redirect', { timeout: 10000 });
   await page.waitForLoadState('networkidle');
   await page.getByRole('link', { name: 'Continuer en invité' }).click();
-  await page.waitForURL('**/paiement/achat/livraison', { timeout: 10000 });
-  await page.getByRole('textbox', { name: 'Prénom *' }).waitFor({ state: 'visible' });
+  
+  // Attendre la navigation et le chargement complet de la page
+  await page.waitForURL('**/paiement/achat/livraison', { timeout: 30000 });
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForLoadState('networkidle', { timeout: 30000 });
+  
+  // Attendre que le formulaire soit visible et prêt
+  await page.getByRole('textbox', { name: 'Prénom *' }).waitFor({ state: 'visible', timeout: 30000 });
   await page.getByRole('textbox', { name: 'Prénom *' }).fill('Luke');
   await page.getByRole('textbox', { name: 'Nom *', exact: true }).fill('Skywalker');
   await page.getByRole('textbox', { name: 'Adresse *' }).fill('32 rue des Jedi');
