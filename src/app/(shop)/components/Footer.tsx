@@ -2,14 +2,17 @@ import Link from 'next/link';
 
 export const Footer = () => {
   return (
-    <footer className="bg-[#f8f7f4] text-[#010101] py-12">
+    <footer
+      className="bg-[#f8f7f4] text-[#010101] py-12"
+      aria-label="Pied de page"
+    >
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="flex flex-col">
             <h4 className="mb-4 font-bold text-xl uppercase border-b border-black/30 pb-2">
               Plan du site
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-3" aria-label="Navigation du plan du site">
               <li>
                 <Link
                   href="/"
@@ -57,7 +60,7 @@ export const Footer = () => {
             <h4 className="mb-4 font-bold text-xl uppercase border-b border-black/30 pb-2">
               Juridique
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-3" aria-label="Navigation juridique">
               <li>
                 <Link
                   href="/mentions-legales"
@@ -89,11 +92,15 @@ export const Footer = () => {
             <h4 className="mb-4 font-bold text-xl uppercase border-b border-black/30 pb-2">
               Réseaux sociaux
             </h4>
-            <ul className="space-y-3">
+            <ul
+              className="space-y-3"
+              aria-label="Suivez-nous sur les réseaux sociaux"
+            >
               <li>
                 <Link
                   href="https://linkedin.com"
                   className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
+                  aria-label="Grindcycle sur LinkedIn"
                 >
                   LinkedIn
                 </Link>
@@ -102,6 +109,7 @@ export const Footer = () => {
                 <Link
                   href="https://instagram.com"
                   className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
+                  aria-label="Grindcycle sur Instagram"
                 >
                   Instagram
                 </Link>
@@ -110,6 +118,7 @@ export const Footer = () => {
                 <Link
                   href="https://facebook.com"
                   className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
+                  aria-label="Grindcycle sur Facebook"
                 >
                   Facebook
                 </Link>
@@ -118,6 +127,7 @@ export const Footer = () => {
                 <Link
                   href="https://x.com"
                   className="text-gray-600 hover:text-[#010101] hover:pl-2 transition-all"
+                  aria-label="Grindcycle sur X (anciennement Twitter)"
                 >
                   X
                 </Link>
@@ -130,9 +140,25 @@ export const Footer = () => {
               Nous contacter
             </h4>
             <ul className="space-y-3">
-              <li className="text-gray-600">hellogrindcycle@gmail.com</li>
-              <li className="text-gray-600">02 40 41 42 43</li>
-              <li className="text-gray-600">9h - 18h</li>
+              <li className="text-gray-600">
+                <a
+                  href="mailto:hellogrindcycle@gmail.com"
+                  aria-label="Envoyer un email à hellogrindcycle@gmail.com"
+                >
+                  hellogrindcycle@gmail.com
+                </a>
+              </li>
+              <li className="text-gray-600">
+                <a
+                  href="tel:+33240414243"
+                  aria-label="Appeler au 02 40 41 42 43"
+                >
+                  02 40 41 42 43
+                </a>
+              </li>
+              <li className="text-gray-600" aria-label="Horaires : 9h à 18h">
+                9h - 18h
+              </li>
             </ul>
           </div>
         </div>
@@ -142,7 +168,10 @@ export const Footer = () => {
         </div>
 
         <div className="w-full mt-8 text-center">
-          <h1 className="text-[10vw] md:text-[8vw] font-bold tracking-tight uppercase leading-none text-[#010101]">
+          <h1
+            className="text-[10vw] md:text-[8vw] font-bold tracking-tight uppercase leading-none text-[#010101]"
+            aria-label="Grindcycle"
+          >
             GRINDCYCLE
           </h1>
         </div>

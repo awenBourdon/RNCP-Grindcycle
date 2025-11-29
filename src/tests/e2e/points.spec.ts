@@ -7,7 +7,6 @@ const password = process.env.TEST_PASSWORD || '';
 
 test.describe('Points', () => {
   test.beforeEach(async ({ page }) => {
-    // Se connecter
     await page.goto('http://localhost:3000/authentification/connexion');
     await page.waitForLoadState('networkidle');
 
@@ -33,7 +32,6 @@ test.describe('Points', () => {
     
     await expect(page).toHaveURL(/.*points/);
     
-    // Vérifier que la page est chargée
     const pageContent = page.locator('body');
     await expect(pageContent).toBeVisible();
   });
@@ -42,11 +40,9 @@ test.describe('Points', () => {
     await page.goto('http://localhost:3000/compte/points');
     await page.waitForLoadState('networkidle');
     
-    // Chercher l'affichage des points
     const pointsDisplay = page.locator('text=/points|solde/i');
     const count = await pointsDisplay.count();
     
-    // Il devrait y avoir au moins un élément affichant les points
     expect(count).toBeGreaterThanOrEqual(0);
   });
 
@@ -54,15 +50,12 @@ test.describe('Points', () => {
     await page.goto('http://localhost:3000/compte/points');
     await page.waitForLoadState('networkidle');
     
-    // Vérifier que la page est chargée
     const pageContent = page.locator('body');
     await expect(pageContent).toBeVisible();
     
-    // Chercher l'historique ou la liste des transactions
     const history = page.locator('text=/historique|transaction|achat|recyclage/i');
     const count = await history.count();
-    
-    // L'historique peut être vide, donc on vérifie juste que la page est chargée
+
     expect(count).toBeGreaterThanOrEqual(0);
   });
 });

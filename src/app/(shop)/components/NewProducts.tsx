@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { motion, useAnimation, useMotionValue } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { NewProductCard } from './ProductCard';
 import { Product } from '@/lib/utils/types/types';
+import { NewProductCard } from './NewProductCard';
 
 interface NewProductsProps {
   products: Product[];

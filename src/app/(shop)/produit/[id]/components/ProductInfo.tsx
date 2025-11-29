@@ -20,22 +20,30 @@ const getBoardTypeText = (type: BoardType) => {
 
 export const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6"
+      aria-label={`Informations du produit ${product.name}`}
+    >
       <div>
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-normal text-[#010101] mb-4 leading-tight">
           {product.name}
         </h1>
       </div>
-
       <div className="space-y-4">
-        <div className="flex items-center border-b border-gray-200 pb-3">
+        <div
+          className="flex items-center border-b border-gray-200 pb-3"
+          aria-label={`Type : ${getBoardTypeText(product.type)}`}
+        >
           <span className="w-24 font-medium text-[#010101]">Type :</span>
           <span className="text-gray-600">
             {getBoardTypeText(product.type)}
           </span>
         </div>
         {product.description && (
-          <div className="border-b border-gray-200 pb-3">
+          <div
+            className="border-b border-gray-200 pb-3"
+            aria-label="Description du produit"
+          >
             <span className="font-medium text-[#010101] block mb-2">
               Description :
             </span>
@@ -45,15 +53,23 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
           </div>
         )}
       </div>
-
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+      <div
+        className="flex flex-col sm:flex-row sm:items-center gap-4"
+        aria-label="Tarification du produit"
+      >
         <div className="text-[#0a3d3f]">
-          <span className="text-2xl sm:text-3xl font-normal">
+          <span
+            className="text-2xl sm:text-3xl font-normal"
+            aria-label={`Prix : ${product.priceEuro.toFixed(2)} euros`}
+          >
             {product.priceEuro.toFixed(2)} €
           </span>
         </div>
         {product.pricePoints && product.pricePoints > 0 && (
-          <span className="text-sm text-gray-600 bg-[#f8f7f4] px-3 py-1 rounded-full">
+          <span
+            className="text-sm text-gray-600 bg-[#f8f7f4] px-3 py-1 rounded-full"
+            aria-label={`Ou ${product.pricePoints} points`}
+          >
             ou {product.pricePoints} points
           </span>
         )}

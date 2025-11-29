@@ -7,7 +7,6 @@ const password = process.env.TEST_PASSWORD || '';
 
 test.describe('Admin Panel', () => {
   test.beforeEach(async ({ page }) => {
-    // Se connecter en tant qu'admin
     await page.goto('http://localhost:3000/authentification/connexion');
     await page.waitForLoadState('networkidle');
 
@@ -22,32 +21,27 @@ test.describe('Admin Panel', () => {
 
     await page.getByRole('button', { name: 'Se connecter', exact: true }).click();
 
-    // Attendre la redirection
     await page.waitForURL('**/compte**', { timeout: 20000 });
     await page.waitForURL('**/compte/profil', { timeout: 5000 }).catch(() => {});
     await page.waitForLoadState('networkidle');
   });
 
   test('Accéder au tableau de bord admin', async ({ page }) => {
-    // Naviguer vers l'admin
     await page.goto('http://localhost:3000/admin');
     await page.waitForURL('**/admin/tableau-de-bord', { timeout: 10000 });
     await page.waitForLoadState('networkidle');
 
-    // Vérifier que la page admin est chargée
     const adminTitle = page.locator('text=Tableau de bord').first();
     await expect(adminTitle).toBeVisible();
   });
 
   test('Naviguer dans les différentes sections admin', async ({ page }) => {
-    // Naviguer vers le tableau de bord avec timeout plus long
     await page.goto('http://localhost:3000/admin/tableau-de-bord', { 
       waitUntil: 'domcontentloaded',
       timeout: 60000 
     });
     await page.waitForLoadState('domcontentloaded');
 
-    // Test navigation vers Utilisateurs
     const usersLink = page.getByRole('link', { name: 'Utilisateurs' });
     if (await usersLink.isVisible({ timeout: 5000 }).catch(() => false)) {
       await usersLink.click();
@@ -55,7 +49,6 @@ test.describe('Admin Panel', () => {
       await expect(page).toHaveURL(/.*utilisateurs/);
     }
 
-    // Test navigation vers Produits
     await page.goto('http://localhost:3000/admin/tableau-de-bord', { 
       waitUntil: 'domcontentloaded',
       timeout: 60000 
@@ -68,7 +61,6 @@ test.describe('Admin Panel', () => {
       await expect(page).toHaveURL(/.*produits/);
     }
 
-    // Test navigation vers Planches
     await page.goto('http://localhost:3000/admin/tableau-de-bord', { 
       waitUntil: 'domcontentloaded',
       timeout: 60000 
@@ -81,7 +73,6 @@ test.describe('Admin Panel', () => {
       await expect(page).toHaveURL(/.*planches/);
     }
 
-    // Test navigation vers Commandes
     await page.goto('http://localhost:3000/admin/tableau-de-bord', { 
       waitUntil: 'domcontentloaded',
       timeout: 60000 
@@ -94,7 +85,6 @@ test.describe('Admin Panel', () => {
       await expect(page).toHaveURL(/.*commandes/);
     }
 
-    // Test navigation vers Notifications
     await page.goto('http://localhost:3000/admin/tableau-de-bord', { 
       waitUntil: 'domcontentloaded',
       timeout: 60000 
@@ -114,7 +104,6 @@ test.describe('Admin Panel', () => {
     await page.waitForURL('**/admin/ajouter-produit', { timeout: 10000 });
     await page.waitForLoadState('networkidle');
 
-    // Vérifier que le formulaire est présent
     const form = page.locator('form').first();
     await expect(form).toBeVisible();
   });

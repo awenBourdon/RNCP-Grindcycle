@@ -117,10 +117,13 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
     return (
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="text-center py-12">
-          <p className="text-red-500 mb-4">{error}</p>
+          <p className="text-red-500 mb-4" role="alert">
+            {error}
+          </p>
           <button
             onClick={() => fetchOrders(1)}
             className="px-4 py-2 bg-[#0a3d3f] text-white rounded-lg hover:bg-[#083032] transition-colors"
+            aria-label="Réessayer de charger les commandes"
           >
             Réessayer
           </button>
@@ -133,10 +136,17 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
     <div>
       <div className="bg-[#f8f7f4] rounded-xl p-8">
         <div className="flex items-center mb-8">
-          <Package size={24} className="text-[#0a3d3f] mr-3" />
+          <Package
+            size={24}
+            className="text-[#0a3d3f] mr-3"
+            aria-hidden="true"
+          />
           <h2 className="text-2xl font-normal text-[#010101]">Mes commandes</h2>
           {meta.totalItems > 0 && (
-            <span className="ml-4 text-sm text-gray-600">
+            <span
+              className="ml-4 text-sm text-gray-600"
+              aria-label={`${orders.length} sur ${meta.totalItems} commande${meta.totalItems !== 1 ? 's' : ''} affichée${orders.length !== 1 ? 's' : ''}`}
+            >
               {orders.length}/{meta.totalItems} commande
               {meta.totalItems !== 1 ? 's' : ''}
             </span>
@@ -144,12 +154,15 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
         </div>
 
         {loading && orders.length === 0 ? (
-          <div className="flex justify-center items-center py-20">
+          <div className="flex justify-center items-center py-20" role="status">
             <div className="text-gray-600">Chargement des commandes...</div>
           </div>
         ) : orders.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center">
+            <div
+              className="w-16 h-16 bg-white rounded-full mx-auto mb-4 flex items-center justify-center"
+              aria-hidden="true"
+            >
               <Package size={24} className="text-[#0a3d3f]" />
             </div>
             <h3 className="text-lg font-medium text-[#010101] mb-2">
@@ -160,11 +173,12 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-6" aria-label="Liste de vos commandes">
             {orders.map(order => (
               <div
                 key={order.id}
                 className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+                aria-label={`Commande ${order.id.slice(0, 8)}, statut ${getStatusText(order.status)}, passée le ${new Date(order.createdAt).toLocaleDateString('fr-FR')}`}
               >
                 <div className="p-6 border-b border-gray-200 bg-gray-50">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -174,13 +188,19 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
                           Commande #{order.id.slice(0, 8)}
                         </span>
                       </div>
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                      <span
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200"
+                        aria-label={`Statut : ${getStatusText(order.status)}`}
+                      >
                         {getStatusText(order.status)}
                       </span>
                     </div>
                     <div className="flex items-center gap-6 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Calendar size={14} />
+                      <div
+                        className="flex items-center gap-1"
+                        aria-label={`Date de la commande : ${new Date(order.createdAt).toLocaleDateString('fr-FR')}`}
+                      >
+                        <Calendar size={14} aria-hidden="true" />
                         <span>
                           {new Date(order.createdAt).toLocaleDateString(
                             'fr-FR',
@@ -195,13 +215,29 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
                       <div className="flex items-center gap-1">
                         {order.paymentType === PaymentType.POINTS ? (
                           <>
-                            <Coins size={14} className="text-[#0a3d3f]" />
-                            <span>{order.pointsUsed} points</span>
+                            <Coins
+                              size={14}
+                              className="text-[#0a3d3f]"
+                              aria-hidden="true"
+                            />
+                            <span
+                              aria-label={`Montant payé : ${order.pointsUsed} points`}
+                            >
+                              {order.pointsUsed} points
+                            </span>
                           </>
                         ) : (
                           <>
-                            <CreditCard size={14} className="text-[#0a3d3f]" />
-                            <span>{order.totalAmount.toFixed(2)}€</span>
+                            <CreditCard
+                              size={14}
+                              className="text-[#0a3d3f]"
+                              aria-hidden="true"
+                            />
+                            <span
+                              aria-label={`Montant payé : ${order.totalAmount.toFixed(2)}€`}
+                            >
+                              {order.totalAmount.toFixed(2)}€
+                            </span>
                           </>
                         )}
                       </div>
@@ -210,9 +246,16 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
                 </div>
 
                 <div className="p-6">
-                  <div className="space-y-4">
+                  <div
+                    className="space-y-4"
+                    aria-label="Articles de la commande"
+                  >
                     {order.orderItems.map(item => (
-                      <div key={item.id} className="flex items-start gap-4">
+                      <div
+                        key={item.id}
+                        className="flex items-start gap-4"
+                        aria-label={`Article : ${item.productName}, ${getProductTypeText(item.productType)}, ${order.paymentType === PaymentType.POINTS ? `${item.pricePoints} points` : `${item.priceEuro.toFixed(2)}€`}`}
+                      >
                         <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
                           {item.product.imageUrl &&
                           item.product.imageUrl.length > 0 ? (
@@ -226,7 +269,10 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
+                            <div
+                              className="w-full h-full flex items-center justify-center"
+                              aria-hidden="true"
+                            >
                               <Package size={20} className="text-gray-400" />
                             </div>
                           )}
@@ -257,19 +303,28 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
                   {order.shippingAddress && (
                     <div className="mt-6 pt-4 border-t border-gray-200">
                       <div className="flex items-start gap-2">
-                        <Truck size={16} className="text-[#0a3d3f] mt-0.5" />
+                        <Truck
+                          size={16}
+                          className="text-[#0a3d3f] mt-0.5"
+                          aria-hidden="true"
+                        />
                         <div className="text-sm text-gray-600">
                           <p className="font-medium mb-1">
                             Adresse de livraison:
                           </p>
-                          <p>{order.shippingAddress}</p>
-                          <p>
-                            {order.shippingPostalCode} {order.shippingCity}
-                          </p>
-                          <p>{order.shippingCountry}</p>
-                          {order.shippingPhone && (
-                            <p>Tél: {order.shippingPhone}</p>
-                          )}
+                          <address
+                            aria-label={`Adresse de livraison : ${order.shippingAddress}, ${order.shippingPostalCode} ${order.shippingCity}, ${order.shippingCountry}${order.shippingPhone ? `, Téléphone : ${order.shippingPhone}` : ''}`}
+                            style={{ fontStyle: 'normal' }}
+                          >
+                            <p>{order.shippingAddress}</p>
+                            <p>
+                              {order.shippingPostalCode} {order.shippingCity}
+                            </p>
+                            <p>{order.shippingCountry}</p>
+                            {order.shippingPhone && (
+                              <p>Tél: {order.shippingPhone}</p>
+                            )}
+                          </address>
                         </div>
                       </div>
                     </div>
@@ -287,6 +342,11 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
             onClick={loadMoreOrders}
             disabled={loading}
             className="px-8 py-4 bg-[#0a3d3f] text-white rounded-full cursor-pointer hover:bg-[#083032] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label={
+              loading
+                ? `Chargement des commandes en cours... ${orders.length} sur ${meta.totalItems} affichées`
+                : `Charger plus de commandes. ${orders.length} sur ${meta.totalItems} affichées`
+            }
           >
             {loading
               ? 'Chargement...'
@@ -296,7 +356,11 @@ export const UserOrdersList = ({}: UserOrdersListProps) => {
       )}
 
       {!meta.hasNextPage && orders.length > 0 && (
-        <div className="mt-8 text-center text-gray-600">
+        <div
+          className="mt-8 text-center text-gray-600"
+          role="status"
+          aria-label={`Toutes les ${orders.length} commandes ont été chargées`}
+        >
           <p>Toutes les commandes ont été chargées</p>
         </div>
       )}

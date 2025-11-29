@@ -24,7 +24,6 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
 
   function handleClick() {
     setError(null);
-
     startTransition(async () => {
       try {
         await signIn.social({
@@ -34,7 +33,6 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
           fetchOptions: {
             onError: async context => {
               const { response } = context;
-
               if (response.status === 429) {
                 try {
                   const errorData = await response.json();
@@ -49,7 +47,6 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
                 }
                 return;
               }
-
               if (response.status >= 400) {
                 try {
                   const errorData = await response.json();
@@ -74,6 +71,11 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
       className={`cursor-pointer w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors ${
         isPending ? 'opacity-70 cursor-not-allowed' : ''
       }`}
+      aria-label={
+        isPending
+          ? `${action} avec Google en cours...`
+          : `${action} avec Google`
+      }
     >
       {isPending ? (
         <Spinner />
@@ -85,6 +87,7 @@ export const SignInOauthButton = ({ signUp }: SignInOauthButtonProps) => {
             width={18}
             height={18}
             className="mr-2"
+            aria-hidden="true"
           />
           {`${action} avec Google`}
         </>

@@ -74,24 +74,33 @@ export const Filters: React.FC<FiltersProps> = ({
             <button
               onClick={() => toggleDropdown('type')}
               className="flex items-center justify-between w-full md:w-48 px-4 py-3 border border-gray-200 rounded-md bg-white hover:bg-gray-50 transition-colors"
+              aria-label="Filtrer par type de planche"
+              aria-expanded={openMenu === 'type'}
+              aria-haspopup="menu"
             >
               <span>Type de planche</span>
               <ChevronDown
                 className={`w-4 h-4 transition-transform duration-300 ${openMenu === 'type' ? 'rotate-180' : ''}`}
+                aria-hidden="true"
               />
             </button>
             {openMenu === 'type' && (
-              <div className="dropdown absolute left-0 top-full mt-2 w-full md:w-48 bg-white border border-gray-200 rounded-md z-50 shadow-sm">
+              <div
+                className="dropdown absolute left-0 top-full mt-2 w-full md:w-48 bg-white border border-gray-200 rounded-md z-50 shadow-sm"
+                role="menu"
+              >
                 {['SKATE', 'CRUISER', 'LONG'].map(type => (
                   <label
                     key={type}
                     className="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                    role="menuitem"
                   >
                     <input
                       type="checkbox"
                       checked={filters.types.includes(type)}
                       onChange={() => handleTypeChange(type)}
                       className="mr-3 h-4 w-4 accent-[#0a3d3f]"
+                      aria-label={`Filtrer par ${formatTypeDisplay(type)}`}
                     />
                     <span>{formatTypeDisplay(type)}</span>
                   </label>
@@ -104,21 +113,29 @@ export const Filters: React.FC<FiltersProps> = ({
             <button
               onClick={() => toggleDropdown('price')}
               className="flex items-center justify-between w-full md:w-48 px-4 py-3 border border-gray-200 rounded-md bg-white hover:bg-gray-50 transition-colors"
+              aria-label="Filtrer par prix"
+              aria-expanded={openMenu === 'price'}
+              aria-haspopup="menu"
             >
               <span>Prix (€)</span>
               <ChevronDown
                 className={`w-4 h-4 transition-transform duration-300 ${openMenu === 'price' ? 'rotate-180' : ''}`}
+                aria-hidden="true"
               />
             </button>
             {openMenu === 'price' && (
-              <div className="dropdown absolute left-0 top-full mt-2 w-full md:w-64 bg-white border border-gray-200 rounded-lg z-50 shadow-lg p-4">
+              <div
+                className="dropdown absolute left-0 top-full mt-2 w-full md:w-64 bg-white border border-gray-200 rounded-lg z-50 shadow-lg p-4"
+                role="menu"
+              >
                 <div className="space-y-4">
                   <div className="space-y-3">
                     <div>
-                      <label className="mb-1 block">
+                      <label htmlFor="min-price" className="mb-1 block">
                         Prix minimum: {tempMinPrice}€
                       </label>
                       <input
+                        id="min-price"
                         type="range"
                         min="0"
                         max="200"
@@ -126,6 +143,7 @@ export const Filters: React.FC<FiltersProps> = ({
                         onChange={e => setTempMinPrice(Number(e.target.value))}
                         onMouseUp={() => handlePriceBlur(tempMinPrice, 0)}
                         onTouchEnd={() => handlePriceBlur(tempMinPrice, 0)}
+                        aria-label="Prix minimum"
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer
                           [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 
                           [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0a3d3f] [&::-webkit-slider-thumb]:cursor-pointer
@@ -135,10 +153,11 @@ export const Filters: React.FC<FiltersProps> = ({
                     </div>
 
                     <div>
-                      <label className="mb-1 block">
+                      <label htmlFor="max-price" className="mb-1 block">
                         Prix maximum: {tempMaxPrice}€
                       </label>
                       <input
+                        id="max-price"
                         type="range"
                         min="0"
                         max="200"
@@ -146,6 +165,7 @@ export const Filters: React.FC<FiltersProps> = ({
                         onChange={e => setTempMaxPrice(Number(e.target.value))}
                         onMouseUp={() => handlePriceBlur(tempMaxPrice, 1)}
                         onTouchEnd={() => handlePriceBlur(tempMaxPrice, 1)}
+                        aria-label="Prix maximum"
                         className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer
                           [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 
                           [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#0a3d3f] [&::-webkit-slider-thumb]:cursor-pointer
@@ -155,7 +175,10 @@ export const Filters: React.FC<FiltersProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex justify-between text-xs text-gray-500">
+                  <div
+                    className="flex justify-between text-xs text-gray-500"
+                    aria-hidden="true"
+                  >
                     <span>0€</span>
                     <span>200€</span>
                   </div>
@@ -168,6 +191,7 @@ export const Filters: React.FC<FiltersProps> = ({
         <button
           onClick={resetFilters}
           className="px-4 py-3 cursor-pointer mt-4 md:mt-0 md:ml-4 text-[#0a3d3f] border border-[#0a3d3f] rounded-md hover:bg-[#0a3d3f] hover:text-white transition-colors"
+          aria-label="Réinitialiser tous les filtres"
         >
           Réinitialiser
         </button>

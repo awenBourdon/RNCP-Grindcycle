@@ -33,13 +33,17 @@ export const LoginForm = () => {
       onSubmit={handleSubmit}
       autoComplete="off"
       className="w-full space-y-4"
+      aria-label="Formulaire de connexion"
     >
       <div className="flex flex-col gap-2">
         <label htmlFor="email" className="text-sm font-medium text-gray-700">
           Email
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div
+            className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            aria-hidden="true"
+          >
             <Mail size={16} className="text-gray-400" />
           </div>
           <input
@@ -48,6 +52,7 @@ export const LoginForm = () => {
             name="email"
             placeholder="ton@email.com"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            aria-label="Adresse email"
             required
           />
         </div>
@@ -64,12 +69,16 @@ export const LoginForm = () => {
           <Link
             href="/authentification/mot-de-passe-oublie"
             className="text-sm text-[#0a3d3f] hover:underline"
+            aria-label="Accéder à la page de récupération de mot de passe oublié"
           >
             Mot de passe oublié ?
           </Link>
         </div>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div
+            className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            aria-hidden="true"
+          >
             <Lock size={16} className="text-gray-400" />
           </div>
           <input
@@ -78,12 +87,18 @@ export const LoginForm = () => {
             name="password"
             placeholder="••••••••"
             className="w-full pl-10 pr-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            aria-label="Mot de passe"
             required
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            aria-label={
+              showPassword
+                ? 'Masquer le mot de passe'
+                : 'Afficher le mot de passe'
+            }
           >
             {showPassword ? (
               <EyeOff size={16} className="text-gray-400 hover:text-gray-600" />
@@ -100,6 +115,7 @@ export const LoginForm = () => {
         className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white cursor-pointer hover:bg-[#0a4d4f]transition-colors ${
           isPending ? 'opacity-70 cursor-not-allowed' : ''
         }`}
+        aria-label={isPending ? 'Connexion en cours...' : 'Se connecter'}
       >
         {isPending ? (
           <Spinner />
@@ -112,7 +128,13 @@ export const LoginForm = () => {
       </button>
 
       {error && (
-        <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+        <p
+          className="text-red-500 text-sm mt-2 text-center"
+          role="alert"
+          aria-live="polite"
+        >
+          {error}
+        </p>
       )}
     </form>
   );

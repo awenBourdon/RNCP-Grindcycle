@@ -1,5 +1,4 @@
 'use client';
-
 import { Spinner } from '@/app/(shop)/components/Spinner';
 import { signOut } from '@/lib/utils/auth-client';
 import type { ErrorContext } from '@/lib/utils/types/types';
@@ -38,6 +37,7 @@ export const SignOutButton = () => {
         text-sm font-medium
         ${isPending ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}
       `}
+      aria-label={isPending ? 'Déconnexion en cours...' : 'Se déconnecter'}
     >
       {isPending ? (
         <span className="inline-flex items-center">

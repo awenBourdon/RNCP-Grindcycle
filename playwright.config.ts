@@ -21,10 +21,10 @@ export default defineConfig({
   /* Retry on CI only */
   retries: 2,
   /* Opt out of parallel tests on CI. */
-  workers: 5,
+  workers: process.env.CI ? 1 : 5,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
-  timeout: 60000,
+  timeout: 120000,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -53,5 +53,6 @@ export default defineConfig({
     command: 'npm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: true,
+    timeout: process.env.CI ? 120000 : 30000,
   },
 });

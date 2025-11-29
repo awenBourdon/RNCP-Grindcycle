@@ -7,7 +7,6 @@ const password = process.env.TEST_PASSWORD || '';
 
 test.describe('Commandes', () => {
   test.beforeEach(async ({ page }) => {
-    // Se connecter
     await page.goto('http://localhost:3000/authentification/connexion');
     await page.waitForLoadState('networkidle');
 
@@ -33,7 +32,6 @@ test.describe('Commandes', () => {
     
     await expect(page).toHaveURL(/.*commandes/);
     
-    // Vérifier que la page est chargée
     const pageContent = page.locator('body');
     await expect(pageContent).toBeVisible();
   });
@@ -42,18 +40,15 @@ test.describe('Commandes', () => {
     await page.goto('http://localhost:3000/compte/commandes');
     await page.waitForLoadState('networkidle');
     
-    // Vérifier que la page est chargée
     const pageContent = page.locator('body');
     await expect(pageContent).toBeVisible();
     
-    // La liste peut être vide, donc on vérifie juste que la page est chargée
   });
 
   test('Voir les détails d\'une commande', async ({ page }) => {
     await page.goto('http://localhost:3000/compte/commandes');
     await page.waitForLoadState('networkidle');
     
-    // Chercher un lien ou bouton vers une commande
     const orderLink = page.locator('a[href*="/commande"], button').filter({ hasText: /commande|voir|détails/i }).first();
     
     if (await orderLink.isVisible().catch(() => false)) {

@@ -51,13 +51,17 @@ export const RegisterForm = () => {
       onSubmit={handleSubmit(onSubmit)}
       autoComplete="off"
       className="w-full space-y-4"
+      aria-label="Formulaire d'inscription"
     >
       <div className="flex flex-col gap-2">
         <label htmlFor="name" className="text-sm font-medium text-gray-700">
           Nom d&apos;utilisateur
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div
+            className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            aria-hidden="true"
+          >
             <UserPlus size={16} className="text-gray-400" />
           </div>
           <input
@@ -65,10 +69,15 @@ export const RegisterForm = () => {
             {...register('name')}
             placeholder="Ton nom d'utilisateur"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            aria-label="Nom d'utilisateur"
+            aria-invalid={errors.name ? 'true' : 'false'}
+            aria-describedby={errors.name ? 'name-error' : undefined}
           />
         </div>
         {errors.name && (
-          <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
+          <p className="text-red-500 text-xs mt-1" id="name-error" role="alert">
+            {errors.name.message}
+          </p>
         )}
       </div>
 
@@ -77,7 +86,10 @@ export const RegisterForm = () => {
           Email
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div
+            className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            aria-hidden="true"
+          >
             <Mail size={16} className="text-gray-400" />
           </div>
           <input
@@ -86,10 +98,19 @@ export const RegisterForm = () => {
             {...register('email')}
             placeholder="ton@email.com"
             className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            aria-label="Adresse email"
+            aria-invalid={errors.email ? 'true' : 'false'}
+            aria-describedby={errors.email ? 'email-error' : undefined}
           />
         </div>
         {errors.email && (
-          <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+          <p
+            className="text-red-500 text-xs mt-1"
+            id="email-error"
+            role="alert"
+          >
+            {errors.email.message}
+          </p>
         )}
       </div>
 
@@ -98,7 +119,10 @@ export const RegisterForm = () => {
           Mot de passe
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div
+            className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            aria-hidden="true"
+          >
             <Lock size={16} className="text-gray-400" />
           </div>
           <input
@@ -107,11 +131,19 @@ export const RegisterForm = () => {
             {...register('password')}
             placeholder="••••••••"
             className="w-full pl-10 pr-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            aria-label="Mot de passe"
+            aria-invalid={errors.password ? 'true' : 'false'}
+            aria-describedby={errors.password ? 'password-error' : undefined}
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            aria-label={
+              showPassword
+                ? 'Masquer le mot de passe'
+                : 'Afficher le mot de passe'
+            }
           >
             {showPassword ? (
               <EyeOff size={16} className="text-gray-400 hover:text-gray-600" />
@@ -121,7 +153,13 @@ export const RegisterForm = () => {
           </button>
         </div>
         {errors.password && (
-          <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+          <p
+            className="text-red-500 text-xs mt-1"
+            id="password-error"
+            role="alert"
+          >
+            {errors.password.message}
+          </p>
         )}
       </div>
 
@@ -133,7 +171,10 @@ export const RegisterForm = () => {
           Confirmer le mot de passe
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div
+            className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            aria-hidden="true"
+          >
             <Lock size={16} className="text-gray-400" />
           </div>
           <input
@@ -142,11 +183,21 @@ export const RegisterForm = () => {
             {...register('confirmPassword')}
             placeholder="••••••••"
             className="w-full pl-10 pr-10 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0a3d3f] focus:border-transparent transition-colors"
+            aria-label="Confirmation du mot de passe"
+            aria-invalid={errors.confirmPassword ? 'true' : 'false'}
+            aria-describedby={
+              errors.confirmPassword ? 'confirmPassword-error' : undefined
+            }
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            aria-label={
+              showConfirmPassword
+                ? 'Masquer la confirmation du mot de passe'
+                : 'Afficher la confirmation du mot de passe'
+            }
           >
             {showConfirmPassword ? (
               <EyeOff size={16} className="text-gray-400 hover:text-gray-600" />
@@ -156,7 +207,11 @@ export const RegisterForm = () => {
           </button>
         </div>
         {errors.confirmPassword && (
-          <p className="text-red-500 text-xs mt-1">
+          <p
+            className="text-red-500 text-xs mt-1"
+            id="confirmPassword-error"
+            role="alert"
+          >
             {errors.confirmPassword.message}
           </p>
         )}
@@ -173,6 +228,7 @@ export const RegisterForm = () => {
         className={`w-full inline-flex items-center justify-center rounded-full text-sm font-medium px-4 py-3 bg-[#0a3d3f] text-white cursor-pointer hover:bg-[#0a4d4f] transition-colors ${
           isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
         }`}
+        aria-label={isSubmitting ? 'Inscription en cours...' : "S'inscrire"}
       >
         {isSubmitting ? (
           <Spinner />

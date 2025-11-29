@@ -8,46 +8,68 @@ export const Summary = () => {
   const total = subtotal + shipping;
 
   return (
-    <div className="p-6 rounded-lg bg-[#f8f7f4] max-h-[26.5rem]">
+    <div
+      className="p-6 rounded-lg bg-[#f8f7f4] max-h-[26.5rem]"
+      aria-label="Récapitulatif du panier"
+    >
       <h2 className="text-xl font-medium mb-6">Récapitulatif</h2>
-
-      <div className="space-y-4 mb-6">
-        <div className="flex justify-between">
+      <div
+        className="space-y-4 mb-6"
+        role="region"
+        aria-label="Détails du prix"
+      >
+        <div
+          className="flex justify-between"
+          aria-label={`Sous-total : ${subtotal.toFixed(2)} euros`}
+        >
           <span className="text-gray-600">Sous-total</span>
           <span>{subtotal.toFixed(2)} €</span>
         </div>
-        <div className="flex justify-between">
+        <div
+          className="flex justify-between"
+          aria-label={`Livraison : ${shipping === 0 ? 'gratuite' : `${shipping.toFixed(2)} euros`}`}
+        >
           <span className="text-gray-600">Livraison</span>
           <span>
             {shipping === 0 ? 'Gratuite' : `${shipping.toFixed(2)} €`}
           </span>
         </div>
         {shipping > 0 && (
-          <div className="text-sm text-gray-500 italic">
+          <div
+            className="text-sm text-gray-500 italic"
+            aria-label="Information : livraison gratuite à partir de 100 euros d'achat"
+          >
             Livraison gratuite à partir de 100€ d&apos;achat
           </div>
         )}
-        <div className="border-t border-gray-200 pt-4 flex justify-between font-medium">
+        <div
+          className="border-t border-gray-200 pt-4 flex justify-between font-medium"
+          aria-label={`Total : ${total.toFixed(2)} euros`}
+        >
           <span>Total</span>
           <span>{total.toFixed(2)} €</span>
         </div>
       </div>
-
       <div className="space-y-4">
         <Link href="panier/redirect">
-          <button className="w-full py-3 mb-2 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors">
+          <button
+            className="w-full py-3 mb-2 bg-[#0a3d3f] text-white rounded-full hover:bg-[#0a4d4f] transition-colors"
+            aria-label={`Passer la commande, total ${total.toFixed(2)} euros`}
+          >
             Passer la commande
           </button>
         </Link>
         <Link
           href="/catalogue"
           className="block w-full py-3 text-center border border-[#0a3d3f] text-[#0a3d3f] rounded-full hover:bg-[#0a3d3f] hover:text-white transition-colors"
+          aria-label="Continuer mes achats et retourner au catalogue"
         >
           Continuer mes achats
         </Link>
         <button
           onClick={clearCart}
           className="w-full text-gray-500 hover:text-gray-700 text-sm py-2 transition-colors"
+          aria-label="Vider mon panier"
         >
           Vider mon panier
         </button>

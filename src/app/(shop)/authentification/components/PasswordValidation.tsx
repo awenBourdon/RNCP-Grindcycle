@@ -62,7 +62,10 @@ export const PasswordValidation = ({
   if (!password) return null;
 
   return (
-    <div className="space-y-4">
+    <div
+      className="space-y-4"
+      aria-label="Indicateur de force et validation du mot de passe"
+    >
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-700">
@@ -78,14 +81,23 @@ export const PasswordValidation = ({
                     ? 'text-yellow-800'
                     : 'text-green-800'
             }`}
+            aria-label={`Force du mot de passe : ${getStrengthText(strength)}, ${strength}%`}
           >
             {getStrengthText(strength)}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div
+          className="w-full bg-gray-200 rounded-full h-2"
+          role="progressbar"
+          aria-valuenow={strength}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`Barre de progression de la force du mot de passe : ${strength}%`}
+        >
           <div
             className={`h-2 rounded-full transition-all duration-300 ${getStrengthColor(strength)}`}
             style={{ width: `${strength}%` }}
+            aria-hidden="true"
           />
         </div>
       </div>
@@ -96,60 +108,85 @@ export const PasswordValidation = ({
         <div className="grid grid-cols-1 gap-2">
           <div className="flex items-center gap-2">
             {criteria.hasMinLength ? (
-              <Check size={16} className="text-gray-600" />
+              <Check size={16} className="text-gray-600" aria-hidden="true" />
             ) : (
-              <X size={16} className="text-gray-400" />
+              <X size={16} className="text-gray-400" aria-hidden="true" />
             )}
             <span
               className={`text-sm ${criteria.hasMinLength ? 'text-gray-600' : 'text-gray-400'}`}
+              aria-label={
+                criteria.hasMinLength
+                  ? 'Au moins 12 caractères : validé'
+                  : 'Au moins 12 caractères : non validé'
+              }
             >
               Au moins 12 caractères
             </span>
           </div>
           <div className="flex items-center gap-2">
             {criteria.hasLowercase ? (
-              <Check size={16} className="text-gray-600" />
+              <Check size={16} className="text-gray-600" aria-hidden="true" />
             ) : (
-              <X size={16} className="text-gray-400" />
+              <X size={16} className="text-gray-400" aria-hidden="true" />
             )}
             <span
               className={`text-sm ${criteria.hasLowercase ? 'text-gray-600' : 'text-gray-400'}`}
+              aria-label={
+                criteria.hasLowercase
+                  ? 'Une lettre minuscule (a-z) : validée'
+                  : 'Une lettre minuscule (a-z) : non validée'
+              }
             >
               Une lettre minuscule (a-z)
             </span>
           </div>
           <div className="flex items-center gap-2">
             {criteria.hasUppercase ? (
-              <Check size={16} className="text-gray-600" />
+              <Check size={16} className="text-gray-600" aria-hidden="true" />
             ) : (
-              <X size={16} className="text-gray-400" />
+              <X size={16} className="text-gray-400" aria-hidden="true" />
             )}
             <span
               className={`text-sm ${criteria.hasUppercase ? 'text-gray-600' : 'text-gray-400'}`}
+              aria-label={
+                criteria.hasUppercase
+                  ? 'Une lettre majuscule (A-Z) : validée'
+                  : 'Une lettre majuscule (A-Z) : non validée'
+              }
             >
               Une lettre majuscule (A-Z)
             </span>
           </div>
           <div className="flex items-center gap-2">
             {criteria.hasNumber ? (
-              <Check size={16} className="text-gray-600" />
+              <Check size={16} className="text-gray-600" aria-hidden="true" />
             ) : (
-              <X size={16} className="text-gray-400" />
+              <X size={16} className="text-gray-400" aria-hidden="true" />
             )}
             <span
               className={`text-sm ${criteria.hasNumber ? 'text-gray-600' : 'text-gray-400'}`}
+              aria-label={
+                criteria.hasNumber
+                  ? 'Un chiffre (0-9) : validé'
+                  : 'Un chiffre (0-9) : non validé'
+              }
             >
               Un chiffre (0-9)
             </span>
           </div>
           <div className="flex items-center gap-2">
             {criteria.hasSpecialChar ? (
-              <Check size={16} className="text-gray-600" />
+              <Check size={16} className="text-gray-600" aria-hidden="true" />
             ) : (
-              <X size={16} className="text-gray-400" />
+              <X size={16} className="text-gray-400" aria-hidden="true" />
             )}
             <span
               className={`text-sm ${criteria.hasSpecialChar ? 'text-gray-600' : 'text-gray-400'}`}
+              aria-label={
+                criteria.hasSpecialChar
+                  ? 'Un caractère spécial (!@#$%^&*) : validé'
+                  : 'Un caractère spécial (!@#$%^&*) : non validé'
+              }
             >
               Un caractère spécial (!@#$%^&*)
             </span>
@@ -157,17 +194,21 @@ export const PasswordValidation = ({
         </div>
       </div>
       {password && confirmPassword && (
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2"
+          role="alert"
+          aria-live="polite"
+        >
           {passwordsMatch ? (
             <>
-              <Check size={16} className="text-green-800" />
+              <Check size={16} className="text-green-800" aria-hidden="true" />
               <span className="text-sm text-green-800 font-medium">
                 Les mots de passe correspondent
               </span>
             </>
           ) : (
             <>
-              <X size={16} className="text-red-800" />
+              <X size={16} className="text-red-800" aria-hidden="true" />
               <span className="text-sm text-red-800 font-medium">
                 Les mots de passe ne correspondent pas
               </span>
