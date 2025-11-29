@@ -33,7 +33,6 @@ export default function PrivacyPolicyPage() {
             </p>
           </div>
 
-          {/* Contenu */}
           <div className="prose prose-lg max-w-none">
             <div className="bg-[#f8f7f4] rounded-xl p-8 mb-8">
               <h2 className="text-2xl font-medium text-[#010101] mb-6 flex items-center">

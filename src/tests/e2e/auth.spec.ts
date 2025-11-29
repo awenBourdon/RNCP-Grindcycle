@@ -78,14 +78,12 @@ test.describe('Authentification', () => {
   });
 
   test('Lien vers la récupération de mot de passe', async ({ page }) => {
-    // Chercher le lien par son href plutôt que par son texte
     const forgotLink = page.locator('a[href*="mot-de-passe-oublie"]').first();
 
     if (await forgotLink.isVisible().catch(() => false)) {
       await expect(forgotLink).toBeVisible();
 
       await forgotLink.click();
-      // Attendre la navigation avec un timeout plus long
       await page.waitForURL('**/mot-de-passe-oublie', { timeout: 15000 });
 
       expect(page.url()).toContain('mot-de-passe-oublie');

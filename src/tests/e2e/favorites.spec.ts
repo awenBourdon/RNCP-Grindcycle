@@ -7,7 +7,6 @@ const password = process.env.TEST_PASSWORD || '';
 
 test.describe('Favoris', () => {
   test.beforeEach(async ({ page }) => {
-    // Se connecter
     await page.goto('http://localhost:3000/authentification/connexion');
     await page.waitForLoadState('networkidle');
 
@@ -48,7 +47,6 @@ test.describe('Favoris', () => {
       await page.waitForURL('**/produit/**', { timeout: 10000 });
       await page.waitForLoadState('networkidle');
       
-      // Chercher le bouton favori (icône cœur)
       const favoriteButton = page.locator('button').filter({ hasText: /favori|♥|♡|❤/i }).or(
         page.locator('button[aria-label*="favori" i]')
       ).first();
@@ -64,7 +62,6 @@ test.describe('Favoris', () => {
     await page.goto('http://localhost:3000/compte/favoris');
     await page.waitForLoadState('networkidle');
     
-    // Chercher un bouton pour retirer des favoris
     const removeButton = page.locator('button').filter({ hasText: /retirer|supprimer|favori/i }).first();
     
     if (await removeButton.isVisible().catch(() => false)) {

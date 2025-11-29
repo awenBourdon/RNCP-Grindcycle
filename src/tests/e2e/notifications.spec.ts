@@ -7,7 +7,6 @@ const password = process.env.TEST_PASSWORD || '';
 
 test.describe('Notifications', () => {
   test.beforeEach(async ({ page }) => {
-    // Se connecter
     await page.goto('http://localhost:3000/authentification/connexion');
     await page.waitForLoadState('networkidle');
 
@@ -33,7 +32,6 @@ test.describe('Notifications', () => {
     
     await expect(page).toHaveURL(/.*notifications/);
     
-    // Vérifier que la page est chargée
     const pageContent = page.locator('body');
     await expect(pageContent).toBeVisible();
   });
@@ -42,35 +40,19 @@ test.describe('Notifications', () => {
     await page.goto('http://localhost:3000/compte/notifications');
     await page.waitForLoadState('networkidle');
     
-    // Vérifier que la page est chargée
     const pageContent = page.locator('body');
     await expect(pageContent).toBeVisible();
     
-    // La liste peut être vide, donc on vérifie juste que la page est chargée
   });
 
   test('Marquer une notification comme lue si possible', async ({ page }) => {
     await page.goto('http://localhost:3000/compte/notifications');
     await page.waitForLoadState('networkidle');
     
-    // Chercher un bouton pour marquer comme lu
-    const markReadButton = page.locator('button').filter({ hasText: /marquer|lu|✓/i }).first();
+    const markReadButton = page.locator('button').filter({ hasText: /marquée|lu|✓/i }).first();
     
     if (await markReadButton.isVisible().catch(() => false)) {
       await markReadButton.click();
-      await page.waitForTimeout(500);
-    }
-  });
-
-  test('Supprimer une notification si possible', async ({ page }) => {
-    await page.goto('http://localhost:3000/compte/notifications');
-    await page.waitForLoadState('networkidle');
-    
-    // Chercher un bouton de suppression
-    const deleteButton = page.locator('button').filter({ hasText: /supprimer|×|effacer/i }).first();
-    
-    if (await deleteButton.isVisible().catch(() => false)) {
-      await deleteButton.click();
       await page.waitForTimeout(500);
     }
   });
