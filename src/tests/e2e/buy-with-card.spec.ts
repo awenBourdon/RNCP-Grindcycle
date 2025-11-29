@@ -47,14 +47,14 @@ await produit.click();
   await page.waitForLoadState('domcontentloaded');
   await page.waitForLoadState('networkidle', { timeout: 30000 });
   
-  // Attendre que le formulaire soit visible et prêt
-  await page.getByRole('textbox', { name: 'Prénom *' }).waitFor({ state: 'visible', timeout: 30000 });
-  await page.getByRole('textbox', { name: 'Prénom *' }).fill('Luke');
-  await page.getByRole('textbox', { name: 'Nom *', exact: true }).fill('Skywalker');
-  await page.getByRole('textbox', { name: 'Adresse *' }).fill('32 rue des Jedi');
-  await page.getByRole('textbox', { name: 'Ville *' }).fill('Mos Esleis');
-  await page.getByRole('textbox', { name: 'Code postal *' }).fill('44000');
-  await page.getByRole('textbox', { name: 'Email *' }).fill('luke@jedi.com');
+  // Attendre que le formulaire soit visible et prêt (utiliser les IDs au lieu des aria-labels)
+  await page.locator('#firstName').waitFor({ state: 'visible', timeout: 30000 });
+  await page.locator('#firstName').fill('Luke');
+  await page.locator('#lastName').fill('Skywalker');
+  await page.locator('#address').fill('32 rue des Jedi');
+  await page.locator('#city').fill('Mos Esleis');
+  await page.locator('#postalCode').fill('44000');
+  await page.locator('#email').fill('luke@jedi.com');
   await page.getByRole('textbox', { name: 'Téléphone' }).fill('0987656789');
   await page.getByRole('button', { name: 'Procéder au paiement' }).click();
   
