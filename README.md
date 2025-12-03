@@ -1,152 +1,186 @@
-# GrindCycle
+# Grindcycle
 
-<img width="1920" height="997" alt="image" src="https://github.com/user-attachments/assets/9215a891-fa0b-48a4-81dc-471ffe4735b4" />
+<img width="1869" height="918" alt="image" src="https://github.com/user-attachments/assets/830dc797-0c0a-4d35-9ad9-8b456f8934a6" />
 
-A web e-commerce application built with Next.js featuring authentication, payments, and database integration.
 
-## 🚀 Tech Stack
+Grindcycle est une plateforme d'e-commerce construite avec Next.js permettant d' échanger ses anciennes planches de skate contre des nouvelles.
 
-- **Frontend & Backend**: Next.js
-- **Database**: PostgreSQL with Supabase
-- **ORM**: Prisma
-- **Authentication**: Better Auth
-- **Payments**: Stripe
-- **Email**: Nodemailer with Gmail
-- **Styling**: Tailwind
-- **Deployment**: Koyeb
+## Stack Technique
 
-## 📋 Prerequisites
+- **Frontend & Backend**: [Next.js](https://nextjs.org/) (App Router)
+- **Base de données**: [PostgreSQL](https://www.postgresql.org/) hébergée sur [Neon](https://neon.tech/)
+- **Stockage des images**: [Supabase Storage](https://supabase.com/storage)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Authentification**: [Better Auth](https://www.better-auth.com/)
+- **Paiements**: [Stripe](https://stripe.com/)
+- **Emails**: [Nodemailer](https://nodemailer.com/) avec Gmail
+- **Styles**: [Tailwind CSS](https://tailwindcss.com/)
+- **Déploiement**: [Vercel](https://www.vercel.com/)
+- **Documentation API**: Swagger UI / OpenAPI
 
-Before you begin, ensure you have the following installed:
+## 📋 Prérequis
 
-- Node.js (version 22 or higher)
-- npm or yarn
-- Docker (if running locally)
+Avant de commencer, assurez-vous d'avoir installé les outils suivants sur votre machine :
+
+- [Node.js](https://nodejs.org/) (version 22 ou supérieure)
+- [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
+- [Docker](https://www.docker.com/) (optionnel, si vous souhaitez exécuter la base de données localement)
 
 ## 🛠️ Installation
 
-### 1. Clone the repository
+### 1. Cloner le dépôt
 
 ```bash
 git clone git@github.com:awenBourdon/RNCP-Grindcycle.git
 cd grindcycle
 ```
 
-### 2. Install dependencies
+### 2. Installer les dépendances
 
 ```bash
 npm install
-# or
+# ou
 yarn install
 ```
 
-### 3. Environment Setup
+### 3. Configuration de l'environnement
 
-Create a `.env` file in the root directory and add the following variables:
+Créez un fichier `.env` à la racine du projet en dupliquant l'exemple ci-dessous. Vous devez remplir les variables avec vos propres clés API.
 
 ```env
-# Authentication
-BETTER_AUTH_SECRET="your-auth-secret"
+# Authentification (Better Auth)
+BETTER_AUTH_SECRET="votre-secret-genere-aleatoirement"
 NEXT_PUBLIC_URL="http://localhost:3000"
 NEXT_PUBLIC_API_URL="http://localhost:3000"
 
-# Database
-DATABASE_URL="your-database-connection-string"
+# Base de données (Prisma / Neon)
+# Format: postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public
+DATABASE_URL="votre-connection-string-neon"
 
-# Admin Configuration
-ADMIN_EMAIL="your-admin-email@example.com"
+# Google OAuth (Pour la connexion via Google)
+GOOGLE_CLIENT_ID="votre-google-client-id"
+GOOGLE_CLIENT_SECRET="votre-google-client-secret"
 
-# Google OAuth
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
+# Configuration Email (Nodemailer)
+NODEMAILER_USER="votre-email@gmail.com"
+NODEMAILER_APP_PASSWORD="votre-mot-de-passe-application"
 
-# Email Configuration
-NODEMAILER_USER="your-email@gmail.com"
-NODEMAILER_APP_PASSWORD="your-app-password"
-
-# Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+# Stripe (Paiements)
 STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 
-# Application URLs
-NEXT_PUBLIC_BASE_URL="http://localhost:3000"
-
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL="your-supabase-url"
-SUPABASE_SERVICE_ROLE_KEY="your-supabase-service-role-key"
+# Supabase (Stockage images, etc.)
+NEXT_PUBLIC_SUPABASE_URL="votre-url-projet-supabase"
+SUPABASE_SERVICE_ROLE_KEY="votre-cle-service-role-supabase"
 ```
 
-### 4. Database Setup
+### 4. Mise en place de la Base de Données
 
-#### Option A: Using Supabase (Recommended)
+#### Option A : Utiliser Neon
 
-1. Create a new project on [Supabase](https://supabase.com/)
-2. Get your database URL from the project settings
-3. Update the `DATABASE_URL` in your `.env`
+1. Créez un nouveau projet sur [Neon](https://neon.tech/).
+2. Récupérez l'URL de connexion dans le tableau de bord.
+3. Mettez à jour `DATABASE_URL` dans votre fichier `.env`.
 
-#### Option B: Local PostgreSQL with Docker
+> **Note** : Supabase est utilisé uniquement pour le stockage des images. Assurez-vous de configurer également vos clés Supabase dans le `.env`.
+
+#### Option B : PostgreSQL Local avec Docker
+
+Si vous préférez travailler en local sans dépendance externe :
 
 ```bash
-# Uncomment the Docker DATABASE_URL in your .env
-docker compose -up
+# Assurez-vous d'avoir configuré une DATABASE_URL locale dans le .env
+docker compose up -d
 ```
 
-### 5. Run Database Migrations
+### 5. Migrations de la Base de Données
+
+Une fois la base de données connectée, poussez le schéma Prisma pour créer les tables :
 
 ```bash
-# Add your migration command here
 npx prisma db push
+
+npx prisma generate
 ```
 
-### 6. Start the Development Server
+### 6. Lancer le Serveur de Développement
 
 ```bash
 npm run dev
-# or
+# ou
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur pour voir l'application.
 
-## 🔧 Configuration
+## 📚 Documentation API
 
-### Google OAuth Setup
+Le projet inclut une documentation API interactive générée automatiquement via Swagger.
 
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the Google+ API
-4. Create OAuth 2.0 credentials
-5. Add your domain to authorized origins
+- **Accès local** : Une fois le serveur lancé, rendez-vous sur [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
+- **Contenu** : Vous y trouverez la liste de tous les endpoints (Produits, Commandes, Utilisateurs, etc.), les schémas de données, et la possibilité de tester les requêtes directement depuis le navigateur.
+- **Fichier source** : La définition OpenAPI se trouve dans `src/lib/docs/openapi.ts`.
 
-### Stripe Setup
+## 🔧 Guides de Configuration Détaillés
 
-1. Create a [Stripe account](https://stripe.com/)
-2. Get your publishable and secret keys from the dashboard
-3. Set up webhooks for your application events
+### Google OAuth
 
-### Email Configuration
+1. Rendez-vous sur la [Google Cloud Console](https://console.cloud.google.com/).
+2. Créez un nouveau projet.
+3. Allez dans "APIs & Services" > "Credentials".
+4. Créez un identifiant "OAuth client ID".
+5. Ajoutez `http://localhost:3000` dans les "Authorized JavaScript origins".
+6. Ajoutez `http://localhost:3000/api/auth/callback/google` dans les "Authorized redirect URIs".
 
-1. Enable 2-factor authentication on your Gmail account
-2. Generate an app-specific password
-3. Use this password in your `NODEMAILER_APP_PASSWORD`
+### Stripe
 
-## 🚀 Deployment
+1. Créez un compte sur [Stripe](https://stripe.com/).
+2. Récupérez vos clés API (Publishable et Secret) dans le tableau de bord développeur.
+3. Pour tester les webhooks en local, utilisez le CLI Stripe :
+   ```bash
+   stripe listen --forward-to localhost:3000/api/webhooks/stripe
+   ```
+   Cela vous donnera votre `STRIPE_WEBHOOK_SECRET`.
 
-TODO
+### Emails (Gmail)
 
-## 📝 Features
+1. Activez l'authentification à deux facteurs (2FA) sur votre compte Google.
+2. Générez un "Mot de passe d'application" (App Password) spécifique pour Nodemailer.
+3. Utilisez ce mot de passe dans la variable `NODEMAILER_APP_PASSWORD`.
 
-- User authentication with Better-Auth and Google OAuth
-- Payment processing with Stripe
-- Email notifications
-- Admin panel access
-- Database integration with Supabase
+## 🚀 Déploiement
 
-## 📄 License
+Le projet est optimisé pour être déployé sur [Vercel](https://vercel.com/), la plateforme créée par les auteurs de Next.js.
 
-TODO
+### Déploiement sur Vercel (Recommandé)
+
+1. Poussez votre code sur un dépôt GitHub, GitLab ou Bitbucket.
+2. Importez votre projet sur Vercel.
+3. Configurez les variables d'environnement (copiez le contenu de votre `.env`).
+4. Cliquez sur "Deploy".
+
+Le projet est également compatible avec d'autres hébergeurs comme Koyeb ou tout environnement supportant Docker/Node.js.
+
+### Build de production
+
+Pour créer une version de production en local :
+
+```bash
+npm run build
+npm start
+```
+
+## 📝 Fonctionnalités Principales
+
+- **Authentification Complète** : Connexion par email/mot de passe et Google OAuth.
+- **Catalogue Produits** : Navigation, filtrage et recherche de produits.
+- **Panier & Commande** : Gestion du panier en temps réel et tunnel d'achat sécurisé.
+- **Paiement** : Intégration Stripe pour les paiements par carte.
+- **Espace Client** : Historique des commandes, gestion du profil et favoris.
+- **Système de Points** : Fidélité et récompenses pour le recyclage.
+- **Administration** : Interface dédiée pour la gestion des produits, commandes et utilisateurs.
 
 ## 📞 Support
 
-For support, email hellogrindcycle@gmail.com or create an issue in the repository.
+Pour toute question ou demande de support, vous pouvez contacter l'équipe à hellogrindcycle@gmail.com ou ouvrir une issue sur le dépôt GitHub.
+
