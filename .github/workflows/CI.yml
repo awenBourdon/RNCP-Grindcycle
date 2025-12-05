@@ -45,7 +45,10 @@ jobs:
         run: npx prisma generate
 
       - name: Run linting
-        run: npm run lint
+        run: |
+          pwd
+          ls -la
+          npm run lint
 
       - name: Run Next.js build
         run: npm run build
