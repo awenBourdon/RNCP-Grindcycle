@@ -29,7 +29,8 @@ export const ForgotPasswordForm = () => {
           fetchOptions: {
             onRequest: () => {},
             onResponse: () => {},
-            onError: ctx => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onError: (ctx: any) => {
               toast.error(ctx.error.message);
             },
             onSuccess: () => {
