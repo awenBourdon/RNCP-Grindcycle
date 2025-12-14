@@ -249,8 +249,8 @@ export const AddProductForm = ({ usedBoards }: AddProductFormProps) => {
             Ajouter un nouveau produit
           </h2>
           <p className="text-gray-600 max-w-3xl">
-            Remplissez ce formulaire pour ajouter un nouveau produit au
-            catalogue. Vous pouvez créer un produit indépendant ou recycler une
+            Remplis ce formulaire pour ajouter un nouveau produit au
+            catalogue. Tu peux créer un produit indépendant ou recycler une
             planche reçue.
           </p>
         </div>
