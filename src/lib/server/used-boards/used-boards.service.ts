@@ -12,13 +12,15 @@ import { UserService } from '../users/users-service';
 import { PointsCalculatorService } from '../points-calculator/points-calculator';
 import { ImageService } from '../upload-images/images.service';
 import { PaginatedResponse, PaginationParams, normalizePaginationParams } from '@/lib/utils/pagination';
+import { MailService } from '../mail/mail.service';
 
 export class UsedBoardService {
   constructor(
     private usedBoardRepository: InterfaceUsedBoardRepository = new UsedBoardRepository(),
     private imageService: ImageService = new ImageService('usedBoards'),
     private pointsHistoryService: PointsHistoryService = new PointsHistoryService(),
-    private userService: UserService = new UserService()
+    private userService: UserService = new UserService(),
+    private mailService: MailService = new MailService()
   ) {}
 
   async createUsedBoard(
@@ -168,7 +170,7 @@ export class UsedBoardService {
         description: NotificationTemplates.boardSubmitted(board.name),
       });
 
-      const user = await this.usedBoardRepository.findUserById(board.userId);
+      const user = await this.userService.getUserById(board.userId);
       if (user) {
         await createNotification({
           userId: null,
@@ -178,6 +180,16 @@ export class UsedBoardService {
             board.name
           ),
         });
+
+      if (user && user.email) {
+          await this.mailService.sendBoardSubmissionConfirmationEmail(
+              user.email,
+              board.name,
+              board.description,
+              board.image,
+              user.name || 'Utilisateur'
+          );
+      }
       }
     } catch (error) {
       console.error('Erreur notifications soumission:', error);

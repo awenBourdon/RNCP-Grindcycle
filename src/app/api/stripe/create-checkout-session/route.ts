@@ -101,6 +101,9 @@ export async function POST(request: Request) {
         shippingCountry: shippingAddress.country,
         shippingPhone: shippingAddress.phone || '',
       },
+      invoice_creation: {
+        enabled: true,
+      },
     };
 
    if (shippingCost > 0) {

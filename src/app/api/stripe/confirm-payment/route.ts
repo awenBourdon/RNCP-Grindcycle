@@ -1,4 +1,5 @@
 import { PaymentService } from '@/lib/server/payments/payments.service';
+import { MailService } from '@/lib/server/mail/mail.service';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
@@ -41,6 +42,20 @@ export async function POST(req: Request) {
       shippingPostalCode: updatedOrder.shippingPostalCode,
       shippingCountry: updatedOrder.shippingCountry,
     };
+
+
+    let invoiceUrl = null;
+    if (session.invoice) {
+      if (typeof session.invoice === 'string') {
+        const invoice = await stripe.invoices.retrieve(session.invoice);
+        invoiceUrl = invoice.hosted_invoice_url;
+      } else {
+        invoiceUrl = (session.invoice as Stripe.Invoice).hosted_invoice_url;
+      }
+    }
+
+    const mailService = new MailService();
+    await mailService.sendOrderConfirmationEmail(orderDetails.customerEmail, updatedOrder, invoiceUrl || null);
 
     return NextResponse.json({
       success: true,

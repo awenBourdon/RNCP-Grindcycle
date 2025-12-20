@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/utils/auth';
 import { headers } from 'next/headers';
 import { PaymentService } from '@/lib/server/payments/payments.service';
+import { MailService } from '@/lib/server/mail/mail.service';
 
 const paymentService = new PaymentService();
 
@@ -50,6 +51,11 @@ export async function purchaseWithPointsAction(formData: FormData) {
     revalidatePath('/compte/profil');
     revalidatePath('/catalogue');
     revalidatePath('/admin/commandes');
+
+    if (session.user?.email) {
+      const mailService = new MailService();
+      await mailService.sendOrderConfirmationEmail(session.user.email, order, null); 
+    }
 
     return {
       success: true,
