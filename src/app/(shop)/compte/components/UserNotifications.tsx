@@ -106,6 +106,7 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
             totalItems: Math.max(0, prev.totalItems - 1),
           }));
           toast.success(result.message);
+          window.dispatchEvent(new Event('notificationUpdated'));
         } else {
           toast.error(result.error);
         }
@@ -130,6 +131,7 @@ export const UserNotifications = ({ userId }: UserNotificationsProps) => {
             hasPreviousPage: false,
           });
           toast.success(result.message);
+          window.dispatchEvent(new Event('notificationUpdated'));
         } else {
           toast.error(result.error);
         }

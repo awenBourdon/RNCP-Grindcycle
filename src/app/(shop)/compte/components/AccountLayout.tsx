@@ -26,7 +26,7 @@ export const AccountLayout = ({
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-80 flex-shrink-0">
-            <AccountSidebar currentPath={pathname} />
+            <AccountSidebar currentPath={pathname} user={session.user} />
           </div>
           <div className="flex-1">{children}</div>
         </div>

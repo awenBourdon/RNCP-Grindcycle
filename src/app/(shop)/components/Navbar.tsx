@@ -111,6 +111,10 @@ export const Navbar = ({ user }: NavbarProps) => {
 
     if (user?.id) {
       fetchUnreadNotifications();
+      window.addEventListener('notificationUpdated', fetchUnreadNotifications);
+      return () => {
+        window.removeEventListener('notificationUpdated', fetchUnreadNotifications);
+      };
     } else {
       setUnreadCount(0);
     }
