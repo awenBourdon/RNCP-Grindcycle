@@ -1,5 +1,6 @@
 'use client';
-import { Hash, Eye, Trash2, Package } from 'lucide-react';
+import { Hash, Eye, Trash2, Package, Pencil } from 'lucide-react'; // Added Pencil
+
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -112,6 +113,10 @@ export const ProductsTable = () => {
 
   const handleViewProduct = (productId: string) => {
     router.push(`/produit/${productId}`);
+  };
+
+  const handleEditProduct = (productId: string) => {
+    router.push(`/admin/produits/${productId}/editer-produit`);
   };
 
   const handleDeleteProduct = async (productId: string) => {
@@ -295,6 +300,13 @@ export const ProductsTable = () => {
                             title="Voir le produit"
                           >
                             <Eye size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleEditProduct(product.id)}
+                            className="text-gray-600 hover:text-[#0a3d3f] p-1 transition-colors cursor-pointer"
+                            title="Modifier le produit"
+                          >
+                            <Pencil size={16} />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(product.id)}

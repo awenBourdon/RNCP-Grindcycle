@@ -133,11 +133,38 @@ const StatusSelect = ({
   );
 };
 
+const POINTS_BAREME = {
+  SKATE: {
+    GOOD: 80,
+    AVERAGE: 60,
+    BAD: 40,
+  },
+  CRUISER: {
+    GOOD: 90,
+    AVERAGE: 70,
+    BAD: 50,
+  },
+  LONG: {
+    GOOD: 100,
+    AVERAGE: 80,
+    BAD: 60,
+  },
+} as const;
+
+interface PointsSelectProps {
+  boardId: string;
+  currentPoints: number | null | undefined;
+  currentStatus: UsedBoardStatus;
+  onUpdate: () => void;
+  suggestedPoints?: number;
+}
+
 const PointsSelect = ({
   boardId,
   currentPoints,
   currentStatus,
   onUpdate,
+  suggestedPoints,
 }: PointsSelectProps) => {
   const [isPending, startTransition] = useTransition();
 
@@ -164,22 +191,31 @@ const PointsSelect = ({
   };
 
   const canEditPoints = currentStatus === UsedBoardStatus.RECEIVED;
+  
+  // Use current points if defined, otherwise use suggested points (default), otherwise empty
+  const displayValue = currentPoints !== undefined && currentPoints !== null 
+    ? currentPoints 
+    : (suggestedPoints ?? '');
+
+  const pointOptions = [10, 25, 40, 50, 60, 70, 75, 80, 90, 100];
 
   return (
     <div className="relative inline-flex items-center group">
       <div className="relative">
         <select
-          value={currentPoints || ''}
+          value={displayValue}
           onChange={handleChange}
           disabled={isPending || !canEditPoints}
-          className="appearance-none pl-3 pr-8 py-2 text-sm font-medium border border-gray-200 rounded-full cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f] disabled:opacity-50 disabled:cursor-not-allowed hover:border-gray-300 min-w-[80px] bg-white text-[#010101]"
+          className={`appearance-none pl-3 pr-8 py-2 text-sm font-medium border rounded-full cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f] disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] text-[#010101] ${
+            !currentPoints && suggestedPoints ? 'border-[#0a3d3f] bg-[#0a3d3f]/5' : 'border-gray-200 bg-white hover:border-gray-300'
+          }`}
         >
           <option value="">0 pts</option>
-          <option value="10">10 pts</option>
-          <option value="25">25 pts</option>
-          <option value="50">50 pts</option>
-          <option value="75">75 pts</option>
-          <option value="100">100 pts</option>
+          {pointOptions.map((points) => (
+            <option key={points} value={points}>
+              {points} pts {points === suggestedPoints ? '(Recommandé)' : ''}
+            </option>
+          ))}
         </select>
         <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 pointer-events-none">
           {isPending ? (
@@ -509,6 +545,11 @@ export const UsedBoardsTable = () => {
                               currentPoints={board.pointsAwarded}
                               currentStatus={board.status}
                               onUpdate={handleUpdate}
+                              suggestedPoints={
+                                board.boardType && board.boardCondition
+                                  ? POINTS_BAREME[board.boardType][board.boardCondition]
+                                  : undefined
+                              }
                             />
                           ) : (
                             <div className="text-sm text-gray-400">-</div>

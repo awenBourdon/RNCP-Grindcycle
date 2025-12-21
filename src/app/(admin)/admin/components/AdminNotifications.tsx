@@ -98,6 +98,7 @@ export function AdminNotifications() {
         if (result.success) {
           toast.success(result.message);
           await fetchNotifications(1);
+          window.dispatchEvent(new Event('notificationUpdated'));
         } else {
           toast.error(result.error);
         }
