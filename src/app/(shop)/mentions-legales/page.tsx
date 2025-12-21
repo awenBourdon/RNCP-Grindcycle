@@ -93,33 +93,36 @@ export default function LegalNoticesPage() {
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-medium text-[#010101] mb-2">
-                    Hébergeur
-                  </h3>
-                  <p className="text-gray-700">A REMPLIR</p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-[#010101] mb-2">
-                    Adresse
+                    Hébergement application
                   </h3>
                   <p className="text-gray-700">
-                    A REMPLIR
-                    <br />A REMPLIR
+                    <strong>Vercel Inc.</strong> - France (Paris)
+                    <br />
+                    <a
+                      href="https://vercel.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0a3d3f] hover:underline"
+                    >
+                      vercel.com
+                    </a>
                   </p>
                 </div>
 
                 <div>
                   <h3 className="text-lg font-medium text-[#010101] mb-2">
-                    Site web
+                    Base de données
                   </h3>
                   <p className="text-gray-700">
+                    <strong>Neon (NeonDB)</strong> - Allemagne (Francfort)
+                    <br />
                     <a
-                      href="https://bonjour.com"
+                      href="https://neon.tech"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[#0a3d3f] hover:underline"
                     >
-                      A REMPLIR
+                      neon.tech
                     </a>
                   </p>
                 </div>
@@ -158,8 +161,8 @@ export default function LegalNoticesPage() {
                       fictifs
                     </li>
                     <li>
-                      Les images proviennent de banques d&apos;images libres de
-                      droits (A REMPLIR)
+                      Les images proviennent de la banque d&apos;images libres
+                      de droits Freepik
                     </li>
                     <li>
                       Les icônes proviennent de la bibliothèque Lucide React
@@ -177,11 +180,9 @@ export default function LegalNoticesPage() {
                     Crédits photos
                   </h3>
                   <p className="text-gray-700">
-                    Photos de skateboard : A REMPLIR
+                    Photos de skateboard : Freepik
                     <br />
                     Icônes : Lucide React (lucide.dev)
-                    <br />
-                    Illustrations : A REMPLIR
                   </p>
                 </div>
               </div>

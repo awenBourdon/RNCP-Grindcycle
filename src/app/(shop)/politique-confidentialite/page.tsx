@@ -570,9 +570,20 @@ export default function PrivacyPolicyPage() {
                         Hébergement web
                       </h4>
                       <p className="text-sm text-gray-700">
-                        <strong>A REMPLIR</strong> (RENSEIGNER PAYS)
+                        <strong>Vercel</strong> - France (Paris)
                         <br />
-                        Hébergement du site web et base de données
+                        Hébergement du code et de l&apos;application
+                      </p>
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        Base de données
+                      </h4>
+                      <p className="text-sm text-gray-700">
+                        <strong>NeonDB</strong> - Allemagne (Francfort)
+                        <br />
+                        Stockage des données utilisateurs
                       </p>
                     </div>
 
