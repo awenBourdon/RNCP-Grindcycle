@@ -16,6 +16,7 @@ import Image from 'next/image';
 import { useAbortController } from '@/hooks/useAbortController';
 import { PaginationMeta } from '@/lib/utils/pagination';
 import { BoardType, OrderStatus, PaymentType } from '@/lib/utils/enums/enums';
+import { OrderStatusSelect } from './OrderStatusSelect';
 
 const getStatusText = (status: OrderStatus) => {
   switch (status) {
@@ -208,7 +209,7 @@ export const AdminOrdersTable = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {orders.map(order => (
-                    <div key={order.id}>
+                    <React.Fragment key={order.id}>
                       <tr className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4">
                           <span className="text-sm font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">
@@ -231,9 +232,10 @@ export const AdminOrdersTable = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
-                            {getStatusText(order.status)}
-                          </span>
+                          <OrderStatusSelect 
+                            orderId={order.id} 
+                            status={order.status} 
+                          />
                         </td>
                         <td className="px-6 py-4 text-center">
                           <div className="flex items-center justify-center gap-1">
@@ -427,7 +429,7 @@ export const AdminOrdersTable = () => {
                           </td>
                         </tr>
                       )}
-                    </div>
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
