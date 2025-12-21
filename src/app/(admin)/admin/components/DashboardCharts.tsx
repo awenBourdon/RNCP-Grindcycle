@@ -84,7 +84,7 @@ export const DashboardCharts = ({
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div
-                className="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
+                className="bg-[#0a3d3f] h-2.5 rounded-full transition-all duration-500"
                 style={{ width: `${productStats.soldPercent}%` }}
               ></div>
             </div>

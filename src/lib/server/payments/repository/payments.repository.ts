@@ -60,10 +60,8 @@ export class PaymentRepository implements InterfacePaymentRepository {
     if (order.status !== OrderStatus.PENDING) {
       throw new Error('Cette commande ne peut pas être confirmée');
     }
-
-    const confirmedOrder = await services.orderService.updateOrderStatus(orderId, OrderStatus.CONFIRMED);
-
-    return confirmedOrder;
+    
+    return order;
   }
 
   async cleanupFavoritesForPurchase(
