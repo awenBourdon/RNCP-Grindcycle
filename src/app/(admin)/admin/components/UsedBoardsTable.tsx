@@ -191,11 +191,12 @@ const PointsSelect = ({
   };
 
   const canEditPoints = currentStatus === UsedBoardStatus.RECEIVED;
-  
+
   // Use current points if defined, otherwise use suggested points (default), otherwise empty
-  const displayValue = currentPoints !== undefined && currentPoints !== null 
-    ? currentPoints 
-    : (suggestedPoints ?? '');
+  const displayValue =
+    currentPoints !== undefined && currentPoints !== null
+      ? currentPoints
+      : (suggestedPoints ?? '');
 
   const pointOptions = [10, 25, 40, 50, 60, 70, 75, 80, 90, 100];
 
@@ -207,11 +208,13 @@ const PointsSelect = ({
           onChange={handleChange}
           disabled={isPending || !canEditPoints}
           className={`appearance-none pl-3 pr-8 py-2 text-sm font-medium border rounded-full cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#0a3d3f]/20 focus:border-[#0a3d3f] disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] text-[#010101] ${
-            !currentPoints && suggestedPoints ? 'border-[#0a3d3f] bg-[#0a3d3f]/5' : 'border-gray-200 bg-white hover:border-gray-300'
+            !currentPoints && suggestedPoints
+              ? 'border-[#0a3d3f] bg-[#0a3d3f]/5'
+              : 'border-gray-200 bg-white hover:border-gray-300'
           }`}
         >
           <option value="">0 pts</option>
-          {pointOptions.map((points) => (
+          {pointOptions.map(points => (
             <option key={points} value={points}>
               {points} pts {points === suggestedPoints ? '(Recommandé)' : ''}
             </option>
@@ -381,7 +384,7 @@ export const UsedBoardsTable = () => {
           <div className="flex items-center mb-8">
             <Package size={24} className="text-[#0a3d3f] mr-3" />
             <h2 className="text-2xl font-normal text-[#010101]">
-              Planches d&apos;occasion
+              Planches usagées
             </h2>
             {meta.totalItems > 0 && (
               <span className="ml-4 text-sm text-gray-600">
@@ -547,7 +550,9 @@ export const UsedBoardsTable = () => {
                               onUpdate={handleUpdate}
                               suggestedPoints={
                                 board.boardType && board.boardCondition
-                                  ? POINTS_BAREME[board.boardType][board.boardCondition]
+                                  ? POINTS_BAREME[board.boardType][
+                                      board.boardCondition
+                                    ]
                                   : undefined
                               }
                             />

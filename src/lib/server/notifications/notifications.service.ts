@@ -134,6 +134,13 @@ export const NotificationTemplates = {
     `Ton profil a été mis à jour avec succès.`,
   passwordChanged: () => 
     `Ton mot de passe a été modifié avec succès.`,
+  pointsUpdated: (boardName: string, points: number, diff: number) => {
+    if (diff > 0) {
+      return `Bonne nouvelle ! Les points pour ta planche "${boardName}" ont augmenté à ${points} points (+${diff}).`;
+    } else {
+      return `Mise à jour : Les points pour ta planche "${boardName}" ont été ajustés à ${points} points (${diff}). Ta planche est en plus mauvais état que annoncé.`;
+    }
+  },
 };
 
 export const notificationService = new NotificationService();

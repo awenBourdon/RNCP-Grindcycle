@@ -36,7 +36,12 @@ const navItems: NavItem[] = [
     icon: Users,
     href: '/admin/utilisateurs',
   },
-  { id: 'boards', label: 'Planches', icon: Package, href: '/admin/planches' },
+  {
+    id: 'boards',
+    label: 'Planches usagées',
+    icon: Package,
+    href: '/admin/planches',
+  },
   {
     id: 'products',
     label: 'Produits',
@@ -128,11 +133,13 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
                 <span className="text-sm font-medium">
                   {item.label}
                   {isNotificationItem && unreadCount > 0 && (
-                     <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                      isActive 
-                        ? 'bg-white text-[#0a3d3f]' 
-                        : 'bg-[#0a3d3f] text-white'
-                    }`}>
+                    <span
+                      className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                        isActive
+                          ? 'bg-white text-[#0a3d3f]'
+                          : 'bg-[#0a3d3f] text-white'
+                      }`}
+                    >
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
@@ -160,9 +167,9 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
                     : 'text-[#010101] hover:bg-white hover:shadow-sm'
                 }`}
               >
-                 <div className="relative">
+                <div className="relative">
                   <Icon size={18} />
-                   {isNotificationItem && unreadCount > 0 && (
+                  {isNotificationItem && unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
@@ -172,15 +179,17 @@ export const AdminNavbar = ({ currentPath }: AdminNavbarProps) => {
                 <span className="text-sm font-medium truncate flex-1">
                   {item.label}
                 </span>
-                 {isNotificationItem && unreadCount > 0 && (
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                      isActive 
-                        ? 'bg-white text-[#0a3d3f]' 
+                {isNotificationItem && unreadCount > 0 && (
+                  <span
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                      isActive
+                        ? 'bg-white text-[#0a3d3f]'
                         : 'bg-[#0a3d3f] text-white'
-                    }`}>
-                      {unreadCount > 99 ? '99+' : unreadCount}
-                    </span>
-                  )}
+                    }`}
+                  >
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </Link>
             );
           })}

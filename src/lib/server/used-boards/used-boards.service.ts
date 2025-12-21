@@ -139,6 +139,14 @@ export class UsedBoardService {
       await this.createStatusChangeNotification(updatedBoard);
     }
 
+    if (
+        updatedBoard.pointsAwarded !== null && 
+        oldBoard.pointsAwarded !== null && 
+        updatedBoard.pointsAwarded !== oldBoard.pointsAwarded
+    ) {
+        await this.createPointsChangeNotification(updatedBoard, oldBoard.pointsAwarded);
+    }
+
     return updatedBoard;
   }
 
@@ -235,6 +243,23 @@ export class UsedBoardService {
       }
     } catch (error) {
       console.error('Erreur notification changement statut:', error);
+    }
+  }
+
+  private async createPointsChangeNotification(board: UsedBoardWithRelations, oldPoints: number): Promise<void> {
+    try {
+        if (!board.userId || board.pointsAwarded === null) return;
+
+        const diff = board.pointsAwarded - oldPoints;
+        if (diff === 0) return;
+
+        await createNotification({
+            userId: board.userId,
+            target: 'USER',
+            description: NotificationTemplates.pointsUpdated(board.name, board.pointsAwarded, diff),
+        });
+    } catch (error) {
+        console.error('Erreur notification changement points:', error);
     }
   }
 }

@@ -676,7 +676,7 @@ export const apiSpec: OpenAPIV3.Document = {
             name: 'userId',
             in: 'query',
             schema: { type: 'string', format: 'uuid' },
-            description: 'Lister les planches d’un utilisateur (admin).',
+            description: 'Lister les planches usagées d’un utilisateur (admin).',
           },
           {
             name: 'admin',
