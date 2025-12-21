@@ -95,7 +95,7 @@ model User {
   favorites     Favorite[]
   orders        Order[]
 
-  @@map("user")
+  @@map("users")
 }
 
 model Session {
@@ -110,7 +110,7 @@ model Session {
   userId         String
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("session")
+  @@map("sessions")
 }
 
 model Account {
@@ -130,7 +130,7 @@ model Account {
   updatedAt             DateTime  @updatedAt
   deletedAt             DateTime?
 
-  @@map("account")
+  @@map("accounts")
 }
 
 model Verification {
@@ -141,7 +141,7 @@ model Verification {
   createdAt  DateTime?
   updatedAt  DateTime?
 
-  @@map("verification")
+  @@map("verifications")
 }
 
 // ================================
@@ -164,7 +164,7 @@ model UsedBoard {
   updatedAt      DateTime         @updatedAt
   deletedAt      DateTime?
 
-  @@map("used_board")
+  @@map("used_boards")
 }
 
 // ================================
@@ -205,7 +205,7 @@ model Product {
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
 
-  @@map("product")
+  @@map("products")
 }
 
 model Order {
@@ -229,7 +229,7 @@ model Order {
   // Relations
   orderItems OrderItem[]
 
-  @@map("order")
+  @@map("orders")
 }
 
 model OrderItem {
@@ -263,7 +263,7 @@ model Notification {
   updatedAt   DateTime           @updatedAt
   deletedAt   DateTime?
 
-  @@map("notification")
+  @@map("notifications")
   @@index([userId])
   @@index([target])
   @@index([createdAt])
@@ -284,5 +284,5 @@ model Favorite {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@id([userId, productId])
-  @@map("favorite")
+  @@map("favorites")
 }
