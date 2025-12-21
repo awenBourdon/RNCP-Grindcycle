@@ -19,11 +19,13 @@ import { OrderStatus } from '@/lib/utils/enums/enums';
 interface OrderStatusSelectProps {
   orderId: string;
   status: OrderStatus;
+  onStatusChange?: (newStatus: OrderStatus) => void;
 }
 
 export const OrderStatusSelect = ({
   orderId,
   status,
+  onStatusChange,
 }: OrderStatusSelectProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -39,6 +41,7 @@ export const OrderStatusSelect = ({
 
         if (result.success) {
           toast.success(result.message);
+          onStatusChange?.(newStatus);
           router.refresh();
         } else {
           toast.error(result.error);

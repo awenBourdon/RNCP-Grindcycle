@@ -11,6 +11,7 @@ import { PaginationMeta } from '@/lib/utils/pagination';
 import { useAbortController } from '@/hooks/useAbortController';
 import { BoardType } from '@/lib/utils/enums/enums';
 import { Product } from '@/lib/utils/types/types';
+import { ProductStatus } from '@/lib/utils/enums/enums';
 
 interface ProductWithUsedBoard extends Product {
   createdAt: string | number | Date;
@@ -133,6 +134,15 @@ export const ProductsTable = () => {
         toast.error('Erreur lors de la suppression');
       }
     });
+  };
+
+
+  const handleStatusUpdate = (productId: string, newStatus: ProductStatus) => {
+    setProducts(prevProducts =>
+      prevProducts.map(product =>
+        product.id === productId ? { ...product, status: newStatus } : product
+      )
+    );
   };
 
   if (error) {
@@ -270,6 +280,7 @@ export const ProductsTable = () => {
                         <ProductStatusSelect
                           productId={product.id}
                           status={product.status}
+                          onStatusChange={(newStatus) => handleStatusUpdate(product.id, newStatus)}
                         />
                       </td>
                       <td className="px-6 py-4">

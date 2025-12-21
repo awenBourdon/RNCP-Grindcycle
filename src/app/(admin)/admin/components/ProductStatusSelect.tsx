@@ -16,11 +16,13 @@ import { ProductStatus } from '@/lib/utils/enums/enums';
 interface ProductStatusSelectProps {
   productId: string;
   status: ProductStatus;
+  onStatusChange?: (newStatus: ProductStatus) => void;
 }
 
 export const ProductStatusSelect = ({
   productId,
   status,
+  onStatusChange,
 }: ProductStatusSelectProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -36,6 +38,7 @@ export const ProductStatusSelect = ({
 
         if (result.success) {
           toast.success(result.message);
+          onStatusChange?.(newStatus);
           router.refresh();
         } else {
           toast.error(result.error);

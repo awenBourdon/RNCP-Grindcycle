@@ -130,6 +130,14 @@ export const AdminOrdersTable = () => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
+  const handleStatusUpdate = (orderId: string, newStatus: OrderStatus) => {
+    setOrders(prevOrders =>
+      prevOrders.map(order =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
+  };
+
   if (error) {
     return (
       <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -235,6 +243,7 @@ export const AdminOrdersTable = () => {
                           <OrderStatusSelect 
                             orderId={order.id} 
                             status={order.status} 
+                            onStatusChange={(newStatus) => handleStatusUpdate(order.id, newStatus)}
                           />
                         </td>
                         <td className="px-6 py-4 text-center">

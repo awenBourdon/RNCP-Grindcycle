@@ -11,9 +11,10 @@ import { updateUserRoleAction } from '@/actions/users/update-user.-role.action';
 interface UserRoleSelectProps {
   userId: string;
   role: UserRole;
+  onRoleChange?: (newRole: UserRole) => void;
 }
 
-export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
+export const UserRoleSelect = ({ userId, role, onRoleChange }: UserRoleSelectProps) => {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -28,6 +29,7 @@ export const UserRoleSelect = ({ userId, role }: UserRoleSelectProps) => {
 
         if (result.success) {
           toast.success(result.message);
+          onRoleChange?.(newRole);
           router.refresh();
         } else {
           toast.error(result.error);

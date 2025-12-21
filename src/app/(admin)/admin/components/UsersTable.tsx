@@ -80,6 +80,14 @@ export const UsersTable = () => {
     await fetchUsers(currentPage + 1);
   };
 
+  const handleRoleUpdate = (userId: string, newRole: UserRole) => {
+    setUsers(prevUsers =>
+      prevUsers.map(user =>
+        user.id === userId ? { ...user, role: newRole } : user
+      )
+    );
+  };
+
   if (error) {
     return (
       <div className="bg-[#f8f7f4] rounded-xl p-8">
@@ -186,6 +194,7 @@ export const UsersTable = () => {
                         <UserRoleSelect
                           userId={user.id}
                           role={user.role as UserRole.ADMIN | UserRole.USER}
+                          onRoleChange={(newRole) => handleRoleUpdate(user.id, newRole)}
                         />
                       </td>
                       <td className="px-6 py-4 text-center">
