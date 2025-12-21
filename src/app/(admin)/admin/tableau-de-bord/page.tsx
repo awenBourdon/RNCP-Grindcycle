@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 import { DashboardStats } from '../components/DashboardStats';
+import { DashboardCharts } from '../components/DashboardCharts';
 import type { Notification, Product, UsedBoard } from '@/lib/utils/types/types';
 import { ProductStatus, UsedBoardStatus } from '@/lib/utils/enums/enums';
 
@@ -89,7 +90,16 @@ export default async function DashboardPage() {
       ).length,
     };
 
-    return <DashboardStats stats={stats} />;
+    return (
+      <div className="space-y-8">
+        <DashboardStats stats={stats} />
+        <DashboardCharts
+          products={products}
+          users={users}
+          usedBoards={usedBoards}
+        />
+      </div>
+    );
   } catch {
     return (
       <div className="p-8 text-center">
