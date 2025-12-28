@@ -6,7 +6,7 @@
     "dev": "prisma generate && next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint --dir .",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -39,8 +39,8 @@
     "zod": "^3.25.55"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@eslint/js": "^9.39.1",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "@next/eslint-plugin-next": "^16.0.7",
     "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4",
