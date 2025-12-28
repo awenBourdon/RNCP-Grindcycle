@@ -2,10 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['@node-rs/argon2'],
-  // @ts-ignore - ESLint config existe mais pas dans les types Next 16
-  eslint: {
-  dirs: ['.'],
-},
+
   images: {
     remotePatterns: [
       {
