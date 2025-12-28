@@ -29,14 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -45,31 +38,13 @@ jobs:
         run: npx prisma generate
 
       - name: Run linting
-        run: |
-          pwd
-          ls -la
-          npm run lint
+        run: npm run lint
 
       - name: Run Next.js build
         run: npm run build
 
-      - name: Start Next.js server
-        run: npm start &
-        env:
-          PORT: 3000
-
-      - name: Wait for server to start
-        run: npx wait-on http://localhost:3000 -t 60000
-
       - name: Run unit tests
         run: npm run test
-
-      - name: Stop Next.js server
-        run: pkill -f "next start" || true
-        if: always()
-
-      - name: Wait for server to stop
-        run: sleep 2
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
